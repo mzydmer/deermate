@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Local worker + MCP bridge alpha · 2026-10-25.** The Python worker, authenticated loopback API, SQLite task store, Git workspaces, Codex adapter, and local MCP bridge are implemented. M1 verified a real Codex repair; M2.1 now verifies the actual pinned DeerFlow Gateway/SQLite restart path with an offline fixture. Model-driven notifications, SSH, specialist routing and the dashboard remain pending. The video is a simulated concept preview. Install from source; no PyPI release is published.
+> **Worker + MCP + SSH alpha · 2026-10-25.** Python execution, durable tasks, Codex, MCP and enrolled direct SSH are implemented. M1 verified a real Codex repair; later Gateway/SSH checks use offline native fixtures. Actual device/OpenSSH deployment, NAT, model notifications, specialist routing and the dashboard remain pending. The video is a simulated concept preview. Install from source; no PyPI release is published.
 
 ## Meet your personal agent secretary
 
@@ -46,7 +46,7 @@ Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m2-gateway-verification  # until the implementation branch is merged
+git checkout feat/m2-ssh-worker  # until the implementation branch is merged
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -67,6 +67,8 @@ Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0
 To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. Actual Gateway/SQLite restart, cancellation and outage recovery now have a [retained fixture receipt](docs/verification/deerflow-gateway-2026-10-25.json); model/UI and remote access remain separate work.
 
 ## What we are building
+
+For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; actual device/account/network deployment still needs validation.
 
 | Capability | Intended experience | Status |
 | --- | --- | --- |
@@ -146,7 +148,7 @@ Planned connection flow:
 4. Register adapter capabilities and project-specific policies.
 5. Run a read-only smoke task before enabling writes.
 
-The remote connection flow above is still planned. For the implemented local path, use the [worker setup guide](docs/local-worker.md) and [local TOML example](examples/local-worker.toml). The [broader YAML example](examples/deermate.example.yaml) remains design-only. Install from this repository; a package named `deermate` on a registry is not claimed to be this project.
+Direct SSH implementation and provisioning are documented in [the SSH guide](docs/ssh-worker.md). Local setup uses the [worker guide](docs/local-worker.md) and [TOML example](examples/local-worker.toml). The [broader YAML example](examples/deermate.example.yaml) remains design-only. Install from this repository; a package named `deermate` on a registry is not claimed to be this project.
 
 ## Autonomy with explicit boundaries
 
@@ -159,17 +161,17 @@ The target is unattended work within permissions you set in advance. The propose
 - **Bound the work:** task limits, concurrency limits, expiry, and cancellation are first-class design requirements.
 - **Treat outside text as data:** an issue, email, web page, or another agent's result cannot grant additional authority.
 
-**Encryption status:** the default design uses established SSH encryption; it has not been implemented or audited in DeerMate. A forwarding relay need not decrypt the SSH stream, but the SSH endpoints can read it. The optional Hermesh MCP gateway can decrypt its sessions; CLI and MCP paths have different trust boundaries. See [the security model](docs/security.md).
+**Encryption status:** direct SSH implements explicit host-key verification, dedicated credentials and bounded connection lifetime. Generated-key protocol tests pass; no independent audit or actual device deployment is claimed. SSH endpoints can read plaintext. Relay/NAT and Hermesh have separate trust boundaries. See [security](docs/security.md) and [revocation](docs/ssh-worker.md).
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M1 implemented; M2.1 local MCP bridge alpha**.
+We track delivered work separately from planned functionality. Current stage: **M2.2 direct SSH transport alpha**.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
 | M0 | English/Chinese README, architecture, security boundaries, contracts, concept film | In this repository |
 | M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
-| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | Local bridge and actual Gateway/SQLite restart verified with fixture; SSH pending |
+| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH implemented; actual devices, restricted accounts and NAT pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Unified task cards + research watchlists + scoped mail/browser tools | Planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
@@ -179,6 +181,8 @@ We track delivered work separately from planned functionality. Current stage: **
 M2.1 has 51 passing normal tests (two opt-in upstream checks skipped), a passing ordinary-driver probe and a separately passing actual Gateway/SQLite process-restart verifier with 14 recorded checks. The backend check uses a model-free submit entry and offline native fixture; it does not prove chat/UI, real-model notifications or remote SSH. See [bridge verification](docs/deerflow.md) and [current status](docs/STATUS.md).
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
+
+M2.2 expands the normal suite to **74 passed, 3 opt-in cases skipped**. Both local/SSH pinned-driver variants pass separately. The [SSH receipt](docs/verification/ssh-transport-2026-10-25.json) covers 22 protocol cases including revocation, rotation and lost acknowledgements; this is not real-device/OpenSSH/NAT evidence.
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 
@@ -190,7 +194,7 @@ Track the first implementation milestone: [Python worker + Codex session lifecyc
 | [Hermesh](https://github.com/hermeshai/hermesh) | Design inspiration and optional bridge; its code remains independently maintained |
 | [Codex](https://github.com/openai/codex) | A native coding-agent runtime connected through documented interfaces |
 | [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | An optional ACP worker runtime |
-| [AsyncSSH](https://github.com/ronf/asyncssh) | Proposed Python SSH implementation; no custom cryptography |
+| [AsyncSSH](https://github.com/ronf/asyncssh) | Implemented optional SSH transport; tested at 2.24.1; no custom cryptography |
 | [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) | Implemented optional stdio bridge; tested with SDK 1.30.0 |
 | [Playwright MCP](https://github.com/microsoft/playwright-mcp) / [Peekaboo](https://github.com/openclaw/Peekaboo) | Optional web and desktop capabilities |
 

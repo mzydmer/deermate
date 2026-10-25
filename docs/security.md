@@ -1,6 +1,6 @@
 # Security model proposal
 
-Status: local worker alpha with bearer authentication, local Host/Origin checks, configured project admission, native Codex sandbox policies, and single-owner state. Remote transport and the broader requirements below remain unimplemented; nothing has been independently audited. Updated: 2026-10-25. See [local limits](local-worker.md).
+Status: Worker, MCP and enrolled direct SSH transport alpha. Bearer authentication, local Host/Origin checks, project admission, native sandbox policies and single-owner state remain in force. Broader deployment requirements below are not all implemented or independently audited. Updated: 2026-10-25. See [local limits](local-worker.md) and [SSH scope](ssh-worker.md).
 
 The M2.1 stdio MCP bridge uses that same single owner's local bearer authority. It forwards to a fixed loopback endpoint with proxy discovery and redirects disabled, and does not add a network listener, new grants, or direct database access. Run it only in a trusted local DeerFlow process with deliberate access to the Worker token; its three tools can act on that owner's registered projects/tasks. Bounded summaries may still contain project content; no universal redaction is claimed. See [the setup and deployment limits](deerflow.md).
 
@@ -19,7 +19,9 @@ Personal messages and source code, external-service credentials, host access, pr
 | Agent to model provider | Provider's supported encrypted transport | The provider receives prompts and relevant context |
 | Optional Hermesh MCP gateway | Self-hosted gateway with scoped grants | The gateway holds keys and can read/act within those grants |
 
-The proposed direct SSH path is not a new cryptographic protocol. No encrypted-relay, key-management, penetration-test, or audit completion is claimed. A TLS-terminating proxy is a plaintext endpoint; calling it self-hosted does not make it blind to content.
+The direct transport uses AsyncSSH, explicit known_hosts/client keys and an enrolled instance ID; it does not introduce cryptography. It disables ambient identities and non-key authentication, rechecks grants and credentials per operation, and bounds cached connection lifetime. Instance IDs prevent namespace drift, not host impersonation; host-key validation provides host authentication. SSH endpoints see plaintext. Relay deployment, automatic key enrollment, penetration testing and audit completion are not claimed.
+
+Revocation rejects new remote operations and closes the controller tunnel; already admitted Worker tasks continue under existing limits. Removing a server authorized key alone does not disconnect authenticated sessions. The default 60-second connection lifetime bounds reauthentication, subject to bounded in-flight HTTP cleanup; immediate server-side revocation requires terminating active sessions. Dedicated restricted accounts and trusted provisioning remain operator responsibilities. Tests use generated keys and a temporary protocol server, not the operator's sshd.
 
 ## Admission and execution requirements
 

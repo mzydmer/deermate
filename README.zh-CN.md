@@ -5,7 +5,7 @@
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Python 后端</p>
 
-> **当前阶段：本地 Worker + MCP 桥接 Alpha，2026-10-25。** 已实现 Python Worker、带鉴权的本地 API、SQLite 持久任务、Git 工作区、Codex 适配和本地 MCP 桥接。M1 已验证真实 Codex 修复；M2.1 已用离线 fixture 验证实际 DeerFlow Gateway/SQLite 进程重启。模型通知、远程 SSH、专职路由与仪表盘仍待完成。下方视频仍是模拟概念预览。当前从源码安装，尚未发布 PyPI 包。
+> **当前阶段：Worker + MCP + SSH Alpha，2026-10-25。** 已实现 Python 执行、持久任务、Codex、MCP 和注册式直接 SSH。M1 验证过真实 Codex 修复，后续 Gateway/SSH 验收使用离线原生 fixture。真实设备/OpenSSH 部署、NAT、模型通知、专职路由和仪表盘仍待完成。视频仍是模拟概念预览，尚未发布 PyPI 包。
 
 ## 你的私人 Agent 秘书
 
@@ -36,7 +36,7 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m2-gateway-verification  # 实现分支合并前使用
+git checkout feat/m2-ssh-worker  # 实现分支合并前使用
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -57,6 +57,8 @@ deermate diff TASK_ID
 同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；实际 Gateway/SQLite 的重启、取消和失联恢复已有[可保存的 fixture 收据](docs/verification/deerflow-gateway-2026-10-25.json)，模型/UI 与跨主机连接仍需后续工作。
 
 ## 我们正在构建什么
+
+直接可达的 SSH Worker 可安装 `.[mcp,ssh]`，填写[注册配置](examples/ssh-controller.toml)，运行 `deermate --config controller.toml --worker home mcp` 或既有 CLI 命令。[SSH 指南](docs/ssh-worker.md)包含主机信任、凭据、期限和绑定句柄；实际设备/账户/网络仍需部署验收。
 
 | 能力 | 目标体验 | 进展 |
 | --- | --- | --- |
@@ -133,7 +135,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 4. 注册 Agent 能力，设置项目级权限与任务限制。
 5. 先执行只读检查，再按需开放写入。
 
-上述远程接入流程仍属规划。本地实现请使用[Worker 指南](docs/local-worker.md)和[TOML 示例](examples/local-worker.toml)。[更完整的 YAML 示例](examples/deermate.example.yaml)仍是设计草案，不能用于启动服务。当前从仓库安装，不声称包注册表中的同名项目属于本仓库。
+直接 SSH 已有[实现与部署指南](docs/ssh-worker.md)。本地实现使用[Worker 指南](docs/local-worker.md)和[TOML 示例](examples/local-worker.toml)。[更完整的 YAML 示例](examples/deermate.example.yaml)仍是设计草案，不能用于启动服务。当前从仓库安装，不声称包注册表中的同名项目属于本仓库。
 
 ## 自动执行的边界
 
@@ -146,17 +148,17 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 - 为任务设置时限、并发上限、失效时间和取消方式。
 - issue、邮件、网页和其他 Agent 的回复都是外部数据，不能提升权限。
 
-**加密进展：** 默认设计使用成熟的 SSH 加密协议，但 DeerMate 尚未实现或审计。转发中继可以只传递密文，SSH 两端仍能读取内容。可选 Hermesh MCP 网关能够解密其会话，不能将它和 CLI 直连的信任边界混为一谈。详见[安全模型](docs/security.md)。
+**加密进展：** 直接 SSH 已实现明确的主机密钥校验、专用凭据和有限连接寿命，临时密钥协议测试已通过；尚无独立审计或真实设备部署证明。SSH 两端可以读取明文，中继/NAT 和 Hermesh 另有信任边界。详见[安全模型](docs/security.md)和[撤权行为](docs/ssh-worker.md)。
 
 ## 开发进展
 
-当前阶段：**M1 已实现；M2.1 本地 MCP 桥接 Alpha**。已交付的内容与计划中的运行能力分别列出。
+当前阶段：**M2.2，直接 SSH 传输 Alpha**。已交付的内容与计划中的运行能力分别列出。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
 | M0 | 中英文 README、架构、安全边界、接入契约、概念视频 | 已在仓库提供 |
 | M1 | 本地 Python Worker、Codex 适配器、可验证的单任务生命周期 | 已有实现，验证范围见指南 |
-| M2 | DeerFlow 工具、SSH 远程 Worker、重启和重连恢复 | 本地桥接及实际 Gateway/SQLite 重启已通过 fixture 验证；SSH 待完成 |
+| M2 | DeerFlow 工具、SSH 远程 Worker、重启和重连恢复 | MCP/直接 SSH 已实现；真实设备、账户策略与 NAT 待验收 |
 | M3 | Claude/ACP 适配、独立审核、GitHub 维护流程 | 规划中 |
 | M4 | 统一任务卡片、竞品 watchlist、受限邮件与浏览器工具 | 规划中 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
@@ -167,6 +169,8 @@ M2.1 常规测试为 51 项通过、两项 opt-in 上游检查跳过；另行执
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
+M2.2 将常规测试扩展至 **74 项通过、3 项 opt-in 用例跳过**；上游固定驱动的本地/SSH 两种模式均另行通过。[SSH 收据](docs/verification/ssh-transport-2026-10-25.json)覆盖 22 项协议测试，包括撤权、轮换和丢响应恢复，不代表真实设备/OpenSSH/NAT 已验收。
+
 首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
 
 ## 开源生态
@@ -174,7 +178,7 @@ M2.1 常规测试为 51 项通过、两项 opt-in 上游检查跳过；另行执
 - [DeerFlow](https://github.com/bytedance/deer-flow)：秘书基础，优先复用现有能力。
 - [Hermesh](https://github.com/hermeshai/hermesh)：架构参考和可选桥接，其实现独立维护。
 - [Codex](https://github.com/openai/codex)、[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)：通过公开接口连接的外部执行者。
-- [AsyncSSH](https://github.com/ronf/asyncssh)：拟采用的 Python SSH 库，不自行发明加密协议。
+- [AsyncSSH](https://github.com/ronf/asyncssh)：已用于可选 SSH 传输，测试版本 2.24.1，不自行发明加密协议。
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)：已用于可选 stdio 桥接，测试版本 1.30.0。
 - [Playwright MCP](https://github.com/microsoft/playwright-mcp)、[Peekaboo](https://github.com/openclaw/Peekaboo)：可选网页与桌面能力。
 

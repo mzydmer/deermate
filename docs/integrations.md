@@ -1,6 +1,6 @@
 # Integration contracts
 
-Status: local Codex adapter and Python stdio MCP bridge implemented; SSH and the other adapter contracts remain proposals. Updated: 2026-10-25. The local HTTP/CLI API is documented in [local-worker.md](local-worker.md); MCP setup and compatibility limits are in [deerflow.md](deerflow.md).
+Status: Codex, Python stdio MCP and enrolled direct SSH implemented; other adapters remain proposals. Updated: 2026-10-25. See [local HTTP/CLI](local-worker.md), [MCP](deerflow.md) and [SSH](ssh-worker.md) for setup and limits.
 
 ## Normalized adapter operations
 
@@ -31,6 +31,8 @@ The implemented lifecycle returns these shapes in MCP `structuredContent`; IDs a
 ```
 
 Source: pinned [DeerFlow MCP server guide](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/docs/MCP_SERVER.md). Exact status/error mapping, bounded result fields, and acceptance evidence are in the [M2.1 spec](specs/m2-deerflow-task-bridge.md). Cancellation returns a confirmed terminal outcome or a tool error; no unconfirmed cancellation success is reported.
+
+The same pinned driver now passes local and SSH variants. SSH mode binds a raw `instance_id:task_id` handle (65 characters) and accepts no host, port, credential or command fields in tool arguments. Grant/transport errors remain tool errors rather than invented task failures. Setup and per-instance constraints: [M2.2](specs/m2-ssh-worker.md).
 
 ## Native agent interfaces
 

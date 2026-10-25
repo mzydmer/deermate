@@ -11,7 +11,7 @@ Start with [AGENTS.md](AGENTS.md) and [current status](docs/STATUS.md). [SPEC.md
 1. Review the worker lifecycle and restart/reconnect semantics.
 2. Improve the Codex adapter's lifecycle evidence and bounded recovery.
 3. Extend the actual Gateway/SQL verifier to configured-model notifications or upgrade scenarios; local restart and outage checks already have retained receipts.
-4. Review SSH enrollment, limited execution accounts, and revocation requirements.
+4. Validate the implemented SSH transport on real restricted accounts, or extend the Gateway verifier to its SSH mode. Protocol tests already cover enrollment, rotation and revocation boundaries.
 5. Improve the documentation or Chinese translation.
 
 Open a [design proposal](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml) or [integration request](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml) before a broad change. Focus a pull request on one outcome; include upstream version references and evidence for any support claim.

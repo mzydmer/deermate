@@ -1,6 +1,6 @@
 # Run the local Python worker
 
-Milestone M1, experimental. Python 3.11+, Git, and macOS or Linux are required. Windows is not supported in this milestone (`fcntl` and POSIX process groups are used). A local Python MCP bridge and actual Gateway/SQLite fixture verification are available in the [DeerFlow guide](deerflow.md); SSH and the dashboard remain pending.
+Milestone M1, experimental. Python 3.11+, Git, and macOS or Linux are required. Windows is not supported (`fcntl` and POSIX process groups are used). [DeerFlow](deerflow.md) and [enrolled SSH](ssh-worker.md) now build on this Worker; actual device deployment and the dashboard remain pending.
 
 ## Install from this repository
 
@@ -13,7 +13,7 @@ python -m pip install -e '.[dev]'
 cp examples/local-worker.toml deermate.toml
 ```
 
-Until the implementation branch is merged, check out `feat/m2-gateway-verification` before installing (includes M1, the local MCP bridge and Gateway verification tooling).
+Until the implementation branch is merged, check out `feat/m2-ssh-worker` before installing (includes Worker, MCP, SSH and verification tooling).
 
 Edit `deermate.toml`: set `projects.demo.root` to an existing **trusted** Git repository with at least one commit. Set a project-specific test command as an argv array. Omit `test_command` to collect a result with `needs_review` instead of claiming validated completion. Set `allow_write = true` only for projects you authorize the agent to edit.
 
@@ -109,4 +109,4 @@ Add `--lifecycle` to also interrupt a real native turn and continue the same sav
 
 The smoke script creates a temporary buggy repository, delegates its one-line repair to real Codex, runs a separate configured test command, prints a diff and receipt, and removes the temporary files afterward. It does not change your global Codex settings.
 
-Validated locally on 2026-10-25 with Python 3.12, macOS, Codex `0.164.0-alpha.11.1`, and an explicit `gpt-6.1-sol` model: a real repair completed, the independent test command ran one test and passed, and the patch was collected. The opt-in lifecycle run also interrupted a real native turn and continued the same thread successfully, preserving its session identity across three attempts. Offline tests cover restart recovery, pending input, idempotency, policy denial, malformed transport, and deadlines. Live remote execution is not implemented or claimed.
+Validated locally on 2026-10-25 with Python 3.12, macOS, Codex `0.164.0-alpha.11.1`, and an explicit `gpt-6.1-sol` model: a real repair completed, the independent test command ran one test and passed, and the patch was collected. The opt-in lifecycle run also interrupted a real native turn and continued the same thread successfully, preserving its session identity across three attempts. Offline tests cover restart recovery, pending input, idempotency, policy denial, malformed transport, and deadlines. Later SSH evidence uses an offline native fixture; real remote-model execution has not been verified.

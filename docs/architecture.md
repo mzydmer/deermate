@@ -1,6 +1,6 @@
 # Architecture proposal
 
-Status: local M1 worker and M2.1 Python MCP bridge implemented; the distributed topology below is still a proposal. Updated: 2026-10-25. See [the local worker guide](local-worker.md) and [DeerFlow guide](deerflow.md) for the runnable scope and verification evidence.
+Status: M1 Worker, M2.1 MCP and M2.2 enrolled direct SSH implemented; broader distributed routing remains a proposal. Updated: 2026-10-25. See [local](local-worker.md), [DeerFlow](deerflow.md) and [SSH](ssh-worker.md) guides for runnable scope and evidence.
 
 ## Product boundary
 
@@ -8,7 +8,7 @@ DeerMate coordinates agents that already exist. DeerFlow supplies the conversati
 
 The control service and worker are maintained in Python. The initial UI reuses DeerFlow, whose frontend has its own toolchain. External agent executables remain external dependencies. The optional Hermesh bridge is not part of the default installation.
 
-The implemented local MCP bridge forwards three tools to the independent authenticated HTTP Worker. It does not acquire a database lock or own native execution; restarting the MCP connection leaves Worker tasks intact. See [ADR 0003](decisions/0003-independent-mcp-bridge.md). The actual pinned Gateway/SQLite process-restart path has passed an [isolated fixture check](specs/m2-gateway-verification.md); real-model notifications, UI and remote SSH remain separate work.
+The MCP bridge forwards three tools to the independent authenticated HTTP Worker, locally or through an enrolled SSH channel. It does not acquire a database lock or own native execution. The pinned Gateway/SQLite restart path has an [isolated fixture check](specs/m2-gateway-verification.md); SSH has generated-key protocol and upstream-driver checks. Real-model notifications, UI and actual two-machine deployment remain separate work.
 
 ## Proposed components
 
@@ -24,7 +24,7 @@ The implemented local MCP bridge forwards three tools to the independent authent
 
 Begin with one control service and one worker on a trusted network. Use SQLite for the initial single-instance design; do not put the SQLite file on a network filesystem. PostgreSQL becomes necessary before multiple controllers coordinate the same tasks. Do not add Kubernetes or a separate distributed workflow platform to the first milestone.
 
-The proposed SSH connector uses AsyncSSH with explicit known-hosts verification. Start with a direct, reachable SSH endpoint. A later relay may forward an already encrypted SSH stream; it must not terminate the end-to-end SSH session. We have not implemented a reverse-tunnel service, key enrollment, or relay discovery. NAT traversal is an explicit M2 design task, not an existing feature.
+The implemented AsyncSSH connector verifies explicit known_hosts and dedicated credentials, then forwards HTTP to the remote Worker loopback port. Enrollment pins a persistent application instance; remote handles bind that instance to the task. Grant checks, bounded connection age and explicit recovery are described in [ADR 0004](decisions/0004-ssh-loopback-transport.md). Operators provision credentials/accounts through a trusted channel. Reverse tunnels, relay discovery and NAT enrollment remain unimplemented.
 
 ## Task lifecycle
 
@@ -69,8 +69,8 @@ Desktop automation runs in a dedicated user/VM session, with exclusive control o
 
 ## Open questions
 
-- Choose a worker framing protocol over SSH: versioned JSON-RPC or JSON Lines, with byte limits and explicit framing.
-- Define key enrollment, rotation, revocation, host replacement, and incident recovery.
+- Validate a real two-machine deployment and limited OS account, beyond the protocol fixture.
+- Add guided enrollment/NAT and incident recovery on top of the existing explicit key/expiry/revocation policy.
 - Verify how DeerFlow background tasks and native agent resumption interact across restarts.
 - Define budget enforcement from incomplete or delayed provider usage reporting.
 - Choose a task-card integration approach without a deep DeerFlow fork.
