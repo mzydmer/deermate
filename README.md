@@ -151,6 +151,8 @@ We track delivered work separately from planned functionality. Current stage: **
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
+Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
+
 ## Built with the open-source ecosystem
 
 | Project | Intended relationship |

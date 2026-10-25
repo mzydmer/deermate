@@ -138,6 +138,8 @@ Worker 尚未实现，因此此处不提供虚构的安装命令。[接入契约
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
+首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
+
 ## 开源生态
 
 - [DeerFlow](https://github.com/bytedance/deer-flow)：秘书基础，优先复用现有能力。

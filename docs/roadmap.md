@@ -12,6 +12,8 @@ Status: M0 design preview. Updated: 2026-10-25. This is a sequence of acceptance
 
 ## M1 — Prove one local task
 
+Tracking issue: [Python worker and Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
+
 - [ ] Implement a versioned Python worker contract and local task store.
 - [ ] Implement the Codex native app-server adapter.
 - [ ] Submit a bounded task in a disposable repository and return native session ID, events, diff, and captured test output.
