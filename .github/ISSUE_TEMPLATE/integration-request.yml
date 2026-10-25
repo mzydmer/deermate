@@ -1,0 +1,23 @@
+name: Integration request
+description: Propose an agent, protocol, machine, or tool integration.
+title: "[Integration] "
+body:
+  - type: input
+    id: upstream
+    attributes:
+      label: Upstream project and official interface
+      description: Link the primary documentation and specify the version if known.
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Intended workflow
+      description: Describe who delegates to whom and where execution happens.
+    validations:
+      required: true
+  - type: textarea
+    id: lifecycle
+    attributes:
+      label: Lifecycle and security boundaries
+      description: Describe auth, start/status/cancel/resume, artifacts, and known limits.

@@ -1,0 +1,46 @@
+# DESIGN EXAMPLE ONLY — no DeerMate parser or service exists yet.
+# Fields may change before implementation. This is not deployable configuration.
+project:
+  name: deermate
+  stage: design-preview
+
+secretary:
+  integration: deerflow
+
+backend:
+  implementation: python
+  persistence: sqlite
+  transport: ssh
+
+workers:
+  home-worker:
+    host: home-worker.example.invalid
+    account: deermate-worker
+    known_hosts_file: /etc/deermate/known_hosts
+    project_ids: [demo]
+    # Concrete roots are configured locally by the worker administrator.
+    adapters: [codex]
+    max_concurrent_tasks: 1
+
+roles:
+  implementation:
+    adapter: codex
+    worker: home-worker
+  design:
+    adapter: claude-code
+    enabled: false   # Planned adapter; not configured on the example worker.
+  research:
+    integration: deerflow
+
+policy:
+  project_allowlist: [demo]
+  default_permissions: read-only
+  task_timeout_seconds: 1800
+  publish: deny
+  merge: deny
+  send_mail: deny
+
+optional_bridges:
+  hermesh:
+    enabled: false
+    implementation: external-cli

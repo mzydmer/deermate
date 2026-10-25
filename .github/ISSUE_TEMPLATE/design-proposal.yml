@@ -1,0 +1,23 @@
+name: Design proposal
+description: Improve the secretary, worker, routing, or security design.
+title: "[Design] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and intended outcome
+      description: Describe a concrete task and what completion would look like.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed design
+      description: Explain the smallest useful change and relevant upstream interfaces.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Permissions, failure modes, and validation
+      description: Include restart/reconnect behavior and how to verify the result. Do not paste secrets.
