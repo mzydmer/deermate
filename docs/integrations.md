@@ -18,7 +18,7 @@ Not every agent supports resume, questions, attachments, or persistent sessions.
 
 ## DeerFlow tool integration
 
-DeerFlow documents ordinary MCP background tools with `submit`, `status`, and `cancel`, plus SQL-backed tracking outside the agent turn. Its `task_toolsets` mechanism expects exact raw tool names and structured content. DeerMate now exposes `submit_task`, `get_task_status`, and `cancel_task` through Python stdio MCP to an independently running loopback Worker. The actual ordinary-task driver at `a1b89d0432de4e45adc59f512cb25bb386ea1e51` has passed a real MCP compatibility probe; the deployed Gateway/SQL flow has not been exercised.
+DeerFlow documents ordinary MCP background tools with `submit`, `status`, and `cancel`, plus SQL-backed tracking outside the agent turn. Its `task_toolsets` mechanism expects exact raw tool names and structured content. DeerMate exposes `submit_task`, `get_task_status`, and `cancel_task` through Python stdio MCP to an independent loopback Worker. At `a1b89d0432de4e45adc59f512cb25bb386ea1e51`, both the ordinary driver and actual Gateway/SQLite restart path have passed. The latter uses the unchanged application/service/routes, a verifier-only model-free submit entry and an offline native fixture; see the [scope and receipt](specs/m2-gateway-verification.md).
 
 The implemented lifecycle returns these shapes in MCP `structuredContent`; IDs and summaries below are illustrative:
 

@@ -5,7 +5,7 @@
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Python 后端</p>
 
-> **当前阶段：本地 Worker + MCP 桥接 Alpha，2026-10-25。** 已实现 Python Worker、带鉴权的本地 API、SQLite 持久任务、Git 工作区、Codex 适配和本地 MCP 桥接。M1 已验证真实 Codex 修复；M2.1 已验证真实 MCP 和固定版本的 DeerFlow 任务驱动。完整 Gateway/SQL 部署、远程 SSH、专职路由与仪表盘仍待完成。下方视频仍是模拟概念预览。当前从源码安装，尚未发布 PyPI 包。
+> **当前阶段：本地 Worker + MCP 桥接 Alpha，2026-10-25。** 已实现 Python Worker、带鉴权的本地 API、SQLite 持久任务、Git 工作区、Codex 适配和本地 MCP 桥接。M1 已验证真实 Codex 修复；M2.1 已用离线 fixture 验证实际 DeerFlow Gateway/SQLite 进程重启。模型通知、远程 SSH、专职路由与仪表盘仍待完成。下方视频仍是模拟概念预览。当前从源码安装，尚未发布 PyPI 包。
 
 ## 你的私人 Agent 秘书
 
@@ -36,7 +36,7 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m2-deerflow-bridge  # 实现分支合并前使用
+git checkout feat/m2-gateway-verification  # 实现分支合并前使用
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -54,7 +54,7 @@ deermate diff TASK_ID
 
 `TASK_ID` 使用提交接口返回的值。服务只监听 `127.0.0.1`，并创建本地 bearer token。[完整安装、中断、继续与恢复说明](docs/local-worker.md)。
 
-同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；完整 Gateway/SQL 部署与跨主机连接还需后续验证。
+同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；实际 Gateway/SQLite 的重启、取消和失联恢复已有[可保存的 fixture 收据](docs/verification/deerflow-gateway-2026-10-25.json)，模型/UI 与跨主机连接仍需后续工作。
 
 ## 我们正在构建什么
 
@@ -156,14 +156,14 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 | --- | --- | --- |
 | M0 | 中英文 README、架构、安全边界、接入契约、概念视频 | 已在仓库提供 |
 | M1 | 本地 Python Worker、Codex 适配器、可验证的单任务生命周期 | 已有实现，验证范围见指南 |
-| M2 | DeerFlow 工具、SSH 远程 Worker、重启和重连恢复 | 本地桥接与上游驱动已验证；完整 Gateway/SQL 与 SSH 待完成 |
+| M2 | DeerFlow 工具、SSH 远程 Worker、重启和重连恢复 | 本地桥接及实际 Gateway/SQLite 重启已通过 fixture 验证；SSH 待完成 |
 | M3 | Claude/ACP 适配、独立审核、GitHub 维护流程 | 规划中 |
 | M4 | 统一任务卡片、竞品 watchlist、受限邮件与浏览器工具 | 规划中 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
 
 已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。[本地验证与限制](docs/local-worker.md)。
 
-M2.1 常规测试为 51 项通过、一项 opt-in 检查跳过；另行运行的固定版本 DeerFlow 原生任务驱动检查已通过。桥接验证包括真实 stdio MCP、独立 HTTP Worker、重连与取消；尚未启动完整 Gateway/SQL 或仪表盘。配置与验证方法见 [DeerFlow 接入指南](docs/deerflow.md)和[当前开发状态](docs/STATUS.md)。
+M2.1 常规测试为 51 项通过、两项 opt-in 上游检查跳过；另行执行的驱动检查和实际 Gateway/SQLite 进程验收均通过。后者保留 14 个检查结果，用测试入口代替模型选工具、以离线原生 fixture 执行，覆盖后台查询、重启、取消及失联恢复；不包含聊天 UI、模型通知或远程 SSH。方法见 [DeerFlow 接入指南](docs/deerflow.md)和[当前开发状态](docs/STATUS.md)。
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
@@ -184,7 +184,7 @@ M2.1 常规测试为 51 项通过、一项 opt-in 检查跳过；另行运行的
 
 Agent 接续开发先读 [AGENTS.md](AGENTS.md)。[基础规格 SPEC](docs/SPEC.md) 记录需求与验收标准，[当前开发状态](docs/STATUS.md) 记录实现、验证与交付状态，[项目演进](docs/EVOLUTION.md) 保留变化历史，[架构决策 ADR](docs/decisions/README.md) 解释关键取舍。后续开发需按变更范围同步维护这些记录。
 
-欢迎贡献完整 DeerFlow/SQL 验证、SSH Worker 设计评审、原生生命周期测试和恢复机制评审。开始较大改动前，请先阅读[贡献指南](CONTRIBUTING.md)。
+欢迎贡献 SSH 身份设计、已配置模型的通知验证、原生生命周期测试和恢复机制评审。开始较大改动前，请先阅读[贡献指南](CONTRIBUTING.md)。
 
 [设计提案](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml) · [接入提案](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml) · [安全反馈](SECURITY.md)
 

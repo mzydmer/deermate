@@ -1,6 +1,6 @@
 # ADR 0003: Independent Worker behind a local MCP bridge
 
-Date: 2026-10-25. Status: accepted and implemented for M2.1. Requirement: FR-012; acceptance: AC-M2-01 (deployment validation remains partial).
+Date: 2026-10-25. Status: accepted and implemented for M2.1. Requirement: FR-012; acceptance: AC-M2-01 (local Gateway/SQLite fixture check passed; real-model/UI and remote validation separate).
 
 ## Context
 
@@ -28,6 +28,8 @@ DeerFlow can persist ordinary submit/status/cancel tasks, but it may close or re
 
 ## Consequences and limits
 
-Operators start one Worker and give the trusted local MCP process access to its existing private token. The current bridge is for one host/network namespace and one owner, not a cloud-to-home connection. Full DeerFlow Gateway/SQL restart validation remains required, even though SDK/subprocess tests and the actual pinned upstream driver pass. Native form answers and explicit recovery use existing local CLI controls. No database migration is needed to enable or remove this bridge.
+Operators start one Worker and give the trusted local MCP process access to its existing private token. The current bridge is for one host/network namespace and one owner, not a cloud-to-home connection. Native form answers and explicit recovery use existing local CLI controls. No database migration is needed to enable or remove this bridge.
+
+Verification follow-up on 2026-10-25: the actual pinned Gateway/SQLite application has now passed an orderly process-restart, cancellation and outage/reconnect check with an offline native fixture. [The verifier and receipt](../specs/m2-gateway-verification.md) substantiate the independent-lifecycle choice; they do not change the decision or prove model/UI, hard-crash or remote behavior.
 
 References: [feature spec](../specs/m2-deerflow-task-bridge.md), [setup](../deerflow.md), [bridge](../../src/deermate/bridge.py), [MCP server](../../src/deermate/mcp_server.py), and [compatibility probe](../../tests/test_deerflow_compat.py).

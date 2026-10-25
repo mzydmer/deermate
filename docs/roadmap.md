@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1 implemented; M2.1 local MCP bridge and upstream-driver probe implemented. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1 implemented; M2.1 local bridge and actual Gateway/SQLite fixture verification passed. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -29,9 +29,9 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 
 ## M2 — Connect DeerFlow to a remote worker
 
-- [x] Pin and validate DeerFlow's ordinary-task driver contract (`a1b89d0`); full deployment validation remains below.
+- [x] Pin and validate DeerFlow's ordinary-task driver contract (`a1b89d0`).
 - [x] Expose narrow Python MCP tools matching its durable background-task contract.
-- [ ] Exercise a deployed DeerFlow Gateway with SQL-backed task tracking across restart (AC-M2-01).
+- [x] Exercise the actual DeerFlow Gateway with SQLite-backed tracking across orderly process restart (AC-M2-01; offline native fixture and model-free tool entry).
 - [ ] Add an AsyncSSH connector with host-key verification and a limited worker account.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.
@@ -40,7 +40,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 
 Exit criterion: start work from DeerFlow, finish remotely, return evidence, then demonstrate restart/reconnect recovery and revoked-access rejection.
 
-Local bridge setup and precise verification scope: [deerflow.md](deerflow.md). Real SDK/HTTP/subprocess tests and the pinned upstream driver pass without model calls; they do not establish a deployed Gateway or remote SSH path.
+Local bridge setup and precise verification scope: [deerflow.md](deerflow.md). The [retained Gateway receipt](verification/deerflow-gateway-2026-10-25.json) covers actual application startup, SQL tracking, original task HTTP routes, process restart, outage and reconnect. No real model, browser, remote SSH, hard-crash, or historical database-upgrade claim follows from that fixture check.
 
 ## M3 — Add specialists and repository maintenance
 
@@ -72,4 +72,4 @@ Exit criterion: follow several different tasks from one interface without having
 
 ## Contribution priorities
 
-Prioritize deployed DeerFlow/SQL verification, worker contract review, and bounded SSH enrollment before expanding adapters. Do not mark a feature supported solely because the upstream project advertises the capability.
+Prioritize bounded SSH enrollment, worker contract review, and configured-model notification verification before expanding adapters. Do not mark a feature supported solely because the upstream project advertises the capability.

@@ -1,6 +1,6 @@
 # DeerFlow 本地任务接入
 
-状态：M2.1 本地 Python MCP 桥接已实现。真实 stdio MCP 与固定版本的 DeerFlow 原生任务驱动已验证；完整 Gateway、SQL 任务跟踪和前端部署尚未实测。SSH 远程 Worker 待 M2.2。
+状态：M2.1 本地 Python MCP 桥接已实现。真实 MCP、固定上游驱动，以及实际 Gateway/SQLite 的后台任务和有序进程重启均已通过 fixture 验收。模型通知、浏览器 UI 和 SSH 远程 Worker 仍待后续验证。
 
 ## 运行方式
 
@@ -53,7 +53,7 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 
 `project_id` 必须预先注册。相同请求重试使用相同键；不同任务使用新键。提交返回稳定 ID 及上游要求的 `running` 接纳状态，随后查询真实执行状态。即使重复提交已结束的任务，也不会重新运行它。
 
-上游文档提供当前 thread 的查询路由 `GET /api/threads/{thread_id}/mcp-tasks` 及 `GET /api/threads/{thread_id}/mcp-tasks/{task_id}`；这里的 `task_id` 是 DeerFlow 跟踪行 ID，DeerMate 返回的是其保存的 `remote_task_id`。完整部署中应验证 SQL 跟踪行跨 Gateway 重启后还能查询同一 Worker 任务。
+上游提供当前 thread 的查询路由 `GET /api/threads/{thread_id}/mcp-tasks` 及 `GET /api/threads/{thread_id}/mcp-tasks/{task_id}`；这里的 `task_id` 是 DeerFlow 跟踪行 ID，DeerMate 返回的是其保存的 `remote_task_id`。下面的实际 Gateway 验收已证明 SQL 跟踪行跨有序进程重启仍能查询同一 Worker 任务。
 
 ## 状态与证据
 
@@ -76,7 +76,7 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 ```bash
 python -m pip install -e '.[dev]'
 python -m pytest -q
-ruff check src tests scripts/live_smoke.py
+ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py
 python -m build --wheel
 ```
 
@@ -90,6 +90,39 @@ git -C /path/to/deer-flow checkout --detach a1b89d0432de4e45adc59f512cb25bb386ea
 DEERMATE_DEERFLOW_CHECKOUT=/path/to/deer-flow python -m pytest -q tests/test_deerflow_compat.py
 ```
 
-检查会验证提交和所加载源码未修改，调用上游 `OrdinaryMcpTaskDriver` 经真实 MCP 完成提交、查询、取消、完成、失败、待答，以及用磁盘保存的句柄重建驱动。未设置环境变量时，该项显式跳过。它没有启动 DeerFlow 的 SQL repository/service 或网页，不能代替 Gateway 重启验收；[AC-M2-01](SPEC.md) 仍为部分验证。
+该驱动检查会验证提交和所加载源码未修改，调用上游 `OrdinaryMcpTaskDriver` 经真实 MCP 完成提交、查询、取消、完成、失败、待答及句柄重建。未设置环境变量时显式跳过。它本身不启动 Gateway/SQL；下面另有实际后端进程验收。
 
-移除 DeerFlow 的桥接配置并重启即可停用接入，不删除 Worker 任务或修改数据库格式。当前不支持跨主机通信、多用户授权或 SSH。下一步是实际 Gateway/SQL 跟踪验证，再推进远程连接。
+## Gateway 与 SQL 验收
+
+新增 [verify_deerflow_gateway.py](../scripts/verify_deerflow_gateway.py) 实际启动上游原始 `app.gateway.app`、lifespan、SQL repository/service、MCP 工具发现/提交包装、后台 poller 及原始 HTTP 查询/取消路由；没有用 mock 替换这些组件。它独立启动 DeerMate Worker，并完成 Gateway 进程关闭/重启、取消、验证成功/失败、Worker 失联和恢复。
+
+为避免消耗模型额度，只有“模型选择并调用工具”这一步由带单次密钥的 verifier 专用提交入口代替。原生 Codex 使用明确标识的离线协议 fixture。该入口只存在于验收子进程，不是产品 API。子进程使用临时 dotenv、应用 home、SQLite 和测试仓库，过滤模型凭据、仅监听 loopback，并拒绝其非 loopback socket 连接；这不是对生产网络隔离的声明。
+
+完整上游后端要求 **Python 3.12+**，另建环境；DeerMate Worker 自身仍支持 Python 3.11+。在 DeerMate 仓库中运行：
+
+```bash
+python -m pip install 'uv==0.13.5'
+uv sync --project /path/to/deer-flow/backend --frozen --no-default-groups --python 3.12
+python scripts/verify_deerflow_gateway.py \
+  --checkout /path/to/deer-flow \
+  --gateway-python /path/to/deer-flow/backend/.venv/bin/python \
+  --receipt .deermate/verification/gateway-receipt.json
+```
+
+上游 checkout 必须是前述固定提交且 `backend` 没有本地修改。安装使用该提交的 `uv.lock`，不扩大 DeerMate 默认依赖。某些 macOS Intel 运行时需要为上游固定的 cryptography 50.0.0 提供 OpenSSL 开发库；本机用位于忽略目录的 OpenSSL 3.5.9 静态构建和安装命令环境 `OPENSSL_DIR` / `OPENSSL_STATIC=1` 完成，未降级上游依赖或修改系统安装。
+
+可加 `--work-dir /new/empty/path` 保留本机日志和临时状态，目录必须尚不存在；默认工作目录在结束后清理。不要将原始日志、临时配置、数据库或 token 提交到仓库。仅提交由已知 fixture 生成并检查过的有限 JSON 收据。
+
+现有[验收收据](verification/deerflow-gateway-2026-10-25.json)在 macOS/Python 3.12.14 完成 14 个检查，保留上游 commit/lock、脚本哈希、依赖版本、跟踪 ID 及场景结果。独立 pytest 入口也已通过：
+
+```bash
+DEERMATE_DEERFLOW_CHECKOUT=/path/to/deer-flow \
+DEERMATE_GATEWAY_PYTHON=/path/to/deer-flow/backend/.venv/bin/python \
+python -m pytest -q tests/test_deerflow_gateway.py
+```
+
+常规测试现为 51 passed、2 skipped；两项较重的上游检查均要求显式环境变量。CI 另有独立的 `deerflow-gateway` job，从固定源码和 frozen 环境执行同一脚本，并上传 fixture 收据。
+
+验收只覆盖新 SQLite 数据库和有序进程重启。由于没有配置聊天模型，上游通知 run 会在模型装配阶段失败；本次验证的是任务 HTTP/SQL 结果，不是模型生成通知、聊天 UI、历史数据库升级、硬崩溃、SSH 或跨主机容错。详细条件见[验收规格](specs/m2-gateway-verification.md)。
+
+移除 DeerFlow 的桥接配置并重启即可停用接入，不删除 Worker 任务或修改数据库格式。下一步为 M2.2 的 SSH 身份、密钥与远程连接设计。

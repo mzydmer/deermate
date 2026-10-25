@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Local worker + MCP bridge alpha · 2026-10-25.** The Python worker, authenticated loopback API, SQLite task store, Git workspaces, Codex adapter, and local MCP bridge are implemented. A real Codex repair was verified in M1; M2.1 adds real MCP tests and a pinned DeerFlow task-driver probe. A deployed DeerFlow Gateway/SQL flow, SSH, specialist routing, and the dashboard remain pending. The video is a simulated concept preview. Install from source; no PyPI release is published.
+> **Local worker + MCP bridge alpha · 2026-10-25.** The Python worker, authenticated loopback API, SQLite task store, Git workspaces, Codex adapter, and local MCP bridge are implemented. M1 verified a real Codex repair; M2.1 now verifies the actual pinned DeerFlow Gateway/SQLite restart path with an offline fixture. Model-driven notifications, SSH, specialist routing and the dashboard remain pending. The video is a simulated concept preview. Install from source; no PyPI release is published.
 
 ## Meet your personal agent secretary
 
@@ -46,7 +46,7 @@ Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m2-deerflow-bridge  # until the implementation branch is merged
+git checkout feat/m2-gateway-verification  # until the implementation branch is merged
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -64,7 +64,7 @@ deermate diff TASK_ID
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
 
-To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. Full Gateway/SQL deployment and remote access remain separate validation work.
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. Actual Gateway/SQLite restart, cancellation and outage recovery now have a [retained fixture receipt](docs/verification/deerflow-gateway-2026-10-25.json); model/UI and remote access remain separate work.
 
 ## What we are building
 
@@ -169,14 +169,14 @@ We track delivered work separately from planned functionality. Current stage: **
 | --- | --- | --- |
 | M0 | English/Chinese README, architecture, security boundaries, contracts, concept film | In this repository |
 | M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
-| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | Local MCP bridge and pinned driver verified; Gateway/SQL and SSH pending |
+| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | Local bridge and actual Gateway/SQLite restart verified with fixture; SSH pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Unified task cards + research watchlists + scoped mail/browser tools | Planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
 
-M2.1 adds 51 passing normal tests (one opt-in probe skipped), real stdio MCP calls, and a separately passing actual DeerFlow ordinary-driver compatibility probe. It does not establish a deployed Gateway/UI or SQL-backed tracker restart. See [bridge verification](docs/deerflow.md) and [current status](docs/STATUS.md).
+M2.1 has 51 passing normal tests (two opt-in upstream checks skipped), a passing ordinary-driver probe and a separately passing actual Gateway/SQLite process-restart verifier with 14 recorded checks. The backend check uses a model-free submit entry and offline native fixture; it does not prove chat/UI, real-model notifications or remote SSH. See [bridge verification](docs/deerflow.md) and [current status](docs/STATUS.md).
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
@@ -200,7 +200,7 @@ This repository contains original design documents and media, not a vendored cop
 
 For agent-assisted development, start with [AGENTS.md](AGENTS.md). Follow the [product spec](docs/SPEC.md), [current development status](docs/STATUS.md), [evolution log](docs/EVOLUTION.md), and [architecture decisions](docs/decisions/README.md). The status page separates implemented, verified, merged, and released work.
 
-Useful first contributions include deployed DeerFlow/SQL validation, an SSH worker design review, native lifecycle coverage, and feedback on task recovery. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before starting a large change.
+Useful first contributions include SSH identity design, configured-model notification validation, native lifecycle coverage, and feedback on task recovery. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before starting a large change.
 
 - [Open a design proposal](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml)
 - [Propose an integration](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml)

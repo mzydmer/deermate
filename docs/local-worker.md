@@ -1,6 +1,6 @@
 # Run the local Python worker
 
-Milestone M1, experimental. Python 3.11+, Git, and macOS or Linux are required. Windows is not supported in this milestone (`fcntl` and POSIX process groups are used). A local Python MCP bridge is now available in the [DeerFlow guide](deerflow.md); deployed Gateway/SQL verification, SSH, and the dashboard remain pending.
+Milestone M1, experimental. Python 3.11+, Git, and macOS or Linux are required. Windows is not supported in this milestone (`fcntl` and POSIX process groups are used). A local Python MCP bridge and actual Gateway/SQLite fixture verification are available in the [DeerFlow guide](deerflow.md); SSH and the dashboard remain pending.
 
 ## Install from this repository
 
@@ -13,7 +13,7 @@ python -m pip install -e '.[dev]'
 cp examples/local-worker.toml deermate.toml
 ```
 
-Until the implementation branch is merged, check out `feat/m2-deerflow-bridge` before installing (includes M1 and the local MCP bridge).
+Until the implementation branch is merged, check out `feat/m2-gateway-verification` before installing (includes M1, the local MCP bridge and Gateway verification tooling).
 
 Edit `deermate.toml`: set `projects.demo.root` to an existing **trusted** Git repository with at least one commit. Set a project-specific test command as an argv array. Omit `test_command` to collect a result with `needs_review` instead of claiming validated completion. Set `allow_write = true` only for projects you authorize the agent to edit.
 

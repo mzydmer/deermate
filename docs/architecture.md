@@ -8,7 +8,7 @@ DeerMate coordinates agents that already exist. DeerFlow supplies the conversati
 
 The control service and worker are maintained in Python. The initial UI reuses DeerFlow, whose frontend has its own toolchain. External agent executables remain external dependencies. The optional Hermesh bridge is not part of the default installation.
 
-The implemented local MCP bridge forwards three tools to the independent authenticated HTTP Worker. It does not acquire a database lock or own native execution; restarting the MCP connection leaves Worker tasks intact. See [ADR 0003](decisions/0003-independent-mcp-bridge.md). Actual Gateway/SQL deployment verification and remote SSH are pending.
+The implemented local MCP bridge forwards three tools to the independent authenticated HTTP Worker. It does not acquire a database lock or own native execution; restarting the MCP connection leaves Worker tasks intact. See [ADR 0003](decisions/0003-independent-mcp-bridge.md). The actual pinned Gateway/SQLite process-restart path has passed an [isolated fixture check](specs/m2-gateway-verification.md); real-model notifications, UI and remote SSH remain separate work.
 
 ## Proposed components
 

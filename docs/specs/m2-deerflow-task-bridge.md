@@ -1,6 +1,6 @@
 # M2.1: DeerFlow durable-task bridge
 
-- **Status:** Implemented locally; SDK/Worker and pinned upstream-driver verification passed. Deployed Gateway/SQL verification pending.
+- **Status:** Implemented locally; SDK/Worker, pinned upstream driver and subsequent actual Gateway/SQLite fixture verification passed. Model/UI and remote checks remain separate.
 - **Milestone:** M2.1, local integration before SSH.
 - **Requirement IDs:** FR-003, FR-004, FR-008, FR-009, FR-010, FR-012; NFR-001–NFR-006; AC-M2-01.
 - **Updated:** 2026-10-25.
@@ -47,7 +47,7 @@ Do not copy private prompts, project paths, policy snapshots, credentials, full 
 | M21-06 | Invalid IDs/extra authority fields are rejected, output is bounded, and private task configuration is absent from returned summaries. | Admission/output tests. |
 | M21-07 | The pinned upstream ordinary driver accepts submit/status/cancel through a real MCP session. | Opt-in compatibility probe against a verified upstream checkout; no model call. |
 
-AC-M2-01 is only partially satisfied until a deployed DeerFlow Gateway with SQL tracking is exercised across restart. An upstream-driver probe must not be labeled a full product or UI test.
+The subsequent [Gateway verification](m2-gateway-verification.md) satisfies AC-M2-01 for the local backend/fixture scope by exercising the actual application and SQLite service across process restart. Neither a driver probe nor the Gateway fixture is a full model-driven product or UI test.
 
 ## Rollout and handoff
 
@@ -61,4 +61,4 @@ Record actual checks and limitations here and in STATUS/EVOLUTION after implemen
 - `DEERMATE_DEERFLOW_CHECKOUT=<pinned checkout> python -m pytest -q tests/test_deerflow_compat.py tests/test_bridge.py tests/test_mcp.py`: 34 passed, including the actual upstream driver and real MCP subprocesses.
 - `ruff check src tests scripts/live_smoke.py` passed; `python -m build --wheel` built `deermate-0.1.0a1`.
 - MCP SDK tested at `1.30.0`; bridge dependency is bounded to the 1.x API (`>=1.30,<2`). The independently running DeerFlow client need not use the same Python environment.
-- No model invocation, production deployment, full DeerFlow SQL/Gateway restart test, SSH, or UI walkthrough was performed for this milestone.
+- At the original bridge commit `2a941b1`, no model invocation, production deployment, full Gateway restart test, SSH, or UI walkthrough was performed. The follow-up [Gateway verification and retained receipt](m2-gateway-verification.md) now cover the local backend restart path without a model or browser.

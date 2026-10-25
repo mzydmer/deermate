@@ -10,7 +10,7 @@ Start with [AGENTS.md](AGENTS.md) and [current status](docs/STATUS.md). [SPEC.md
 
 1. Review the worker lifecycle and restart/reconnect semantics.
 2. Improve the Codex adapter's lifecycle evidence and bounded recovery.
-3. Validate a deployed DeerFlow Gateway/SQL task tracker; the local MCP bridge and pinned driver probe already exist.
+3. Extend the actual Gateway/SQL verifier to configured-model notifications or upgrade scenarios; local restart and outage checks already have retained receipts.
 4. Review SSH enrollment, limited execution accounts, and revocation requirements.
 5. Improve the documentation or Chinese translation.
 
@@ -18,7 +18,7 @@ Open a [design proposal](https://github.com/mzydmer/deermate/issues/new?template
 
 ## Project conventions
 
-Install developer dependencies with `python -m pip install -e '.[dev]'`. Run `ruff check src tests scripts/live_smoke.py`, `python -m pytest -q`, and `python -m build --wheel`. Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota.
+Install developer dependencies with `python -m pip install -e '.[dev]'`. Run `ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py`, `python -m pytest -q`, and `python -m build --wheel`. Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota. The separate [Gateway verifier](docs/deerflow.md) requires a pinned upstream checkout and frozen backend environment but makes no model calls.
 
 - Maintain DeerMate-owned backend services in Python. Hermesh is optional external interoperability, not a required Go service.
 - Reuse upstream capabilities where practical and keep interfaces narrow.

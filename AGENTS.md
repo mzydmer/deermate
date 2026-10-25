@@ -14,7 +14,7 @@ Use [the roadmap](docs/roadmap.md) for milestone scope, [the evolution log](docs
 ## Project invariants
 
 - Maintain DeerMate-owned backend services in Python. External agent binaries retain their own runtimes; Hermesh remains optional.
-- Reuse DeerFlow's existing capabilities through narrow interfaces. The local MCP bridge has SDK and pinned upstream-driver evidence; deployed Gateway/SQL verification and SSH remain pending. Check STATUS before extending integration claims.
+- Reuse DeerFlow's existing capabilities through narrow interfaces. Check STATUS and retained receipts before extending compatibility claims; driver, Gateway/SQL, real-model, UI, and remote checks have distinct scopes.
 - Keep local M1 single-owner and loopback-only. Do not silently widen host access, network permissions, project roots, or external tool authority.
 - Preserve task/session identity and idempotency. After an uncertain interruption, require explicit recovery; never blindly replay side effects or invent a replacement native session.
 - A cancellation request is not confirmation. A model's success claim is not execution evidence. A worktree is not an OS sandbox.
@@ -35,7 +35,7 @@ Use [the roadmap](docs/roadmap.md) for milestone scope, [the evolution log](docs
 For Python implementation changes, run the relevant tests, then the existing checks as appropriate:
 
 ```bash
-ruff check src tests scripts/live_smoke.py
+ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py
 python -m pytest -q
 python -m build --wheel
 ```
