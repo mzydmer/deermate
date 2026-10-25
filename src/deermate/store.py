@@ -26,6 +26,7 @@ class Store:
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.executescript("""
+            CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS tasks (
                 id TEXT PRIMARY KEY, project TEXT NOT NULL, status TEXT NOT NULL,
                 data TEXT NOT NULL
@@ -41,6 +42,19 @@ class Store:
             );
             CREATE INDEX IF NOT EXISTS task_events ON events(task_id, cursor);
         """)
+        self.db.execute(
+            "INSERT OR IGNORE INTO metadata VALUES('instance_id', ?)", (uuid.uuid4().hex,)
+        )
+        value = self.db.execute("SELECT value FROM metadata WHERE key='instance_id'").fetchone()[0]
+        try:
+            if uuid.UUID(value).hex != value:
+                raise ValueError("invalid instance identity")
+        except (ValueError, AttributeError) as error:
+            self.db.close()
+            raise ValueError(
+                "Worker instance identity is corrupt; restore its state explicitly"
+            ) from error
+        self.instance_id = value
 
     def close(self):
         self.db.close()

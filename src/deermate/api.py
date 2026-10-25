@@ -136,9 +136,10 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
         return {"status": "ok", "version": "0.1.0a1", "mode": "local-only"}
 
     @app.get("/capabilities", dependencies=auth)
-    async def capabilities():
+    async def capabilities(request: Request):
         return {
             "protocol_version": 1,
+            "instance_id": worker(request).store.instance_id,
             "adapter": "codex-app-server",
             "operations": ["submit", "status", "events", "cancel", "resume", "input"],
             "remote": False,

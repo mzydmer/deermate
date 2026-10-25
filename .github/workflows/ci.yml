@@ -24,8 +24,13 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev]'
       - run: ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py
-      - run: python -m pytest -q
+      - run: python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json
       - run: python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ssh-receipt-${{ matrix.os }}-py${{ matrix.python }}
+          path: .deermate/verification/ssh-ci.json
+          include-hidden-files: true
 
   deerflow-contract:
     runs-on: ubuntu-latest

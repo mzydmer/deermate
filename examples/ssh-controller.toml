@@ -1,0 +1,16 @@
+# Controller configuration, separate from the Worker's project/runtime config.
+# Replace every identity/path and choose an access expiry before connecting.
+[workers.home]
+host = "home.example.com"
+port = 22
+username = "deermate"
+known_hosts = "/absolute/path/to/controller/credentials/home.known_hosts"
+client_key = "/absolute/path/to/controller/credentials/home.key"
+token_file = "/absolute/path/to/controller/credentials/home.token"
+expected_instance_id = "00000000000000000000000000000000"
+worker_port = 18777
+expires_at = "2026-11-24T00:00:00Z"
+enabled = true
+connect_timeout_seconds = 5
+max_connection_age_seconds = 60
+# passphrase_env = "DEERMATE_HOME_KEY_PASSPHRASE"

@@ -12,6 +12,7 @@ from types import ModuleType
 
 import pytest
 from mcp_helpers import mcp_session
+from ssh_helpers import ssh_worker as ssh_worker
 
 DEERFLOW_COMMIT = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
 
@@ -57,12 +58,19 @@ def load_driver(checkout: Path, monkeypatch):
     return loaded[1], loaded[2]
 
 
-async def test_pinned_deerflow_driver_over_real_mcp(local_server, tmp_path, monkeypatch):
+@pytest.mark.parametrize("remote", [False, True], ids=["local", "ssh"])
+async def test_pinned_deerflow_driver_over_real_mcp(
+    local_server, ssh_worker, tmp_path, monkeypatch, remote
+):
     value = os.environ.get("DEERMATE_DEERFLOW_CHECKOUT")
     if not value:
         pytest.skip("Set DEERMATE_DEERFLOW_CHECKOUT to run the pinned upstream probe")
     models, ordinary = load_driver(Path(value), monkeypatch)
     config, port, worker = local_server
+    worker_id = None
+    if remote:
+        config = ssh_worker["config"]
+        worker_id = "home"
     toolset = {
         "submit_tool": "submit_task",
         "status_tool": "get_task_status",
@@ -107,7 +115,7 @@ async def test_pinned_deerflow_driver_over_real_mcp(local_server, tmp_path, monk
                     return result
                 await asyncio.sleep(0.02)
 
-    async with mcp_session(config, port) as session:
+    async with mcp_session(config, port, worker_id=worker_id) as session:
         driver = ordinary.OrdinaryMcpTaskDriver(Caller(session))
         submission = await driver.submit(request("slow", "persisted"))
         ref = reference(submission)
@@ -115,7 +123,7 @@ async def test_pinned_deerflow_driver_over_real_mcp(local_server, tmp_path, monk
         await wait(driver, ref, {models.TaskStatus.WORKING})
         (tmp_path / "reference.json").write_text(json.dumps(asdict(ref)))
     # Recreate the driver and stdio process using only persisted handle data.
-    async with mcp_session(config, port) as session:
+    async with mcp_session(config, port, worker_id=worker_id) as session:
         driver = ordinary.OrdinaryMcpTaskDriver(Caller(session))
         ref = models.TaskReference(**json.loads((tmp_path / "reference.json").read_text()))
         assert (await driver.get_status(ref)).status == models.TaskStatus.WORKING
@@ -138,7 +146,8 @@ async def test_pinned_deerflow_driver_over_real_mcp(local_server, tmp_path, monk
             user_id="owner",
             thread_id="thread",
             server_name="deermate",
-            remote_task_id="a" * 32,
+            remote_task_id=(ssh_worker["data"]["expected_instance_id"] + ":" if remote else "")
+            + "a" * 32,
             driver_data=toolset,
         )
         assert (await driver.get_status(missing)).status == models.TaskStatus.FAILED

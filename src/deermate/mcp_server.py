@@ -18,8 +18,15 @@ class TaskLookup(BaseModel):
     task_id: str = Field(pattern=r"^[0-9a-f]{32}$")
 
 
-def create_server(token_path: Path, port: int = 18777) -> Server:
-    bridge = TaskBridge(token_path, port)
+class RemoteTaskLookup(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    task_id: str = Field(pattern=r"^[0-9a-f]{32}:[0-9a-f]{32}$")
+
+
+def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server:
+    remote = bridge is not None
+    bridge = bridge if remote else TaskBridge(token_path, port)
+    lookup = RemoteTaskLookup if remote else TaskLookup
 
     @asynccontextmanager
     async def lifespan(server):
@@ -28,25 +35,25 @@ def create_server(token_path: Path, port: int = 18777) -> Server:
         finally:
             await bridge.close()
 
-    server = Server("DeerMate local tasks", lifespan=lifespan)
+    server = Server("DeerMate tasks", lifespan=lifespan)
     tools = {
         "submit_task": (
             SubmitTask,
             bridge.submit,
-            "Submit work to a registered project using a stable idempotency_key. "
+            "Submit work to an administrator-registered project using a stable idempotency_key. "
             "Reuse the same key on retries. Returns a durable task_id promptly; "
             "running acknowledges tracking, not actual execution state. "
             "No arbitrary paths, commands or permissions are accepted.",
         ),
         "get_task_status": (
-            TaskLookup,
+            lookup,
             bridge.status,
             "Read task state and bounded evidence by its saved ID. "
             "A tool error leaves task outcome unknown. input_required can mean "
             "native input, local review or explicit restart recovery; inspect its kind.",
         ),
         "cancel_task": (
-            TaskLookup,
+            lookup,
             bridge.cancel,
             "Request interruption and return only a confirmed terminal outcome. "
             "Unconfirmed cancellation is a tool error. A completion race can return "
@@ -88,7 +95,7 @@ def create_server(token_path: Path, port: int = 18777) -> Server:
     return server
 
 
-async def run_server(token_path: Path, port: int):
-    server = create_server(token_path, port)
+async def run_server(token_path: Path, port: int, *, bridge=None):
+    server = create_server(token_path, port, bridge=bridge)
     async with stdio_server() as (reader, writer):
         await server.run(reader, writer, server.create_initialization_options())

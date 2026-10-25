@@ -1,4 +1,6 @@
 import asyncio
+import hashlib
+import importlib.metadata
 import json
 import socket
 import subprocess
@@ -10,6 +12,61 @@ import uvicorn
 
 from deermate.api import create_app
 from deermate.config import Project, Settings
+
+_ssh_reports = []
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--ssh-receipt", help="save bounded SSH fixture outcomes after a passing session"
+    )
+
+
+def pytest_runtest_logreport(report):
+    if report.when == "call" and report.nodeid.startswith("tests/test_ssh.py::"):
+        _ssh_reports.append(
+            {
+                "test": report.nodeid.split("::")[-1],
+                "outcome": report.outcome,
+                "seconds": round(report.duration, 3),
+            }
+        )
+
+
+def pytest_sessionfinish(session, exitstatus):
+    destination = session.config.getoption("ssh_receipt")
+    if not destination or exitstatus != 0 or not _ssh_reports:
+        return
+    root = Path(__file__).resolve().parents[1]
+    sources = sorted((root / "src/deermate").glob("*.py")) + [
+        root / "tests/test_ssh.py",
+        root / "tests/ssh_helpers.py",
+        root / "tests/fake_codex.py",
+        root / "tests/conftest.py",
+        root / "tests/mcp_helpers.py",
+    ]
+    data = {
+        "schema_version": 1,
+        "passed": True,
+        "scope": "Real generated-key SSH and HTTP Worker on loopback; offline native fixture",
+        "limits": [
+            "No operator keys/sshd or cross-machine deployment",
+            "No NAT, relay, UI or real model",
+        ],
+        "packages": {
+            name: importlib.metadata.version(name)
+            for name in ["asyncssh", "bcrypt", "cryptography", "mcp", "httpx"]
+        },
+        "source_sha256": {
+            str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sources
+        },
+        "test_count": len(_ssh_reports),
+        "tests": _ssh_reports,
+    }
+    target = Path(destination)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(data, indent=2) + "\n")
 
 
 @pytest.fixture

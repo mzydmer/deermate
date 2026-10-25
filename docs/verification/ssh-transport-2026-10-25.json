@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "scope": "Real generated-key SSH and HTTP Worker on loopback; offline native fixture",
+  "limits": [
+    "No operator keys/sshd or cross-machine deployment",
+    "No NAT, relay, UI or real model"
+  ],
+  "packages": {
+    "asyncssh": "2.24.1",
+    "bcrypt": "5.0.0",
+    "cryptography": "48.0.1",
+    "mcp": "1.30.0",
+    "httpx": "0.28.1"
+  },
+  "source_sha256": {
+    "src/deermate/__init__.py": "066ceff24061421990b42cf10bff8b923f134124313ee6cc88b7bb4e5be93853",
+    "src/deermate/api.py": "7561ad3d39af327932bf73d4258cb14836a97f009b45a112efcbbb76beeb2c5b",
+    "src/deermate/bridge.py": "2008336da677cf5799abbb5ed7bd18a50dd169f6eaf76ffc3aa7e7073950748f",
+    "src/deermate/cli.py": "06a267aa572d5cc951bd21da5b0498fa8426dae45b62d2588b2d5c65cb1b6752",
+    "src/deermate/codex.py": "e979f389f718f715371810af307251484e3082a69f4f097d0e068e632228af8c",
+    "src/deermate/config.py": "a1d8bcea983e13c91dfc1bcdd2051275c143028bb78d698e5b89c2c5a08933f7",
+    "src/deermate/mcp_server.py": "0b8296c1087d9c4d8f8f70e31c1b6815d073a262225631ae432e05e37be67e84",
+    "src/deermate/models.py": "9f3cef942cf697abc999380983b7be6baea0a882c705c8d0913d680629c38e74",
+    "src/deermate/remote_config.py": "5cb88812ff0c7ced18d6948d69138ae3db382b1e13f9b272767bba29fe195101",
+    "src/deermate/rpc.py": "3a3b9a57f742658e4dbc3370d97acb4b8bbc522b4f67e163453b67bf0b4d84e9",
+    "src/deermate/ssh.py": "22d6c38c22ed6ddccffa4bfea0588dcb222c98a6c1fcca06bb536acc8a1edae6",
+    "src/deermate/store.py": "e02ff29a54da2a1c8ee374cdf58a9068b06c58da618222df45b3ef822693dd10",
+    "src/deermate/worker.py": "3a5256eb693f2252d612fa1b6ba65a34497360a69908a2643c3a8e8ee4ec798d",
+    "src/deermate/workspace.py": "db426c842f44733de8ed155e40cd9d51c86a1b27744f091f967dccc3e714cc17",
+    "tests/test_ssh.py": "05d076de58525d705c20f32f156c8f7c624e098c7d674b4b1e449989db85545f",
+    "tests/ssh_helpers.py": "c21c017141e8ce113445010daab2883b7834f29c596063280d9c4d44a0bbe766",
+    "tests/fake_codex.py": "de834b8c5da326f107dadbd059bc882316782e6a72800048f1c32ecfa576e6f9",
+    "tests/conftest.py": "17de434e923156c686a418a35efc3d6eb0111c93218944aaef55d51dcebf5c3c",
+    "tests/mcp_helpers.py": "fe085c850f1c91df8fb7d3c4fd0ea6578a791bb642a6dbaa7a6cc78dce8d7cac"
+  },
+  "test_count": 22,
+  "tests": [
+    {
+      "test": "test_real_ssh_repair_and_evidence",
+      "outcome": "passed",
+      "seconds": 0.634
+    },
+    {
+      "test": "test_real_remote_mcp_reconnect_and_cancel",
+      "outcome": "passed",
+      "seconds": 2.555
+    },
+    {
+      "test": "test_remote_cli_can_inspect_capabilities_and_evidence",
+      "outcome": "passed",
+      "seconds": 3.611
+    },
+    {
+      "test": "test_instance_bound_handle_rejected_before_network",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "test": "test_identity_and_credentials_fail_before_mutation[host_key]",
+      "outcome": "passed",
+      "seconds": 0.011
+    },
+    {
+      "test": "test_identity_and_credentials_fail_before_mutation[missing_trust]",
+      "outcome": "passed",
+      "seconds": 0.003
+    },
+    {
+      "test": "test_identity_and_credentials_fail_before_mutation[client_key]",
+      "outcome": "passed",
+      "seconds": 0.016
+    },
+    {
+      "test": "test_identity_and_credentials_fail_before_mutation[token]",
+      "outcome": "passed",
+      "seconds": 0.046
+    },
+    {
+      "test": "test_identity_and_credentials_fail_before_mutation[instance]",
+      "outcome": "passed",
+      "seconds": 0.044
+    },
+    {
+      "test": "test_revocation_and_config_changes_do_not_claim_stopped[disable]",
+      "outcome": "passed",
+      "seconds": 0.29
+    },
+    {
+      "test": "test_revocation_and_config_changes_do_not_claim_stopped[expire]",
+      "outcome": "passed",
+      "seconds": 0.292
+    },
+    {
+      "test": "test_revocation_and_config_changes_do_not_claim_stopped[remove]",
+      "outcome": "passed",
+      "seconds": 0.293
+    },
+    {
+      "test": "test_revocation_and_config_changes_do_not_claim_stopped[change]",
+      "outcome": "passed",
+      "seconds": 0.292
+    },
+    {
+      "test": "test_ssh_disconnect_reconnect_does_not_restart_native_session",
+      "outcome": "passed",
+      "seconds": 0.482
+    },
+    {
+      "test": "test_lost_submission_ack_is_not_automatically_replayed",
+      "outcome": "passed",
+      "seconds": 0.091
+    },
+    {
+      "test": "test_expiring_connection_closes_idle_tunnel_and_reauthenticates",
+      "outcome": "passed",
+      "seconds": 5.162
+    },
+    {
+      "test": "test_key_rotation_and_encrypted_key_reference",
+      "outcome": "passed",
+      "seconds": 2.904
+    },
+    {
+      "test": "test_unsafe_files_fail_closed[client_key]",
+      "outcome": "passed",
+      "seconds": 0.003
+    },
+    {
+      "test": "test_unsafe_files_fail_closed[known_hosts]",
+      "outcome": "passed",
+      "seconds": 0.003
+    },
+    {
+      "test": "test_unsafe_files_fail_closed[token_file]",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "test": "test_credential_symlink_does_not_open",
+      "outcome": "passed",
+      "seconds": 0.003
+    },
+    {
+      "test": "test_instance_rechecked_and_server_denies_other_channels",
+      "outcome": "passed",
+      "seconds": 0.057
+    }
+  ]
+}

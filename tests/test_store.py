@@ -36,3 +36,26 @@ def test_recovery_does_not_replay_active_work(tmp_path):
     again = store.resume(task.task_id, resume.model_copy(update={"confirm_recovery": True}))
     assert again.attempt == 2
     store.close()
+
+
+def test_instance_identity_is_stable_and_legacy_store_is_upgraded(tmp_path):
+    import sqlite3
+
+    path = tmp_path / "tasks.sqlite3"
+    store = Store(path)
+    task, _ = store.submit(SubmitTask(project_id="demo", prompt="fix", idempotency_key="one"))
+    identity = store.instance_id
+    store.close()
+    reopened = Store(path)
+    assert reopened.instance_id == identity
+    reopened.close()
+    # Existing stores have tasks but no metadata table; only identity is new.
+    with sqlite3.connect(path) as db:
+        db.execute("DROP TABLE metadata")
+    upgraded = Store(path)
+    assert len(upgraded.instance_id) == 32 and upgraded.get(task.task_id).prompt == "fix"
+    upgraded.close()
+    with sqlite3.connect(path) as db:
+        db.execute("UPDATE metadata SET value='corrupt' WHERE key='instance_id'")
+    with pytest.raises(ValueError, match="identity is corrupt"):
+        Store(path)

@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "deermate-home": {
+      "enabled": true,
+      "type": "stdio",
+      "command": "/absolute/path/to/controller/.venv/bin/python",
+      "args": [
+        "-m", "deermate.cli",
+        "--config", "/absolute/path/to/controller/controller.toml",
+        "--worker", "home",
+        "mcp"
+      ],
+      "cwd": "/absolute/path/to/controller",
+      "session_init_timeout": 15,
+      "tool_call_timeout": 30,
+      "task_toolsets": [
+        {
+          "name": "coding-home",
+          "submit_tool": "submit_task",
+          "status_tool": "get_task_status",
+          "cancel_tool": "cancel_task"
+        }
+      ]
+    }
+  }
+}

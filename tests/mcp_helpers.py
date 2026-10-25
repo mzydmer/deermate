@@ -8,10 +8,12 @@ from mcp.client.stdio import stdio_client
 
 
 @asynccontextmanager
-async def mcp_session(config, port):
+async def mcp_session(config, port=18777, *, worker_id=None):
+    args = ["-m", "deermate.cli", "--config", str(config)]
+    args.extend(["--worker", worker_id] if worker_id else ["--port", str(port)])
     params = StdioServerParameters(
         command=sys.executable,
-        args=["-m", "deermate.cli", "--config", str(config), "--port", str(port), "mcp"],
+        args=[*args, "mcp"],
         env={"HTTP_PROXY": "http://127.0.0.1:1", "ALL_PROXY": "http://127.0.0.1:1"},
     )
     async with stdio_client(params) as (reader, writer):
