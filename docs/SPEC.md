@@ -38,7 +38,7 @@
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
 | FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
 | FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2–M3 规划 |
-| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2 规划 |
+| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 本地桥接已实现；SDK 与固定上游驱动已验证，完整 Gateway/SQL 待实测 |
 | FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2 规划 |
 | FR-014 | GitHub 事件验签、去重、issue 修复和独立 PR 审核；创建 PR、评论、合并、发布分别授权 | M3 规划 |
 | FR-015 | 竞品/资料 watchlist、历史快照对比、引用来源和有实质变化才通知 | M4 规划 |
@@ -88,7 +88,7 @@
 
 | 编号 | 约束 | 当前边界 |
 | --- | --- | --- |
-| NFR-001 | DeerMate 自有后端维护在 Python，默认无需 Go | M1 已符合；外部 Agent 可用其他运行时 |
+| NFR-001 | DeerMate 自有后端维护在 Python，默认无需 Go | M1 与本地 MCP 桥接已符合；外部 Agent 可用其他运行时 |
 | NFR-002 | 不自创加密协议；明确加密端点与中继是否能读明文 | SSH 尚未实现；Hermesh MCP 网关可读取其会话 |
 | NFR-003 | 在模型提示词之外接纳权限，使用明确执行边界 | M1 仅可信本地项目；无多租户/生产隔离承诺 |
 | NFR-004 | 正常测试不需要模型凭据；真实模型测试明确标识并限定范围 | 离线协议 fixture、临时 Git 仓库和 opt-in live smoke 已具备 |
@@ -106,10 +106,12 @@
 | AC-M1-04 | 重启后的运行中任务要求显式恢复，不自动创建新原生会话 | store/worker 恢复测试；硬崩溃与跨机器恢复尚未实测 |
 | AC-M1-05 | 验证失败、无验证、权限拒绝、超时、异常协议不能伪装成验证成功 | [test_worker.py](../tests/test_worker.py)、[test_rpc.py](../tests/test_rpc.py) |
 | AC-M1-06 | 无 token、非本地主机、浏览器来源、超大请求或任意执行命令被拒绝 | [test_api.py](../tests/test_api.py) |
-| AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 尚未实现；M2 首个集成目标 |
+| AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 部分验证：真实 MCP、独立 Worker、固定上游驱动及重建句柄已通过；完整 Gateway/SQL 重启待实测，见[接入规格](specs/m2-deerflow-task-bridge.md) |
 | AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | 尚未实现；需先完成 SSH 与身份设计 |
 
 上述文件是证据入口，不表示每项已覆盖所有边界。当前跑过哪些命令、对应哪个代码版本，以 [STATUS.md](STATUS.md) 为准。
+
+M2.1 的具体映射、取消确认预算、错误与结果边界见[功能规格](specs/m2-deerflow-task-bridge.md)；配置步骤见 [DeerFlow 接入指南](deerflow.md)。桥接仅暴露 `submit_task`、`get_task_status`、`cancel_task`，不直接读取数据库或持有执行进程。表单、review 和 recovery 映射为需要处理的状态，继续使用既有本地 CLI 完成决策。
 
 ## 变更管理
 

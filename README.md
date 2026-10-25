@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Local worker alpha · 2026-10-25.** The Python worker, authenticated loopback API, SQLite task store, isolated Git workspaces, and Codex app-server adapter are implemented. One real Codex repair has been verified with an independent test receipt and patch. DeerFlow, SSH, specialist routing, and the dashboard remain planned. The video below is still a simulated concept preview. Install from source; no PyPI release is published.
+> **Local worker + MCP bridge alpha · 2026-10-25.** The Python worker, authenticated loopback API, SQLite task store, Git workspaces, Codex adapter, and local MCP bridge are implemented. A real Codex repair was verified in M1; M2.1 adds real MCP tests and a pinned DeerFlow task-driver probe. A deployed DeerFlow Gateway/SQL flow, SSH, specialist routing, and the dashboard remain pending. The video is a simulated concept preview. Install from source; no PyPI release is published.
 
 ## Meet your personal agent secretary
 
@@ -46,7 +46,7 @@ Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m1-local-worker  # until the implementation branch is merged
+git checkout feat/m2-deerflow-bridge  # until the implementation branch is merged
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -63,6 +63,8 @@ deermate diff TASK_ID
 ```
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
+
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. Full Gateway/SQL deployment and remote access remain separate validation work.
 
 ## What we are building
 
@@ -161,18 +163,20 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M1 — local worker alpha**.
+We track delivered work separately from planned functionality. Current stage: **M1 implemented; M2.1 local MCP bridge alpha**.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
 | M0 | English/Chinese README, architecture, security boundaries, contracts, concept film | In this repository |
 | M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
-| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | Planned |
+| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | Local MCP bridge and pinned driver verified; Gateway/SQL and SSH pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Unified task cards + research watchlists + scoped mail/browser tools | Planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
+
+M2.1 adds 51 passing normal tests (one opt-in probe skipped), real stdio MCP calls, and a separately passing actual DeerFlow ordinary-driver compatibility probe. It does not establish a deployed Gateway/UI or SQL-backed tracker restart. See [bridge verification](docs/deerflow.md) and [current status](docs/STATUS.md).
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
@@ -187,7 +191,7 @@ Track the first implementation milestone: [Python worker + Codex session lifecyc
 | [Codex](https://github.com/openai/codex) | A native coding-agent runtime connected through documented interfaces |
 | [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | An optional ACP worker runtime |
 | [AsyncSSH](https://github.com/ronf/asyncssh) | Proposed Python SSH implementation; no custom cryptography |
-| [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) | Proposed tool integration surface |
+| [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) | Implemented optional stdio bridge; tested with SDK 1.30.0 |
 | [Playwright MCP](https://github.com/microsoft/playwright-mcp) / [Peekaboo](https://github.com/openclaw/Peekaboo) | Optional web and desktop capabilities |
 
 This repository contains original design documents and media, not a vendored copy of these projects. Their licenses, support policies, model costs, and security boundaries remain their own. We do not claim endorsement, completed interoperability, or bundled third-party subscriptions.
@@ -196,7 +200,7 @@ This repository contains original design documents and media, not a vendored cop
 
 For agent-assisted development, start with [AGENTS.md](AGENTS.md). Follow the [product spec](docs/SPEC.md), [current development status](docs/STATUS.md), [evolution log](docs/EVOLUTION.md), and [architecture decisions](docs/decisions/README.md). The status page separates implemented, verified, merged, and released work.
 
-Useful first contributions include a Codex lifecycle adapter, an SSH worker design review, a DeerFlow integration spike, and security feedback on task recovery. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before starting a large change.
+Useful first contributions include deployed DeerFlow/SQL validation, an SSH worker design review, native lifecycle coverage, and feedback on task recovery. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before starting a large change.
 
 - [Open a design proposal](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml)
 - [Propose an integration](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml)

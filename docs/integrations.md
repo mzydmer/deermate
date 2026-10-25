@@ -1,6 +1,6 @@
 # Integration contracts
 
-Status: local Codex adapter implemented; MCP, SSH, and the other adapter contracts remain proposals. Updated: 2026-10-25. The local HTTP/CLI API is documented in [local-worker.md](local-worker.md).
+Status: local Codex adapter and Python stdio MCP bridge implemented; SSH and the other adapter contracts remain proposals. Updated: 2026-10-25. The local HTTP/CLI API is documented in [local-worker.md](local-worker.md); MCP setup and compatibility limits are in [deerflow.md](deerflow.md).
 
 ## Normalized adapter operations
 
@@ -18,19 +18,19 @@ Not every agent supports resume, questions, attachments, or persistent sessions.
 
 ## DeerFlow tool integration
 
-DeerFlow documents ordinary MCP background tools with `submit`, `status`, and `cancel`, plus SQL-backed tracking outside the agent turn. Its `task_toolsets` mechanism expects exact raw tool names and structured content. DeerMate should expose a narrow Python MCP server mapping to that lifecycle, subject to a compatibility spike.
+DeerFlow documents ordinary MCP background tools with `submit`, `status`, and `cancel`, plus SQL-backed tracking outside the agent turn. Its `task_toolsets` mechanism expects exact raw tool names and structured content. DeerMate now exposes `submit_task`, `get_task_status`, and `cancel_task` through Python stdio MCP to an independently running loopback Worker. The actual ordinary-task driver at `a1b89d0432de4e45adc59f512cb25bb386ea1e51` has passed a real MCP compatibility probe; the deployed Gateway/SQL flow has not been exercised.
 
-Example response shapes below are a design sketch aligned to that upstream contract, not endpoints available from this repository:
+The implemented lifecycle returns these shapes in MCP `structuredContent`; IDs and summaries below are illustrative:
 
 ```json
 {"task_id":"task-example","status":"running"}
 ```
 
 ```json
-{"task_id":"task-example","status":"completed","result":{"summary":"Patch prepared","evidence":["diff","test-receipt"]}}
+{"task_id":"task-example","status":"completed","result":{"summary":"Patch prepared","validation_status":"passed","diff_available":true}}
 ```
 
-Source: [DeerFlow MCP server guide](https://github.com/bytedance/deer-flow/blob/main/backend/docs/MCP_SERVER.md). Configuration and authentication requirements must be validated against a pinned upstream version before implementation.
+Source: pinned [DeerFlow MCP server guide](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/docs/MCP_SERVER.md). Exact status/error mapping, bounded result fields, and acceptance evidence are in the [M2.1 spec](specs/m2-deerflow-task-bridge.md). Cancellation returns a confirmed terminal outcome or a tool error; no unconfirmed cancellation success is reported.
 
 ## Native agent interfaces
 

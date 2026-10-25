@@ -2,6 +2,8 @@
 
 Status: local worker alpha with bearer authentication, local Host/Origin checks, configured project admission, native Codex sandbox policies, and single-owner state. Remote transport and the broader requirements below remain unimplemented; nothing has been independently audited. Updated: 2026-10-25. See [local limits](local-worker.md).
 
+The M2.1 stdio MCP bridge uses that same single owner's local bearer authority. It forwards to a fixed loopback endpoint with proxy discovery and redirects disabled, and does not add a network listener, new grants, or direct database access. Run it only in a trusted local DeerFlow process with deliberate access to the Worker token; its three tools can act on that owner's registered projects/tasks. Bounded summaries may still contain project content; no universal redaction is claimed. See [the setup and deployment limits](deerflow.md).
+
 ## What must be protected
 
 Personal messages and source code, external-service credentials, host access, project integrity, task results, and the user's authority to decide who can act. Task metadata can itself reveal sensitive information even if the task payload is encrypted.

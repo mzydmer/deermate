@@ -9,8 +9,8 @@ Start with [AGENTS.md](AGENTS.md) and [current status](docs/STATUS.md). [SPEC.md
 ## Useful first contributions
 
 1. Review the worker lifecycle and restart/reconnect semantics.
-2. Propose a narrow Codex app-server adapter proof.
-3. Validate DeerFlow's background MCP task contract against a pinned version.
+2. Improve the Codex adapter's lifecycle evidence and bounded recovery.
+3. Validate a deployed DeerFlow Gateway/SQL task tracker; the local MCP bridge and pinned driver probe already exist.
 4. Review SSH enrollment, limited execution accounts, and revocation requirements.
 5. Improve the documentation or Chinese translation.
 

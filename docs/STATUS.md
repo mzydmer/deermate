@@ -1,76 +1,73 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-10-25。此文件只保留当前状态；历史保留在 [EVOLUTION.md](EVOLUTION.md)。这是手动维护的版本化快照，不是自动监控服务。
+最后核对：2026-10-25。历史见 [EVOLUTION.md](EVOLUTION.md)。这是由开发 Agent/维护者更新的版本化快照，不是自动监控服务。
 
-## 一眼看懂
+## 当前交付
 
 | 项目 | 当前事实 |
 | --- | --- |
-| 产品阶段 | M1 本地 Worker Alpha；完整私人秘书仍在构建中 |
-| 实现分支 | `feat/m1-local-worker` |
-| 运行代码基线 | [`7dfe34a`](https://github.com/mzydmer/deermate/commit/7dfe34ac610a4f2ecd600ab77d28432786916b6a) |
-| 主线基线 | `main` 仍为 `e9f228d`，设计预览；本次核对时 M1 未合并 |
-| 发布状态 | 代码已推送开发分支；未发布 PyPI 包或正式 release |
-| PR 状态 | 本次核对时没有该分支的开放 PR；[分支比较](https://github.com/mzydmer/deermate/compare/main...feat/m1-local-worker)可直接查看改动 |
-| 下一阶段 | M2：先接入 DeerFlow 后台 MCP 任务，再接 SSH 远程 Worker |
+| 产品阶段 | M1 本地 Worker 已实现；M2.1 本地 Python MCP 桥接与上游驱动兼容检查已实现 |
+| 开发分支 | `feat/m2-deerflow-bridge`，包含此前 M1 与接续文档 |
+| 运行代码基线 | [`2a941b1`](https://github.com/mzydmer/deermate/commit/2a941b140348727b6298009dcdf04a3397691caf) |
+| 主线基线 | 本次远端核对 `main` 仍为 `e9f228d`；M1/M2 尚未合并 |
+| 发布状态 | 开发分支交付；包仍为源码 alpha `0.1.0a1`，没有正式 release 或 PyPI 发布 |
+| PR | 本次远端核对无开放 PR；[比较开发分支](https://github.com/mzydmer/deermate/compare/main...feat/m2-deerflow-bridge) |
+| 下一步 | 完整 DeerFlow Gateway/SQL 任务跟踪与重启验收，然后 M2.2 SSH 远程 Worker |
 
-文档提交会继续推进分支 HEAD；上面的哈希特指最近验证过的**运行代码基线**，不是对文档最新提交哈希的猜测。每次接续都应核对实际 Git 和远端状态。
+上面的哈希是运行代码提交；后续文档提交可继续推进 HEAD，不需要为填写自身哈希反复提交。接续时核对 Git 和远端状态。
 
-## 已实现范围
+## 已实现能力
 
-- Python Worker、FastAPI 本地 API 与 CLI。
-- SQLite 任务、会话身份、策略快照与事件游标持久化。
-- 注册项目接纳、幂等提交、独立继续键、冲突处理。
-- Codex app-server 启动、事件、中断、同会话继续和受支持表单处理。
-- 从已提交 HEAD 建立独立 Git worktree，收集补丁和验证命令输出。
-- 任务时限、并发限制、权限扩展拒绝、单进程状态目录所有权。
-- 本地 token、Host/Origin 检查与请求体限制。
-- 重启后的显式恢复：保留身份与工作区，不自动重放运行中的任务。
+M1 保留 Python API/CLI、SQLite 任务/会话/事件、幂等提交、Codex app-server、独立 Git worktree、补丁与管理员验证命令、取消与同会话继续、表单处理、时限与并发、本地鉴权和显式重启恢复。
 
-对应需求与验收见 [SPEC.md](SPEC.md)。运行步骤见 [local-worker.md](local-worker.md)。
+M2.1 新增：
 
-## 验证记录
+- `deermate mcp` 通过 stdio 暴露 `submit_task`、`get_task_status`、`cancel_task`，使用真实 MCP SDK 和严格参数 schema。
+- 桥接只连接独立 Worker 的固定 loopback API；读取已有私有 token，禁用环境代理和重定向，不创建执行进程或直接访问数据库。
+- MCP 连接重建仍能使用原 ID；重复提交复用任务，不创建第二个原生会话。
+- 取消在 8 秒预算内等待确认；不确定时返回工具错误。完成竞争保留实际终态。
+- 表单、review、recovery 保留为需要处理的状态；不自动批准、回答或重放。
+- 有长度限制的摘要、验证记录节选及本地 diff 查询提示；不把完整 prompt、配置和补丁复制到上游。
+- 固定 DeerFlow `a1b89d0432de4e45adc59f512cb25bb386ea1e51` 的实际 `OrdinaryMcpTaskDriver` 经真实 MCP 的兼容检查；新增 CI 专项 job。
 
-以下是代码基线 `7dfe34a` 的既有验证，不是本次文档变更重新执行的结果。
+运行：[本地 Worker](local-worker.md)、[DeerFlow 配置](deerflow.md)。设计与范围：[基础规格](SPEC.md)、[M2.1 规格](specs/m2-deerflow-task-bridge.md)、[ADR 0003](decisions/0003-independent-mcp-bridge.md)。
 
-| 验证 | 已知结果 | 证据/复现入口 |
-| --- | --- | --- |
-| 离线自动化测试 | 18 项通过；使用协议 fixture 与真实临时 Git 仓库，不调用模型 | `python -m pytest -q`；[tests/](../tests/) |
-| 静态检查 | Ruff 通过 | `ruff check src tests scripts/live_smoke.py` |
-| 构建 | wheel 构建成功，包版本 `0.1.0a1` | `python -m build --wheel`；[pyproject.toml](../pyproject.toml) |
-| GitHub CI | Ubuntu/Python 3.11 与 macOS/Python 3.12 两组均通过 | [运行 40175946902](https://github.com/mzydmer/deermate/actions/runs/40175946902) |
-| 真实 Codex 修复 | 临时仓库修复、独立执行一项测试通过，并收集 diff | [live smoke](../scripts/live_smoke.py)、[环境与结果说明](local-worker.md#verification) |
-| 真实 Codex 生命周期 | 实际中断并继续同一 thread，三个 attempt 保留 native session ID | `live_smoke.py --live --model YOUR_AVAILABLE_MODEL --lifecycle` 的既有本地运行记录 |
-| 待答表单与重启恢复 | 离线协议/进程测试通过 | [test_worker.py](../tests/test_worker.py)、[test_store.py](../tests/test_store.py) |
+## 本次实际验证 · M2.1
 
-真实模型验证使用 macOS、Python 3.12、Codex `0.164.0-alpha.11.1` 和显式 `gpt-6.1-sol`。临时测试数据已清理，仓库没有保留原始会话或完整运行日志；现有说明和可复现脚本不等价于持久化原始测试收据。后续有真实兼容性需求时再运行 live 检查，避免无意义地重复消耗额度。
+| 检查 | 结果与边界 |
+| --- | --- |
+| `python -m pytest -q` | 51 passed、1 skipped；跳过的是需显式 upstream checkout 的兼容检查；一条上游 Starlette TestClient 弃用提示 |
+| `DEERMATE_DEERFLOW_CHECKOUT=<pinned checkout> python -m pytest -q tests/test_deerflow_compat.py tests/test_bridge.py tests/test_mcp.py` | 34 passed；包含固定版本的真实 DeerFlow 驱动、真实 MCP stdio 子进程、HTTP Worker 与临时 Git 仓库 |
+| token 读取边界调整后 `python -m pytest -q tests/test_bridge.py` | 28 passed；验证私有文件、缺失/符号链接、HTTP 错误、恢复、状态与证据边界 |
+| `ruff check src tests scripts/live_smoke.py` | 通过 |
+| `python -m build --wheel` | 通过；`deermate-0.1.0a1-py3-none-any.whl` |
+| CI | 已配置 Ubuntu/Python 3.11、macOS/Python 3.12 常规检查和固定上游驱动 job；本页未预先声明本次远端运行通过，查看 [Actions](https://github.com/mzydmer/deermate/actions) |
 
-## 尚未实现或未充分验证
+本次环境为 macOS/Python 3.12、MCP SDK 1.30.0。此运行时安装 SDK 时，cryptography 最新源码构建缺少 OpenSSL；使用 `pip install --only-binary=cryptography 'mcp==1.30.0'` 选用兼容 wheel 后完成安装。没有修改系统 Python 或全局 Codex 配置。所有新增验证均使用明确标识的离线 Codex fixture，没有请求真实模型。
+
+## 既有验证 · M1，非本次重跑模型
+
+运行代码基线 [`7dfe34a`](https://github.com/mzydmer/deermate/commit/7dfe34ac610a4f2ecd600ab77d28432786916b6a) 的 18 项离线测试、Ruff、wheel 构建通过；[CI 40175946902](https://github.com/mzydmer/deermate/actions/runs/40175946902) 的 Ubuntu/Python 3.11 与 macOS/Python 3.12 两组通过。此次 51 项常规检查包含这些离线测试。
+
+既有真实 Codex 验证使用 macOS/Python 3.12、Codex `0.164.0-alpha.11.1` 和显式 `gpt-6.1-sol`：临时仓库修复、独立执行一项测试通过并收集 diff；真实中断与继续在三个 attempt 保留同一 thread。环境和复现入口见 [local-worker.md](local-worker.md#verification) 与 [live_smoke.py](../scripts/live_smoke.py)。临时原始日志未保留；说明和脚本不等于持久化原始测试收据。本次未重复调用模型。
+
+## 尚未完成
 
 | 范围 | 状态与影响 |
 | --- | --- |
-| DeerFlow MCP 对接 | 未实现；当前不能声称已从 DeerFlow 派工 |
-| SSH、NAT、中继和设备配对 | 未实现；M1 API 只能本地使用，没有远程 E2E 通道 |
-| Claude、DSH、Qoder 等适配器 | 未实现；不能由上游有接口推断 DeerMate 已支持 |
-| 多岗位路由、独立审核与 GitHub 自动维护 | 规划中 |
-| 调研 watchlist、邮件、桌面控制、统一仪表盘 | 规划中；视频仍是模拟概念展示 |
-| 进程硬崩溃与远程恢复 | 未完成 live 验证；现有重启测试不能替代跨机器容错证明 |
-| 生产隔离、秘密脱敏、数据库加密、容量保留 | 尚不具备完整方案或实现；仅适用于可信项目的本地实验 |
+| 完整 DeerFlow Gateway、SQL tracker、网页 | 未部署实测；驱动/SDK 检查不等于 Gateway 重启或产品 UI 验收，AC-M2-01 部分验证 |
+| SSH、设备配对、NAT、中继 | 未实现；当前同主机、同网络命名空间、单一所有者，无远程 E2E 通道 |
+| 表单回答与恢复的秘书操作入口 | MCP 仅有三个生命周期工具；回答、review 和显式恢复仍走本地 CLI |
+| Claude、DSH、Qoder、专职路由、GitHub 自动维护 | 未实现 |
+| 调研、邮件、桌面控制、统一仪表盘 | 规划中；视频为概念模拟 |
+| 进程硬崩溃、孤儿进程及远程恢复 | 未完成 live 验证；现有有序重启测试不证明跨机器容错 |
+| 生产隔离、秘密脱敏、数据库加密与容量保留 | 未具备完整实现；仅供可信项目本地实验 |
 
-## 交付操作与当前限制
+此前创建 PR 遇到连接器写权限不足，浏览器控制随后不可用；工作已保存在 Git 开发分支。本次没有将旧失败重新当作授权问题，也没有声称 PR、合并或 release 已完成。工具恢复后先核对已有 PR，避免重复创建。
 
-M1 推送成功，源代码与 CI 结果可访问。此前创建 PR 时，GitHub 连接器返回写入权限不足，浏览器控制随后不可用，因此没有创建 PR；本次通过远端查询确认仍无开放 PR。
+## 下一项验收
 
-这只影响 PR 发布操作，不阻止继续开发，不应把它误记为运行代码故障。接续时如工具已恢复，应先检查是否已有 PR，避免重复创建。尚无合并或 release 的证据，不将其标成已发布。
+1. **M2.1 / AC-M2-01 补全：** 在独立、固定上游提交的 DeerFlow 环境开启 SQL 和 `mcp_tasks`，通过 Gateway 提交任务，保留 SQL tracker ID 与 Worker ID；重启 Gateway 后继续查询、取消与接收结果。保留可复核的脱敏收据，区分模型会话和后台服务验收。
+2. **M2.2 / FR-013：** 形成 SSH 主机身份、密钥生命周期、最小执行账户、断线状态与撤权规格，再实现远程路径。当前不把云端 DeerFlow 连接到家中 Worker 视为已支持。
 
-## 下一步可直接执行的工作
-
-1. **M2.1 / FR-012：DeerFlow MCP 接入。** 核对并记录兼容的上游版本；用 Python MCP 暴露 submit/status/cancel，将现有任务 ID、状态和结果映射为后台任务契约。先证明本地任务能被该契约跟踪，不同时引入 SSH。
-2. **验收目标 AC-M2-01：** 提交快速返回稳定 ID；后续查询不依赖模型记住会话；任务完成、失败、待答与取消不误报；DeerFlow 重启后的句柄处理有明确行为和测试。
-3. **M2.2 / FR-013：** 在接入契约成立后设计 SSH 主机身份、密钥生命周期、断线状态与撤权策略，再做远程实现；保持默认 Python 后端。
-
-开始前按 [AGENTS.md](../AGENTS.md) 读取需求和实现，不将上述下一步当作已完成。一次只推进一个可验证的集成边界。
-
-## 接续时更新什么
-
-完成一个有意义的工作项后，更新此页的代码基线、交付状态、验证证据和下一步；在 [EVOLUTION.md](EVOLUTION.md) 追加结果。行为改变同步 spec，验收完成同步 roadmap，关键取舍补 ADR。常规文字修正不需要新增演进事件。
+按 [AGENTS.md](../AGENTS.md) 接续。每次有意义的工作同步当前证据和下一步，行为变化更新 spec，历史结果追加 EVOLUTION；常规文字修正不新增演进事件。

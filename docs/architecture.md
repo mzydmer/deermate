@@ -1,12 +1,14 @@
 # Architecture proposal
 
-Status: local M1 worker implemented; the distributed topology below is still a proposal. Updated: 2026-10-25. See [the local worker guide](local-worker.md) for the runnable scope and verification evidence.
+Status: local M1 worker and M2.1 Python MCP bridge implemented; the distributed topology below is still a proposal. Updated: 2026-10-25. See [the local worker guide](local-worker.md) and [DeerFlow guide](deerflow.md) for the runnable scope and verification evidence.
 
 ## Product boundary
 
 DeerMate coordinates agents that already exist. DeerFlow supplies the conversation, planning, skills, and secretary experience. DeerMate adds a worker registry, bounded delegation, native session adapters, and a durable link between the conversation and execution evidence. Reuse DeerFlow's existing scheduling and background-task mechanisms where their contracts fit, rather than creating another competing scheduler.
 
 The control service and worker are maintained in Python. The initial UI reuses DeerFlow, whose frontend has its own toolchain. External agent executables remain external dependencies. The optional Hermesh bridge is not part of the default installation.
+
+The implemented local MCP bridge forwards three tools to the independent authenticated HTTP Worker. It does not acquire a database lock or own native execution; restarting the MCP connection leaves Worker tasks intact. See [ADR 0003](decisions/0003-independent-mcp-bridge.md). Actual Gateway/SQL deployment verification and remote SSH are pending.
 
 ## Proposed components
 
