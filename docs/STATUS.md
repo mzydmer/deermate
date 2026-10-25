@@ -41,7 +41,7 @@ M2.1 新增：
 | token 读取边界调整后 `python -m pytest -q tests/test_bridge.py` | 28 passed；验证私有文件、缺失/符号链接、HTTP 错误、恢复、状态与证据边界 |
 | `ruff check src tests scripts/live_smoke.py` | 通过 |
 | `python -m build --wheel` | 通过；`deermate-0.1.0a1-py3-none-any.whl` |
-| CI | 已配置 Ubuntu/Python 3.11、macOS/Python 3.12 常规检查和固定上游驱动 job；本页未预先声明本次远端运行通过，查看 [Actions](https://github.com/mzydmer/deermate/actions) |
+| CI | [运行 40180093367](https://github.com/mzydmer/deermate/actions/runs/40180093367) 在提交 `6f0a51f` 通过：Ubuntu/Python 3.11、macOS/Python 3.12 和 `deerflow-contract` 三个 job 均 success；该提交的运行代码基线仍为 `2a941b1` |
 
 本次环境为 macOS/Python 3.12、MCP SDK 1.30.0。此运行时安装 SDK 时，cryptography 最新源码构建缺少 OpenSSL；使用 `pip install --only-binary=cryptography 'mcp==1.30.0'` 选用兼容 wheel 后完成安装。没有修改系统 Python 或全局 Codex 配置。所有新增验证均使用明确标识的离线 Codex fixture，没有请求真实模型。
 
