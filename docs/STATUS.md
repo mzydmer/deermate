@@ -44,7 +44,7 @@ M2.1 新增：
 | `DEERMATE_DEERFLOW_CHECKOUT=<checkout> DEERMATE_GATEWAY_PYTHON=<backend python> python -m pytest -q tests/test_deerflow_gateway.py` | 1 passed，37.72 秒；验证独立 pytest 入口及收据边界 |
 | `ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py` | 通过 |
 | `python -m build --wheel` | 通过；`deermate-0.1.0a1-py3-none-any.whl` |
-| 本次 CI | 已新增 `deerflow-gateway` 独立 job，使用固定源码、frozen 环境并上传 fixture 收据；远端结果需实际核对后记录 |
+| 本次 CI | [运行 40201412129](https://github.com/mzydmer/deermate/actions/runs/40201412129) 在 `28d6cc5` 完成：Ubuntu/Python 3.11、macOS/Python 3.12、`deerflow-contract`、`deerflow-gateway` 四组全部 success；后者已上传 `deerflow-gateway-receipt` artifact（ID `12601528420`） |
 
 本次为 macOS/Python 3.12.14；上游环境使用 `uv sync --frozen --no-default-groups`，保留 cryptography 50.0.0、MCP 1.30.0 等锁定依赖。为此 Intel 运行时在忽略目录构建了 OpenSSL 3.5.9，通过安装进程的 `OPENSSL_DIR` / `OPENSSL_STATIC=1` 链接，没有降级上游依赖、修改系统安装或正常用户配置。完整版本与哈希在收据中。
 

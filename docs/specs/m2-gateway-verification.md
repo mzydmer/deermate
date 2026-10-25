@@ -41,3 +41,4 @@ Provide an opt-in reproducible script and CI job with the pinned upstream checko
 - Normal suite: 51 passed, 2 skipped (both explicitly opt-in upstream probes); Ruff and wheel build passed. No real model was invoked.
 - Actual Gateway startup created the SQL schema and stamped Alembic revision `0048_extension_execution_leases`. This is fresh-database verification, not a historical-schema upgrade test.
 - With no configured chat model, upstream notification runs fail model assembly as expected. Task results and cancellation are validated through original HTTP routes and SQL; model-generated notification completion and browser UX remain unverified.
+- Remote [CI 40201412129](https://github.com/mzydmer/deermate/actions/runs/40201412129) passed all four jobs at `28d6cc5`, including the actual frozen Gateway environment on Ubuntu. Its `deerflow-gateway-receipt` artifact was verified present (ID `12601528420`).
