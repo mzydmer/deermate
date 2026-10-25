@@ -37,11 +37,13 @@
 | `DEERMATE_DEERFLOW_CHECKOUT=<pinned checkout> python -m pytest -q tests/test_deerflow_compat.py` | 2 passed，8.65 秒；实际固定上游驱动，经真实 MCP 使用 local/SSH 两种绑定 |
 | Ruff | `ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py` 通过 |
 | 包与依赖 | wheel 构建通过；`pip check` 无依赖冲突；包仍为 `0.1.0a1` |
-| 本次 CI | 配置为两个常规平台上传 SSH 收据、固定驱动运行两种模式及实际 Gateway 回归；等待远端结果实际核对，不能预先标通过 |
+| 本次 CI | [运行 40206131865](https://github.com/mzydmer/deermate/actions/runs/40206131865) 在 `96ca52b` 完成：Ubuntu/Python 3.11、macOS/Python 3.12、两种原生驱动绑定与实际 Gateway 四个 job 均 success；两个 SSH 收据及 Gateway 收据均已上传 |
 
 本地环境：macOS/Python 3.12、AsyncSSH 2.24.1、bcrypt 5.0.0、cryptography 48.0.1、MCP 1.30.0。22 项 SSH 用例使用临时生成的密钥、真实协议服务器、HTTP Worker 和离线原生 fixture；没有使用真实 SSH daemon、用户 SSH 密钥、模型或系统配置。
 
 本次源代码与收据哈希已核对。CI 的 SSH artifact 只在成功会话后产生，不包含私密路径、密钥、token、地址、原始日志或数据库。
+
+已核对 artifact：`ssh-receipt-macos-latest-py3.12`（`12604035037`）、`ssh-receipt-ubuntu-latest-py3.11`（`12603233873`）、`deerflow-gateway-receipt`（`12602959515`）。当前 Gateway 回归覆盖新增源码的本地路径，不把该结果扩展为组合 SSH 或真实双机验收。
 
 ## 历史证据与范围
 
