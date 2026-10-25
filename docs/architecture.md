@@ -1,6 +1,6 @@
 # Architecture proposal
 
-Status: design; no runtime is implemented. Updated: 2026-10-25.
+Status: local M1 worker implemented; the distributed topology below is still a proposal. Updated: 2026-10-25. See [the local worker guide](local-worker.md) for the runnable scope and verification evidence.
 
 ## Product boundary
 

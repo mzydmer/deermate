@@ -1,6 +1,6 @@
 # Integration contracts
 
-Status: proposal, not an implemented API. Updated: 2026-10-25.
+Status: local Codex adapter implemented; MCP, SSH, and the other adapter contracts remain proposals. Updated: 2026-10-25. The local HTTP/CLI API is documented in [local-worker.md](local-worker.md).
 
 ## Normalized adapter operations
 

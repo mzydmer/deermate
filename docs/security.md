@@ -1,6 +1,6 @@
 # Security model proposal
 
-Status: requirements and threat model only. DeerMate has no implemented or audited security boundary yet. Updated: 2026-10-25.
+Status: local worker alpha with bearer authentication, local Host/Origin checks, configured project admission, native Codex sandbox policies, and single-owner state. Remote transport and the broader requirements below remain unimplemented; nothing has been independently audited. Updated: 2026-10-25. See [local limits](local-worker.md).
 
 ## What must be protected
 

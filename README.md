@@ -8,14 +8,14 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-6ee7b7" /></a>
-  <img alt="Stage: design preview" src="https://img.shields.io/badge/Stage-design_preview-fbbf24" />
-  <img alt="Backend plan: Python" src="https://img.shields.io/badge/Backend_plan-Python-93c5fd" />
+  <img alt="Stage: local worker alpha" src="https://img.shields.io/badge/Stage-local_worker_alpha-fbbf24" />
+  <img alt="Backend: Python" src="https://img.shields.io/badge/Backend-Python-93c5fd" />
   <img alt="Deployment goal: self hosted" src="https://img.shields.io/badge/Deployment_goal-self_hosted-c4b5fd" />
 </p>
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Design preview · 2026-10-25.** This repository contains the product brief, architecture, integration contracts, roadmap, and a concept video. The DeerMate service, remote worker, routing, and dashboard are **not implemented yet**. The preview uses simulated data. There is no installable DeerMate release today.
+> **Local worker alpha · 2026-10-25.** The Python worker, authenticated loopback API, SQLite task store, isolated Git workspaces, and Codex app-server adapter are implemented. One real Codex repair has been verified with an independent test receipt and patch. DeerFlow, SSH, specialist routing, and the dashboard remain planned. The video below is still a simulated concept preview. Install from source; no PyPI release is published.
 
 ## Meet your personal agent secretary
 
@@ -39,6 +39,31 @@ It builds around **DeerFlow**, with a **Python control service and Python worker
 
 The film illustrates an intended handoff: one request → role-based routing → work on your own machine → an independent review → a result with a diff and test evidence. It is a motion storyboard, not a recording of functioning software. A live demo will replace it when the first integration is working.
 
+## Run the local worker
+
+Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and authenticated separately.
+
+```bash
+git clone https://github.com/mzydmer/deermate.git
+cd deermate
+git checkout feat/m1-local-worker  # until the implementation branch is merged
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+cp examples/local-worker.toml deermate.toml
+```
+
+Edit `deermate.toml` to register a trusted repository and its validation command, then run `deermate serve`. In another terminal:
+
+```bash
+deermate submit --project demo --key first-task --prompt 'Investigate and fix the bug.'
+deermate status TASK_ID
+deermate events TASK_ID
+deermate diff TASK_ID
+```
+
+Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
+
 ## What we are building
 
 | Capability | Intended experience | Status |
@@ -46,7 +71,7 @@ The film illustrates an intended handoff: one request → role-based routing →
 | A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | Planned |
 | Specialist routing | Choose an eligible agent by role, project, device availability, and budget | Planned |
 | Home and cloud workers | Run bounded work on machines you own; show offline devices explicitly | Planned |
-| Durable sessions | Start, inspect, resume, interrupt, and recover work without duplicate execution | Contract drafted |
+| Durable sessions | Local start/status/events/interrupt/resume; idempotent submission and explicit restart recovery | Local implementation |
 | Repository maintenance | Triage issues, prepare fixes, collect CI evidence, and request independent review | Planned |
 | Research watchlists | Track changes, keep citations, compare snapshots, and surface meaningful updates | Planned |
 | One work dashboard | See the assignee, device, stage, recent activity, artifacts, and decisions | Concept only |
@@ -94,7 +119,7 @@ See [architecture](docs/architecture.md) and [the Python-first decision](docs/de
 
 ## Connect your agents
 
-The following interfaces have upstream documentation; **none has a completed DeerMate adapter yet**.
+The Codex native app-server adapter is implemented locally. The remaining adapters are planned and require their own compatibility validation.
 
 | Agent or tool | Planned integration | Upstream interface |
 | --- | --- | --- |
@@ -119,7 +144,7 @@ Planned connection flow:
 4. Register adapter capabilities and project-specific policies.
 5. Run a read-only smoke task before enabling writes.
 
-There is deliberately no invented `pip install deermate` or one-command production setup here. The connection flow becomes executable documentation only when the worker exists. See [integration contracts](docs/integrations.md) and the [design-only example configuration](examples/deermate.example.yaml).
+The remote connection flow above is still planned. For the implemented local path, use the [worker setup guide](docs/local-worker.md) and [local TOML example](examples/local-worker.toml). The [broader YAML example](examples/deermate.example.yaml) remains design-only. Install from this repository; a package named `deermate` on a registry is not claimed to be this project.
 
 ## Autonomy with explicit boundaries
 
@@ -136,18 +161,18 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M0 — public design preview**.
+We track delivered work separately from planned functionality. Current stage: **M1 — local worker alpha**.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
 | M0 | English/Chinese README, architecture, security boundaries, contracts, concept film | In this repository |
-| M1 | Local Python worker + Codex adapter + one verified task lifecycle | Planned |
+| M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
 | M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | Planned |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Unified task cards + research watchlists + scoped mail/browser tools | Planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
-**First acceptance target:** send a task from DeerFlow, run it through Codex in a disposable repository, return the diff and test output, interrupt and resume it, then restart the control service without losing or duplicating the work.
+**Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 

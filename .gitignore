@@ -10,3 +10,8 @@ __pycache__/
 *.sqlite*
 .deermate/
 .media-build/
+.pytest_cache/
+.ruff_cache/
+dist/
+*.egg-info/
+deermate.toml

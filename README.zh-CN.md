@@ -3,9 +3,9 @@
 <h1 align="center">DeerMate</h1>
 <p align="center"><strong>一个私人秘书，一支 Agent 团队，你自己的机器。</strong></p>
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
-<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 设计预览 · Python 后端方案</p>
+<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Python 后端</p>
 
-> **当前阶段：设计预览，2026-10-25。** 仓库已经提供项目说明、架构、安全边界、接入契约、开发路线和概念视频。DeerMate 服务、远程 Worker、自动路由和仪表盘**尚未实现**。预览使用模拟数据，目前没有可安装的 DeerMate 发行版。
+> **当前阶段：本地 Worker Alpha，2026-10-25。** 已实现 Python Worker、带鉴权的本地 API、SQLite 持久任务、独立 Git 工作区和 Codex app-server 适配。已用真实 Codex 完成一次修复，并独立取得通过的测试记录和 diff。DeerFlow 接入、远程 SSH、专职路由与仪表盘仍在规划中。下方视频仍是模拟概念预览。当前从源码安装，尚未发布 PyPI 包。
 
 ## 你的私人 Agent 秘书
 
@@ -29,6 +29,31 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 
 视频呈现目标流程：一句话交代 → 按角色派工 → 在自己的机器执行 → 独立审核 → 返回 diff 和测试证据。它是概念动效，**不代表软件已经实现**。首个集成完成后，会补充真实运行演示。
 
+## 运行本地 Worker
+
+需要 Python 3.11+、Git，以及 macOS 或 Linux。Codex 需单独安装并完成官方登录。
+
+```bash
+git clone https://github.com/mzydmer/deermate.git
+cd deermate
+git checkout feat/m1-local-worker  # 实现分支合并前使用
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+cp examples/local-worker.toml deermate.toml
+```
+
+编辑 `deermate.toml`，填写可信 Git 仓库路径和测试命令，然后运行 `deermate serve`。另一个终端中：
+
+```bash
+deermate submit --project demo --key first-task --prompt '分析并修复这个 bug。'
+deermate status TASK_ID
+deermate events TASK_ID
+deermate diff TASK_ID
+```
+
+`TASK_ID` 使用提交接口返回的值。服务只监听 `127.0.0.1`，并创建本地 bearer token。[完整安装、中断、继续与恢复说明](docs/local-worker.md)。
+
 ## 我们正在构建什么
 
 | 能力 | 目标体验 | 进展 |
@@ -36,7 +61,7 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 | 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | 规划中 |
 | 专事专办 | 根据职责、项目权限、设备在线情况和预算分派 | 规划中 |
 | 家里与云端协作 | 调用自有机器；离线设备明确显示等待状态 | 规划中 |
-| 持久会话 | 启动、查询、继续、中断和恢复，避免重复执行 | 契约草案 |
+| 持久会话 | 本地提交、查询、事件、中断、继续；幂等提交和显式恢复 | 已有本地实现 |
 | 开源项目维护 | issue 分流、修复、测试、独立审核 | 规划中 |
 | 竞品与资料跟踪 | 对比历史快照，保留引用，有实质变化再报告 | 规划中 |
 | 一个工作仪表盘 | 查看执行者、机器、阶段、事件、产物和决策 | 概念设计 |
@@ -81,7 +106,7 @@ flowchart TD
 
 ## 接入方式
 
-下面列出上游已有接口与拟接入方式，**目前均没有完成 DeerMate 适配或联调**。
+已实现本地 Codex app-server 适配。其他适配器仍待开发和独立验证。
 
 | 执行者 | 拟接入方式 | 预期岗位 |
 | --- | --- | --- |
@@ -106,7 +131,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 4. 注册 Agent 能力，设置项目级权限与任务限制。
 5. 先执行只读检查，再按需开放写入。
 
-Worker 尚未实现，因此此处不提供虚构的安装命令。[接入契约](docs/integrations.md)和[设计示例配置](examples/deermate.example.yaml)用于讨论，不是可运行配置。
+上述远程接入流程仍属规划。本地实现请使用[Worker 指南](docs/local-worker.md)和[TOML 示例](examples/local-worker.toml)。[更完整的 YAML 示例](examples/deermate.example.yaml)仍是设计草案，不能用于启动服务。当前从仓库安装，不声称包注册表中的同名项目属于本仓库。
 
 ## 自动执行的边界
 
@@ -123,18 +148,18 @@ Worker 尚未实现，因此此处不提供虚构的安装命令。[接入契约
 
 ## 开发进展
 
-当前阶段：**M0，公开设计预览**。已交付的内容与计划中的运行能力分别列出。
+当前阶段：**M1，本地 Worker Alpha**。已交付的内容与计划中的运行能力分别列出。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
 | M0 | 中英文 README、架构、安全边界、接入契约、概念视频 | 已在仓库提供 |
-| M1 | 本地 Python Worker、Codex 适配器、可验证的单任务生命周期 | 规划中 |
+| M1 | 本地 Python Worker、Codex 适配器、可验证的单任务生命周期 | 已有实现，验证范围见指南 |
 | M2 | DeerFlow 工具、SSH 远程 Worker、重启和重连恢复 | 规划中 |
 | M3 | Claude/ACP 适配、独立审核、GitHub 维护流程 | 规划中 |
 | M4 | 统一任务卡片、竞品 watchlist、受限邮件与浏览器工具 | 规划中 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
 
-首个验收目标：从 DeerFlow 提交任务，让 Codex 在测试仓库执行，返回 diff 和测试输出；可以中断和继续；控制服务重启后任务不丢失，也不重复启动。
+已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。DeerFlow 与远程执行待 M2。[验证范围与当前限制](docs/local-worker.md)。
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 

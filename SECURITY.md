@@ -1,6 +1,6 @@
 # Security policy
 
-DeerMate is a design preview. It has no production release or implemented security boundary yet. Do not deploy unfinished examples with access to private data or sensitive hosts.
+DeerMate is a local worker alpha with no production release or independent audit. Run only on loopback with trusted repositories. Remote SSH, multi-user isolation, and the full assistant platform are not implemented. Use a dedicated account or VM before granting access to sensitive hosts or data.
 
 The proposed threat model and trust boundaries are documented in [docs/security.md](docs/security.md).
 

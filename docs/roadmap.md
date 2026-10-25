@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M0 design preview. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1 local worker alpha. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
 
 ## M0 — Publish the design
 
@@ -14,12 +14,14 @@ Status: M0 design preview. Updated: 2026-10-25. This is a sequence of acceptance
 
 Tracking issue: [Python worker and Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 
-- [ ] Implement a versioned Python worker contract and local task store.
-- [ ] Implement the Codex native app-server adapter.
-- [ ] Submit a bounded task in a disposable repository and return native session ID, events, diff, and captured test output.
-- [ ] Distinguish execution failure, cancelled work, missing evidence, and accepted completion.
-- [ ] Interrupt and continue without a duplicate native session.
-- [ ] Prove duplicate submission returns the same task handle.
+- [x] Implement a versioned Python worker contract and local task store.
+- [x] Implement the Codex native app-server adapter.
+- [x] Submit a bounded task in a disposable repository and return native session ID, events, diff, and captured test output.
+- [x] Distinguish execution failure, cancelled work, missing evidence, and accepted completion.
+- [x] Interrupt and continue without a duplicate native session (offline tests and live Codex).
+- [x] Prove duplicate submission returns the same task handle.
+
+Verification: a real Codex repair passed independently executed validation and returned a patch. A live interruption and continuation preserved the native thread ID. Offline protocol tests cover restart recovery, pending input, denied capabilities, deadlines, and idempotency. See [local-worker.md](local-worker.md) for the precise scope. The video remains a concept storyboard until a recorded live walkthrough is added.
 
 Exit criterion: a reproducible local walkthrough that runs on a clean machine with documented prerequisites. Replace the concept film with a labeled live demo when ready.
 

@@ -1,0 +1,14 @@
+# Copy to deermate.toml and replace root with an existing TRUSTED Git repository.
+# The repository needs at least one commit; only its committed HEAD is the starting point.
+state_dir = ".deermate"
+codex_command = ["codex", "app-server"]
+task_timeout_seconds = 1800
+test_timeout_seconds = 120
+max_concurrent_tasks = 1
+# model = "a-model-available-to-your-Codex-account"
+
+[projects.demo]
+root = "/absolute/path/to/your/trusted/repository"
+allow_write = true
+# Operator-configured argv; executed by command/exec with the same Codex sandbox.
+test_command = ["python3", "-m", "unittest", "discover", "-s", "tests", "-v"]

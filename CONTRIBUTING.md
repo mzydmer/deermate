@@ -1,6 +1,6 @@
 # Contributing to DeerMate
 
-Thank you for helping build a private assistant that can delegate real work. This is currently a design repository. There is no service to run, package to install, or completed integration to test.
+Thank you for helping build a private assistant that can delegate real work. The local Python worker and Codex adapter are now implemented. See [the setup guide](docs/local-worker.md) for installation and [the roadmap](docs/roadmap.md) for the remaining integrations.
 
 ## Useful first contributions
 
@@ -13,6 +13,8 @@ Thank you for helping build a private assistant that can delegate real work. Thi
 Open a [design proposal](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml) or [integration request](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml) before a broad change. Focus a pull request on one outcome; include upstream version references and evidence for any support claim.
 
 ## Project conventions
+
+Install developer dependencies with `python -m pip install -e '.[dev]'`. Run `ruff check src tests scripts/live_smoke.py`, `python -m pytest -q`, and `python -m build --wheel`. Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota.
 
 - Maintain DeerMate-owned backend services in Python. Hermesh is optional external interoperability, not a required Go service.
 - Reuse upstream capabilities where practical and keep interfaces narrow.
