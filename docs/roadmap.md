@@ -2,6 +2,8 @@
 
 Status: M1 local worker alpha. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
 
+See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
+
 ## M0 — Publish the design
 
 - [x] Define the personal-secretary use case and Python backend boundary.

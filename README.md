@@ -194,6 +194,8 @@ This repository contains original design documents and media, not a vendored cop
 
 ## Join the project
 
+For agent-assisted development, start with [AGENTS.md](AGENTS.md). Follow the [product spec](docs/SPEC.md), [current development status](docs/STATUS.md), [evolution log](docs/EVOLUTION.md), and [architecture decisions](docs/decisions/README.md). The status page separates implemented, verified, merged, and released work.
+
 Useful first contributions include a Codex lifecycle adapter, an SSH worker design review, a DeerFlow integration spike, and security feedback on task recovery. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before starting a large change.
 
 - [Open a design proposal](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml)

@@ -178,6 +178,8 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 ## 参与开发
 
+Agent 接续开发先读 [AGENTS.md](AGENTS.md)。[基础规格 SPEC](docs/SPEC.md) 记录需求与验收标准，[当前开发状态](docs/STATUS.md) 记录实现、验证与交付状态，[项目演进](docs/EVOLUTION.md) 保留变化历史，[架构决策 ADR](docs/decisions/README.md) 解释关键取舍。后续开发需按变更范围同步维护这些记录。
+
 欢迎贡献 Codex 生命周期适配器、SSH Worker 设计评审、DeerFlow 接入原型和恢复机制安全评审。开始较大改动前，请先阅读[贡献指南](CONTRIBUTING.md)。
 
 [设计提案](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml) · [接入提案](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml) · [安全反馈](SECURITY.md)

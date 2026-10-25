@@ -1,6 +1,6 @@
 # ADR 0001: Python-owned backend, optional Hermesh interoperability
 
-Date: 2026-10-25. Status: accepted design direction; implementation pending.
+Date: 2026-10-25. Status: accepted design direction; local Python M1 implemented, SSH and the optional Hermesh bridge pending. See [the decision index](README.md) and [current status](../STATUS.md).
 
 ## Context
 

@@ -2,6 +2,10 @@
 
 Thank you for helping build a private assistant that can delegate real work. The local Python worker and Codex adapter are now implemented. See [the setup guide](docs/local-worker.md) for installation and [the roadmap](docs/roadmap.md) for the remaining integrations.
 
+## Agent handoff and specifications
+
+Start with [AGENTS.md](AGENTS.md) and [current status](docs/STATUS.md). [SPEC.md](docs/SPEC.md) defines stable requirements and acceptance criteria; [EVOLUTION.md](docs/EVOLUTION.md) records meaningful changes; [ADRs](docs/decisions/README.md) explain architectural decisions. Use the [feature spec template](docs/specs/TEMPLATE.md) for substantial new contracts. Keep these records aligned with actual implementation and evidence; routine prose fixes do not require a new spec or history entry.
+
 ## Useful first contributions
 
 1. Review the worker lifecycle and restart/reconnect semantics.
