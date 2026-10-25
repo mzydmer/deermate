@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import json
 from pathlib import Path
 
@@ -13,6 +14,7 @@ def main():
     parser.add_argument("--port", type=int, default=18777)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("serve", help="run one local-only worker; creates a private API token")
+    sub.add_parser("mcp", help="serve stdio MCP tools backed by an already running local worker")
     sub.add_parser("capabilities")
     sub.add_parser("list")
     create = sub.add_parser("submit")
@@ -35,6 +37,15 @@ def main():
     args = parser.parse_args()
     try:
         settings = load_settings(args.config)
+        if args.command == "mcp":
+            try:
+                from .mcp_server import run_server
+            except ImportError as error:
+                raise ValueError(
+                    "MCP support requires installation with the 'mcp' extra."
+                ) from error
+            asyncio.run(run_server(settings.state_dir / "api.token", args.port))
+            return
         if args.command == "serve":
             import uvicorn
 

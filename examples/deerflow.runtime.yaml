@@ -1,0 +1,8 @@
+# Merge these settings into DeerFlow's existing config.yaml; this is a fragment.
+database:
+  backend: sqlite
+mcp_tasks:
+  enabled: true
+  poll_interval_seconds: 5
+  lease_seconds: 120
+  max_concurrent_polls: 8

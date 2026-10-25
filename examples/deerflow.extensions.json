@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "deermate": {
+      "enabled": true,
+      "type": "stdio",
+      "command": "/absolute/path/to/deermate/.venv/bin/python",
+      "args": [
+        "-m", "deermate.cli",
+        "--config", "/absolute/path/to/deermate/deermate.toml",
+        "--port", "18777",
+        "mcp"
+      ],
+      "cwd": "/absolute/path/to/deermate",
+      "session_init_timeout": 15,
+      "tool_call_timeout": 20,
+      "task_toolsets": [
+        {
+          "name": "coding",
+          "submit_tool": "submit_task",
+          "status_tool": "get_task_status",
+          "cancel_tool": "cancel_task"
+        }
+      ]
+    }
+  }
+}
