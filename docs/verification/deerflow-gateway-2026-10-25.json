@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "started_at": "2026-10-25T14:14:09.033085+00:00",
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "upstream_lock_sha256": "021af3f934529c5492f9cc157b59ab021577e274c57cb7f174dd18d624fc8993",
+  "verifier_sha256": "a48bb51e0b8c72aa7e4769afd9220f2203b9ed4d870c3f2790c5e07f002fc8ab",
+  "deermate_source_sha256": "3f622938354c363ca93cb06e7ffe8b1637cb315727f4b915725f15e32cbd2feb",
+  "native_fixture_sha256": "de834b8c5da326f107dadbd059bc882316782e6a72800048f1c32ecfa576e6f9",
+  "parent_python": "3.12.14",
+  "gateway_runtime": {
+    "python": "3.12.14",
+    "packages": {
+      "deerflow-harness": "2.1.0",
+      "deerflow-extension-api": "0.2.9",
+      "fastapi": "0.136.1",
+      "sqlalchemy": "2.0.49",
+      "mcp": "1.30.0",
+      "langchain-mcp-adapters": "0.2.2",
+      "cryptography": "50.0.0"
+    }
+  },
+  "platform": "Darwin",
+  "native_runtime": "offline Codex protocol fixture",
+  "configured_cloud_models": 0,
+  "gateway": "actual upstream application, lifespan, SQL service, MCP caller and HTTP routes",
+  "submit_entry": "verifier-only protected shim invokes actual discovered tool wrapper",
+  "limits": [
+    "Orderly process restart; no hard-crash or remote network test.",
+    "No configured chat model; notification-model runs are not expected to complete.",
+    "No browser/UI, real-model task or SSH verification."
+  ],
+  "checks": [
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "tracking_id": "mcp-task-c6dbc857017040ccb3d0f0daa1876d6f",
+      "remote_task_id": "3127a4aa11404302b75ba40ca9d4e2d6"
+    },
+    {
+      "name": "worker_survives_gateway_stop",
+      "passed": true
+    },
+    {
+      "name": "gateway_process_restart_preserves_identity",
+      "passed": true,
+      "tracking_id": "mcp-task-c6dbc857017040ccb3d0f0daa1876d6f",
+      "remote_task_id": "3127a4aa11404302b75ba40ca9d4e2d6",
+      "native_session_id": "58fd0c7a866547109ade1c83bdb744d4"
+    },
+    {
+      "name": "http_cancel_confirmed_in_sql_and_worker",
+      "passed": true
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "tracking_id": "mcp-task-149dbb45606f4d7b9d5a24b7157cc26c",
+      "remote_task_id": "cda0cee016164273a41a8ad672cb4450"
+    },
+    {
+      "name": "background_validation_completed",
+      "passed": true,
+      "tracking_id": "mcp-task-149dbb45606f4d7b9d5a24b7157cc26c",
+      "remote_task_id": "cda0cee016164273a41a8ad672cb4450",
+      "validation_exit_code": 0
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "tracking_id": "mcp-task-e68375e62f864b63ba19e38ef27103cd",
+      "remote_task_id": "f788a03694e745d2b96226f130fed418"
+    },
+    {
+      "name": "background_validation_failed",
+      "passed": true,
+      "tracking_id": "mcp-task-e68375e62f864b63ba19e38ef27103cd",
+      "remote_task_id": "f788a03694e745d2b96226f130fed418",
+      "validation_exit_code": 1
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "tracking_id": "mcp-task-5c86aae7518f4052bf731338fdad2e0c",
+      "remote_task_id": "801f44c9102347fb87b3f028f9c59b9e"
+    },
+    {
+      "name": "outage_is_retryable_not_terminal",
+      "passed": true
+    },
+    {
+      "name": "reconnect_requires_explicit_recovery",
+      "passed": true
+    },
+    {
+      "name": "no_replayed_sessions_or_turns",
+      "passed": true
+    },
+    {
+      "name": "source_checkout_unchanged",
+      "passed": true
+    },
+    {
+      "name": "pinned_upstream_unchanged",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "finished_at": "2026-10-25T14:14:49.971350+00:00"
+}

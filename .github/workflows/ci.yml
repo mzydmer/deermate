@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev]'
-      - run: ruff check src tests scripts/live_smoke.py
+      - run: ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py
       - run: python -m pytest -q
       - run: python -m build --wheel
 
@@ -48,3 +48,30 @@ jobs:
       - run: python -m pytest -q tests/test_deerflow_compat.py
         env:
           DEERMATE_DEERFLOW_CHECKOUT: ${{ github.workspace }}/upstream/deer-flow
+
+  deerflow-gateway:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]' uv
+      - uses: actions/checkout@v4
+        with:
+          repository: bytedance/deer-flow
+          ref: a1b89d0432de4e45adc59f512cb25bb386ea1e51
+          path: upstream/deer-flow
+          sparse-checkout: backend
+      - run: uv sync --project upstream/deer-flow/backend --frozen --no-default-groups --python 3.12
+      - run: >-
+          python scripts/verify_deerflow_gateway.py
+          --checkout upstream/deer-flow
+          --gateway-python upstream/deer-flow/backend/.venv/bin/python
+          --receipt .deermate/verification/gateway-ci.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deerflow-gateway-receipt
+          path: .deermate/verification/gateway-ci.json
+          include-hidden-files: true
