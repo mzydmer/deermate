@@ -18,6 +18,12 @@ def main():
         path.write_bytes((Path("/stage/credentials") / name).read_bytes())
         path.chmod(0o600)
         os.chown(path, 1000, 1000)
+    # Even the upstream read API takes a sibling file lock. Seed a writable,
+    # owner-only copy in the managed home volume; staged configuration stays RO.
+    extensions = Path("/home/extensions_config.json")
+    extensions.write_bytes(Path("/stage/extensions_config.json").read_bytes())
+    extensions.chmod(0o600)
+    os.chown(extensions, 1000, 1000)
 
 
 if __name__ == "__main__":

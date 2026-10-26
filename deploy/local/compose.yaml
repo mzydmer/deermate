@@ -39,7 +39,7 @@ services:
       DEER_FLOW_HOME: /app/backend/.deer-flow
       DEER_FLOW_CONFIG_PATH: /etc/deermate/config.yaml
       DEER_FLOW_ENV_FILE: /etc/deermate/empty.env
-      DEER_FLOW_EXTENSIONS_CONFIG_PATH: /etc/deermate/extensions_config.json
+      DEER_FLOW_EXTENSIONS_CONFIG_PATH: /app/backend/.deer-flow/extensions_config.json
       DEER_FLOW_CHANNELS_GATEWAY_URL: http://gateway:8001
       DEER_FLOW_CHANNELS_LANGGRAPH_URL: http://gateway:8001/api
       UV_CACHE_DIR: /tmp/uv

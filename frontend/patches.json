@@ -1,0 +1,61 @@
+[
+  {
+    "path": "src/app/layout.tsx",
+    "sha256": "779e5a26430608fb7811996dec11a2bbb5e5f02346321c845a1047d67967f04e",
+    "replace": [
+      [
+        "import \"@/styles/globals.css\";",
+        "import \"@/styles/globals.css\";\nimport \"@/styles/deermate.css\";"
+      ],
+      [
+        "title: \"DeerFlow\",",
+        "title: \"DeerMate \u00b7 Your personal agent secretary\","
+      ],
+      [
+        "description: \"A LangChain-based framework for building super agents.\",",
+        "description: \"Your private secretary, specialist agents, and your own machines.\","
+      ]
+    ]
+  },
+  {
+    "path": "src/app/(auth)/layout.tsx",
+    "sha256": "1b826dcbc6fb06cc6e738f3755cfd5800343c3baa19d67510d7eb6f2374232d5",
+    "replace": [
+      [
+        "import { redirect }",
+        "import { AuthFrame } from \"@/components/deermate/auth-frame\";\nimport { redirect }"
+      ],
+      [
+        "return <I18nProvider initialLocale={locale}>{content}</I18nProvider>;",
+        "return <I18nProvider initialLocale={locale}><AuthFrame>{content}</AuthFrame></I18nProvider>;"
+      ]
+    ]
+  },
+  {
+    "path": "src/app/(auth)/login/page.tsx",
+    "sha256": "c741f40e81254a6836217d76fdf2cb229380defd543776758a5e2bff56c6ab88",
+    "replace": [[">DeerFlow</h1>", ">DeerMate</h1>"]]
+  },
+  {
+    "path": "src/app/workspace/workspace-content.tsx",
+    "sha256": "72fb03ddfafcb3eda734d315a0ce02e46de3383b3e81772b77b9b352ad9dee53",
+    "replace": [
+      [
+        "<SidebarProvider className=\"h-screen\"",
+        "<SidebarProvider className=\"dm-workspace h-screen\""
+      ]
+    ]
+  },
+  {
+    "path": "src/components/workspace/workspace-nav-chat-list.tsx",
+    "sha256": "ecc462a434e4a5ae54f11ad8016e55c9a9c2db311ff173e5a84608137ae6de8d",
+    "replace": [
+      ["  BotIcon,", "  BotIcon,\n  LayoutDashboard,"],
+      ["const { t } = useI18n();", "const { t, locale } = useI18n();"],
+      [
+        "<SidebarMenu>",
+        "<SidebarMenu>\n        <SidebarMenuItem>\n          <SidebarMenuButton isActive={pathname === \"/workspace\"} asChild>\n            <Link href=\"/workspace\"><LayoutDashboard /><span>{locale === \"zh-CN\" ? \"\u5de5\u4f5c\u53f0\" : \"Your desk\"}</span></Link>\n          </SidebarMenuButton>\n        </SidebarMenuItem>"
+      ]
+    ]
+  }
+]

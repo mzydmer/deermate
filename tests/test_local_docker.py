@@ -30,6 +30,9 @@ def test_local_stack_keeps_host_authority_narrow():
             assert service["cap_drop"] == ["ALL"]
             assert not service.get("cap_add")
     assert services["init"]["network_mode"] == "none"
+    assert services["gateway"]["environment"]["DEER_FLOW_EXTENSIONS_CONFIG_PATH"] == (
+        "/app/backend/.deer-flow/extensions_config.json"
+    )
     assert services["frontend"]["entrypoint"][0] == "node"
     assert services["frontend"]["env_file"] != services["gateway"]["env_file"]
     assert all(

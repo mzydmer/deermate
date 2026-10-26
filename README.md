@@ -46,7 +46,7 @@ Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/local-docker-runtime  # until the implementation branch is merged
+git checkout feat/deermate-workspace  # until the implementation branch is merged
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -74,6 +74,8 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 
 **Run the full local Docker profile:** [startup, login and real Codex verification](docs/local-docker.md) · [retained live receipt](docs/verification/local-docker-2026-10-26.json). On the tested Mac it serves `http://localhost:2026`; a generated private owner password and named volumes preserve account/task state. No cloud key is needed. Secretary chat remains unconfigured.
 
+**DeerMate workspace:** the default address opens the protected secretary home, with real recent tasks, a validation-evidence drawer, account-scoped draft handoff, accessible motion and an original Lottie mark. See [frontend source and checks](frontend/README.md). Specialist routing and secretary-model acceptance remain separate.
+
 **Deploy the control plane to Alibaba Cloud ACK:** [quick deployment guide](docs/ack-deployment.md). Python scripts build ACR images and install the pinned DeerFlow Helm chart with private access, persistent cloud-disk state and optional enrolled home Worker. Actual cluster installation and cloud-to-home acceptance remain operator-specific.
 
 | Capability | Intended experience | Status |
@@ -84,7 +86,7 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 | Durable sessions | Local start/status/events/interrupt/resume; idempotent submission and explicit restart recovery | Local implementation |
 | Repository maintenance | Triage issues, prepare fixes, collect CI evidence, and request independent review | Planned |
 | Research watchlists | Track changes, keep citations, compare snapshots, and surface meaningful updates | Planned |
-| One work dashboard | See the assignee, device, stage, recent activity, artifacts, and decisions | Concept only |
+| One work dashboard | Secretary home, bounded real task list, status filters and validation evidence | First read-only view implemented; device liveness and task controls pending |
 | Browser and desktop tools | Use a browser or a dedicated desktop session when the job needs an interface | Optional; planned |
 
 “Private” means you choose where DeerMate stores and runs its own services. Sending a prompt to a cloud model still discloses that prompt to the model provider. Open-source software also does not make model usage or hosting free.
@@ -171,7 +173,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M2.5 local Docker/login/real Codex acceptance**, alongside the M2.4 ACK deployment package.
+We track delivered work separately from planned functionality. Current stage: **M4.1 first DeerMate workspace**, on the M2.5 locally verified Docker/Worker stack.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -188,7 +190,7 @@ Historical M2.1 verification had 51 passing normal tests (two opt-in upstream ch
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **91 passed, 6 opt-in cases skipped**; actual Chart/local deployment policy checks separately pass 19 cases. The new Docker run passes 14 real Gateway/SSH/Codex checks plus four browser checks. Earlier fixture runs of both actual Gateway modes (local: 14 checks; SSH: 21), pinned drivers and the [22-case SSH receipt](docs/verification/ssh-transport-2026-10-25.json) remain historical evidence. Actual devices/OpenSSH/NAT and secretary-model conversation need separate acceptance; see [STATUS](docs/STATUS.md).
+The current normal suite has **94 passed, 6 opt-in cases skipped**; actual Chart/local/overlay policy checks separately pass 22 cases. The new Docker run passes 14 real Gateway/SSH/Codex checks plus four browser checks. Earlier fixture runs of both actual Gateway modes (local: 14 checks; SSH: 21), pinned drivers and the [22-case SSH receipt](docs/verification/ssh-transport-2026-10-25.json) remain historical evidence. Actual devices/OpenSSH/NAT and secretary-model conversation need separate acceptance; see [STATUS](docs/STATUS.md).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

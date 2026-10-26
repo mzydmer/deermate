@@ -36,7 +36,7 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/local-docker-runtime  # 实现分支合并前使用
+git checkout feat/deermate-workspace  # 实现分支合并前使用
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -64,6 +64,8 @@ deermate diff TASK_ID
 
 **本地 Docker 启动：** [安装、登录与真实 Codex 验收](docs/local-docker.md) · [实际收据](docs/verification/local-docker-2026-10-26.json)。实测 Mac 上的入口为 `http://localhost:2026`，随机 owner 密码仅在私密本地文件中保存，命名卷保留账号和任务。不需要云端 AK/SK，秘书聊天模型暂不配置。
 
+**DeerMate 工作台：** 默认地址直接进入受保护的私人秘书首页，可查看近期真实任务、筛选状态、检查验证证据，并把当前会话的目标草稿转入原对话编辑器。加入统一动效和原创 Lottie 小鹿，支持键盘、手机宽度、深色与减少动态效果。[源码与验证方式](frontend/README.md)。专职路由和秘书模型验收仍需后续工作。
+
 **部署到阿里云 ACK：** [快速部署指南](docs/ack-deployment.md)。Python 脚本构建 ACR 镜像并安装固定版本 DeerFlow Helm Chart，默认私人访问、云盘持久化，可再启用家中 Worker 注册。实际集群安装和云端到家庭链路仍需在用户环境验收。
 
 | 能力 | 目标体验 | 进展 |
@@ -74,7 +76,7 @@ deermate diff TASK_ID
 | 持久会话 | 本地提交、查询、事件、中断、继续；幂等提交和显式恢复 | 已有本地实现 |
 | 开源项目维护 | issue 分流、修复、测试、独立审核 | 规划中 |
 | 竞品与资料跟踪 | 对比历史快照，保留引用，有实质变化再报告 | 规划中 |
-| 一个工作仪表盘 | 查看执行者、机器、阶段、事件、产物和决策 | 概念设计 |
+| 一个工作仪表盘 | 秘书首页、近期真实任务、状态筛选和验证证据 | 首个只读工作台已实现；设备在线探测和任务控制待完成 |
 | 浏览器和桌面操作 | 必要时使用专用浏览器或独立桌面会话 | 可选，规划中 |
 
 “私人”指可以选择 DeerMate 自有服务和数据的部署位置。调用云模型时，发送的内容仍会被模型提供方处理。开源免费也不等于模型、订阅和服务器没有费用。
@@ -158,7 +160,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 ## 开发进展
 
-当前阶段：**M2.5，本地 Docker/登录/真实 Codex 验收**；同时已有 M2.4 ACK 部署包。已交付的内容与计划中的运行能力分别列出。
+当前阶段：**M4.1，首个 DeerMate 工作台**；运行于已验证的 M2.5 Docker/Worker 基础上。已交付的内容与计划中的运行能力分别列出。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
@@ -175,7 +177,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
-当前常规测试为 **91 项通过、6 项 opt-in 用例跳过**；实际 Chart/本地部署策略另行通过 19 项。本次 Docker 运行保留 14 项真实 Gateway/SSH/Codex 检查及四项浏览器检查。此前本地/SSH Gateway 的 14/21 项 fixture、上游驱动及 [22 项 SSH 收据](docs/verification/ssh-transport-2026-10-25.json)保留为历史证据；真实设备/OpenSSH/NAT 和秘书模型对话仍待验收，见 [STATUS](docs/STATUS.md)。
+当前常规测试为 **94 项通过、6 项 opt-in 用例跳过**；实际 Chart/本地/overlay 策略另行通过 22 项。本次 Docker 运行保留 14 项真实 Gateway/SSH/Codex 检查及四项浏览器检查。此前本地/SSH Gateway 的 14/21 项 fixture、上游驱动及 [22 项 SSH 收据](docs/verification/ssh-transport-2026-10-25.json)保留为历史证据；真实设备/OpenSSH/NAT 和秘书模型对话仍待验收，见 [STATUS](docs/STATUS.md)。
 
 首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
 

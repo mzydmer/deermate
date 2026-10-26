@@ -568,7 +568,8 @@ def main():
     init.add_argument(
         "--model", help="explicit host Codex model; otherwise use native configuration"
     )
-    sub.add_parser("build")
+    image = sub.add_parser("build")
+    image.add_argument("--frontend-only", action="store_true", help="rebuild only the UI image")
     sub.add_parser("up")
     test = sub.add_parser("verify")
     test.add_argument(
@@ -592,7 +593,9 @@ def main():
         else:
             profile = json.loads((STATE / "profile.json").read_text())
         if args.action == "build":
-            ack.build(ack.load(STATE / "images.yaml"), STATE / "images.yaml", False)
+            ack.build(
+                ack.load(STATE / "images.yaml"), STATE / "images.yaml", False, args.frontend_only
+            )
         elif args.action == "up":
             token, instance = host_worker(profile)
             ssh_worker(profile, token, instance)

@@ -21,7 +21,7 @@
 从此功能分支安装（合并主线后可改用 main）：
 
 ```bash
-git clone --branch feat/local-docker-runtime https://github.com/mzydmer/deermate.git
+git clone --branch feat/deermate-workspace https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -128,7 +128,7 @@ helm --kube-context YOUR_ACK_CONTEXT -n deermate uninstall deermate
 
 当前实际 Chart 与本地部署策略检查合计 19 项通过；常规回归 91 passed、6 skipped。生成 Dockerfile 的下载重试/HTTPS、Gateway 的真实 UID 1000 身份及直接 Node 启动前端已从本地运行反馈同步进 ACK 包，见 [ADR 0005](decisions/0005-ack-control-plane.md)。
 
-历史 [CI 40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155) 在 `ca23f2c` 六个 job 成功，构建四个 linux/amd64 镜像并验证非 root Gateway 就绪、匿名拒绝、MCP/SSH 导入及凭据复制；[原始证据](verification/ack-package-2026-10-25.json)不代表本轮打包修正的 CI。新 CI 还会检查非 root 用户身份和实际前端登录 HTML，结果见 [STATUS](STATUS.md)。
+历史 [CI 40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155) 在 `ca23f2c` 六个 job 成功，构建四个 linux/amd64 镜像并验证非 root Gateway 就绪、匿名拒绝、MCP/SSH 导入及凭据复制；[原始证据](verification/ack-package-2026-10-25.json)不代表本轮打包修正的 CI。后续 [CI 40295603001](https://github.com/mzydmer/deermate/actions/runs/40295603001) 在 `bf02720` 六个 job 全部通过，新增用户身份和前端登录 HTML 探针，[保存证据](verification/ack-package-2026-10-26.json)的 ZIP digest 已核对；这是前端 overlay 之前的历史打包证据。本轮 overlay 的运行/CI 范围见 [STATUS](STATUS.md)。
 
 同源镜像已在 [Mac 本地 Docker](local-docker.md)完成页面、真实浏览器登录及真实 Codex/SSH 任务验收，保留[独立收据](verification/local-docker-2026-10-26.json)。这不代表实际 ACK 安装或云端到家庭链路已通过。ARM 镜像、ACR 推送、ACK 和真实家庭设备仍需在用户环境验收。
 

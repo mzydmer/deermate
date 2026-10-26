@@ -2,7 +2,7 @@
 
 这个配置在 Mac 上运行 DeerFlow Gateway、前端和 nginx，复用 ACK 的四个镜像。本机独立 Python Worker 调用已经登录的 Codex；容器经 MCP 和生成密钥的 SSH 开发服务连接 Worker。入口为 **[http://localhost:2026](http://localhost:2026)**，只绑定 `127.0.0.1`。
 
-当前已验证页面、真实浏览器登录、真实 Codex 修复、独立测试和 Gateway 重启后的结果。按本轮用户选择，秘书聊天模型暂不配置；页面中的自然语言派单、模型通知、专职路由还未验收。界面复用上游 DeerFlow，尚未改成 DeerMate 品牌。
+当前已验证页面、真实浏览器登录、真实 Codex 修复、独立测试和 Gateway 重启后的结果。按本轮用户选择，秘书聊天模型暂不配置；页面中的自然语言派单、模型通知、专职路由还未验收。界面已加入 DeerMate 品牌、秘书首页和只读任务工作台，默认根地址重定向到受保护的 `/workspace`；原对话与认证继续复用 DeerFlow。见 [前端说明](../frontend/README.md)。
 
 ## 在这台 Mac 上使用
 
@@ -28,7 +28,7 @@ python scripts/local_docker.py up
 Docker 安装程序来自 [Docker 官方 Mac 安装页](https://docs.docker.com/desktop/setup/install/mac-install/)。遵循其许可与首次启动流程；本仓库不重新分发 Docker Desktop。本次采用用户目录安装；图形首次设置界面因 Mac 锁屏没有操作，后台 daemon 和实际容器已验证可用。
 
 ```bash
-git clone --branch feat/local-docker-runtime https://github.com/mzydmer/deermate.git
+git clone --branch feat/deermate-workspace https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -60,6 +60,8 @@ python scripts/local_docker.py verify --live
 | 网络 | nginx 唯一宿主映射 `127.0.0.1:2026`；Worker `127.0.0.1:18777`；SSH 开发服务 `127.0.0.1:19822` |
 
 运行服务均非 root、drop ALL capabilities、无 Docker socket。一次性 init 无网络，只有初始化这些命名卷所需的三项文件权限 capability。Compose CLI 在主机读取私密 env；前端只取得自己的会话 secret，没有 Worker token 或本地验收 key。
+
+本地 extensions 配置由 init 从 staging 种子复制到 home 卷的普通私密文件，允许上游只读 API 创建同目录锁文件。每次 `up` 都重新应用宿主生成的种子；MCP 策略的持久修改应编辑 `.deermate/local-docker/config/extensions_config.json`，不要依赖网页中对这个受管理文件的修改。
 
 `local_gateway.py` 仅在本地 profile 中加载；它的提交入口要求真实管理员登录、CSRF 和独立本地验收 key，且固定项目为 `demo`。它调用实际上游 MCP 后台包装器/SQL 服务，只替代模型选工具，不安装到 ACK 镜像。不要把此 profile 改成公网服务。
 

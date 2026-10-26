@@ -6,13 +6,13 @@
 
 | 项目 | 当前事实 |
 | --- | --- |
-| 阶段 | M1–M2.3 已实现；M2.4 ACK 包已有历史 CI；M2.5 本地 Docker、浏览器登录、真实 Codex/SSH 与重启验收通过 |
-| 分支 | `feat/local-docker-runtime`，继承 Worker、桥接、Gateway、SSH、组合演示和 ACK 包 |
-| Worker/MCP/SSH 运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次新增部署工具、镜像打包与验证 |
+| 阶段 | M1–M2.5 已实现并有对应证据；M4.1 首个只读秘书工作台正在完成最终浏览器回归 |
+| 分支 | `feat/deermate-workspace`，继承运行栈和 ACK 包，新增版本化前端 overlay |
+| Worker/MCP/SSH 运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次改动集中在前端 overlay、构建和本地配置种子，不改 Worker/MCP/SSH 核心 |
 | Gateway 验收工具 | [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 新增 `--transport ssh`、`--replay`；收据脚本哈希 `aaa2934058d0…` |
 | ACK 部署 | Python 配置/ACR 构建/Helm 安装脚本已准备；本轮同步修正非 root 用户身份、Node 前端启动与构建网络重试；未连接 ACK/推送 ACR |
 | 本地运行 | 用户目录 Docker Desktop 已启动；Gateway/前端/nginx 三个健康容器，入口 `http://localhost:2026`；独立 host Worker/SSH 运行 |
-| 主线/PR | 上次核对 `main` 为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/local-docker-runtime) |
+| 主线/PR | 上次核对 `main` 为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/deermate-workspace) |
 | 发布 | 源码 alpha `0.1.0a1`；未合并主线、未发布 PyPI 或正式 release |
 | 下一步 | 本轮按用户选择先交付页面/登录/真实 Codex；云端凭据之后再接 ACK。聊天模型、真实家庭账户/设备另行配置验收 |
 
@@ -29,7 +29,19 @@
 
 使用：[本地](local-worker.md)、[DeerFlow](deerflow.md)、[SSH](ssh-worker.md)、[组合演示](demo.md)。设计：[SPEC](SPEC.md)、[M2.3](specs/m2-gateway-ssh-demo.md)、[ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 
-## 本次工作 · M2.5 本地 Docker 与真实 Codex
+## 本次工作 · M4.1 DeerMate 前端与动效
+
+用户要求安装 transitions-dev、transitions-polish、text-to-lottie 并重构前端。三项 skill 已从作者固定版本安装到本机 Codex 目录，版本/许可见 [前端 NOTICE](../frontend/NOTICE.md)。未把 skill 集合入库。[功能规格](specs/m4-workspace-refresh.md)、[ADR 0006](decisions/0006-frontend-overlay.md)、[构建与验证](../frontend/README.md)。
+
+源码位于 `frontend/overlay`，Python 仅在临时 Git archive 构建上下文应用 hash 校验的补丁；固定上游 checkout、认证逻辑与 lock 保持不变。本地和 ACK 共用 overlay，新增 `build --frontend-only`。页面包含品牌登录页、默认私人工作台、真实任务筛选/证据抽屉、原始记录和会话草稿交接，支持深色/手机/减少动态效果。
+
+任务列表限最近 20 个对话、每个最多 20 条，失败/部分结果不冒充完整数据或成功零计数。MCP 已配置不代表在线；Claude/DeepSeek Harness 标明规划中；模型未配置时只准备草稿，不触发模型任务。停止/继续仍通过原对话面板/CLI，设备探测、完整时间线和专职路由未完成。
+
+本地 MCP 只读配置接口此前因只读目录不能创建 sibling lock 而 500；init 改为向 owner-only home 普通文件复制种子，每次 up 重新应用。GET 已实际返回 200，专用凭据/staging 仍只读，未扩展宿主权限。
+
+首轮生产镜像、TypeScript 与 13 项真实浏览器检查通过，使用既有已完成任务，没有模型提交。原创透明 Lottie 已在官方 Skia Skottie player 检查 0/45/89 帧，产品内也已渲染。最后补齐默认入口、易读验证摘要、主题对比度与关闭焦点恢复，最终构建/浏览器收据待完成后追加。常规回归 94 passed、6 skipped（73.59 秒）；实际 Chart/本地/overlay 用例 22 passed（2.00 秒）；Ruff 通过。未用旧 CI 代替新 overlay 证据。
+
+## 历史验证 · M2.5 本地 Docker 与真实 Codex
 
 [使用说明](local-docker.md)、[规格](specs/m2-local-docker.md)、[有限收据](verification/local-docker-2026-10-26.json)、[实际工作区截图](assets/local-workspace-2026-10-26.png)。用户明确选择先完成页面、登录与真实 Codex，聊天模型暂不配置。
 
@@ -38,7 +50,7 @@
 - 14 项实际 Gateway → MCP → SSH → host Worker 检查通过：真实 Codex `0.164.0-alpha.11.1` / `gpt-6.1-sol` 完成一行修复，独立 unittest 通过、diff 返回；重复提交仍为同一 Worker 任务和 attempt 1，SQL 不创建第二个 owner；Gateway 重启保留登录、原 SQL ID 和原生会话结果。
 - 隔离 Linux Chromium 实际填写登录表单，进入 `/workspace/chats/new`，认证接口确认 session，四项浏览器检查通过，无 page errors，已查看截图。它使用私有 Compose 网络和全新浏览器 context，未访问锁屏 Mac 桌面或个人浏览器资料。
 - 已实际执行完整 profile 的 `down`/`up`，重新登录和读取原任务通过，原 Worker 实例/原生会话/attempt 保留；重启后的新 SSH capabilities 查询通过，未增加模型任务。当前三个容器健康，保留运行。
-- 常规 `pytest`：91 passed、6 skipped（49.68 秒）；实际固定 Chart/本地策略 19 passed（2.23 秒）；Ruff 与 wheel 通过。[`bf02720`](https://github.com/mzydmer/deermate/commit/bf027200b68af6c6ec89505ad8621e6fadd41088) 已推送；[CI 40295603001](https://github.com/mzydmer/deermate/actions/runs/40295603001) 已核对两平台常规、原生驱动、Gateway local/SSH 五个 job success，ACK 镜像构建仍进行中，尚不宣称本轮完整 CI 或新增镜像探针通过。
+- 常规 `pytest`：91 passed、6 skipped（49.68 秒）；实际固定 Chart/本地策略 19 passed（2.23 秒）；Ruff 与 wheel 通过。[`bf02720`](https://github.com/mzydmer/deermate/commit/bf027200b68af6c6ec89505ad8621e6fadd41088) 已推送；[CI 40295603001](https://github.com/mzydmer/deermate/actions/runs/40295603001) 现已核对六个 job success；[ACK 镜像收据](verification/ack-package-2026-10-26.json)来自 ZIP digest 已核对的 artifact `12638651102`，六项镜像探针通过。该证据绑定 `bf02720`，在本轮前端 overlay 之前。
 
 本地 owner 密码仅在 `.deermate/local-docker/admin.json`（0600）；原生账号在主机上使用，不复制 `.codex` 目录进容器。模型列表为空，本地专用 owner/key 提交入口只代替模型选工具，不进入 ACK 镜像。生成密钥 SSH 开发服务不代表实际系统 OpenSSH/账户、双机/NAT/云端。完整聊天、通知和专职路由未宣称完成。
 

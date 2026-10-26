@@ -113,3 +113,13 @@
 - **追加本地停启验收：** 已实际执行 profile 的 `down`/`up`，重新登录、原 SQL 结果、Worker 实例/原生会话/attempt 保留，新 SSH capabilities 查询通过；未新增模型任务。三个容器恢复健康并保持运行，结果追加到同一有限收据。
 
 - **追加远端交付：** `bf02720` 已推到 `feat/local-docker-runtime`；[CI 40295603001](https://github.com/mzydmer/deermate/actions/runs/40295603001) 的两平台常规、驱动和 Gateway local/SSH 共五个 job 已核对 success。ACK job 仍构建镜像，尚未确认本轮完整 CI 或取得新镜像探针 artifact；本地真实功能验收已完成。此后只补文档/收据，不修改运行源码。
+
+## E-012 · 2026-10-26 · DeerMate 工作台与统一动效
+
+- **目标：** 按用户明确请求安装 transitions-dev、transitions-polish、text-to-lottie，并在既有本地运行栈上重构前端。M4.1 先做只读工作台，M3 路由/专职 Agent 仍待实现。
+- **实现：** 作者固定版本 skill 安装在用户目录；DeerMate 品牌登录/默认首页、真实近期任务筛选和证据、账户作用域 session 草稿交接。使用 hash 校验的源码 overlay，复用原认证、API 和 composer，本地/ACK 共用，无上游 checkout/lock 修改。见 [ADR 0006](decisions/0006-frontend-overlay.md)。
+- **动效：** transitions-dev 原 sliding-tabs snippet、transitions-polish 时序/不对称抽屉/短 stagger；原创透明 Lottie 使用官方 Skia player 检查 0/45/89 帧，再在产品自托管 MIT light player 渲染。保留静态 fallback、减少动态效果与键盘交互；不分发 skill 集合。
+- **运行反馈：** 本地 MCP 配置 GET 需要同目录锁文件；init 改为 home 卷内 owner-only 普通配置种子，每次 up 应用；staging/凭据仍只读。实际 GET 恢复 200，没有修改 Worker 核心或宿主授权。
+- **阶段验证：** 94 passed/6 skipped，实际 Chart/本地/overlay 22 passed，Ruff 通过。首轮生产构建/TypeScript、13 项真实浏览器检查和 Skia 帧检查通过；最终入口/证据摘要/主题和焦点修正的浏览器验收随后追加，不提前宣称完成。
+- **边界：** 只读任务范围限最近 20 对话、每对话 20 项；配置不代表设备在线，未配置模型不派单；M3 专职路由、真实云端/设备/NAT 和完整任务控制未新增验收。
+- **补记此前 CI：** `bf02720` 的 CI 40295603001 六个 job 均 success；[历史 ACK 收据](verification/ack-package-2026-10-26.json)绑定 artifact `12638651102` 且 ZIP digest 已核对，不覆盖此后前端 overlay。

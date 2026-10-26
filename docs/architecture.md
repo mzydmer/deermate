@@ -73,6 +73,6 @@ Desktop automation runs in a dedicated user/VM session, with exclusive control o
 - Add guided enrollment/NAT and incident recovery on top of the existing explicit key/expiry/revocation policy.
 - Verify how DeerFlow background tasks and native agent resumption interact across restarts.
 - Define budget enforcement from incomplete or delayed provider usage reporting.
-- Choose a task-card integration approach without a deep DeerFlow fork.
+- Extend the first bounded task desk toward live devices and controls; [ADR 0006](decisions/0006-frontend-overlay.md) defines the implemented source-overlay integration without a deep DeerFlow fork.
 
 See [integration contracts](integrations.md), [security](security.md), and [roadmap](roadmap.md).

@@ -63,6 +63,10 @@ Exit criterion: a test issue produces an isolated patch, test evidence, and inde
 
 ## M4 — Build the daily workspace
 
+User-requested M4.1 UI work starts on the M2 runtime while specialist routing remains pending. See [workspace source](../frontend/README.md) and [M4.1 spec](specs/m4-workspace-refresh.md).
+
+- [x] Add a DeerMate secretary home, bounded read-only real task list, evidence drawer, draft handoff and accessible motion on the reused frontend.
+
 - [ ] Add task cards to the DeerFlow experience, with timelines, artifacts, and stop/resume controls.
 - [ ] Add source-preserving research watchlists and change detection.
 - [ ] Add read-only mail integration with a separate permission scope.

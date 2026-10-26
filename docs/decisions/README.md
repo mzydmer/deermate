@@ -9,6 +9,7 @@ Record significant choices and their consequences here. Current implementation a
 | [0003](0003-independent-mcp-bridge.md) | Accepted | Independent Worker behind a local Python MCP bridge | M2.1 implemented; actual Gateway/SQLite fixture restart verified |
 | [0004](0004-ssh-loopback-transport.md) | Accepted | Enrolled forwarding, bounded SSH connections and instance-bound remote handles | M2.2 implemented; generated-key protocol/driver evidence, actual devices pending |
 | [0005](0005-ack-control-plane.md) | Accepted | Single-instance ACK control plane using the pinned upstream chart and Python post-renderer | Deployment package; actual ACK installation remains operator-specific |
+| [0006](0006-frontend-overlay.md) | Accepted | Hash-checked source overlay, bounded task desk and accessible motion | First DeerMate workspace; secretary routing/device liveness remain separate |
 
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 

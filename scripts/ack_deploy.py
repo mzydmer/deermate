@@ -614,7 +614,12 @@ RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' \
     return generated + "\n" + layer
 
 
-def build(settings, config_path, push):
+def build(settings, config_path, push, frontend_only=False):
+    if __package__:
+        from .frontend_overlay import apply as apply_frontend
+    else:
+        from frontend_overlay import apply as apply_frontend
+
     checkout = prepare(config_path.parent)
     with tempfile.TemporaryDirectory(prefix="ack-build-", dir=config_path.parent) as temp:
         context = Path(temp)
@@ -622,15 +627,17 @@ def build(settings, config_path, push):
         archive = subprocess.check_output(["git", "-C", str(checkout), "archive", PIN])
         with tarfile.open(fileobj=io.BytesIO(archive)) as source:
             source.extractall(context, filter="data")
-        wheel_dir = context / "deermate-wheel"
-        command([sys.executable, "-m", "build", "--wheel", "--outdir", wheel_dir, ROOT])
+        apply_frontend(context / "frontend")
         gateway_file = context / "Dockerfile.deermate"
-        gateway_file.write_text(
-            gateway_dockerfile(
-                (context / "backend/Dockerfile").read_text(),
-                (ROOT / "deploy/ack/gateway-layer.dockerfile").read_text(),
+        if not frontend_only:
+            wheel_dir = context / "deermate-wheel"
+            command([sys.executable, "-m", "build", "--wheel", "--outdir", wheel_dir, ROOT])
+            gateway_file.write_text(
+                gateway_dockerfile(
+                    (context / "backend/Dockerfile").read_text(),
+                    (ROOT / "deploy/ack/gateway-layer.dockerfile").read_text(),
+                )
             )
-        )
         with (context / ".dockerignore").open("a") as ignore:
             ignore.write("\n!deermate-wheel/\n!deermate-wheel/*.whl\n")
         output = "--push" if push else "--load"
@@ -638,6 +645,8 @@ def build(settings, config_path, push):
             ("gateway", gateway_file, None),
             ("frontend", context / "frontend/Dockerfile", "prod"),
         ]:
+            if frontend_only and name != "frontend":
+                continue
             argv = [
                 "docker",
                 "buildx",
@@ -654,7 +663,10 @@ def build(settings, config_path, push):
                 argv.extend(["--target", target])
             command([*argv, context])
         # Mirror the two helper images too, so ACK need not pull Docker Hub.
-        for name, image in [("nginx", "nginx:1.28-alpine"), ("tools", "busybox:1.36")]:
+        helpers = (
+            [] if frontend_only else [("nginx", "nginx:1.28-alpine"), ("tools", "busybox:1.36")]
+        )
+        for name, image in helpers:
             (context / f"Dockerfile.{name}").write_text(f"FROM {image}\n")
             command(
                 [
@@ -701,6 +713,7 @@ def main():
     )
     sub.add_parser("prepare", help="fetch the pinned unchanged upstream checkout")
     image = sub.add_parser("build", help="build Gateway/UI/helper images; no cluster calls")
+    image.add_argument("--frontend-only", action="store_true", help="rebuild only the UI image")
     image.add_argument("--push", action="store_true", help="push to configured registry")
     sub.add_parser("render", help="print review YAML with all Secret data redacted")
     sub.add_parser("post-render", help=argparse.SUPPRESS)
@@ -724,7 +737,7 @@ def main():
         if args.action == "prepare":
             print(prepare(path.parent))
         elif args.action == "build":
-            build(settings, path, args.push)
+            build(settings, path, args.push, args.frontend_only)
         elif args.action == "post-render":
             documents = post_render(
                 yaml.safe_load_all(sys.stdin),
