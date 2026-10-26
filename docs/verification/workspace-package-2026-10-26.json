@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source_commit": "fa452e32a02859bd61ed9dad3e0a784c0a6950dc",
+  "ci_run_id": 40303558560,
+  "ci_url": "https://github.com/mzydmer/deermate/actions/runs/40303558560",
+  "artifact_id": 12641727909,
+  "artifact_sha256": "5458ab1e51cd990d8ab6c8ec37e32041711a70f52b8c314880a2b7f9f19930f9",
+  "image_probe": {
+    "passed": true,
+    "image_id": "sha256:07685d27e55dabea413c2a61f14e93c11763d64498441b0c559c93d893dc8542",
+    "packages": {
+      "deermate": "0.1.0a1",
+      "mcp": "1.30.0",
+      "asyncssh": "2.24.1"
+    },
+    "uid": 1000,
+    "checks": [
+      "gateway_ready",
+      "unauthenticated_threads_rejected",
+      "mcp_ssh_imported",
+      "non_root_credential_copy",
+      "non_root_local_username_resolved",
+      "non_root_production_frontend_html"
+    ],
+    "limits": "Image only; no ACK/model/frontend login/home SSH test."
+  },
+  "actual_ack_installation": false,
+  "acr_push_verified": false,
+  "limits": [
+    "Standard Linux amd64 build of all four images from fa452e3 including the DeerMate source overlay.",
+    "Probe covers non-root production login HTML; actual owner/workspace interactions are the separate local UI receipt.",
+    "No user ACK cluster or model execution."
+  ]
+}

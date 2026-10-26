@@ -123,3 +123,6 @@
 - **阶段验证：** 94 passed/6 skipped，实际 Chart/本地/overlay 22 passed，Ruff 通过。首轮生产构建/TypeScript、13 项真实浏览器检查和 Skia 帧检查通过；最终入口/证据摘要/主题和焦点修正的浏览器验收随后追加，不提前宣称完成。
 - **边界：** 只读任务范围限最近 20 对话、每对话 20 项；配置不代表设备在线，未配置模型不派单；M3 专职路由、真实云端/设备/NAT 和完整任务控制未新增验收。
 - **补记此前 CI：** `bf02720` 的 CI 40295603001 六个 job 均 success；[历史 ACK 收据](verification/ack-package-2026-10-26.json)绑定 artifact `12638651102` 且 ZIP digest 已核对，不覆盖此后前端 overlay。
+
+- **追加最终交付：** `fa452e3` 已推送；本地最终生产/TypeScript 编译、16 项浏览器检查通过，未新增模型任务，已有 Worker 会话/attempt 保留。已查看工作台、证据、深色/手机截图；Skia 0/45/89 及实际播放推进通过。[有限收据](verification/frontend-workspace-2026-10-26.json)保留源码/镜像/依赖身份和检查结果，不含凭据。
+- **构建范围：** 本地 npm 下载变慢后复用经 package/lock 摘要核对的同 pin 依赖镜像，重新编译最终源码。[CI 40303558560](https://github.com/mzydmer/deermate/actions/runs/40303558560) 独立执行当前源码的标准四镜像构建，六个 job success，[probe artifact](verification/workspace-package-2026-10-26.json) `12641727909` 已核对 ZIP SHA256。此后只补文档/收据；保持本地应用运行，移除临时浏览器/类型检查容器。

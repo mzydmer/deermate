@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1–M2.3 implemented; M2.4 ACK packaging verified and M2.5 local Docker/login/real Codex verified; actual cloud/devices/NAT remain pending. Updated: 2026-10-26. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1–M2.3 implemented; M2.4 ACK packaging verified and M2.5 local Docker/login/real Codex verified; M4.1 first read-only workspace verified; actual cloud/devices/NAT remain pending. Updated: 2026-10-26. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 

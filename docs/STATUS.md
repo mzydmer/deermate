@@ -6,7 +6,7 @@
 
 | 项目 | 当前事实 |
 | --- | --- |
-| 阶段 | M1–M2.5 已实现并有对应证据；M4.1 首个只读秘书工作台正在完成最终浏览器回归 |
+| 阶段 | M1–M2.5 已实现并有对应证据；M4.1 首个只读秘书工作台已通过最终浏览器与生产构建验收 |
 | 分支 | `feat/deermate-workspace`，继承运行栈和 ACK 包，新增版本化前端 overlay |
 | Worker/MCP/SSH 运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次改动集中在前端 overlay、构建和本地配置种子，不改 Worker/MCP/SSH 核心 |
 | Gateway 验收工具 | [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 新增 `--transport ssh`、`--replay`；收据脚本哈希 `aaa2934058d0…` |
@@ -39,7 +39,11 @@
 
 本地 MCP 只读配置接口此前因只读目录不能创建 sibling lock 而 500；init 改为向 owner-only home 普通文件复制种子，每次 up 重新应用。GET 已实际返回 200，专用凭据/staging 仍只读，未扩展宿主权限。
 
-首轮生产镜像、TypeScript 与 13 项真实浏览器检查通过，使用既有已完成任务，没有模型提交。原创透明 Lottie 已在官方 Skia Skottie player 检查 0/45/89 帧，产品内也已渲染。最后补齐默认入口、易读验证摘要、主题对比度与关闭焦点恢复，最终构建/浏览器收据待完成后追加。常规回归 94 passed、6 skipped（73.59 秒）；实际 Chart/本地/overlay 用例 22 passed（2.00 秒）；Ruff 通过。未用旧 CI 代替新 overlay 证据。
+最终 [UI 收据](verification/frontend-workspace-2026-10-26.json)保存 16 项真实浏览器检查：实际 owner 登录、默认入口、配置读取、真实任务与独立验证证据、状态键盘操作、草稿交接、关闭焦点恢复、深色/手机/减少动态效果和隔离故障注入，page errors 为零；使用既有任务，未提交模型工作。已查看 [工作台](assets/deermate-workspace-2026-10-26.png)、[证据抽屉](assets/deermate-evidence-2026-10-26.png)、[深色](assets/deermate-dark-2026-10-26.png)、[手机](assets/deermate-mobile-2026-10-26.png)截图。原创透明 Lottie 在官方 Skia player 检查 0/45/89 帧及播放推进，产品自托管 renderer 也通过。
+
+最终本地生产源码/TypeScript 编译通过。因 npm 下载变慢，核对已构建镜像的 package/lock 与 pin 完全一致后复用依赖，重新编译全部当前源码；来源/镜像 ID 均在收据中。常规回归 94 passed、6 skipped（73.59 秒）；实际 Chart/本地/overlay 22 passed（2.00 秒）；Ruff 通过。
+
+[`fa452e3`](https://github.com/mzydmer/deermate/commit/fa452e32a02859bd61ed9dad3e0a784c0a6950dc) 已推送；[CI 40303558560](https://github.com/mzydmer/deermate/actions/runs/40303558560) 六个 job success，包含当前 overlay 的标准四镜像构建与非 root 前端探针。[镜像收据](verification/workspace-package-2026-10-26.json)来自 artifact `12641727909`，ZIP digest 已核对；不代表 ACK 集群安装。当前三个应用容器健康，入口 `http://localhost:2026`。
 
 ## 历史验证 · M2.5 本地 Docker 与真实 Codex
 

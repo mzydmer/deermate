@@ -1,6 +1,6 @@
 # M4.1: DeerMate workspace and motion
 
-Status: accepted; implementation in progress. Updated: 2026-10-26.
+Status: implemented and locally verified; current source CI passes. Updated: 2026-10-26.
 Requirements: FR-001/012/018, NFR-001/004/005/006.
 
 The user requests installation of transitions-dev, transitions-polish and text-to-lottie, then a frontend refactor using them. Install the author's skills in the user's Codex skill directory; do not redistribute the skills as a library. Reuse the pinned DeerFlow frontend, authentication and task APIs through a versioned source overlay applied only to the generated build context. Keep the pinned checkout and lock unchanged.
@@ -10,3 +10,10 @@ Deliver a DeerMate login identity, a responsive secretary home, the existing con
 Use transitions-dev sliding tabs, transitions-polish semantic timing and asymmetric drawer timing, and a transparent original Lottie brand gesture. Preserve keyboard interaction, focus management, reduced motion, light/dark modes and static fallback. Verify the animation in the official Skia Skottie player at frame 0/midpoint/final, then in the actual application renderer. No cloud calls, model quota or new secret permissions are needed for frontend acceptance.
 
 Acceptance: production frontend builds; real owner login works; authenticated API data is rendered; filters, detail panel, draft handoff and mobile navigation work; errors/unknowns remain explicit; no page errors, clipping or reduced-motion animation. Keep bounded screenshots/receipts and update STATUS. This is a first workbench view, not complete multi-agent routing, live device enrollment, recovery, mail or research automation.
+
+
+## Observed acceptance
+
+Source `fa452e3` passes final production Next.js/TypeScript compilation, 16 real browser checks, 94 ordinary tests (6 opt-in skipped), and 22 explicit Chart/local/overlay checks. The official Skia player renders the canonical scene at 0/45/89 and its controls advance during playback. UI checks cover an actual existing task/account, configuration GET, default redirect, evidence, draft handoff without a prompt URL, focus/keyboard, dark/mobile/reduced motion and isolated service faults. No new model task was submitted.
+
+The final local build reuses exact package/lock-matching dependencies from an already built image after npm downloads stalled, and recompiles all current source. Separately, CI 40303558560 builds the standard four-image package from the same source and all six jobs pass. See [UI receipt](../verification/frontend-workspace-2026-10-26.json), [CI image receipt](../verification/workspace-package-2026-10-26.json) and [workspace screenshot](../assets/deermate-workspace-2026-10-26.png).

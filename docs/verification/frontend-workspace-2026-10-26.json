@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "finished_at": "2026-10-26T10:10:41.773116+00:00",
+  "source_commit": "fa452e32a02859bd61ed9dad3e0a784c0a6950dc",
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "skills": {
+    "transitions-dev": "Jakubantalik/transitions.dev@6a7d68260d624eb66661cc3af17e0989476f48ae",
+    "transitions-polish": "Jakubantalik/transitions.dev@6a7d68260d624eb66661cc3af17e0989476f48ae",
+    "text-to-lottie": "diffusionstudio/lottie@3c72912fad543897f90045ed4d355813837927fc"
+  },
+  "source_files_sha256": {
+    "frontend/motion/generate.py": "35b57f5b8afc6555ab7dec1c980da07f88d47b246d8a81eb88ce2d1626eca074",
+    "frontend/motion/public/projects/deermate/scene-1/controls.json": "e1c92fb88b828c366ce48b87c1ca200414822c51d286d697eeb5dc88ed9fb95e",
+    "frontend/motion/public/projects/deermate/scene-1/lottie.json": "6ed880cb7d09ce74af56ad3a19e1fa88dbeb582ed9376439043b963c5bba33cf",
+    "frontend/overlay/public/deermate/vendor/lottie-light-5.13.0.min.js": "9588432bec30c8ef8200bac4a67d8aaad881047bc2a6c9fa624d90ec96402410",
+    "frontend/overlay/src/app/page.tsx": "85a97010c64e520a2c8f1c502e3242e080ddc53382770a9e6b70918fa5070fe8",
+    "frontend/overlay/src/app/workspace/page.tsx": "af0da81e1e0a1ff1c67fb9176bc4b0140430cd05d78e50b8466519b823e6822f",
+    "frontend/overlay/src/components/deermate/auth-frame.tsx": "121fa7df5b9de77bfedad812558f629bba0aac6a2df3d800903113872aea8a51",
+    "frontend/overlay/src/components/deermate/brand.tsx": "7074aaee5d73d123bc4f6838f787ea350cd0c06a825f5d8f726de19c316122b7",
+    "frontend/overlay/src/components/deermate/desk.tsx": "a6514244605650e35de87591fbe647ceff957045020132d1acc3609b866124e0",
+    "frontend/overlay/src/components/deermate/motion-tabs.tsx": "298c0869110778bc65a774a0ba99d760cba98ef74da19cdfe6a22b86ce842151",
+    "frontend/overlay/src/components/deermate/task-detail.tsx": "4802347daf3e2c7a19a46ca382986d842972aed6c50b62c6dce6b51f7999806d",
+    "frontend/overlay/src/components/workspace/welcome.tsx": "bbda07f06f735b929c7b1358d1e4831ee90357e80d0c0d3b20437b73779f06f9",
+    "frontend/overlay/src/components/workspace/workspace-header.tsx": "d6bf5b47d411cbd00a67438c164da421b58518597818843c62ba966da542ce60",
+    "frontend/overlay/src/styles/deermate.css": "9d6d7357e77ac244f631f3af025b0263f12876726f2aa845801b8c58532f07f6",
+    "frontend/patches.json": "1c3628c7ee0714274dd0819314e603aa4b16f98f2b98cd85ef4f62d2794a1989",
+    "scripts/frontend_overlay.py": "7ca33639ec7ab1d9f0d95540c4b1226865cc4b7877b129bd298f145adf955db0",
+    "scripts/verify_frontend.cjs": "205302f01dc7b0b77841f39ca3f7809a207aed10e689ed7dab29339c9862af87",
+    "scripts/ack_deploy.py": "97d4b9f03b25bab089806682aac636cd0de0e830fb7f4a3274e20d5ff85fa7e8",
+    "scripts/local_docker.py": "e5ef5cdb1973bba8999f58551ba599cc5795b9948d58609caba87faaec19f822",
+    "scripts/local_container_init.py": "baa2e165f51da66bb2e67214dfbb105e241a188f28ffcbf01faf2102881283ce",
+    "deploy/local/compose.yaml": "893e2a1adf138f46fcc8770c9e264f0856075380f94e0162b6ea4bc0a02a80b4"
+  },
+  "runtime_image_ids": {
+    "gateway": "sha256:e789b51f7e406a4db39cf6c3b95c68f77c748e43b2681723c87dce018be354f3",
+    "frontend": "sha256:1b0e8483e50b87117a38e6ff2a1253c68d35689e21f4f7e84cb9a80fbc6ee1cf",
+    "nginx": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197"
+  },
+  "production_build": {
+    "passed": true,
+    "nextjs": "16.4.1",
+    "typescript_passed": true,
+    "dependency_reuse": {
+      "source_commit": "fa452e32a02859bd61ed9dad3e0a784c0a6950dc",
+      "base_image_id": "sha256:f10599edf2edac6ee54212f9e296c76a3d0df104387c913dbaff2c243c4cdad3",
+      "pinned_lock_hashes_verified": {
+        "package.json": "9b28495e552c5d19bb972e7088c50e57896de4759e6c08a393ddab0c83e38ec2",
+        "pnpm-lock.yaml": "2e6e65291e1913c3df7de14622e5931cac218f91ff8fc7dae6d39500d19d9870"
+      },
+      "scope": "Recompile current full source with dependencies from the already built, same-pin production image; no compiled bundle editing."
+    },
+    "note": "Earlier standard production builds passed. The final local source was recompiled after npm connection stalls using verified same-pin package/lock dependencies; no compiled bundle was hand-edited."
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "deermate_login_rendered",
+      "real_owner_login",
+      "default_entry_redirects_to_private_workspace",
+      "managed_mcp_configuration_readable",
+      "self_hosted_lottie_rendered",
+      "real_thread_task_queries_loaded",
+      "real_task_evidence_opened",
+      "evidence_escape_dismissal",
+      "evidence_dismissal_restores_keyboard_focus",
+      "status_filter_keyboard_navigation",
+      "account_scoped_draft_handoff_without_prompt_in_url",
+      "dark_theme_rendered",
+      "reduced_motion_static_brand_and_tabs",
+      "mobile_layout_and_navigation",
+      "fault_injection_preserves_unknown_and_partial_states",
+      "no_browser_page_errors"
+    ],
+    "existing_task_rows": 1,
+    "page_errors": [],
+    "model_tasks_submitted": 0,
+    "limits": [
+      "Local owner/login and read-only existing task evidence; no secretary model or cloud execution.",
+      "Service errors are deliberate isolated browser route injections."
+    ]
+  },
+  "skia": {
+    "passed": true,
+    "renderer": "official Diffusion Studio Skia Skottie player",
+    "scene": "deermate/scene-1",
+    "frames": [
+      0,
+      45,
+      89
+    ],
+    "context": {
+      "hasClient": true,
+      "activeProject": "deermate",
+      "activeScene": "scene-1",
+      "playing": false,
+      "currentFrame": 89,
+      "totalFrames": 90,
+      "fps": 30,
+      "reportedAt": "2026-10-26T09:46:23.387Z"
+    },
+    "page_errors": [],
+    "playback": {
+      "passed": true,
+      "renderer": "official Skia Skottie",
+      "scene": "deermate/scene-1",
+      "advanced_from_frame": 0,
+      "advanced_to_frame": 47,
+      "observed_in_player_controls": true
+    }
+  },
+  "validation": {
+    "ordinary_pytest": "94 passed, 6 skipped; 73.59s",
+    "actual_chart_local_overlay_pytest": "22 passed; 2.00s",
+    "ruff": "passed",
+    "upstream_checkout_clean": true
+  },
+  "existing_worker_task": {
+    "task_id": "8fd8add4a745496ca8e49e009238fbff",
+    "session_id": "01a176fa-1295-7b92-901e-787407c08794",
+    "attempt": 1,
+    "status": "completed",
+    "additional_model_tasks_submitted": 0
+  },
+  "limits": [
+    "Latest 20 conversations, at most 20 background tasks each; partial/error states shown.",
+    "Configured MCP is not a device-liveness check; specialist adapters and full controls remain pending.",
+    "No secretary model, cloud, ACK or new native task acceptance in this frontend run."
+  ],
+  "ci": {
+    "run_id": 40303558560,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/40303558560",
+    "source_commit": "fa452e32a02859bd61ed9dad3e0a784c0a6950dc",
+    "jobs_passed": 6,
+    "standard_image_build_and_probe": "success",
+    "receipt": "workspace-package-2026-10-26.json"
+  }
+}
