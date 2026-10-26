@@ -79,8 +79,18 @@
   "source_commit": "c3494319a493bec801947d2ff4eda221308c62dd",
   "ci": {
     "run_id": 40318918329,
-    "status": "in_progress",
+    "status": "completed",
     "url": "https://github.com/mzydmer/deermate/actions/runs/40318918329",
-    "claim": "Local verification passed; remote completion not yet confirmed."
+    "claim": "All seven jobs verified successful on source commit c349431; no ACK cluster deployment.",
+    "conclusion": "success",
+    "completed_successfully": [
+      "go-control",
+      "deerflow-contract",
+      "worker (ubuntu-latest, 3.11)",
+      "deerflow-gateway (ssh)",
+      "worker (macos-latest, 3.12)",
+      "ack-package",
+      "deerflow-gateway (local)"
+    ]
   }
 }

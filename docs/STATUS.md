@@ -13,7 +13,7 @@
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
 | 当前验收 | Go 迁移历史 27 项 API 检查；本轮 25 项浏览器检查（含主题/手机/管理弹窗），原任务仍可读，模型任务 0 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；实际 Chart 校验通过；未连接 ACK/推送 ACR |
-| 交付 | 源码 `4af38d6` 已推送 `feat/go-control-plane`；Go 轮次 CI 40313922279 七个 job 均已成功；设计源码 `c349431` 已推送 `feat/vercel-design-system`；本轮 CI 40318918329 正在运行 |
+| 交付 | 源码 `4af38d6` 已推送 `feat/go-control-plane`；Go 轮次 CI 40313922279 七个 job 均已成功；设计源码 `c349431` 已推送 `feat/vercel-design-system`；设计 CI 40318918329 七个 job 已核对全部 success；用户已授权合并 main，PR 准备中 |
 | 发布 | 源码 alpha；未合并主线、未发布正式 release |
 | 下一步 | 秘书模型配置、项目级授权与专职 Agent 路由；云端凭据提供后再进行 ACK 实际部署验收 |
 
@@ -38,7 +38,7 @@ React 与 Go 管理页共用 [canonical tokens](../frontend/overlay/src/styles/d
 
 [本轮收据](verification/vercel-design-2026-10-26.json)与[工作台截图](assets/vercel-workspace-2026-10-26.png)记录实际范围。标准前端 Docker 构建通过；最后的登录字体/输入边界修正在已核对 package/lock 完全一致的标准镜像依赖上重新编译，来源与镜像 ID 已保留。Go 7 项测试通过（6.798 秒），实际 Chart/本地/overlay 22 passed（2.99 秒），Ruff、token 同步与文档链接检查通过。
 
-[设计源码 `c349431`](https://github.com/mzydmer/deermate/commit/c3494319a493bec801947d2ff4eda221308c62dd) 已推送；[本轮 CI 40318918329](https://github.com/mzydmer/deermate/actions/runs/40318918329) 正在运行，当前不宣称全部通过。当前本地四个应用容器健康。
+[设计源码 `c349431`](https://github.com/mzydmer/deermate/commit/c3494319a493bec801947d2ff4eda221308c62dd) 已推送；[本轮 CI 40318918329](https://github.com/mzydmer/deermate/actions/runs/40318918329) 七个 job 已核对全部 success；当前准备将完整开发分支合并 main。当前本地四个应用容器健康。
 
 ## 历史工作 · M4.2 Go 主服务与管理后台
 

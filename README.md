@@ -169,7 +169,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M4.2 Go main/management backend**, on the locally verified workspace and Docker/Worker stack.
+We track delivered work separately from planned functionality. Current stage: **M4.3 Go backend and shared frontend design**, on the locally verified Docker/Worker stack.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -177,7 +177,7 @@ We track delivered work separately from planned functionality. Current stage: **
 | M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
 | M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH implemented; actual devices, restricted accounts and NAT pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
-| M4 | Unified task cards + research watchlists + scoped mail/browser tools | Planned |
+| M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).

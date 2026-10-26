@@ -42,7 +42,7 @@ python scripts/verify_go_control.py --restart
 Docker 安装程序来自 [Docker 官方 Mac 安装页](https://docs.docker.com/desktop/setup/install/mac-install/)。遵循其许可与首次启动流程；本仓库不重新分发 Docker Desktop。本次采用用户目录安装；图形首次设置界面因 Mac 锁屏没有操作，后台 daemon 和实际容器已验证可用。
 
 ```bash
-git clone --branch feat/vercel-design-system https://github.com/mzydmer/deermate.git
+git clone --branch main https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
