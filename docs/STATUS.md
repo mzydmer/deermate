@@ -7,12 +7,13 @@
 | 项目 | 当前事实 |
 | --- | --- |
 | 阶段 | M1 Worker、M2.1 MCP、M2.2 注册式直接 SSH、M2.3 完整 Gateway/SSH fixture 演示已实现；真实设备与秘书体验待完成 |
-| 分支 | `feat/gateway-ssh-demo`，继承此前 Worker、桥接、Gateway 和 SSH 实现 |
+| 分支 | `feat/ack-deployment`，继承此前 Worker、桥接、Gateway、SSH 和组合演示 |
 | 产品运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次扩展验收工具、CI 和文档 |
 | Gateway 验收工具 | [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 新增 `--transport ssh`、`--replay`；收据脚本哈希 `aaa2934058d0…` |
-| 主线/PR | 远端核对 `main` 仍为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/gateway-ssh-demo) |
+| ACK 部署 | 新增 Python 配置/ACR 构建/Helm 安装脚本与文档；本地真实 Chart 渲染通过，镜像 CI 待核对；尚未连接用户集群 |
+| 主线/PR | 上次核对 `main` 为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/ack-deployment) |
 | 发布 | 源码 alpha `0.1.0a1`；未合并主线、未发布 PyPI 或正式 release |
-| 下一步 | 已注册真实设备上的受限账户/OpenSSH 部署验收；模型通知与聊天/UI 单独推进 |
+| 下一步 | 完成 ACK 镜像 CI，按部署指南安装到用户指定集群，再验收真实 SSH Worker 与模型/聊天链路 |
 
 运行代码与验收工具哈希不随纯文档提交改变；文档 HEAD 可以继续推进。接续时核对 Git 和远端状态。
 
@@ -26,6 +27,12 @@
 - M2.3 一条命令启动真实 Gateway → MCP → SSH → Worker，同一收据证明修复/验证失败、Gateway 重启、SSH-only 失联/重连、撤权/取消与 Worker 恢复；生成可离线回放的单文件 HTML。
 
 使用：[本地](local-worker.md)、[DeerFlow](deerflow.md)、[SSH](ssh-worker.md)、[组合演示](demo.md)。设计：[SPEC](SPEC.md)、[M2.3](specs/m2-gateway-ssh-demo.md)、[ADR 0004](decisions/0004-ssh-loopback-transport.md)。
+
+## 本次工作 · ACK 部署包
+
+用户明确要求 ACK，取代此前暂缓 Kubernetes 的建议。[部署指南](ack-deployment.md)和 [ADR 0005](decisions/0005-ack-control-plane.md)定义单实例控制端：官方固定 Chart、扩展 Gateway 镜像、20Gi RWO 云盘、Recreate、默认鉴权和私有 port-forward，Worker 可后续启用。部署脚本使用 Python 3.12+；不创建集群、不开放公网入口、不把 Codex/桌面搬进控制 Pod。
+
+本地检查：14 项部署用例通过，包含两种实际 Chart 模式、拒绝扩权/多写者、Secret 私密输入与文件复制；初次常规回归 86 passed、6 skipped。清单已实际经 Helm 3.19.0 post-renderer 输出，Secret 内容脱敏。源码仍使用此前 Worker/MCP/SSH；镜像构建与非 root 启动验证交由新增 Linux CI，完成后记录。尚未执行 kubectl 集群操作、模型调用或真实设备连接。
 
 ## 本次验证 · Gateway/SSH 组合
 

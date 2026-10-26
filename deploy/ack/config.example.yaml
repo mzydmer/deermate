@@ -1,0 +1,23 @@
+# Copy with: python scripts/ack_deploy.py init --registry REGISTRY/NAMESPACE --context ACK_CONTEXT
+# Values here are not secrets. Keep actual configuration/keys under .deermate/ack/.
+registry: registry.cn-hangzhou.aliyuncs.com/REPLACE_NAMESPACE
+tag: REPLACE_IMMUTABLE_TAG
+kube_context: REPLACE_ACK_CONTEXT
+namespace: deermate
+release: deermate
+platform: linux/amd64
+storage_class: alicloud-disk-topology-alltype
+image_pull_secret: deermate-acr
+model:
+  model: REPLACE_MODEL_ID
+  base_url: https://REPLACE_PROVIDER_HOST/v1
+worker:
+  enabled: false
+  host: REPLACE_REACHABLE_SSH_HOST
+  port: 22
+  username: deermate
+  worker_port: 18777
+  expected_instance_id: REPLACE_32_HEX_INSTANCE_ID
+  expires_at: REPLACE_UTC_EXPIRY
+  # Optional encrypted private key: put the passphrase in credentials/passphrase.
+  passphrase_env: null

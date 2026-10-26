@@ -62,6 +62,8 @@ deermate diff TASK_ID
 
 **运行后端演示：** [一条命令复现](docs/demo.md) · [已捕获事件回放](docs/assets/gateway-ssh-demo.html) · [21 项检查收据](docs/verification/gateway-ssh-2026-10-25.json)。覆盖实际 Gateway → MCP → SSH → Worker 的修复、验证失败、重启、重连与撤权。HTML 下载后可离线打开；使用同机进程、临时密钥和离线原生 fixture。上方视频仍是模拟概念预览。
 
+**部署到阿里云 ACK：** [快速部署指南](docs/ack-deployment.md)。Python 脚本构建 ACR 镜像并安装固定版本 DeerFlow Helm Chart，默认私人访问、云盘持久化，可再启用家中 Worker 注册。实际集群安装和云端到家庭链路仍需在用户环境验收。
+
 | 能力 | 目标体验 | 进展 |
 | --- | --- | --- |
 | 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | 规划中 |

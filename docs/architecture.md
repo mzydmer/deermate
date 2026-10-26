@@ -22,7 +22,7 @@ The MCP bridge forwards three tools to the independent authenticated HTTP Worker
 
 ## Initial topology
 
-Begin with one control service and one worker on a trusted network. Use SQLite for the initial single-instance design; do not put the SQLite file on a network filesystem. PostgreSQL becomes necessary before multiple controllers coordinate the same tasks. Do not add Kubernetes or a separate distributed workflow platform to the first milestone.
+Begin with one control service and one worker on a trusted network. Use SQLite for the initial single-instance design; do not put the SQLite file on a network filesystem. PostgreSQL becomes necessary before multiple controllers coordinate the same tasks. The initial recommendation was to defer Kubernetes. The user's explicit ACK deployment request supersedes that recommendation: [ADR 0005](decisions/0005-ack-control-plane.md) keeps one Gateway on a block-storage PVC with Recreate updates and the Worker on its enrolled machine. See the [ACK guide](ack-deployment.md).
 
 The implemented AsyncSSH connector verifies explicit known_hosts and dedicated credentials, then forwards HTTP to the remote Worker loopback port. Enrollment pins a persistent application instance; remote handles bind that instance to the task. Grant checks, bounded connection age and explicit recovery are described in [ADR 0004](decisions/0004-ssh-loopback-transport.md). Operators provision credentials/accounts through a trusted channel. Reverse tunnels, relay discovery and NAT enrollment remain unimplemented.
 

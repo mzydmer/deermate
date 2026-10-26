@@ -72,6 +72,8 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 
 **Run the backend demo:** [one-command walkthrough](docs/demo.md) · [captured event replay](docs/assets/gateway-ssh-demo.html) · [21-check receipt](docs/verification/gateway-ssh-2026-10-25.json). It exercises the actual Gateway → MCP → SSH → Worker path, including repair, validation failure, restart, reconnect and revocation. Download the HTML to replay it locally. Generated keys, same-host processes and an offline native fixture keep its scope explicit; the concept video above remains simulated.
 
+**Deploy the control plane to Alibaba Cloud ACK:** [quick deployment guide](docs/ack-deployment.md). Python scripts build ACR images and install the pinned DeerFlow Helm chart with private access, persistent cloud-disk state and optional enrolled home Worker. Actual cluster installation and cloud-to-home acceptance remain operator-specific.
+
 | Capability | Intended experience | Status |
 | --- | --- | --- |
 | A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | Planned |

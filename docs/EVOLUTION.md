@@ -88,3 +88,11 @@
 - **接续：** 已注册设备上的受限账户部署与服务验收，之后单独推进配置模型的通知/聊天体验。见[演示指南](demo.md)、[M2.3 规格](specs/m2-gateway-ssh-demo.md)和 [STATUS](STATUS.md)。
 
 - **追加远端验证：** [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 已推送；[CI 40255200451](https://github.com/mzydmer/deermate/actions/runs/40255200451) 完成且五个 job 均 success，包含实际 Gateway local/SSH。已核对 Gateway local/SSH artifact `12622301410` / `12621728883` 和两平台 SSH 收据 `12621993322` / `12621764111`。此后仅补验证记录，产品运行代码与验收工具未变。
+
+## E-010 · 2026-10-25 · 阿里云 ACK 控制端部署包
+
+- **目标：** 按用户明确要求准备 ACK 部署脚本和快速安装方式；这一要求取代此前暂缓 Kubernetes 的建议。
+- **实现：** Python CLI 生成私有配置、准备固定上游、构建/推送 ACR 镜像、脱敏预览、显式 context 的 Helm 安装升级、状态、port-forward 和 SSH capabilities 查询。复用上游 Chart/Dockerfiles，以 Python post-renderer 注入受限凭据和策略，见 [ADR 0005](decisions/0005-ack-control-plane.md)。
+- **边界：** 单 Gateway、20Gi RWO 云盘、SQLite/checkpoints、Recreate；保留应用鉴权。默认无 Worker、无公网入口、无 provisioner/RBAC 或云端 bash 工具。私钥/token 进入内存卷中的私密普通文件，部署重启更新；MCP 配置由 Helm 管理。
+- **本地验证：** 14 项部署用例通过，包括实际固定 Chart 的 Worker 关闭/启用两种配置；常规初次回归 86 passed、6 skipped。真实 post-renderer 输出已生成；镜像与非 root 启动 CI 结果核对后追加。
+- **交付：** `feat/ack-deployment`；[部署说明](ack-deployment.md)、[规格](specs/m2-ack-deployment.md)、公开配置与可选 Ingress 示例。未连接用户 ACK 或私有设备，未调用模型或宣称真实部署成功。

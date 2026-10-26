@@ -1,0 +1,23 @@
+# Optional, separate step AFTER private setup/login. Requires an existing ALB
+# IngressClass and a TLS Secret in the same namespace. Not applied by the CLI.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: deermate
+  namespace: deermate
+spec:
+  ingressClassName: alb
+  tls:
+    - hosts: [deermate.example.com]
+      secretName: deermate-tls
+  rules:
+    - host: deermate.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 2026
