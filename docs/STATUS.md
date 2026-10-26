@@ -9,7 +9,7 @@
 | 阶段 | M1 Worker、M2.1 MCP、M2.2 注册式直接 SSH、M2.3 完整 Gateway/SSH fixture 演示已实现；真实设备与秘书体验待完成 |
 | 分支 | `feat/gateway-ssh-demo`，继承此前 Worker、桥接、Gateway 和 SSH 实现 |
 | 产品运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次扩展验收工具、CI 和文档 |
-| Gateway 验收工具 | `scripts/verify_deerflow_gateway.py` 新增 `--transport ssh`、`--replay`；收据记录当前脚本哈希 `aaa2934058d0…` |
+| Gateway 验收工具 | [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 新增 `--transport ssh`、`--replay`；收据脚本哈希 `aaa2934058d0…` |
 | 主线/PR | 远端核对 `main` 仍为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/gateway-ssh-demo) |
 | 发布 | 源码 alpha `0.1.0a1`；未合并主线、未发布 PyPI 或正式 release |
 | 下一步 | 已注册真实设备上的受限账户/OpenSSH 部署验收；模型通知与聊天/UI 单独推进 |
@@ -37,11 +37,13 @@
 | 回放页面 | 浏览器检查单步、10×播放和全部 21 项事件；无控制台警告/错误；已查看窄屏布局 |
 | Ruff | `AGENTS.md` 所列检查通过，包含新增两个演示脚本 |
 | wheel | `python -m build --wheel` 通过，仍为 `0.1.0a1` |
-| 当前 CI | 已扩展为五个 job：两平台常规检查、实际上游驱动、local/SSH Gateway；本次远端结果待推送后核对 |
+| 当前 CI | [40255200451](https://github.com/mzydmer/deermate/actions/runs/40255200451) 在 `728deb7` 完成并 success；两平台常规检查、实际上游驱动、local/SSH Gateway 共五个 job 均通过 |
 
 环境：macOS/Python 3.12.14；控制端 AsyncSSH 2.24.1、cryptography 48.0.1；固定上游 `a1b89d0` 使用原始 lock，Gateway 环境 cryptography 50.0.0。凭据均临时生成，无真实模型、用户密钥、真实 SSH daemon 或系统配置修改。提交测试入口仅替代模型选工具；成功/失败验证经 Gateway 返回，原始 diff 由只读 Worker 观察连接取得。
 
 收据与当前源码哈希已核对，HTML 嵌入同一收据。保留文件没有私密路径、密钥、token、原始日志或数据库。CI 仅上传有界 JSON/HTML。
+
+已核对本次 artifact：`deerflow-gateway-local`（`12622301410`）、`deerflow-gateway-ssh`（`12621728883`）、`ssh-receipt-ubuntu-latest-py3.11`（`12621993322`）、`ssh-receipt-macos-latest-py3.12`（`12621764111`）。Gateway 两包各包含该模式的 JSON/HTML；artifact 元数据与上传步骤已核对。
 
 ## 历史证据与范围
 

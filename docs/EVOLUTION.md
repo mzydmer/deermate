@@ -86,3 +86,5 @@
 - **边界：** 同机真实协议与离线 Codex fixture；测试入口只替代模型选工具。原始 diff 从只读 Worker 观察连接获得，任务验证经 Gateway 返回。没有真实设备/OpenSSH/NAT、模型通知、产品 UI、历史升级或硬崩溃声明，也没有修改用户 SSH 配置或调用模型。
 - **交付：** 分支 `feat/gateway-ssh-demo`；CI 增加两种 Gateway 模式及 JSON/HTML artifacts，远端结果核对后追加。`main` 本次核对仍为 `e9f228d`，无开放 PR、未发布。
 - **接续：** 已注册设备上的受限账户部署与服务验收，之后单独推进配置模型的通知/聊天体验。见[演示指南](demo.md)、[M2.3 规格](specs/m2-gateway-ssh-demo.md)和 [STATUS](STATUS.md)。
+
+- **追加远端验证：** [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 已推送；[CI 40255200451](https://github.com/mzydmer/deermate/actions/runs/40255200451) 完成且五个 job 均 success，包含实际 Gateway local/SSH。已核对 Gateway local/SSH artifact `12622301410` / `12621728883` 和两平台 SSH 收据 `12621993322` / `12621764111`。此后仅补验证记录，产品运行代码与验收工具未变。
