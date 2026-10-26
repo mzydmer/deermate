@@ -1,0 +1,40 @@
+{
+  "integrated": true,
+  "date": "2026-10-26",
+  "method": "fast-forward, ordinary Git push",
+  "previous_main": "e9f228dbc443422490cb74c7f695bf24d3e9d360",
+  "integrated_head": "51d58b270e45069ad7ae6596949517528373f220",
+  "included_feature_heads": {
+    "origin/feat/ack-deployment": "7cd2c12a95899f28df4102bd2a8b5389aa1be06b",
+    "origin/feat/deermate-workspace": "5e269471bf297c47b8cb3ce7f514145221df946f",
+    "origin/feat/gateway-ssh-demo": "486ab6e75cce1a84bf739a1693f0c5883904c77e",
+    "origin/feat/go-control-plane": "e7db6dde6990ee4c62a885a4563970b2839dd7e4",
+    "origin/feat/local-docker-runtime": "546186283952199ce92bbc05967fbf1d127ff250",
+    "origin/feat/m1-local-worker": "9b6e10192f7312b262d20d2d97f338d9b460cc56",
+    "origin/feat/m2-deerflow-bridge": "8445af76801db3666682e959ba64d23ffa27c141",
+    "origin/feat/m2-gateway-verification": "16225f9054cd0e1650a61f64490864bac2aa77f7",
+    "origin/feat/m2-ssh-worker": "7816987da2bb790f9502d22f30aabeecab3fa7eb",
+    "origin/feat/vercel-design-system": "51d58b270e45069ad7ae6596949517528373f220"
+  },
+  "verified_implementation": "c3494319a493bec801947d2ff4eda221308c62dd",
+  "source_ci": {
+    "run_id": 40318918329,
+    "conclusion": "success",
+    "successful_jobs": 7,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/40318918329"
+  },
+  "validation": [
+    "All feature heads are ancestors of integrated head.",
+    "Implementation paths match the verified source commit; subsequent changes are documentation only.",
+    "Retained design receipt source hashes match.",
+    "Changed documentation links and shared tokens checked."
+  ],
+  "pull_request": null,
+  "pull_request_connector": "Create returned integration permission 403; SSH Git push succeeded.",
+  "main_ci": "This main push requests a fresh run; completion not yet confirmed.",
+  "model_tasks_submitted": 0,
+  "limits": [
+    "Source alpha; no formal release, ACR push or ACK cluster deployment.",
+    "Existing local credentials, volumes and native task/session identity retained."
+  ]
+}

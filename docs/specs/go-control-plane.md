@@ -1,6 +1,6 @@
 # Go control plane migration
 
-Status: implemented and verified locally and in CI 40313922279; main integration requested. Updated: 2026-10-26.
+Status: implemented and verified locally and in CI 40313922279; integrated into main at 51d58b2. Updated: 2026-10-26.
 Requirements: FR-001/003/009/012/018, NFR-001/005/006/007.
 
 The owner now requests Go for the main backend, management backend, user/login management and frontend-facing interfaces. This explicitly supersedes the Python-owned control-plane constraint. Keep the existing React frontend, DeerFlow as an internal Python Agent runtime, and the verified Python Worker/MCP/SSH adapter as the explicit internal execution integration boundary.

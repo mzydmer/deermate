@@ -152,3 +152,10 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 当前分支 `feat/vercel-design-system` 基于 Go 分支 `e7db6dd`。补记上一轮 Go [CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 七个 job 现已核对全部 success，含标准五镜像构建；这不是本轮新风格的 CI，也不代表 ACK 部署。本轮设计源代码交付状态另见 STATUS。
 
 设计交付补记：源码 `c349431` 已推送 `feat/vercel-design-system`，最终验收为 25 项浏览器检查通过；[CI 40318918329](https://github.com/mzydmer/deermate/actions/runs/40318918329) 正在运行。本地四个应用容器保持健康。
+
+
+## 2026-10-26 · 完整开发栈合并 main
+
+按用户明确要求，将主线从 `e9f228d` fast-forward 到 `51d58b2`。当前开发 head 包含所有十个功能分支，保留原有提交历史及分支，没有压缩、重写或删除。GitHub 连接器创建 PR 返回 403；改用已有 SSH Git 权限，通过普通推送完成远端主线更新。无 PR 创建，不声称存在审阅/批准记录。
+
+合并包含 Worker/Codex、MCP/SSH、Go 主服务/管理/认证/前端 API、Docker/ACK 包，以及工作台和 design.md。已核对来源 `c349431` 的 [CI 40318918329](https://github.com/mzydmer/deermate/actions/runs/40318918329) 七个 job 全部成功；其后为文档更新，实际功能代码与已验收来源一致。主线安装说明改用 main；主线 CI 结果另行核对。原生模型任务未重跑，本地服务/账户/任务数据保留。此为源码 alpha 集成，不是 release、ACK 安装或专职路由完成声明。
