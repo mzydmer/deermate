@@ -1,0 +1,115 @@
+name: deermate-local
+
+services:
+  init:
+    image: ${DEERMATE_GATEWAY_IMAGE}
+    pull_policy: never
+    user: "0:0"
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    security_opt: [no-new-privileges:true]
+    network_mode: none
+    entrypoint: [/app/backend/.venv/bin/python, /stage/local_container_init.py]
+    volumes:
+      - stage:/stage:ro
+      - credentials:/worker-credentials
+      - home:/home
+      - frontend-cache:/frontend-cache
+      - nginx-cache:/nginx-cache
+
+  gateway:
+    image: ${DEERMATE_GATEWAY_IMAGE}
+    pull_policy: never
+    user: "1000:1000"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    working_dir: /app/backend
+    entrypoint: [/app/backend/.venv/bin/python, /etc/deermate/local_gateway.py]
+    env_file: ["${DEERMATE_STATE_DIR}/runtime.env"]
+    environment:
+      USER: deermate
+      LOGNAME: deermate
+      PYTHONPATH: /app/backend
+      PYTHONDONTWRITEBYTECODE: "1"
+      DEER_FLOW_PROJECT_ROOT: /app
+      DEER_FLOW_HOME: /app/backend/.deer-flow
+      DEER_FLOW_CONFIG_PATH: /etc/deermate/config.yaml
+      DEER_FLOW_ENV_FILE: /etc/deermate/empty.env
+      DEER_FLOW_EXTENSIONS_CONFIG_PATH: /etc/deermate/extensions_config.json
+      DEER_FLOW_CHANNELS_GATEWAY_URL: http://gateway:8001
+      DEER_FLOW_CHANNELS_LANGGRAPH_URL: http://gateway:8001/api
+      UV_CACHE_DIR: /tmp/uv
+      NO_PROXY: localhost,127.0.0.1,gateway,frontend,nginx,host.docker.internal
+    volumes:
+      - home:/app/backend/.deer-flow
+      - credentials:/var/run/deermate:ro
+      - stage:/etc/deermate:ro
+    healthcheck:
+      test: [CMD, /app/backend/.venv/bin/python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health/ready',timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+
+  frontend:
+    image: ${DEERMATE_FRONTEND_IMAGE}
+    pull_policy: never
+    user: "1000:1000"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      gateway:
+        condition: service_healthy
+    working_dir: /app/frontend
+    entrypoint: [node, /app/frontend/node_modules/next/dist/bin/next]
+    command: [start, --hostname, 0.0.0.0, --port, "3000"]
+    env_file: ["${DEERMATE_STATE_DIR}/frontend.env"]
+    environment:
+      NODE_ENV: production
+      DEER_FLOW_INTERNAL_GATEWAY_BASE_URL: http://gateway:8001
+    volumes:
+      - frontend-cache:/app/frontend/.next/cache
+    healthcheck:
+      test: [CMD, node, -e, "const s=require('net').connect(3000,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1));"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  nginx:
+    image: ${DEERMATE_NGINX_IMAGE}
+    pull_policy: never
+    user: "101:101"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    depends_on:
+      gateway:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    entrypoint: [nginx, -c, /etc/deermate/nginx.conf, -g, "daemon off;"]
+    ports: ["127.0.0.1:2026:2026"]
+    volumes:
+      - stage:/etc/deermate:ro
+      - nginx-cache:/var/cache/nginx
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:2026/nginx-health]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  stage:
+    external: true
+    name: deermate-local_stage
+  home:
+  credentials:
+  frontend-cache:
+  nginx-cache:

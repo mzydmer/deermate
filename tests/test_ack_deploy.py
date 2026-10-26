@@ -202,6 +202,9 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         pod = document["spec"]["template"]["spec"]
         assert pod["automountServiceAccountToken"] is False
         assert pod["imagePullSecrets"] == [{"name": settings["image_pull_secret"]}]
+        if document["metadata"]["labels"]["app.kubernetes.io/component"] == "frontend":
+            assert pod["containers"][0]["command"][0] == "node"
+            assert "pnpm" not in pod["containers"][0]["command"]
     application = next(
         doc
         for doc in documents

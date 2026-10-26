@@ -1,19 +1,20 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-10-25。历史见 [EVOLUTION.md](EVOLUTION.md)。这是开发 Agent/维护者更新的版本化快照，不是自动监控服务。
+最后核对：2026-10-26。历史见 [EVOLUTION.md](EVOLUTION.md)。这是开发 Agent/维护者更新的版本化快照，不是自动监控服务。
 
 ## 当前交付
 
 | 项目 | 当前事实 |
 | --- | --- |
-| 阶段 | M1–M2.3 已实现；M2.4 ACK 部署包及 Linux 镜像验证通过；用户集群、真实设备与秘书体验待验收 |
-| 分支 | `feat/ack-deployment`，继承此前 Worker、桥接、Gateway、SSH 和组合演示 |
+| 阶段 | M1–M2.3 已实现；M2.4 ACK 包已有历史 CI；M2.5 本地 Docker、浏览器登录、真实 Codex/SSH 与重启验收通过 |
+| 分支 | `feat/local-docker-runtime`，继承 Worker、桥接、Gateway、SSH、组合演示和 ACK 包 |
 | Worker/MCP/SSH 运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次新增部署工具、镜像打包与验证 |
 | Gateway 验收工具 | [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 新增 `--transport ssh`、`--replay`；收据脚本哈希 `aaa2934058d0…` |
-| ACK 部署 | Python 配置/ACR 构建/Helm 安装脚本已准备；实际 Chart 与镜像 CI 通过，尚未连接用户 ACK 或执行 ACR 推送 |
-| 主线/PR | 上次核对 `main` 为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/ack-deployment) |
+| ACK 部署 | Python 配置/ACR 构建/Helm 安装脚本已准备；本轮同步修正非 root 用户身份、Node 前端启动与构建网络重试；未连接 ACK/推送 ACR |
+| 本地运行 | 用户目录 Docker Desktop 已启动；Gateway/前端/nginx 三个健康容器，入口 `http://localhost:2026`；独立 host Worker/SSH 运行 |
+| 主线/PR | 上次核对 `main` 为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/local-docker-runtime) |
 | 发布 | 源码 alpha `0.1.0a1`；未合并主线、未发布 PyPI 或正式 release |
-| 下一步 | 按部署指南构建并推送用户 ACR、安装到明确指定的 ACK；再验收真实 SSH Worker 与模型/聊天链路 |
+| 下一步 | 本轮按用户选择先交付页面/登录/真实 Codex；云端凭据之后再接 ACK。聊天模型、真实家庭账户/设备另行配置验收 |
 
 运行代码与验收工具哈希不随纯文档提交改变；文档 HEAD 可以继续推进。接续时核对 Git 和远端状态。
 
@@ -28,7 +29,19 @@
 
 使用：[本地](local-worker.md)、[DeerFlow](deerflow.md)、[SSH](ssh-worker.md)、[组合演示](demo.md)。设计：[SPEC](SPEC.md)、[M2.3](specs/m2-gateway-ssh-demo.md)、[ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 
-## 本次工作 · ACK 部署包
+## 本次工作 · M2.5 本地 Docker 与真实 Codex
+
+[使用说明](local-docker.md)、[规格](specs/m2-local-docker.md)、[有限收据](verification/local-docker-2026-10-26.json)、[实际工作区截图](assets/local-workspace-2026-10-26.png)。用户明确选择先完成页面、登录与真实 Codex，聊天模型暂不配置。
+
+- 官方 Intel Docker Desktop 4.96.3 安装到用户 Applications；Apple 签名和 DMG 校验已记录。Engine 29.9.2、Compose 5.6.1、Buildx 0.38.1 与 hello-world 通过。Mac 锁屏，图形首次设置界面未操作；后台引擎可用。
+- 本地构建四个镜像，运行 Gateway/前端/nginx，唯一映射 `127.0.0.1:2026`；非 root、drop ALL、无 Docker socket/宿主目录挂载。允许的生成配置和专用 SSH 凭据通过 Docker API 放入命名卷，不依赖 Mac Documents 文件共享。
+- 14 项实际 Gateway → MCP → SSH → host Worker 检查通过：真实 Codex `0.164.0-alpha.11.1` / `gpt-6.1-sol` 完成一行修复，独立 unittest 通过、diff 返回；重复提交仍为同一 Worker 任务和 attempt 1，SQL 不创建第二个 owner；Gateway 重启保留登录、原 SQL ID 和原生会话结果。
+- 隔离 Linux Chromium 实际填写登录表单，进入 `/workspace/chats/new`，认证接口确认 session，四项浏览器检查通过，无 page errors，已查看截图。它使用私有 Compose 网络和全新浏览器 context，未访问锁屏 Mac 桌面或个人浏览器资料。
+- 常规 `pytest`：91 passed、6 skipped（49.68 秒）；实际固定 Chart/本地策略 19 passed（2.23 秒）；Ruff 与 wheel 通过。新 CI 待推送后核对，不能用历史镜像 CI 代替本轮修正。
+
+本地 owner 密码仅在 `.deermate/local-docker/admin.json`（0600）；原生账号在主机上使用，不复制 `.codex` 目录进容器。模型列表为空，本地专用 owner/key 提交入口只代替模型选工具，不进入 ACK 镜像。生成密钥 SSH 开发服务不代表实际系统 OpenSSH/账户、双机/NAT/云端。完整聊天、通知和专职路由未宣称完成。
+
+## 历史验证 · M2.4 ACK 部署包
 
 用户明确要求 ACK，取代此前暂缓 Kubernetes 的建议。[部署指南](ack-deployment.md)和 [ADR 0005](decisions/0005-ack-control-plane.md)定义单实例控制端：官方固定 Chart、扩展 Gateway 镜像、20Gi RWO 云盘、Recreate、默认鉴权和私有 port-forward，Worker 可后续启用。部署脚本使用 Python 3.12+；不创建集群、不开放公网入口、不把 Codex/桌面搬进控制 Pod。
 
@@ -60,7 +73,7 @@
 
 - M2.2 [SSH 协议收据](verification/ssh-transport-2026-10-25.json)保留 22 项用例：身份、凭据、期限、撤权、轮换、丢响应和显式幂等恢复。固定上游驱动 local/SSH 两变体已通过。此前 [CI 40206131865](https://github.com/mzydmer/deermate/actions/runs/40206131865) 在 `96ca52b` 四组均 success，核对过两平台 SSH 和本地 Gateway 三个 artifact；不把旧 CI 扩展为本次新增验收工具证据。
 - [旧 Gateway 收据](verification/deerflow-gateway-2026-10-25.json)属于原本地路径及旧源码，14 项检查；[CI 40201412129](https://github.com/mzydmer/deermate/actions/runs/40201412129) 四组通过。
-- M1 `7dfe34a` 的 [CI 40175946902](https://github.com/mzydmer/deermate/actions/runs/40175946902) 两组通过。既有真实 Codex 验证使用 `0.164.0-alpha.11.1` / `gpt-6.1-sol`，完成修复、独立测试、diff 和同原生会话中断/继续。方法见 [local-worker.md](local-worker.md#verification)；原始临时日志未保留，本轮未重复调用模型。
+- M1 `7dfe34a` 的 [CI 40175946902](https://github.com/mzydmer/deermate/actions/runs/40175946902) 两组通过。既有真实 Codex 验证使用 `0.164.0-alpha.11.1` / `gpt-6.1-sol`，完成修复、独立测试、diff 和同原生会话中断/继续。方法见 [local-worker.md](local-worker.md#verification)；原始临时日志未保留；本轮另有真实 Codex 修复，见 M2.5 收据。
 
 ## 未完成或未证明
 
@@ -68,7 +81,7 @@
 | --- | --- |
 | 真实双机/OpenSSH 账户 | 未部署验收；当前是同机真实 SSH 协议 fixture，未修改用户主机或账户 |
 | NAT、反向隧道、设备配对、自动密钥注册、中继 | 未实现；现有传输要求直接可达 SSH 端点 |
-| 模型通知、产品聊天/UI | 未验证；空模型 Gateway 的通知 run 在模型装配阶段失败，HTTP/SQL 验收与事件回放不证明完整秘书体验 |
+| 秘书模型派单、通知和完整对话 | 未配置/未验证；空模型通知 run 无法完成。页面/登录已单独通过，但验收提交入口仍替代模型选工具 |
 | 表单/review/recovery 秘书入口 | 三个 MCP 工具不自动回答、审批或恢复；现有 CLI 可在授权内处理 |
 | 多岗位路由、Claude/DSH/Qoder、GitHub 维护、调研/邮件/桌面 | 后续阶段 |
 | 硬崩溃/孤儿进程、历史库升级、生产隔离/脱敏/加密/总配额 | 尚无完整实现或验收，不由有序重启和 fixture 推断 |
@@ -79,7 +92,7 @@
 
 ## 下一项工作
 
-1. 按 [ACK 指南](ack-deployment.md)使用用户 ACR 和明确 kubeconfig context 安装控制端，完成私有 setup/login；不自动创建集群或公网负载均衡。
+1. 本地保持可运行；按用户选择暂不接聊天模型。云端凭据准备好后，按 [ACK 指南](ack-deployment.md)使用用户 ACR 和明确 kubeconfig context 安装控制端。
 2. 对明确注册的真实设备验收受限 OS/OpenSSH 策略、网络可达性与服务重启；不扫描或登录未注册主机。
 3. 配置模型后单独验证通知和聊天入口；保留任务身份、取消确认和外部输入权限边界。
 4. NAT/反向连接独立设计，再扩展专职 Agent 路由与工作台。

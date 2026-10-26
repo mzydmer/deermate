@@ -287,6 +287,13 @@ def post_render(documents, settings, rollout="review"):
             1
         ]
         pod["imagePullSecrets"] = [{"name": settings["image_pull_secret"]}]
+        if component == "frontend":
+            frontend = next(item for item in pod["containers"] if item["name"] == "frontend")
+            # Corepack's build-time pnpm cache belongs to root. Launch the
+            # already-built application directly as UID 1000, without a
+            # package-manager download during startup.
+            frontend["command"] = ["node", "/app/frontend/node_modules/next/dist/bin/next"]
+            frontend["args"] = ["start", "--hostname", "0.0.0.0", "--port", "3000"]
         if component != "gateway":
             continue
         gateway.append(doc)
@@ -580,6 +587,33 @@ def deploy(settings, config_path):
     print("Control plane installed. Run the open command for private first-user setup.")
 
 
+def gateway_dockerfile(source, layer):
+    """Harden only the generated builder's dependency downloads, preserving pins."""
+    anchor = "FROM python:3.12-slim-bookworm AS builder\n"
+    apt = "RUN apt-get update && apt-get install -y"
+    if source.count(anchor) != 1 or source.count(apt) != 1:
+        raise DeploymentError("Unexpected pinned backend Dockerfile structure.")
+    network = r"""
+# DeerMate build-only transport hardening; upstream source/lock stay unchanged.
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' \
+      /etc/apt/sources.list.d/debian.sources \
+    && printf 'Acquire::Retries "3";\nAcquire::https::Timeout "30";\n' \
+      > /etc/apt/apt.conf.d/80deermate-network \
+    && rm -f /etc/apt/apt.conf.d/docker-clean
+"""
+    generated = source.replace(anchor, anchor + network, 1)
+    generated = generated.replace(
+        apt,
+        "RUN --mount=type=cache,target=/var/cache/apt,sharing=locked "
+        "apt-get update && apt-get install -y",
+        1,
+    )
+    generated = generated.replace(
+        "curl -fsSL", "curl --retry 3 --retry-all-errors --connect-timeout 15 -fsSL"
+    )
+    return generated + "\n" + layer
+
+
 def build(settings, config_path, push):
     checkout = prepare(config_path.parent)
     with tempfile.TemporaryDirectory(prefix="ack-build-", dir=config_path.parent) as temp:
@@ -592,9 +626,10 @@ def build(settings, config_path, push):
         command([sys.executable, "-m", "build", "--wheel", "--outdir", wheel_dir, ROOT])
         gateway_file = context / "Dockerfile.deermate"
         gateway_file.write_text(
-            (context / "backend/Dockerfile").read_text()
-            + "\n"
-            + (ROOT / "deploy/ack/gateway-layer.dockerfile").read_text()
+            gateway_dockerfile(
+                (context / "backend/Dockerfile").read_text(),
+                (ROOT / "deploy/ack/gateway-layer.dockerfile").read_text(),
+            )
         )
         with (context / ".dockerignore").open("a") as ignore:
             ignore.write("\n!deermate-wheel/\n!deermate-wheel/*.whl\n")

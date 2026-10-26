@@ -5,7 +5,7 @@
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Python 后端</p>
 
-> **当前阶段：Worker + MCP + SSH Alpha，2026-10-25。** 已实现 Python 执行、持久任务、Codex、MCP 和注册式直接 SSH。M1 验证过真实 Codex 修复，后续 Gateway/SSH 验收使用离线原生 fixture。真实设备/OpenSSH 部署、NAT、模型通知、专职路由和仪表盘仍待完成。视频仍是模拟概念预览，尚未发布 PyPI 包。
+> **当前阶段：本地 Docker + Worker/MCP/SSH Alpha，2026-10-26。** 控制端已可启动、登录工作区，并经 Gateway → MCP → SSH → 本机 Worker 完成真实 Codex 修复、独立测试和重启保留结果。模型选工具由受保护的本地验收入口代替；自然语言派单、模型通知、真实云端/设备/NAT、专职路由和统一仪表盘仍待完成。视频仍是模拟概念预览，尚未发布 PyPI 包。
 
 ## 你的私人 Agent 秘书
 
@@ -36,7 +36,7 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m2-ssh-worker  # 实现分支合并前使用
+git checkout feat/local-docker-runtime  # 实现分支合并前使用
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -54,13 +54,15 @@ deermate diff TASK_ID
 
 `TASK_ID` 使用提交接口返回的值。服务只监听 `127.0.0.1`，并创建本地 bearer token。[完整安装、中断、继续与恢复说明](docs/local-worker.md)。
 
-同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；实际 Gateway/SQLite 也已通过 SSH 完成[组合演示](docs/demo.md)，模型/UI 与真实设备部署仍需后续工作。
+同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；实际 Gateway/SQLite 也已通过 SSH 完成[组合演示](docs/demo.md)。本地页面/登录另有真实浏览器验证，模型派单/通知与真实设备部署仍需后续工作。
 
 ## 我们正在构建什么
 
 直接可达的 SSH Worker 可安装 `.[mcp,ssh]`，填写[注册配置](examples/ssh-controller.toml)，运行 `deermate --config controller.toml --worker home mcp` 或既有 CLI 命令。[SSH 指南](docs/ssh-worker.md)包含主机信任、凭据、期限和绑定句柄；实际设备/账户/网络仍需部署验收。
 
 **运行后端演示：** [一条命令复现](docs/demo.md) · [已捕获事件回放](docs/assets/gateway-ssh-demo.html) · [21 项检查收据](docs/verification/gateway-ssh-2026-10-25.json)。覆盖实际 Gateway → MCP → SSH → Worker 的修复、验证失败、重启、重连与撤权。HTML 下载后可离线打开；使用同机进程、临时密钥和离线原生 fixture。上方视频仍是模拟概念预览。
+
+**本地 Docker 启动：** [安装、登录与真实 Codex 验收](docs/local-docker.md) · [实际收据](docs/verification/local-docker-2026-10-26.json)。实测 Mac 上的入口为 `http://localhost:2026`，随机 owner 密码仅在私密本地文件中保存，命名卷保留账号和任务。不需要云端 AK/SK，秘书聊天模型暂不配置。
 
 **部署到阿里云 ACK：** [快速部署指南](docs/ack-deployment.md)。Python 脚本构建 ACR 镜像并安装固定版本 DeerFlow Helm Chart，默认私人访问、云盘持久化，可再启用家中 Worker 注册。实际集群安装和云端到家庭链路仍需在用户环境验收。
 
@@ -156,7 +158,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 ## 开发进展
 
-当前阶段：**M2.3，完整 Gateway/SSH 组合演示**；运行基础仍为直接 SSH 传输 Alpha。已交付的内容与计划中的运行能力分别列出。
+当前阶段：**M2.5，本地 Docker/登录/真实 Codex 验收**；同时已有 M2.4 ACK 部署包。已交付的内容与计划中的运行能力分别列出。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
@@ -169,11 +171,11 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。[本地验证与限制](docs/local-worker.md)。
 
-M2.1 常规测试为 51 项通过、两项 opt-in 上游检查跳过；另行执行的驱动检查和实际 Gateway/SQLite 进程验收均通过。后者保留 14 个检查结果，用测试入口代替模型选工具、以离线原生 fixture 执行，覆盖后台查询、重启、取消及失联恢复；不包含聊天 UI、模型通知或远程 SSH。方法见 [DeerFlow 接入指南](docs/deerflow.md)和[当前开发状态](docs/STATUS.md)。
+历史 M2.1 常规测试为 51 项通过、两项 opt-in 上游检查跳过；另行执行的驱动检查和实际 Gateway/SQLite 进程验收均通过，保留 14 项结果，用测试入口代替模型选工具、以离线原生 fixture 执行。当前证据（含本地浏览器登录与真实 Codex）见 [STATUS](docs/STATUS.md)。
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
-当前常规测试为 **74 项通过、4 项 opt-in 用例跳过**；实际 Gateway 的本地/SSH 两种模式另行通过，分别覆盖 14/21 项检查并生成事件回放。上游固定驱动的本地/SSH 两种模式也已通过。此前的 [SSH 收据](docs/verification/ssh-transport-2026-10-25.json)覆盖 22 项协议测试，包括撤权、轮换和丢响应恢复；这些同机 fixture 不代表真实设备/OpenSSH/NAT 已验收。
+当前常规测试为 **91 项通过、6 项 opt-in 用例跳过**；实际 Chart/本地部署策略另行通过 19 项。本次 Docker 运行保留 14 项真实 Gateway/SSH/Codex 检查及四项浏览器检查。此前本地/SSH Gateway 的 14/21 项 fixture、上游驱动及 [22 项 SSH 收据](docs/verification/ssh-transport-2026-10-25.json)保留为历史证据；真实设备/OpenSSH/NAT 和秘书模型对话仍待验收，见 [STATUS](docs/STATUS.md)。
 
 首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
 

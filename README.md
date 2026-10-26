@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Worker + MCP + SSH alpha · 2026-10-25.** Python execution, durable tasks, Codex, MCP and enrolled direct SSH are implemented. M1 verified a real Codex repair; later Gateway/SSH checks use offline native fixtures. Actual device/OpenSSH deployment, NAT, model notifications, specialist routing and the dashboard remain pending. The video is a simulated concept preview. Install from source; no PyPI release is published.
+> **Local Docker + Worker/MCP/SSH alpha · 2026-10-26.** The local control plane now starts, serves login/workspace pages and completes a real Codex repair through Gateway → MCP → SSH → host Worker, including independent validation and restart persistence. Secretary-model selection is replaced by a protected local verification entry; natural-language delegation, model notifications, actual cloud/devices/NAT and the unified dashboard remain pending. The video is simulated. Install from source; no PyPI release is published.
 
 ## Meet your personal agent secretary
 
@@ -46,7 +46,7 @@ Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/m2-ssh-worker  # until the implementation branch is merged
+git checkout feat/local-docker-runtime  # until the implementation branch is merged
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -71,6 +71,8 @@ To connect a trusted DeerFlow process on the same host, install `.[mcp]` and con
 For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; actual device/account/network deployment still needs validation.
 
 **Run the backend demo:** [one-command walkthrough](docs/demo.md) · [captured event replay](docs/assets/gateway-ssh-demo.html) · [21-check receipt](docs/verification/gateway-ssh-2026-10-25.json). It exercises the actual Gateway → MCP → SSH → Worker path, including repair, validation failure, restart, reconnect and revocation. Download the HTML to replay it locally. Generated keys, same-host processes and an offline native fixture keep its scope explicit; the concept video above remains simulated.
+
+**Run the full local Docker profile:** [startup, login and real Codex verification](docs/local-docker.md) · [retained live receipt](docs/verification/local-docker-2026-10-26.json). On the tested Mac it serves `http://localhost:2026`; a generated private owner password and named volumes preserve account/task state. No cloud key is needed. Secretary chat remains unconfigured.
 
 **Deploy the control plane to Alibaba Cloud ACK:** [quick deployment guide](docs/ack-deployment.md). Python scripts build ACR images and install the pinned DeerFlow Helm chart with private access, persistent cloud-disk state and optional enrolled home Worker. Actual cluster installation and cloud-to-home acceptance remain operator-specific.
 
@@ -169,7 +171,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M2.3 combined Gateway/SSH demo**, on the direct SSH transport alpha.
+We track delivered work separately from planned functionality. Current stage: **M2.5 local Docker/login/real Codex acceptance**, alongside the M2.4 ACK deployment package.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -182,11 +184,11 @@ We track delivered work separately from planned functionality. Current stage: **
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
 
-M2.1 has 51 passing normal tests (two opt-in upstream checks skipped), a passing ordinary-driver probe and a separately passing actual Gateway/SQLite process-restart verifier with 14 recorded checks. The backend check uses a model-free submit entry and offline native fixture; it does not prove chat/UI, real-model notifications or remote SSH. See [bridge verification](docs/deerflow.md) and [current status](docs/STATUS.md).
+Historical M2.1 verification had 51 passing normal tests (two opt-in upstream checks skipped), a passing ordinary-driver probe and a separately passing actual Gateway/SQLite process-restart verifier with 14 recorded checks. That backend check used a model-free submit entry and offline native fixture. Current evidence, including local browser login and real Codex, is tracked in [STATUS](docs/STATUS.md).
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **74 passed, 4 opt-in cases skipped**. Both actual Gateway modes pass separately (local: 14 checks; SSH: 21), with a self-contained replay of captured events. Both local/SSH pinned-driver variants also pass. The earlier [SSH receipt](docs/verification/ssh-transport-2026-10-25.json) covers 22 protocol cases including revocation, rotation and lost acknowledgements; none of these same-host fixtures is real-device/OpenSSH/NAT evidence.
+The current normal suite has **91 passed, 6 opt-in cases skipped**; actual Chart/local deployment policy checks separately pass 19 cases. The new Docker run passes 14 real Gateway/SSH/Codex checks plus four browser checks. Earlier fixture runs of both actual Gateway modes (local: 14 checks; SSH: 21), pinned drivers and the [22-case SSH receipt](docs/verification/ssh-transport-2026-10-25.json) remain historical evidence. Actual devices/OpenSSH/NAT and secretary-model conversation need separate acceptance; see [STATUS](docs/STATUS.md).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

@@ -98,3 +98,14 @@
 - **交付：** `feat/ack-deployment`；[部署说明](ack-deployment.md)、[规格](specs/m2-ack-deployment.md)、公开配置与可选 Ingress 示例。未连接用户 ACK 或私有设备，未调用模型或宣称真实部署成功。
 
 - **追加远端验证：** [CI 40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155) 在 `ca23f2c` 六个 job 全部 success；ACK job 构建四个 linux/amd64 镜像，并通过 UID 1000 启动、就绪、匿名拒绝、MCP/SSH 导入和 root-owned fsGroup 卷中的凭据复制检查。[保留证据](verification/ack-package-2026-10-25.json)来自已核对 SHA256 的 artifact `12626344052`。未执行 ACR 推送、真实 ACK 安装、前端登录、模型调用或家庭 SSH 连接；此后仅更新文档和证据索引。
+
+## E-011 · 2026-10-26 · 本地 Docker、真实浏览器登录与 Codex 执行
+
+- **目标：** 按用户要求先安装 Docker、启动项目并验收真实执行，云端 AK/SK 后续再接。用户明确选择先验收页面/登录/Codex，暂不接秘书模型。
+- **实现：** 新增 Mac 本地 Python 编排与受限 Compose profile，复用 ACK 镜像；只开放 localhost:2026。专用生成配置/SSH 凭据经 Docker API staging 到命名卷，无宿主目录或 Docker socket 挂载。独立 host Worker 使用本机 Codex 登录和生成的 demo 项目；owner/key 入口调用实际上游 MCP/SQL，替代模型选工具。
+- **运行反馈：** 修复非 root 无本地用户名导致 AsyncSSH 失败、前端 Corepack 运行时下载，以及构建 HTTP/下载瞬态问题；同步到 ACK layer/post-renderer 和镜像探针，不修改固定上游 checkout/lock。见 [ADR 0005](decisions/0005-ack-control-plane.md)。
+- **结果：** 实际容器 Gateway → MCP → SSH → 真实 Codex 修复一行代码，独立 unittest 通过并返回 diff；14 项验收含重复提交、认证边界、Gateway 重启保留 session/SQL/结果。上游 duplicate-owner 409 保留原 Worker handle，attempt 始终 1；重复检查复用持久幂等键，没有新增模型任务。
+- **浏览器：** 隔离 Linux Chromium 实际提交登录表单，进入工作区，四项检查通过、无 page errors，截图已查看。未操作锁屏 Mac 桌面或使用个人浏览器资料；Docker 图形首次设置未操作，后台 daemon/实际容器正常。
+- **验证：** 本轮常规 91 passed/6 skipped；真实固定 Chart + 本地部署策略 19 passed；Ruff、wheel 通过。[有限收据](verification/local-docker-2026-10-26.json)包含 Docker/镜像身份、源码快照哈希、真实任务/会话、diff 和测试输出；owner 密码、凭据、原始日志不入库。
+- **交付：** `feat/local-docker-runtime`；[本地指南](local-docker.md)、[M2.5 规格](specs/m2-local-docker.md)。远端 CI 推送后核对追加；主线本轮核对仍为 `e9f228d`、无开放 PR，未合并或发布。
+- **边界/接续：** 秘书模型未配置、无完整对话/通知/路由声明；无实际 ACK/ACR、双机/OpenSSH/NAT 验收。维持本地服务，后续收到云端配置再按 ACK 指南部署。

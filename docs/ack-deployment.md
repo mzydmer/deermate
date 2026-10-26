@@ -21,7 +21,7 @@
 从此功能分支安装（合并主线后可改用 main）：
 
 ```bash
-git clone --branch feat/ack-deployment https://github.com/mzydmer/deermate.git
+git clone --branch feat/local-docker-runtime https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -126,6 +126,10 @@ helm --kube-context YOUR_ACK_CONTEXT -n deermate uninstall deermate
 
 ## 验证与来源
 
-本地 14 项部署检查通过，覆盖实际固定 Chart 的 Worker 关闭/启用两种模式；常规回归 86 passed、6 skipped。[CI 40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155) 六个 job 全部成功，实际构建四个 linux/amd64 镜像并验证非 root Gateway 就绪、匿名访问拒绝、MCP/SSH 导入及私密凭据复制。[保留证据](verification/ack-package-2026-10-25.json)来自已校验的 CI artifact。ARM 镜像与 ACR 推送未实测；镜像仍需你构建并发布到自己的 ACR。没有实际 ACK 安装、前端登录或模型/家庭链路验收记录。
+当前实际 Chart 与本地部署策略检查合计 19 项通过；常规回归 91 passed、6 skipped。生成 Dockerfile 的下载重试/HTTPS、Gateway 的真实 UID 1000 身份及直接 Node 启动前端已从本地运行反馈同步进 ACK 包，见 [ADR 0005](decisions/0005-ack-control-plane.md)。
+
+历史 [CI 40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155) 在 `ca23f2c` 六个 job 成功，构建四个 linux/amd64 镜像并验证非 root Gateway 就绪、匿名拒绝、MCP/SSH 导入及凭据复制；[原始证据](verification/ack-package-2026-10-25.json)不代表本轮打包修正的 CI。新 CI 还会检查非 root 用户身份和实际前端登录 HTML，结果见 [STATUS](STATUS.md)。
+
+同源镜像已在 [Mac 本地 Docker](local-docker.md)完成页面、真实浏览器登录及真实 Codex/SSH 任务验收，保留[独立收据](verification/local-docker-2026-10-26.json)。这不代表实际 ACK 安装或云端到家庭链路已通过。ARM 镜像、ACR 推送、ACK 和真实家庭设备仍需在用户环境验收。
 
 参考：[ACK 云盘 StorageClass](https://www.alibabacloud.com/help/zh/ack/ack-managed-and-ack-dedicated/user-guide/use-dynamically-provisioned-disk-volumes)、[ACK 私有镜像拉取](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/user-guide/faq-about-applications)、[固定上游 Helm Chart](https://github.com/bytedance/deer-flow/tree/a1b89d0432de4e45adc59f512cb25bb386ea1e51/deploy/helm/deer-flow)、[Helm 3 post-renderer](https://v3.helm.sh/docs/topics/advanced/#post-rendering)、[kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)。

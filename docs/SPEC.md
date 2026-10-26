@@ -38,7 +38,7 @@
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
 | FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
 | FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2–M3 规划 |
-| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 实际 Gateway/SQLite 通过 SSH 的组合验收已通过，模型通知与产品 UI 未验证 |
+| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；本地页面/登录通过，模型选工具和通知未验证 |
 | FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；M2.3 组合链路已验证 SSH 断线重连、撤权与取消；真实双机/OpenSSH 部署与 NAT 未验收 |
 | FR-014 | GitHub 事件验签、去重、issue 修复和独立 PR 审核；创建 PR、评论、合并、发布分别授权 | M3 规划 |
 | FR-015 | 竞品/资料 watchlist、历史快照对比、引用来源和有实质变化才通知 | M4 规划 |
@@ -92,9 +92,9 @@
 | NFR-002 | 不自创加密协议；明确加密端点与中继是否能读明文 | 直接 AsyncSSH 已实现，SSH 两端可读明文；Hermesh MCP 网关可读取其会话；无审计或中继部署声明 |
 | NFR-003 | 在模型提示词之外接纳权限，使用明确执行边界 | M1 仅可信本地项目；无多租户/生产隔离承诺 |
 | NFR-004 | 正常测试不需要模型凭据；真实模型测试明确标识并限定范围 | 离线协议 fixture、临时 Git 仓库和 opt-in live smoke 已具备 |
-| NFR-005 | 保存可复核的状态、事件、补丁和验证记录 | Worker 本地 SQLite；ACK 包使用云盘保存 Gateway/检查点，实际持久化部署待验收；无总容量配额或通用脱敏保证 |
+| NFR-005 | 保存可复核的状态、事件、补丁和验证记录 | Worker 本地 SQLite；本地 Docker 命名卷与 Gateway 重启保留结果已验证；ACK 云盘实际部署待验收；无总容量配额或通用脱敏保证 |
 | NFR-006 | 区分实现、验证、合并和发布，维护可接续文档 | 以 STATUS、EVOLUTION、ADR 和 Git/CI 证据管理 |
-| NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 部署脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；暂不支持 Windows |
+| NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；本地 Compose 编排要求 Mac/Python 3.12+，实测 Intel Docker Desktop；暂不支持 Windows |
 
 ## 验收与证据映射
 
@@ -108,6 +108,7 @@
 | AC-M1-06 | 无 token、非本地主机、浏览器来源、超大请求或任意执行命令被拒绝 | [test_api.py](../tests/test_api.py) |
 | AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 本地及 SSH 两种实际 Gateway 路径通过：SQL/进程重启、原始查询/取消、Worker 失联恢复；模型选工具由测试入口代替，见[M2.3](specs/m2-gateway-ssh-demo.md) |
 | AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | SSH 协议及完整 Gateway 链路的同机 fixture 范围通过；撤权后不假称已取消、恢复授权后确认先前取消，且无新原生会话/轮次；真实双机/OpenSSH/NAT 待验收，见[M2.2](specs/m2-ssh-worker.md)与[M2.3](specs/m2-gateway-ssh-demo.md) |
+| AC-M2-03 | 本地容器服务可登录，经 SSH 调用真实 Codex 并返回独立验证；重启保留结果，重复请求不重复执行 | [M2.5 规格](specs/m2-local-docker.md)、[本地 Docker 指南](local-docker.md)、[真实验收收据](verification/local-docker-2026-10-26.json)；模型选工具由本地管理员/key 入口替代 |
 
 上述文件是证据入口，不表示每项已覆盖所有边界。当前跑过哪些命令、对应哪个代码版本，以 [STATUS.md](STATUS.md) 为准。
 

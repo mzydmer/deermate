@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1, M2.1/M2.2 and the M2.3 combined Gateway/SSH fixture demo implemented; actual devices/NAT remain pending. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1–M2.3 implemented; M2.4 ACK packaging verified and M2.5 local Docker/login/real Codex verified; actual cloud/devices/NAT remain pending. Updated: 2026-10-26. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -35,6 +35,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Add enrolled AsyncSSH forwarding with host-key verification, dedicated key/token references and instance-bound handles.
 - [x] Demonstrate actual Gateway → MCP → SSH → Worker in one run, including SSH outage/reconnect, revoked cancellation and Worker recovery, with a receipt and captured-event replay.
 - [x] Prepare a single-instance ACK control-plane package with ACR builds, the pinned upstream Helm chart, persistent block storage, authentication and optional Worker enrollment; image/cluster verification states are tracked separately in STATUS.
+- [x] Run a loopback-only local Docker profile, log in through a real browser, and complete a real Codex repair through Gateway/MCP/SSH with retained validation, idempotency and restart evidence; secretary model remains unconfigured.
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.
