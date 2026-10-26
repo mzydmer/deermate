@@ -114,19 +114,19 @@
   "ci": {
     "run_id": 40313922279,
     "url": "https://github.com/mzydmer/deermate/actions/runs/40313922279",
-    "status": "in_progress",
-    "claim": "Local verification passed; remote completion not yet confirmed.",
+    "status": "completed",
+    "claim": "All seven jobs verified successful; actual ACK deployment remains outside this receipt.",
     "completed_successfully": [
       "go-control",
       "deerflow-contract",
       "deerflow-gateway (ssh)",
       "deerflow-gateway (local)",
       "worker (macos-latest, 3.12)",
-      "worker (ubuntu-latest, 3.11)"
+      "worker (ubuntu-latest, 3.11)",
+      "ack-package"
     ],
-    "pending": [
-      "ack-package: standard five-image build"
-    ]
+    "pending": [],
+    "conclusion": "success"
   },
   "migration_backup_check": {
     "original_owner_id_unchanged": true,

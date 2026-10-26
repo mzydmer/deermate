@@ -204,6 +204,8 @@ Track the first implementation milestone: [Python worker + Codex session lifecyc
 
 This repository contains original design documents and media, not a vendored copy of these projects. Their licenses, support policies, model costs, and security boundaries remain their own. We do not claim endorsement, completed interoperability, or bundled third-party subscriptions.
 
+**Frontend design:** All frontend changes follow [design.md](design.md), our Vercel/Geist-inspired neutral design system shared by React and Go management pages.
+
 ## Join the project
 
 For agent-assisted development, start with [AGENTS.md](AGENTS.md). Follow the [product spec](docs/SPEC.md), [current development status](docs/STATUS.md), [evolution log](docs/EVOLUTION.md), and [architecture decisions](docs/decisions/README.md). The status page separates implemented, verified, merged, and released work.

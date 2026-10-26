@@ -5,11 +5,11 @@
     "replace": [
       [
         "import \"@/styles/globals.css\";",
-        "import \"@/styles/globals.css\";\nimport \"@/styles/deermate.css\";"
+        "import \"@/styles/globals.css\";\nimport \"@/styles/design-tokens.css\";\nimport \"@/styles/deermate.css\";"
       ],
       [
         "title: \"DeerFlow\",",
-        "title: \"DeerMate \u00b7 Your personal agent secretary\","
+        "title: \"DeerMate · Your personal agent secretary\","
       ],
       [
         "description: \"A LangChain-based framework for building super agents.\",",
@@ -34,7 +34,12 @@
   {
     "path": "src/app/(auth)/login/page.tsx",
     "sha256": "c741f40e81254a6836217d76fdf2cb229380defd543776758a5e2bff56c6ab88",
-    "replace": [[">DeerFlow</h1>", ">DeerMate</h1>"]]
+    "replace": [
+      [
+        ">DeerFlow</h1>",
+        ">DeerMate</h1>"
+      ]
+    ]
   },
   {
     "path": "src/app/workspace/workspace-content.tsx",
@@ -50,11 +55,17 @@
     "path": "src/components/workspace/workspace-nav-chat-list.tsx",
     "sha256": "ecc462a434e4a5ae54f11ad8016e55c9a9c2db311ff173e5a84608137ae6de8d",
     "replace": [
-      ["  BotIcon,", "  BotIcon,\n  LayoutDashboard,"],
-      ["const { t } = useI18n();", "const { t, locale } = useI18n();"],
+      [
+        "  BotIcon,",
+        "  BotIcon,\n  LayoutDashboard,"
+      ],
+      [
+        "const { t } = useI18n();",
+        "const { t, locale } = useI18n();"
+      ],
       [
         "<SidebarMenu>",
-        "<SidebarMenu>\n        <SidebarMenuItem>\n          <SidebarMenuButton isActive={pathname === \"/workspace\"} asChild>\n            <Link href=\"/workspace\"><LayoutDashboard /><span>{locale === \"zh-CN\" ? \"\u5de5\u4f5c\u53f0\" : \"Your desk\"}</span></Link>\n          </SidebarMenuButton>\n        </SidebarMenuItem>"
+        "<SidebarMenu>\n        <SidebarMenuItem>\n          <SidebarMenuButton isActive={pathname === \"/workspace\"} asChild>\n            <Link href=\"/workspace\"><LayoutDashboard /><span>{locale === \"zh-CN\" ? \"工作台\" : \"Your desk\"}</span></Link>\n          </SidebarMenuButton>\n        </SidebarMenuItem>"
       ]
     ]
   }

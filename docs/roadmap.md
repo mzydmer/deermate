@@ -88,6 +88,13 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 - [ ] Design project-scoped execution grants before enabling normal-user execution.
 - [ ] Add external identity/OAuth, MFA and recovery as separately specified features.
 
+## M4.3 — Shared Vercel-inspired design language
+
+- [x] Establish root `design.md` as the required guide for all future frontend work.
+- [x] Share neutral light/dark tokens across React and embedded Go management UI.
+- [x] Enforce token consistency in builds and CI; link guidance from AGENTS and contribution docs.
+- [x] Verify the refreshed login/workspace/admin pages on desktop, mobile, dark and reduced-motion modes.
+
 ## M5 — Extend the ecosystem
 
 - [ ] Add an optional Hermesh CLI bridge; keep its separate upstream implementation optional.

@@ -7,3 +7,5 @@ The sliding-tab CSS in `overlay/src/styles/deermate.css` is used inside this pro
 `overlay/public/deermate/vendor/lottie-light-5.13.0.min.js` is lottie-web 5.13.0, MIT, copyright Airbnb, Inc.; its complete license is adjacent. The pinned npm archive's SHA512 integrity was verified before extracting the player, without running package scripts. The runtime is self-hosted and loads only the bundled original animation.
 
 The text-to-lottie skill comes from Diffusion Studio `diffusionstudio/lottie` at `3c72912fad543897f90045ed4d355813837927fc`. Its official Skia Skottie player is used in the ignored local verification workspace; its project/skill is not bundled into the application. Canonical scene path: `motion/public/projects/deermate/scene-1/lottie.json`; the build copies it to `/deermate/secretary.json`.
+
+The neutral visual baseline is inspired by public [Vercel Geist documentation](https://vercel.com/geist/introduction). DeerMate uses its own CSS tokens and deer mark; no Vercel brand assets or internal component library are redistributed. Geist fonts are not bundled by this change; the font stack falls back to system fonts.

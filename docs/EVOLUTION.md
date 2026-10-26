@@ -139,3 +139,14 @@
 验证：Go 模块校验、vet、7 项竞态测试通过（最终测试 8.666 秒）；常规 Python 94 passed/6 skipped（51.10 秒）；实际固定 Chart/本地/overlay 22 passed（1.50 秒）；Ruff、wheel、原 Chart post-renderer 和标准 Go Dockerfile 构建通过。实际本地 27 项 API 检查及 18 项浏览器检查通过，原账号/历史真实 Codex 任务保留，管理页面可创建/停用，浏览器 page errors 为零。追加 Go 重启后会话/任务保留验证；本轮模型任务为零。Go/API/browser [有限收据](verification/go-control-plane-2026-10-26.json)与[管理页截图](assets/deermate-admin-go-2026-10-26.png)区分本轮和历史原生执行证据。
 
 交付补记：源码 `4af38d6` 已推送 `feat/go-control-plane`；本轮 [CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 的 Go、双平台 Worker、契约及双传输 Gateway 六个 job 已通过，ACK 标准镜像构建仍在运行。另以实际在线备份核对原 owner ID 与密码哈希完全一致，未记录这些值。
+
+
+## 2026-10-26 · Vercel 风格与统一前端设计规范（M4.3）
+
+用户要求形成 `design.md` 并约束后续所有前端。新增根目录 [设计规范](../design.md)，参考官方 Geist 与 Web Interface Guidelines，定义 DeerMate 自有中性浅/深色 token、无衬线排版、组件、页面模板、状态、动效和验收流程。AGENTS、贡献指南、中英文 README、前端说明均接入该规范；NFR-008 记录长期约束。
+
+React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本同步，构建和 CI 拒绝漂移。首轮落地登录、工作台、证据界面和管理页；保留鹿标、原交互和动画时序。截图复核发现的登录标题衬线继承已修正。管理页移除主说明中的实现细节，密码重置改为遮罩输入的原生 dialog，覆盖 Escape、焦点恢复和提交。未引入 Vercel 内部组件、额外运行时字体或 CDN。
+
+验收：最终 25 项真实浏览器检查通过，原任务 1 条仍可读、page errors 0、模型任务 0；检查浅/深色、390px 手机、键盘/减少动态效果及管理功能。已查看桌面、登录、手机和深色管理截图，见[有限收据](verification/vercel-design-2026-10-26.json)。色彩基础对比度已计算（正文/状态色 >=4.5、必要边界/焦点 >=3）；未声称完整独立 WCAG 审计。Go 7 项测试通过（6.798 秒）、固定 Chart/本地/overlay 22 passed（2.99 秒）、Ruff/token 同步/相对链接通过。标准前端镜像构建通过；最终少量样式修正在 package/lock 完全一致的标准镜像依赖上重新编译，保留 base/最终镜像身份。
+
+当前分支 `feat/vercel-design-system` 基于 Go 分支 `e7db6dd`。补记上一轮 Go [CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 七个 job 现已核对全部 success，含标准五镜像构建；这不是本轮新风格的 CI，也不代表 ACK 部署。本轮设计源代码交付状态另见 STATUS。

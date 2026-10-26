@@ -6,14 +6,14 @@
 
 | 项目 | 当前事实 |
 | --- | --- |
-| 阶段 | M1–M2.5 执行链路、M4.1 前端已有证据；M4.2 Go 主服务/登录/管理/前端 API 已实现并在本地验证 |
-| 分支 | `feat/go-control-plane`，继承 `5e26947` 前端与运行栈 |
+| 阶段 | M1–M2.5 执行链路、M4.1 前端已有证据；M4.2 Go 已验证；M4.3 统一设计规范和页面风格已实现，本地验收已通过 |
+| 分支 | `feat/vercel-design-system`，基于 `e7db6dd` Go 控制端 |
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 27 项实际 Go API 检查、18 项浏览器检查（含管理页面创建/停用）；原真实任务仍可读；本轮模型任务为 0 |
+| 当前验收 | Go 迁移历史 27 项 API 检查；本轮 25 项浏览器检查（含主题/手机/管理弹窗），原任务仍可读，模型任务 0 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；实际 Chart 校验通过；未连接 ACK/推送 ACR |
-| 交付 | 源码 `4af38d6` 已推送 `feat/go-control-plane`；CI 40313922279 的 Go/双平台 Worker/契约/双传输 Gateway 六个 job 已通过，ACK 镜像 job 仍运行 |
+| 交付 | 源码 `4af38d6` 已推送 `feat/go-control-plane`；Go 轮次 CI 40313922279 七个 job 均已成功；本轮设计变更在 `feat/vercel-design-system` 收尾 |
 | 发布 | 源码 alpha；未合并主线、未发布正式 release |
 | 下一步 | 秘书模型配置、项目级授权与专职 Agent 路由；云端凭据提供后再进行 ACK 实际部署验收 |
 
@@ -30,7 +30,15 @@
 
 使用：[本地](local-worker.md)、[DeerFlow](deerflow.md)、[SSH](ssh-worker.md)、[组合演示](demo.md)。设计：[SPEC](SPEC.md)、[M2.3](specs/m2-gateway-ssh-demo.md)、[ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 
-## 本次工作 · M4.2 Go 主服务与管理后台
+## 本次工作 · M4.3 统一前端设计规范
+
+用户要求采用 Vercel 风格，并让后续前端持续遵循统一指导。根目录 [design.md](../design.md) 作为当前设计规范，已接入 AGENTS、贡献指南和前端 README。覆盖色彩/字体/间距/圆角/组件、页面模板、真实任务状态、动效与验收流程；采用 DeerMate 自有品牌。
+
+React 与 Go 管理页共用 [canonical tokens](../frontend/overlay/src/styles/design-tokens.css)，Go 内嵌副本由同步脚本生成。构建和 CI 检查两端一致，避免重复主题；登录页、工作台与管理页已采用中性配色、无衬线排版、细边框与可读字号。最终 25 项浏览器检查通过（无 page errors、无模型任务）；包含登录标题无衬线、共享浅/深色、手机字号/触控、原任务、Go 密码弹窗关闭/焦点/提交。未安装外部 UI 库或运行时字体/CDN 依赖；Geist 字体当前使用可用的本地/系统回退。
+
+[本轮收据](verification/vercel-design-2026-10-26.json)与[工作台截图](assets/vercel-workspace-2026-10-26.png)记录实际范围。标准前端 Docker 构建通过；最后的登录字体/输入边界修正在已核对 package/lock 完全一致的标准镜像依赖上重新编译，来源与镜像 ID 已保留。Go 7 项测试通过（6.798 秒），实际 Chart/本地/overlay 22 passed（2.99 秒），Ruff、token 同步与文档链接检查通过。
+
+## 历史工作 · M4.2 Go 主服务与管理后台
 
 用户明确改用 Go 维护主后端、管理后端、用户登录和前端接口。[专项规格](specs/go-control-plane.md)、[ADR 0007](decisions/0007-go-control-plane.md)、[Go 后端/API](../backend/README.md)。Go 采用标准库 net/http、纯 Go SQLite 与 bcrypt，独立镜像以 UID 1000 运行。主 API 和管理 API 是同一二进制内的模块/权限边界，不重复维护账号。
 
@@ -38,7 +46,7 @@ Go 接管浏览器和 SSR 登录，使用摘要持久化的随机会话与会话
 
 本地先做 SQLite 在线备份，保留原 UUID、密码和任务归属，只要求重新登录。27 项真实 API 验收通过：跨用户访问拒绝、执行权限、CSRF、角色撤权、密码重置、停用、退出和 Go 重启后会话/原任务保留。18 项浏览器验收通过，包含原工作台 16 项和 Go 身份入口、管理页创建/停用，页面错误为零。[有限收据](verification/go-control-plane-2026-10-26.json)、[管理页截图](assets/deermate-admin-go-2026-10-26.png)。复用原真实 Codex 任务，本轮未触发模型调用。
 
-Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skipped（51.10 秒）、实际 Chart/本地/overlay 22 passed（1.50 秒）、Ruff 和 wheel 通过。标准 Go Dockerfile 已构建，运行镜像与收据一致。[源码 `4af38d6`](https://github.com/mzydmer/deermate/commit/4af38d69061c4c60e1e2f19efa1abe1788c42d88) 已推送；[CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 的 Go、Worker、契约和双传输六个 job 已通过，ACK 镜像 job 仍运行，不能据此声称云端验收完成。
+Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skipped（51.10 秒）、实际 Chart/本地/overlay 22 passed（1.50 秒）、Ruff 和 wheel 通过。标准 Go Dockerfile 已构建，运行镜像与收据一致。[源码 `4af38d6`](https://github.com/mzydmer/deermate/commit/4af38d69061c4c60e1e2f19efa1abe1788c42d88) 已推送；[CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 七个 job 已核对全部 success（含标准五镜像构建），不代表实际云端安装。
 
 普通用户当前只可读取自己的线程/任务；项目级执行授权、OAuth/PAT、邮件找回/MFA 尚未完成。共享 SQLite 只支持固定运行时和单实例本地盘；Go 化不等于将 DeerFlow 或 Worker 重写。ACK 配置将 Go 放进原 Gateway Pod，Service 只指向 Go，Python runtime 仅监听 loopback；云端仍待实际部署。
 

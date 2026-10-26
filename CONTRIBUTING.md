@@ -18,6 +18,8 @@ Open a [design proposal](https://github.com/mzydmer/deermate/issues/new?template
 
 ## Project conventions
 
+All UI changes must follow [design.md](design.md). Reuse canonical design tokens and existing controls across React and Go management pages; check light/dark/mobile and keyboard behavior. Update the guide when introducing a justified visual exception.
+
 Install developer dependencies with `python -m pip install -e '.[dev]'`. Run the checks in [AGENTS.md](AGENTS.md). Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota. The separate [Gateway verifier](docs/demo.md) requires a pinned upstream checkout and frozen backend environment but makes no model calls.
 
 - Maintain main/management, user/login and frontend-facing APIs in Go (ADR 0007). Keep Python DeerFlow/Worker/MCP/SSH integration explicit. Hermesh is optional interoperability.

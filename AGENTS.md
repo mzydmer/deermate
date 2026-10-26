@@ -8,10 +8,13 @@ This is the repository entry point for coding agents. Keep project knowledge in 
 2. Read the relevant requirements in [SPEC.md](docs/SPEC.md). Requirement IDs are stable.
 3. Read [architecture](docs/architecture.md), [security boundaries](docs/security.md), and the relevant [decisions](docs/decisions/README.md).
 4. Read the relevant source and tests. Check `git status`, the active branch, and recent commits before editing. A milestone or checkbox is not a substitute for implementation evidence.
+5. For **any frontend/UI change**, read [design.md](design.md) first. It governs React, authentication, settings, Go management pages and future UI. Reuse its canonical tokens/components; document justified visual exceptions in that file. Run `python scripts/sync_design_tokens.py --check` when frontend or embedded UI assets change.
 
 Use [the roadmap](docs/roadmap.md) for milestone scope, [the evolution log](docs/EVOLUTION.md) for history, and [the local worker guide](docs/local-worker.md) for runnable setup. Do not read every document for a small correction; follow the links relevant to the change.
 
 ## Project invariants
+
+- All frontend work follows [design.md](design.md): a restrained Vercel/Geist-inspired neutral interface, shared React/Go tokens, clear real task states, accessible light/dark/mobile behavior, and DeerMate's own brand. Keep the guide and code aligned when changing the visual system.
 
 - Maintain the main/control, management, login/user and frontend-facing API backend in Go (owner's updated direction; ADR 0007). DeerFlow and the existing Python Worker/MCP/SSH remain explicit internal integration components until separately migrated. External agents retain their runtimes; Hermesh remains optional.
 - Reuse DeerFlow's existing capabilities through narrow interfaces. Check STATUS and retained receipts before extending compatibility claims; driver, Gateway/SQL, real-model, UI, and remote checks have distinct scopes.

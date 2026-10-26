@@ -1,0 +1,59 @@
+/* DeerMate tokens. Edit this canonical file; sync the Go copy with scripts/sync_design_tokens.py. */
+:root {
+  color-scheme: light;
+  --dm-background: #ffffff;
+  --dm-surface: #fafafa;
+  --dm-hover: #f5f5f5;
+  --dm-foreground: #171717;
+  --dm-muted: #666666;
+  --dm-border: #e5e5e5;
+  --dm-border-strong: #8f8f8f;
+  --dm-primary: #171717;
+  --dm-primary-fg: #ffffff;
+  --dm-focus: #0070f3;
+  --dm-info: #0068d6;
+  --dm-success: #107d3e;
+  --dm-warning: #8f5e00;
+  --dm-danger: #c52a2a;
+  --dm-font-sans:
+    "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --dm-font-mono: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  --dm-space-1: 4px;
+  --dm-space-2: 8px;
+  --dm-space-3: 12px;
+  --dm-space-4: 16px;
+  --dm-space-6: 24px;
+  --dm-space-8: 32px;
+  --dm-space-12: 48px;
+  --dm-space-16: 64px;
+  --dm-radius-xs: 4px;
+  --dm-radius-sm: 6px;
+  --dm-radius-md: 8px;
+  --dm-radius-lg: 12px;
+  --dm-control-height: 36px;
+  --duration-stagger: 40ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --duration-slow: 400ms;
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --distance-base: 8px;
+}
+.dark {
+  color-scheme: dark;
+  --dm-background: #0a0a0a;
+  --dm-surface: #111111;
+  --dm-hover: #1a1a1a;
+  --dm-foreground: #ededed;
+  --dm-muted: #a3a3a3;
+  --dm-border: #2e2e2e;
+  --dm-border-strong: #737373;
+  --dm-primary: #ededed;
+  --dm-primary-fg: #0a0a0a;
+  --dm-focus: #52a8ff;
+  --dm-info: #70b8ff;
+  --dm-success: #62d68a;
+  --dm-warning: #e9b949;
+  --dm-danger: #ff8080;
+}

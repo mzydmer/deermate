@@ -44,6 +44,11 @@ async function main() {
     page.on("pageerror", (error) => errors.push(error.message.slice(0, 300)));
     await page.goto(`${base}/login`);
     await page.locator("#email").waitFor();
+    assert.equal(await page.locator(".dm-auth-form h1").evaluate(el => {
+      const font = getComputedStyle(el).fontFamily.toLowerCase();
+      return font.includes("sans-serif") && !font.includes("georgia");
+    }), true);
+    checks.push("design_login_heading_uses_shared_sans_font");
     await page.screenshot({
       path: path.join(output, "login.png"),
       fullPage: true,
@@ -61,6 +66,10 @@ async function main() {
       200,
     );
     checks.push("real_owner_login");
+    assert.equal(await page.locator(".dm-desk").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(255, 255, 255)");
+    assert.equal(await page.locator(".dm-compose .dm-button").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(23, 23, 23)");
+    assert.equal(await page.locator(".dm-hero h1").evaluate(el => getComputedStyle(el).fontFamily.includes("Georgia")), false);
+    checks.push("design_neutral_light_theme_and_sans_typography");
     assert.equal(
       new URL((await page.request.get(base + "/")).url()).pathname,
       "/workspace",
@@ -146,6 +155,8 @@ async function main() {
       fullPage: true,
     });
     checks.push("dark_theme_rendered");
+    assert.equal(await page.locator(".dm-desk").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(10, 10, 10)");
+    checks.push("design_dark_background_matches_shared_palette");
     await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
     await page.reload();
     await page.locator(".t-tabs-pill").waitFor();
@@ -176,6 +187,9 @@ async function main() {
     await page.locator('[data-mobile="true"]').waitFor();
     await page.keyboard.press("Escape");
     checks.push("mobile_layout_and_navigation");
+    assert.ok(await page.locator(".dm-compose textarea").evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 16));
+    assert.ok(await page.locator(".dm-compose .dm-button").evaluate(el => el.getBoundingClientRect().height >= 44));
+    checks.push("design_mobile_readable_inputs_and_touch_targets");
     const cookies = await context.cookies();
     const faultContext = await browser.newContext({
       viewport: { width: 1440, height: 1080 },
@@ -215,6 +229,7 @@ async function main() {
     await page.setViewportSize({ width: 1440, height: 1080 });
     await page.goto(`${base}/admin`);
     await page.getByRole("heading", { name: "管理工作台" }).waitFor();
+    assert.equal(await page.locator("body").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(255, 255, 255)");
     const email = `browser-${require("node:crypto").randomBytes(6).toString("hex")}@example.com`;
     await page.getByLabel("邮箱", { exact: true }).fill(email);
     await page.getByLabel("初始密码").fill(require("node:crypto").randomBytes(24).toString("hex"));
@@ -225,10 +240,29 @@ async function main() {
     const member = await created.json();
     try {
       const row = page.locator("#users tr").filter({ hasText: email });
+      await row.getByRole("button", { name: "重置密码", exact: true }).click();
+      await page.locator("#password-reset").waitFor();
+      assert.equal(await page.locator("#reset-password").getAttribute("type"), "password");
+      await page.keyboard.press("Escape");
+      await page.locator("#password-reset").waitFor({ state: "hidden" });
+      await page.waitForFunction(() => document.activeElement?.textContent === "重置密码");
+      checks.push("design_admin_password_dialog_escape_and_focus_return");
+      await row.getByRole("button", { name: "重置密码", exact: true }).click();
+      await page.locator("#reset-password").fill(require("node:crypto").randomBytes(24).toString("hex"));
+      const resetResponse = page.waitForResponse(r => r.url().endsWith(`/api/v1/admin/users/${member.id}/password`) && r.request().method() === "POST");
+      await page.getByRole("button", { name: "保存密码", exact: true }).click();
+      assert.equal((await resetResponse).status(), 200);
+      await page.locator("#password-reset").waitFor({ state: "hidden" });
+      checks.push("design_admin_password_reset_submits_masked_form");
       await row.getByRole("button", { name: "停用", exact: true }).click();
       await row.getByText("已停用", { exact: true }).waitFor();
       checks.push("go_admin_console_creates_and_suspends_user");
       await page.screenshot({ path: path.join(output, "admin.png"), fullPage: true });
+      await page.emulateMedia({ colorScheme: "dark" });
+      await page.waitForFunction(() => document.documentElement.classList.contains("dark"));
+      assert.equal(await page.locator("body").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(10, 10, 10)");
+      await page.screenshot({ path: path.join(output, "admin-dark.png"), fullPage: true });
+      checks.push("design_go_admin_uses_shared_light_dark_tokens");
     } finally {
       const csrf = (await context.cookies()).find(c => c.name === "csrf_token").value;
       const cleanup = await page.request.patch(`${base}/api/v1/admin/users/${member.id}`, {

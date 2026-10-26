@@ -1,5 +1,7 @@
 # DeerMate workspace source
 
+All frontend work follows the repository [design.md](../design.md), including login, settings and the Go management page. Canonical neutral light/dark tokens live in `overlay/src/styles/design-tokens.css`; run `python scripts/sync_design_tokens.py --check` at the repository root. Go embeds a generated copy of the same CSS. Update the guide and tokens together when changing the visual language.
+
 The product UI lives in `overlay/` and is applied to DeerFlow `a1b89d0` by [`frontend_overlay.py`](../scripts/frontend_overlay.py). `patches.json` verifies complete upstream file hashes before modifying integration points. Do not edit `.deermate/ack/deer-flow` or copy local credentials into the overlay. [ADR 0006](../docs/decisions/0006-frontend-overlay.md) explains the boundary; [NOTICE](NOTICE.md) records third-party provenance.
 
 For an initialized local Docker profile:
@@ -25,3 +27,7 @@ The sliding tab snippet preserves the skill's selectors, orchestration and reduc
 ## Retained acceptance
 
 The [2026-10-26 receipt](../docs/verification/frontend-workspace-2026-10-26.json) binds source `fa452e3`, 16 real browser checks, inspected desktop/evidence/mobile/dark captures and official Skia pinned-frame/playback checks. The final local build recompiles current source with verified identical package/lock dependencies after registry stalls. [CI 40303558560](https://github.com/mzydmer/deermate/actions/runs/40303558560) separately completes the standard four-image build and all six jobs; its [probe receipt](../docs/verification/workspace-package-2026-10-26.json) is separate from interactive UI acceptance. Secretary-model and actual cloud acceptance remain deferred.
+
+## Vercel-inspired baseline
+
+The current visual direction is defined in [design.md](../design.md): neutral light/dark surfaces, sans-serif UI, meaningful status colors, 1px boundaries and readable control sizes. Login, workspace and Go management share tokens; upstream pages are migrated within the scope of future changes. This does not install or redistribute Vercel's internal UI library. The existing motion behavior remains; theme-only changes do not require reauthoring Lottie.

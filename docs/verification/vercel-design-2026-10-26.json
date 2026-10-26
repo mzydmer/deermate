@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "verified_at": "2026-10-26T11:55:03.661139+00:00",
+  "source_sha256": {
+    "design.md": "de2eb8a67f8271b1bbce9e390d29760a9b68a3f2d567df5a9e2a233f25107e11",
+    "AGENTS.md": "3524bec0680e2de2ce09f373087b3e92f58b6fbaab9be5ad35fc6be2f17faeaa",
+    ".github/workflows/ci.yml": "c85aa621c8600c1d4d63a4289a0f343c55d17492aabcffbbe66675febd0a0eb9",
+    "frontend/patches.json": "573977199fa1388897b94621a6b6038b2db4ee3a362ebd9869135fcfbc37599f",
+    "frontend/overlay/src/styles/design-tokens.css": "683ef7627a69d14f7fb6784f48ece4dc3a063f575477e2b8dd2f319f17f8cdd7",
+    "frontend/overlay/src/styles/deermate.css": "a6fa4ffaa6e3370a815539b919bcbd78fc586f5459986bd5586df7f8567f067c",
+    "backend/internal/controlplane/admin.go": "a7f87facc81b143424070a5c9f0fab90bdbd27094ad59c9ff275ecec57726415",
+    "backend/internal/controlplane/admin.html": "e55959af8657535e0b17926afc4a695fc0ec3e024f153c4a60d383f8ef9b3420",
+    "backend/internal/controlplane/design-tokens.css": "683ef7627a69d14f7fb6784f48ece4dc3a063f575477e2b8dd2f319f17f8cdd7",
+    "scripts/sync_design_tokens.py": "060f6bb892a8a1eb803568fe4fdf1bfd89cbfec3b4cea380476cb609f16cee47",
+    "scripts/ack_deploy.py": "2ad659b4db7891c8e0e04b18e1a2005a58b8f248fbf5148c656997e12d75a3e5",
+    "scripts/verify_frontend.cjs": "0a7d64c2d736a3d8bf6ceb0c76a81422d05cf8470220b5a2891a9753a6cbac4d"
+  },
+  "images": {
+    "frontend": "sha256:4c2187deede5f0b9eb5348e5ac8de9a049dda11388fa76c88b07a99517cbb7bb",
+    "control": "sha256:4f50e8e2996df720da019cd9c1f87978e4b790112094b34661bc3c7797bb10d1"
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "design_login_heading_uses_shared_sans_font",
+      "deermate_login_rendered",
+      "real_owner_login",
+      "design_neutral_light_theme_and_sans_typography",
+      "default_entry_redirects_to_private_workspace",
+      "managed_mcp_configuration_readable",
+      "self_hosted_lottie_rendered",
+      "real_thread_task_queries_loaded",
+      "real_task_evidence_opened",
+      "evidence_escape_dismissal",
+      "evidence_dismissal_restores_keyboard_focus",
+      "status_filter_keyboard_navigation",
+      "account_scoped_draft_handoff_without_prompt_in_url",
+      "dark_theme_rendered",
+      "design_dark_background_matches_shared_palette",
+      "reduced_motion_static_brand_and_tabs",
+      "mobile_layout_and_navigation",
+      "design_mobile_readable_inputs_and_touch_targets",
+      "fault_injection_preserves_unknown_and_partial_states",
+      "go_owns_browser_authentication",
+      "design_admin_password_dialog_escape_and_focus_return",
+      "design_admin_password_reset_submits_masked_form",
+      "go_admin_console_creates_and_suspends_user",
+      "design_go_admin_uses_shared_light_dark_tokens",
+      "no_browser_page_errors"
+    ],
+    "existing_task_rows": 1,
+    "page_errors": [],
+    "model_tasks_submitted": 0,
+    "limits": [
+      "Local owner/login and read-only existing task evidence; no secretary model or cloud execution.",
+      "Service errors are deliberate isolated browser route injections."
+    ]
+  },
+  "checks": {
+    "token_sync": "passed, canonical React and generated Go CSS match",
+    "go_tests": "7 passed, 6.798s",
+    "pinned_chart_local_overlay": "22 passed, 2.99s",
+    "ruff": "passed",
+    "frontend_build": "standard Docker build passed; final login-font/composer-border fixes recompiled using exact pinned package/lock-verified base dependencies",
+    "frontend_incremental_base": {
+      "image_id": "sha256:06d448e061c05ba1efa10c4be5146faab557769a5a10585dbfb344426199ba1d",
+      "dependency_sha256": {
+        "package.json": "9b28495e552c5d19bb972e7088c50e57896de4759e6c08a393ddab0c83e38ec2",
+        "pnpm-lock.yaml": "2e6e65291e1913c3df7de14622e5931cac218f91ff8fc7dae6d39500d19d9870"
+      }
+    }
+  },
+  "limits": [
+    "Local isolated browser; no model tasks submitted.",
+    "Palette contrast checked; this is not an independent full WCAG audit.",
+    "Design guide governs future changes; unmodified upstream views are not all individually verified.",
+    "ACK deployment not performed."
+  ]
+}

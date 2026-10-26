@@ -189,6 +189,8 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 当前仓库包含原创设计文档和媒体，没有打包这些上游项目的源码。各项目保留自己的许可证、费用、安全边界和维护方式。列出生态项目不表示已经兼容、得到官方认可或包含第三方订阅。
 
+**前端设计规范：** 所有前端开发遵循 [design.md](design.md)，采用 Vercel/Geist 风格的中性设计语言，React 与 Go 管理页共用 token。
+
 ## 参与开发
 
 Agent 接续开发先读 [AGENTS.md](AGENTS.md)。[基础规格 SPEC](docs/SPEC.md) 记录需求与验收标准，[当前开发状态](docs/STATUS.md) 记录实现、验证与交付状态，[项目演进](docs/EVOLUTION.md) 保留变化历史，[架构决策 ADR](docs/decisions/README.md) 解释关键取舍。后续开发需按变更范围同步维护这些记录。

@@ -724,12 +724,24 @@ RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' \
     return generated + "\n" + layer
 
 
+def check_design_tokens():
+    if __package__:
+        from .sync_design_tokens import sync
+    else:
+        from sync_design_tokens import sync
+    try:
+        sync(check=True)
+    except ValueError as error:
+        raise DeploymentError(str(error)) from None
+
+
 def build(settings, config_path, push, frontend_only=False):
     if __package__:
         from .frontend_overlay import apply as apply_frontend
     else:
         from frontend_overlay import apply as apply_frontend
 
+    check_design_tokens()
     if not frontend_only:
         build_control(settings, push)
     checkout = prepare(config_path.parent)
@@ -799,6 +811,7 @@ def build(settings, config_path, push, frontend_only=False):
 
 
 def build_control(settings, push):
+    check_design_tokens()
     command(
         [
             "docker",

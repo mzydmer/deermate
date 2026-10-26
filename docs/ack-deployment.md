@@ -27,7 +27,7 @@
 从此功能分支安装（合并主线后可改用 main）：
 
 ```bash
-git clone --branch feat/go-control-plane https://github.com/mzydmer/deermate.git
+git clone --branch feat/vercel-design-system https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
