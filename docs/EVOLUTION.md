@@ -150,3 +150,5 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 验收：最终 25 项真实浏览器检查通过，原任务 1 条仍可读、page errors 0、模型任务 0；检查浅/深色、390px 手机、键盘/减少动态效果及管理功能。已查看桌面、登录、手机和深色管理截图，见[有限收据](verification/vercel-design-2026-10-26.json)。色彩基础对比度已计算（正文/状态色 >=4.5、必要边界/焦点 >=3）；未声称完整独立 WCAG 审计。Go 7 项测试通过（6.798 秒）、固定 Chart/本地/overlay 22 passed（2.99 秒）、Ruff/token 同步/相对链接通过。标准前端镜像构建通过；最终少量样式修正在 package/lock 完全一致的标准镜像依赖上重新编译，保留 base/最终镜像身份。
 
 当前分支 `feat/vercel-design-system` 基于 Go 分支 `e7db6dd`。补记上一轮 Go [CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 七个 job 现已核对全部 success，含标准五镜像构建；这不是本轮新风格的 CI，也不代表 ACK 部署。本轮设计源代码交付状态另见 STATUS。
+
+设计交付补记：源码 `c349431` 已推送 `feat/vercel-design-system`，最终验收为 25 项浏览器检查通过；[CI 40318918329](https://github.com/mzydmer/deermate/actions/runs/40318918329) 正在运行。本地四个应用容器保持健康。

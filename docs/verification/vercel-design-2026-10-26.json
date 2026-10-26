@@ -75,5 +75,12 @@
     "Palette contrast checked; this is not an independent full WCAG audit.",
     "Design guide governs future changes; unmodified upstream views are not all individually verified.",
     "ACK deployment not performed."
-  ]
+  ],
+  "source_commit": "c3494319a493bec801947d2ff4eda221308c62dd",
+  "ci": {
+    "run_id": 40318918329,
+    "status": "in_progress",
+    "url": "https://github.com/mzydmer/deermate/actions/runs/40318918329",
+    "claim": "Local verification passed; remote completion not yet confirmed."
+  }
 }
