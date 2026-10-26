@@ -37,7 +37,8 @@ def run(image, settings, receipt):
                 image,
                 "-c",
                 COPY_CREDENTIALS + "\nfrom deermate.ssh import _read_file\n"
-                "assert _read_file(target/'client.key', private=True)==b'offline-credential-fixture'\n",
+                "expected=b'offline-credential-fixture'\n"
+                "assert _read_file(target/'client.key', private=True)==expected\n",
             ]
         )
         for name, content in {
