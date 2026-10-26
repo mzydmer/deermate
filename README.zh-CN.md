@@ -54,11 +54,13 @@ deermate diff TASK_ID
 
 `TASK_ID` 使用提交接口返回的值。服务只监听 `127.0.0.1`，并创建本地 bearer token。[完整安装、中断、继续与恢复说明](docs/local-worker.md)。
 
-同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；实际 Gateway/SQLite 的重启、取消和失联恢复已有[可保存的 fixture 收据](docs/verification/deerflow-gateway-2026-10-25.json)，模型/UI 与跨主机连接仍需后续工作。
+同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具。Worker 独立于 MCP 进程运行；实际 Gateway/SQLite 也已通过 SSH 完成[组合演示](docs/demo.md)，模型/UI 与真实设备部署仍需后续工作。
 
 ## 我们正在构建什么
 
 直接可达的 SSH Worker 可安装 `.[mcp,ssh]`，填写[注册配置](examples/ssh-controller.toml)，运行 `deermate --config controller.toml --worker home mcp` 或既有 CLI 命令。[SSH 指南](docs/ssh-worker.md)包含主机信任、凭据、期限和绑定句柄；实际设备/账户/网络仍需部署验收。
+
+**运行后端演示：** [一条命令复现](docs/demo.md) · [已捕获事件回放](docs/assets/gateway-ssh-demo.html) · [21 项检查收据](docs/verification/gateway-ssh-2026-10-25.json)。覆盖实际 Gateway → MCP → SSH → Worker 的修复、验证失败、重启、重连与撤权。HTML 下载后可离线打开；使用同机进程、临时密钥和离线原生 fixture。上方视频仍是模拟概念预览。
 
 | 能力 | 目标体验 | 进展 |
 | --- | --- | --- |
@@ -152,7 +154,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 ## 开发进展
 
-当前阶段：**M2.2，直接 SSH 传输 Alpha**。已交付的内容与计划中的运行能力分别列出。
+当前阶段：**M2.3，完整 Gateway/SSH 组合演示**；运行基础仍为直接 SSH 传输 Alpha。已交付的内容与计划中的运行能力分别列出。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
@@ -169,7 +171,7 @@ M2.1 常规测试为 51 项通过、两项 opt-in 上游检查跳过；另行执
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
-M2.2 将常规测试扩展至 **74 项通过、3 项 opt-in 用例跳过**；上游固定驱动的本地/SSH 两种模式均另行通过。[SSH 收据](docs/verification/ssh-transport-2026-10-25.json)覆盖 22 项协议测试，包括撤权、轮换和丢响应恢复，不代表真实设备/OpenSSH/NAT 已验收。
+当前常规测试为 **74 项通过、4 项 opt-in 用例跳过**；实际 Gateway 的本地/SSH 两种模式另行通过，分别覆盖 14/21 项检查并生成事件回放。上游固定驱动的本地/SSH 两种模式也已通过。此前的 [SSH 收据](docs/verification/ssh-transport-2026-10-25.json)覆盖 22 项协议测试，包括撤权、轮换和丢响应恢复；这些同机 fixture 不代表真实设备/OpenSSH/NAT 已验收。
 
 首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
 

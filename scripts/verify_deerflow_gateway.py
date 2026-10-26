@@ -20,11 +20,12 @@ import tempfile
 import time
 import uuid
 from contextlib import ExitStack
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 
 import httpx
+from demo_replay import render_replay
 
 DEERFLOW_COMMIT = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
 ROOT = Path(__file__).resolve().parents[1]
@@ -236,7 +237,59 @@ def prepare(work, checkout, worker_port):
     return worker_config, env
 
 
-def run(checkout, gateway_python, receipt_path, work):
+def prepare_ssh(work, ssh_port, worker_port, instance_id, token):
+    import asyncssh
+
+    state = work / "ssh"
+    state.mkdir(mode=0o700)
+    host = asyncssh.generate_private_key("ssh-ed25519")
+    client = asyncssh.generate_private_key("ssh-ed25519")
+    for name, content in {
+        "host.key": host.export_private_key(),
+        "client.key": client.export_private_key(),
+        "client.pub": client.export_public_key(),
+        "known_hosts": f"[127.0.0.1]:{ssh_port} ".encode() + host.export_public_key(),
+        "api.token": token.encode(),
+    }.items():
+        path = state / name
+        path.write_bytes(content)
+        path.chmod(0o600)
+    controller = work / "controller.toml"
+    fields = {
+        "host": "127.0.0.1",
+        "port": ssh_port,
+        "username": "deermate",
+        "known_hosts": str(state / "known_hosts"),
+        "client_key": str(state / "client.key"),
+        "token_file": str(state / "api.token"),
+        "expected_instance_id": instance_id,
+        "worker_port": worker_port,
+        "expires_at": (datetime.now(UTC) + timedelta(hours=1)).isoformat(),
+        "enabled": True,
+        "connect_timeout_seconds": 2,
+        "max_connection_age_seconds": 30,
+    }
+    controller.write_text(
+        "[workers.home]\n"
+        + "".join(f"{key} = {json.dumps(value)}\n" for key, value in fields.items())
+    )
+    extensions_path = work / "extensions_config.json"
+    extensions = json.loads(extensions_path.read_text())
+    extensions["mcpServers"]["deermate"]["args"] = [
+        "-m",
+        "deermate.cli",
+        "--config",
+        str(controller),
+        "--worker",
+        "home",
+        "mcp",
+    ]
+    extensions_path.write_text(json.dumps(extensions))
+    return controller
+
+
+def run(checkout, gateway_python, receipt_path, work, transport="local", replay_path=None):
+    started = time.monotonic()
     verify_checkout(checkout)
     worker_port, gateway_port = port_number(), port_number()
     worker_config, env = prepare(work, checkout, worker_port)
@@ -263,6 +316,9 @@ def run(checkout, gateway_python, receipt_path, work):
             (checkout / "backend/uv.lock").read_bytes()
         ).hexdigest(),
         "verifier_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "replay_renderer_sha256": hashlib.sha256(
+            (ROOT / "scripts/demo_replay.py").read_bytes()
+        ).hexdigest(),
         "deermate_source_sha256": worker_source.hexdigest(),
         "native_fixture_sha256": hashlib.sha256(
             (ROOT / "tests/fake_codex.py").read_bytes()
@@ -270,6 +326,7 @@ def run(checkout, gateway_python, receipt_path, work):
         "parent_python": platform.python_version(),
         "gateway_runtime": gateway_runtime,
         "platform": platform.system(),
+        "transport": transport,
         "native_runtime": "offline Codex protocol fixture",
         "configured_cloud_models": 0,
         "gateway": "actual upstream application, lifespan, SQL service, MCP caller and HTTP routes",
@@ -277,7 +334,10 @@ def run(checkout, gateway_python, receipt_path, work):
         "limits": [
             "Orderly process restart; no hard-crash or remote network test.",
             "No configured chat model; notification-model runs are not expected to complete.",
-            "No browser/UI, real-model task or SSH verification.",
+            "No product chat UI or real-model task; replay shows captured acceptance events.",
+            "All processes run on one host; SSH uses generated fixture credentials."
+            if transport == "ssh"
+            else "Direct loopback Worker transport; no SSH.",
         ],
         "checks": [],
     }
@@ -285,7 +345,14 @@ def run(checkout, gateway_python, receipt_path, work):
     def check(name, condition, **evidence):
         if not condition:
             raise RuntimeError(f"Acceptance failed: {name}")
-        receipt["checks"].append({"name": name, "passed": True, **evidence})
+        receipt["checks"].append(
+            {
+                "name": name,
+                "passed": True,
+                "elapsed_seconds": round(time.monotonic() - started, 3),
+                **evidence,
+            }
+        )
         print(f"PASS {name}", flush=True)
 
     def start_worker(generation):
@@ -320,6 +387,31 @@ def run(checkout, gateway_python, receipt_path, work):
             work / f"gateway-{generation}.log",
         )
 
+    def start_ssh(generation):
+        process = Process(
+            "SSH fixture",
+            [
+                sys.executable,
+                str(ROOT / "scripts/ssh_demo_fixture.py"),
+                "--state",
+                str(work / "ssh"),
+                "--port",
+                str(ssh_port),
+                "--worker-port",
+                str(worker_port),
+            ],
+            child_environment(),
+            ROOT,
+            work / f"ssh-{generation}.log",
+        )
+        cleanup.callback(process.stop)
+        wait_for(
+            lambda: json.loads((work / "ssh/stats.json").read_text()),
+            lambda stats: stats["ready"] and stats["generation"] == generation,
+            process=process,
+        )
+        return process
+
     def sql_row(tracking_id):
         with sqlite3.connect(f"file:{work / 'sql/deerflow.db'}?mode=ro", uri=True) as db:
             db.row_factory = sqlite3.Row
@@ -347,6 +439,33 @@ def run(checkout, gateway_python, receipt_path, work):
                 headers={"Authorization": f"Bearer {token}"},
             )
         )
+        instance_id = wait_for(
+            lambda: request(wc, "GET", "/capabilities"),
+            lambda c: bool(c["instance_id"]),
+            process=worker,
+        )["instance_id"]
+        if transport == "ssh":
+            ssh_port = port_number()
+            controller = prepare_ssh(work, ssh_port, worker_port, instance_id, token)
+            ssh = start_ssh(1)
+            receipt["ssh_fixture_sha256"] = hashlib.sha256(
+                (ROOT / "scripts/ssh_demo_fixture.py").read_bytes()
+            ).hexdigest()
+            from importlib.metadata import version
+
+            receipt["ssh_runtime"] = {"asyncssh": version("asyncssh")}
+
+        def native_id(handle):
+            if transport == "ssh":
+                prefix, task_id = handle.split(":")
+                if prefix != instance_id or len(task_id) != 32:
+                    raise RuntimeError("Gateway did not retain the enrolled Worker identity")
+                return task_id
+            return handle
+
+        def worker_task(handle):
+            return request(wc, "GET", f"/tasks/{native_id(handle)}")
+
         gateway = start_gateway(1)
         cleanup.callback(gateway.stop)
         gc = cleanup.enter_context(
@@ -361,6 +480,8 @@ def run(checkout, gateway_python, receipt_path, work):
             lambda: gc.get("/health"), lambda r: r.status_code == 200, timeout=180, process=gateway
         )
         print("Actual Gateway ready with isolated SQLite.", flush=True)
+
+        submitted = []
 
         def submit(prompt):
             thread = uuid.uuid4().hex
@@ -377,6 +498,8 @@ def run(checkout, gateway_python, receipt_path, work):
             )
             tid = payload["tracking"]["task_id"]
             row = sql_row(tid)
+            native_id(row["remote_task_id"])
+            submitted.append(row["remote_task_id"])
             check(
                 "sql_submission_and_hidden_control_tools",
                 payload["visible_tools"] == ["deermate_submit_task"],
@@ -389,14 +512,24 @@ def run(checkout, gateway_python, receipt_path, work):
             return request(gc, "GET", f"/api/threads/{thread}/mcp-tasks/{tid}")
 
         thread, tid, remote = submit("slow-gateway")
-        native = wait_for(
-            lambda: request(wc, "GET", f"/tasks/{remote}"), lambda t: t["status"] == "running"
-        )["session_id"]
+        native = wait_for(lambda: worker_task(remote), lambda t: t["status"] == "running")[
+            "session_id"
+        ]
+        if transport == "ssh":
+            stats = json.loads((work / "ssh/stats.json").read_text())
+            check(
+                "ssh_instance_bound_path",
+                remote.startswith(instance_id + ":")
+                and stats["authenticated"] > 0
+                and stats["forward_requests"] > 0,
+                worker_instance_id=instance_id,
+                remote_task_id=remote,
+            )
         old_pid = gateway.job.pid
         gateway.stop()
         check(
             "worker_survives_gateway_stop",
-            not gateway.forced and request(wc, "GET", f"/tasks/{remote}")["status"] == "running",
+            not gateway.forced and worker_task(remote)["status"] == "running",
         )
         gateway = start_gateway(2)
         cleanup.callback(gateway.stop)
@@ -409,7 +542,7 @@ def run(checkout, gateway_python, receipt_path, work):
             gateway.job.pid != old_pid
             and saved["task_id"] == tid
             and sql_row(tid)["remote_task_id"] == remote
-            and request(wc, "GET", f"/tasks/{remote}")["session_id"] == native,
+            and worker_task(remote)["session_id"] == native,
             tracking_id=tid,
             remote_task_id=remote,
             native_session_id=native,
@@ -420,7 +553,7 @@ def run(checkout, gateway_python, receipt_path, work):
             "http_cancel_confirmed_in_sql_and_worker",
             cancelled["cancel_requested"]
             and sql_row(tid)["status"] == "cancelled"
-            and request(wc, "GET", f"/tasks/{remote}")["status"] == "cancelled",
+            and worker_task(remote)["status"] == "cancelled",
         )
 
         for prompt, expected in [("fix", "completed"), ("bad-fix", "failed")]:
@@ -437,11 +570,70 @@ def run(checkout, gateway_python, receipt_path, work):
                 remote_task_id=remote,
                 validation_exit_code=data["result"]["validation"]["exit_code"],
             )
+            if expected == "completed":
+                patch = wc.get(f"/tasks/{native_id(remote)}/diff")
+                patch.raise_for_status()
+                if "-    return a - b" not in patch.text or "+    return a + b" not in patch.text:
+                    raise RuntimeError("Expected repair diff was not retained")
+                validation = data["result"]["validation"]
+                receipt["demo_artifacts"] = {
+                    "source": "Read-only Worker diff observer; validation returned through Gateway",
+                    "patch_excerpt": patch.text[:4000],
+                    "validation_excerpt": validation["stdout"] + validation["stderr"],
+                }
+
+        if transport == "ssh":
+            thread, tid, remote = submit("slow-gateway")
+            native = wait_for(lambda: worker_task(remote), lambda t: t["status"] == "running")[
+                "session_id"
+            ]
+            ssh.stop()
+            degraded = wait_for(lambda: detail(thread, tid), lambda t: t["tracking_degraded"])
+            check(
+                "ssh_outage_preserves_running_worker",
+                not ssh.forced
+                and degraded["status"] in {"submitted", "working"}
+                and worker_task(remote)["status"] == "running",
+            )
+            ssh = start_ssh(2)
+            recovered = wait_for(
+                lambda: detail(thread, tid),
+                lambda t: t["status"] == "working" and not t["tracking_degraded"],
+            )
+            check(
+                "ssh_reconnect_preserves_identity",
+                recovered["task_id"] == tid
+                and sql_row(tid)["remote_task_id"] == remote
+                and worker_task(remote)["session_id"] == native,
+                remote_task_id=remote,
+                native_session_id=native,
+            )
+            granted_config = controller.read_text()
+            controller.write_text(granted_config.replace("enabled = true", "enabled = false"))
+            request(gc, "POST", f"/api/threads/{thread}/mcp-tasks/{tid}/cancel")
+            refused = wait_for(
+                lambda: detail(thread, tid),
+                lambda t: bool(t.get("last_cancel_error")),
+            )
+            check(
+                "ssh_revocation_does_not_claim_cancelled",
+                refused["cancel_requested"]
+                and refused["status"] in {"submitted", "working"}
+                and worker_task(remote)["status"] == "running",
+            )
+            controller.write_text(granted_config)
+            wait_for(lambda: detail(thread, tid), lambda t: t["status"] == "cancelled")
+            check(
+                "ssh_grant_restore_completes_requested_cancel",
+                sql_row(tid)["status"] == "cancelled"
+                and worker_task(remote)["status"] == "cancelled"
+                and worker_task(remote)["session_id"] == native,
+            )
 
         thread, tid, remote = submit("slow-gateway")
-        native = wait_for(
-            lambda: request(wc, "GET", f"/tasks/{remote}"), lambda t: t["status"] == "running"
-        )["session_id"]
+        native = wait_for(lambda: worker_task(remote), lambda t: t["status"] == "running")[
+            "session_id"
+        ]
         worker.stop()
         degraded = wait_for(lambda: detail(thread, tid), lambda t: t["tracking_degraded"])
         check(
@@ -456,15 +648,16 @@ def run(checkout, gateway_python, receipt_path, work):
             "reconnect_requires_explicit_recovery",
             recovered["input_required"]["kind"] == "recovery_required"
             and not recovered["tracking_degraded"]
-            and request(wc, "GET", f"/tasks/{remote}")["session_id"] == native,
+            and worker_task(remote)["session_id"] == native,
         )
         trace = [
             json.loads(line) for line in (work / "native/trace.jsonl").read_text().splitlines()
         ]
         check(
             "no_replayed_sessions_or_turns",
-            sum(row.get("method") == "thread/start" for row in trace) == 4
-            and sum(row.get("method") == "turn/start" for row in trace) == 4,
+            sum(row.get("method") == "thread/start" for row in trace) == len(submitted)
+            and sum(row.get("method") == "turn/start" for row in trace) == len(submitted),
+            submitted_tasks=len(submitted),
         )
         check(
             "source_checkout_unchanged",
@@ -475,10 +668,23 @@ def run(checkout, gateway_python, receipt_path, work):
         )
         verify_checkout(checkout)
         check("pinned_upstream_unchanged", True)
+        if transport == "ssh":
+            stats = json.loads((work / "ssh/stats.json").read_text())
+            check(
+                "ssh_fixture_enforced_forwarding",
+                stats["generation"] == 2
+                and stats["authenticated"] > 0
+                and stats["forward_requests"] > 0
+                and stats["denied_forwards"] == stats["denied_sessions"] == 0,
+                **{key: value for key, value in stats.items() if key != "ready"},
+            )
     receipt["passed"] = True
     receipt["finished_at"] = datetime.now(UTC).isoformat()
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
+    if replay_path:
+        render_replay(receipt, replay_path)
+        print(f"Replay saved: {replay_path}", flush=True)
     print(f"Receipt saved: {receipt_path}", flush=True)
 
 
@@ -488,6 +694,10 @@ def main():
     parser.add_argument("--gateway-python", type=Path)
     parser.add_argument("--receipt", type=Path)
     parser.add_argument("--work-dir", type=Path)
+    parser.add_argument("--transport", choices=["local", "ssh"], default="local")
+    parser.add_argument(
+        "--replay", type=Path, help="Write a self-contained replay of actual checks"
+    )
     parser.add_argument("--gateway-child", type=int, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.gateway_child:
@@ -507,6 +717,8 @@ def main():
             args.gateway_python.absolute(),
             args.receipt.resolve(),
             args.work_dir.resolve(),
+            args.transport,
+            args.replay.resolve() if args.replay else None,
         )
     else:
         with tempfile.TemporaryDirectory(prefix="deermate-gateway-") as temp:
@@ -515,6 +727,8 @@ def main():
                 args.gateway_python.absolute(),
                 args.receipt.resolve(),
                 Path(temp).resolve(),
+                args.transport,
+                args.replay.resolve() if args.replay else None,
             )
 
 

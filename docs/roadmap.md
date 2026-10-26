@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1, M2.1 and M2.2 direct SSH implemented with fixture evidence; actual devices/NAT remain pending. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1, M2.1/M2.2 and the M2.3 combined Gateway/SSH fixture demo implemented; actual devices/NAT remain pending. Updated: 2026-10-25. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -33,6 +33,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Expose narrow Python MCP tools matching its durable background-task contract.
 - [x] Exercise the actual DeerFlow Gateway with SQLite-backed tracking across orderly process restart (AC-M2-01; offline native fixture and model-free tool entry).
 - [x] Add enrolled AsyncSSH forwarding with host-key verification, dedicated key/token references and instance-bound handles.
+- [x] Demonstrate actual Gateway → MCP → SSH → Worker in one run, including SSH outage/reconnect, revoked cancellation and Worker recovery, with a receipt and captured-event replay.
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.
@@ -42,7 +43,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 
 Exit criterion: start work from DeerFlow, finish remotely, return evidence, then demonstrate restart/reconnect recovery and revoked-access rejection.
 
-Local bridge setup and precise verification scope: [deerflow.md](deerflow.md). The [retained Gateway receipt](verification/deerflow-gateway-2026-10-25.json) covers actual application startup, SQL tracking, original task HTTP routes, process restart, outage and reconnect. No real model, browser, remote SSH, hard-crash, or historical database-upgrade claim follows from that fixture check.
+Run the [combined demo](demo.md) to exercise 21 checks over actual Gateway/MCP/SSH/Worker processes. Its [receipt](verification/gateway-ssh-2026-10-25.json) and [replay](assets/gateway-ssh-demo.html) include Gateway restart, SSH-only outage/reconnect, revocation and confirmed cancellation. This uses generated credentials and an offline native fixture on one host; real devices, product UI/model notifications and hard crashes remain separate acceptance targets.
 
 The separate [SSH receipt](verification/ssh-transport-2026-10-25.json) covers 22 real generated-key SSH/HTTP/MCP tests, including lost acknowledgements, key rotation and revocation. Both local/SSH pinned-driver variants pass. This remains a same-host network fixture, not two-machine or NAT deployment evidence.
 

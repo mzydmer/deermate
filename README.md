@@ -64,11 +64,13 @@ deermate diff TASK_ID
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
 
-To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. Actual Gateway/SQLite restart, cancellation and outage recovery now have a [retained fixture receipt](docs/verification/deerflow-gateway-2026-10-25.json); model/UI and remote access remain separate work.
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. The actual Gateway/SQLite path also runs through SSH in the [combined demo](docs/demo.md); model/UI and real-device deployment remain separate work.
 
 ## What we are building
 
 For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; actual device/account/network deployment still needs validation.
+
+**Run the backend demo:** [one-command walkthrough](docs/demo.md) · [captured event replay](docs/assets/gateway-ssh-demo.html) · [21-check receipt](docs/verification/gateway-ssh-2026-10-25.json). It exercises the actual Gateway → MCP → SSH → Worker path, including repair, validation failure, restart, reconnect and revocation. Download the HTML to replay it locally. Generated keys, same-host processes and an offline native fixture keep its scope explicit; the concept video above remains simulated.
 
 | Capability | Intended experience | Status |
 | --- | --- | --- |
@@ -165,7 +167,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M2.2 direct SSH transport alpha**.
+We track delivered work separately from planned functionality. Current stage: **M2.3 combined Gateway/SSH demo**, on the direct SSH transport alpha.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -182,7 +184,7 @@ M2.1 has 51 passing normal tests (two opt-in upstream checks skipped), a passing
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-M2.2 expands the normal suite to **74 passed, 3 opt-in cases skipped**. Both local/SSH pinned-driver variants pass separately. The [SSH receipt](docs/verification/ssh-transport-2026-10-25.json) covers 22 protocol cases including revocation, rotation and lost acknowledgements; this is not real-device/OpenSSH/NAT evidence.
+The current normal suite has **74 passed, 4 opt-in cases skipped**. Both actual Gateway modes pass separately (local: 14 checks; SSH: 21), with a self-contained replay of captured events. Both local/SSH pinned-driver variants also pass. The earlier [SSH receipt](docs/verification/ssh-transport-2026-10-25.json) covers 22 protocol cases including revocation, rotation and lost acknowledgements; none of these same-host fixtures is real-device/OpenSSH/NAT evidence.
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

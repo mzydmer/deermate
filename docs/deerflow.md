@@ -2,7 +2,7 @@
 
 状态：M2.1 本地 Python MCP 桥接已实现。真实 MCP、固定上游驱动，以及实际 Gateway/SQLite 的后台任务和有序进程重启均已通过 fixture 验收。模型通知、浏览器 UI 和真实设备部署仍待后续验证。
 
-M2.2 已增加[直接 SSH 模式](ssh-worker.md)及其独立协议/上游驱动测试。本页的 14 项 Gateway 收据仍描述先前的本地路径，不把它扩展成远程部署证据。
+M2.2 已增加[直接 SSH 模式](ssh-worker.md)。M2.3 又把实际 Gateway 与 SSH 接成同一条链路，保留 [21 项组合检查收据](verification/gateway-ssh-2026-10-25.json)和[回放](assets/gateway-ssh-demo.html)，复现见[演示指南](demo.md)。本页原有 14 项收据仍属于历史本地路径。
 
 ## 运行方式
 
@@ -78,7 +78,7 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 ```bash
 python -m pip install -e '.[dev]'
 python -m pytest -q
-ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py
+ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py
 python -m build --wheel
 ```
 
@@ -123,8 +123,8 @@ DEERMATE_GATEWAY_PYTHON=/path/to/deer-flow/backend/.venv/bin/python \
 python -m pytest -q tests/test_deerflow_gateway.py
 ```
 
-当前常规测试为 74 passed、3 skipped；显式上游驱动检查现有 local/SSH 两种变体，另有 Gateway 检查。CI 独立运行驱动和实际 Gateway，并保留各自收据；常规平台还上传 SSH 协议测试收据。
+当前常规测试为 74 passed、4 skipped；显式上游驱动与实际 Gateway 检查均有 local/SSH 两种变体。本次两个实际 Gateway 用例为 2 passed（92.59 秒）。CI 独立运行驱动与两种 Gateway 模式，保存 Gateway JSON/HTML；常规平台还上传 SSH 协议测试收据。
 
-验收只覆盖新 SQLite 数据库和有序进程重启。由于没有配置聊天模型，上游通知 run 会在模型装配阶段失败；本次验证的是任务 HTTP/SQL 结果，不是模型生成通知、聊天 UI、历史数据库升级、硬崩溃、SSH 或跨主机容错。详细条件见[验收规格](specs/m2-gateway-verification.md)。
+验收只覆盖新 SQLite 数据库和有序进程重启。由于没有配置聊天模型，上游通知 run 会在模型装配阶段失败；本次验证的是任务 HTTP/SQL 结果，不是模型生成通知、产品聊天 UI、历史数据库升级、硬崩溃或真实跨主机容错。历史本地范围见[原验收规格](specs/m2-gateway-verification.md)，新增 `--transport ssh --replay <file>` 见[M2.3 规格](specs/m2-gateway-ssh-demo.md)与[演示命令](demo.md)。
 
 移除 DeerFlow 的桥接配置并重启即可停用接入，不删除 Worker 任务。M2.2 的直接 SSH 连接和部署说明见 [SSH 指南](ssh-worker.md)；真实双机/NAT、模型通知与 UI 体验仍是后续验收。

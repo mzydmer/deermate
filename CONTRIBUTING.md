@@ -11,14 +11,14 @@ Start with [AGENTS.md](AGENTS.md) and [current status](docs/STATUS.md). [SPEC.md
 1. Review the worker lifecycle and restart/reconnect semantics.
 2. Improve the Codex adapter's lifecycle evidence and bounded recovery.
 3. Extend the actual Gateway/SQL verifier to configured-model notifications or upgrade scenarios; local restart and outage checks already have retained receipts.
-4. Validate the implemented SSH transport on real restricted accounts, or extend the Gateway verifier to its SSH mode. Protocol tests already cover enrollment, rotation and revocation boundaries.
+4. Validate the implemented SSH transport on real restricted accounts. The combined [Gateway/SSH demo](docs/demo.md) already covers protocol enrollment, outage/reconnect and revocation with generated credentials.
 5. Improve the documentation or Chinese translation.
 
 Open a [design proposal](https://github.com/mzydmer/deermate/issues/new?template=design-proposal.yml) or [integration request](https://github.com/mzydmer/deermate/issues/new?template=integration-request.yml) before a broad change. Focus a pull request on one outcome; include upstream version references and evidence for any support claim.
 
 ## Project conventions
 
-Install developer dependencies with `python -m pip install -e '.[dev]'`. Run `ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py`, `python -m pytest -q`, and `python -m build --wheel`. Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota. The separate [Gateway verifier](docs/deerflow.md) requires a pinned upstream checkout and frozen backend environment but makes no model calls.
+Install developer dependencies with `python -m pip install -e '.[dev]'`. Run the checks in [AGENTS.md](AGENTS.md). Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota. The separate [Gateway verifier](docs/demo.md) requires a pinned upstream checkout and frozen backend environment but makes no model calls.
 
 - Maintain DeerMate-owned backend services in Python. Hermesh is optional external interoperability, not a required Go service.
 - Reuse upstream capabilities where practical and keep interfaces narrow.

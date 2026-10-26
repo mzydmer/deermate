@@ -38,8 +38,8 @@
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
 | FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
 | FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2–M3 规划 |
-| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；实际 Gateway/SQLite 的工具提交、后台查询、取消与有序进程重启已通过 fixture 验收，模型通知与 UI 未验证 |
-| FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 直接 SSH、注册/过期/撤权、实例绑定及重连已实现并通过临时真实 SSH 测试；双机部署与 NAT 未验收 |
+| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 实际 Gateway/SQLite 通过 SSH 的组合验收已通过，模型通知与产品 UI 未验证 |
+| FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；M2.3 组合链路已验证 SSH 断线重连、撤权与取消；真实双机/OpenSSH 部署与 NAT 未验收 |
 | FR-014 | GitHub 事件验签、去重、issue 修复和独立 PR 审核；创建 PR、评论、合并、发布分别授权 | M3 规划 |
 | FR-015 | 竞品/资料 watchlist、历史快照对比、引用来源和有实质变化才通知 | M4 规划 |
 | FR-016 | 按需浏览器和独立桌面会话；同一桌面会话不能被多个任务同时操作 | M4–M5 规划 |
@@ -106,8 +106,8 @@
 | AC-M1-04 | 重启后的运行中任务要求显式恢复，不自动创建新原生会话 | store/worker 恢复测试；硬崩溃与跨机器恢复尚未实测 |
 | AC-M1-05 | 验证失败、无验证、权限拒绝、超时、异常协议不能伪装成验证成功 | [test_worker.py](../tests/test_worker.py)、[test_rpc.py](../tests/test_rpc.py) |
 | AC-M1-06 | 无 token、非本地主机、浏览器来源、超大请求或任意执行命令被拒绝 | [test_api.py](../tests/test_api.py) |
-| AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 后端 fixture 验收通过：实际 Gateway/SQLite 进程重启、原始查询/取消路由、Worker 失联及恢复；模型选择工具由测试入口代替，见[验收规格与边界](specs/m2-gateway-verification.md) |
-| AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | 直接 SSH fixture 范围通过：断线/丢响应、幂等恢复、撤权/到期、密钥轮换、真实 MCP 与实例绑定；双机/OpenSSH 策略/NAT 仍待验收，见[M2.2](specs/m2-ssh-worker.md) |
+| AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 本地及 SSH 两种实际 Gateway 路径通过：SQL/进程重启、原始查询/取消、Worker 失联恢复；模型选工具由测试入口代替，见[M2.3](specs/m2-gateway-ssh-demo.md) |
+| AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | SSH 协议及完整 Gateway 链路的同机 fixture 范围通过；撤权后不假称已取消、恢复授权后确认先前取消，且无新原生会话/轮次；真实双机/OpenSSH/NAT 待验收，见[M2.2](specs/m2-ssh-worker.md)与[M2.3](specs/m2-gateway-ssh-demo.md) |
 
 上述文件是证据入口，不表示每项已覆盖所有边界。当前跑过哪些命令、对应哪个代码版本，以 [STATUS.md](STATUS.md) 为准。
 

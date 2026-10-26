@@ -76,3 +76,13 @@
 - **边界：** 尚非真实双机/OpenSSH/NAT 部署验收；既有实际 Gateway 演示为本地路径，SSH 上游驱动已单独通过。新 CI 将回归并保存两平台 SSH 收据，远端结果需核对后追加。
 - **接续：** 合并 Gateway 与 SSH 为同一演示/验收链，再推进已注册真实设备与受限账户部署。规格与操作见 [M2.2](specs/m2-ssh-worker.md)、[SSH 指南](ssh-worker.md)和 [STATUS](STATUS.md)。
 - **追加远端验证：** [CI 40206131865](https://github.com/mzydmer/deermate/actions/runs/40206131865) 在 `96ca52b` 四组均 success，覆盖两个常规平台、两种驱动绑定及实际本地 Gateway 回归。已核对两平台 SSH artifact `12604035037` / `12603233873` 与 Gateway artifact `12602959515`；此后只补验证记录，运行代码未变。
+
+## E-009 · 2026-10-25 · Gateway → MCP → SSH → Worker 组合演示
+
+- **目标：** 完成 M2.3，把此前分开的 Gateway 与 SSH 验收接成同一条实际链路，推进 FR-012/FR-013 和 AC-M2-01/AC-M2-02。
+- **实现：** 既有 verifier 增加 `--transport ssh`，启动使用临时密钥的受限 SSH 进程并注册真实 Worker 实例；保留本地模式。`--replay` 根据实际收据生成离线 HTML，含事件时间、实例/任务身份、修复 diff 和验证输出。产品运行代码仍为 `f7804ee`，未增加产品权限或工具。
+- **结果：** 21 项组合检查通过，覆盖 SQL 提交、实例绑定、Gateway 替换、原始取消接口、成功/失败验证、SSH-only 失联重连、撤权后取消失败及恢复授权后确认、Worker 恢复与无原生会话/轮次重放。五次提交对应五个原生会话/轮次。
+- **验证：** 实际 Gateway local/SSH pytest 2 passed（92.59 秒），常规 74 passed、4 skipped；Ruff 与 wheel 通过。[收据](verification/gateway-ssh-2026-10-25.json)含当前源码/工具/renderer 哈希；[回放](assets/gateway-ssh-demo.html)已在浏览器检查单步、10×播放、21 项结果及窄屏布局，无控制台警告/错误。
+- **边界：** 同机真实协议与离线 Codex fixture；测试入口只替代模型选工具。原始 diff 从只读 Worker 观察连接获得，任务验证经 Gateway 返回。没有真实设备/OpenSSH/NAT、模型通知、产品 UI、历史升级或硬崩溃声明，也没有修改用户 SSH 配置或调用模型。
+- **交付：** 分支 `feat/gateway-ssh-demo`；CI 增加两种 Gateway 模式及 JSON/HTML artifacts，远端结果核对后追加。`main` 本次核对仍为 `e9f228d`，无开放 PR、未发布。
+- **接续：** 已注册设备上的受限账户部署与服务验收，之后单独推进配置模型的通知/聊天体验。见[演示指南](demo.md)、[M2.3 规格](specs/m2-gateway-ssh-demo.md)和 [STATUS](STATUS.md)。

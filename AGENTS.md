@@ -35,7 +35,7 @@ Use [the roadmap](docs/roadmap.md) for milestone scope, [the evolution log](docs
 For Python implementation changes, run the relevant tests, then the existing checks as appropriate:
 
 ```bash
-ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py
+ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py
 python -m pytest -q
 python -m build --wheel
 ```
