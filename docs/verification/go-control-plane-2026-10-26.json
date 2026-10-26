@@ -109,5 +109,28 @@
     "Local Docker, existing native evidence only; zero new model tasks.",
     "ACK manifests rendered; no ACR push or cluster installation.",
     "Single-instance SQLite; project execution grants and OAuth/PAT/MFA/recovery remain unimplemented."
-  ]
+  ],
+  "source_commit": "4af38d69061c4c60e1e2f19efa1abe1788c42d88",
+  "ci": {
+    "run_id": 40313922279,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/40313922279",
+    "status": "in_progress",
+    "claim": "Local verification passed; remote completion not yet confirmed.",
+    "completed_successfully": [
+      "go-control",
+      "deerflow-contract",
+      "deerflow-gateway (ssh)",
+      "deerflow-gateway (local)",
+      "worker (macos-latest, 3.12)",
+      "worker (ubuntu-latest, 3.11)"
+    ],
+    "pending": [
+      "ack-package: standard five-image build"
+    ]
+  },
+  "migration_backup_check": {
+    "original_owner_id_unchanged": true,
+    "original_password_hash_unchanged": true,
+    "method": "Compare original owner id/password_hash from SQLite online backup to current runtime DB; values not retained."
+  }
 }

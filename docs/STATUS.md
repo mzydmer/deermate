@@ -13,7 +13,7 @@
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
 | 当前验收 | 27 项实际 Go API 检查、18 项浏览器检查（含管理页面创建/停用）；原真实任务仍可读；本轮模型任务为 0 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；实际 Chart 校验通过；未连接 ACK/推送 ACR |
-| 交付 | 本地回归完成；Git 推送/CI 以本节后续交付记录为准，历史前端 CI 与本轮分开记录 |
+| 交付 | 源码 `4af38d6` 已推送 `feat/go-control-plane`；CI 40313922279 的 Go/双平台 Worker/契约/双传输 Gateway 六个 job 已通过，ACK 镜像 job 仍运行 |
 | 发布 | 源码 alpha；未合并主线、未发布正式 release |
 | 下一步 | 秘书模型配置、项目级授权与专职 Agent 路由；云端凭据提供后再进行 ACK 实际部署验收 |
 
@@ -37,6 +37,8 @@
 Go 接管浏览器和 SSR 登录，使用摘要持久化的随机会话与会话绑定 CSRF；更改角色、密码或停用会撤销会话，保留最后一个活跃管理员。管理页 `/admin` 可创建、启停、变更角色和重置密码，并读取近期审计。前端原 API 形状继续兼容；Agent API 经真实用户/版本绑定的短期 JWT 适配到内部运行时，不使用其 internal 超级身份。
 
 本地先做 SQLite 在线备份，保留原 UUID、密码和任务归属，只要求重新登录。27 项真实 API 验收通过：跨用户访问拒绝、执行权限、CSRF、角色撤权、密码重置、停用、退出和 Go 重启后会话/原任务保留。18 项浏览器验收通过，包含原工作台 16 项和 Go 身份入口、管理页创建/停用，页面错误为零。[有限收据](verification/go-control-plane-2026-10-26.json)、[管理页截图](assets/deermate-admin-go-2026-10-26.png)。复用原真实 Codex 任务，本轮未触发模型调用。
+
+Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skipped（51.10 秒）、实际 Chart/本地/overlay 22 passed（1.50 秒）、Ruff 和 wheel 通过。标准 Go Dockerfile 已构建，运行镜像与收据一致。[源码 `4af38d6`](https://github.com/mzydmer/deermate/commit/4af38d69061c4c60e1e2f19efa1abe1788c42d88) 已推送；[CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 的 Go、Worker、契约和双传输六个 job 已通过，ACK 镜像 job 仍运行，不能据此声称云端验收完成。
 
 普通用户当前只可读取自己的线程/任务；项目级执行授权、OAuth/PAT、邮件找回/MFA 尚未完成。共享 SQLite 只支持固定运行时和单实例本地盘；Go 化不等于将 DeerFlow 或 Worker 重写。ACK 配置将 Go 放进原 Gateway Pod，Service 只指向 Go，Python runtime 仅监听 loopback；云端仍待实际部署。
 

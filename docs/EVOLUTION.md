@@ -137,3 +137,5 @@
 本地 Compose 增加非 root Go 服务，只注入必要 bridge secret，先用 SQLite online backup 保存原数据，再切换 nginx/SSR 入口。ACK 五镜像构建及 Go sidecar/Service 接入保持原 RWO/Recreate 单实例；Python runtime 改为 Pod 内 loopback，健康探针携带固定允许 Host。未连接 ACK、推送 ACR 或宣称生产/HA。
 
 验证：Go 模块校验、vet、7 项竞态测试通过（最终测试 8.666 秒）；常规 Python 94 passed/6 skipped（51.10 秒）；实际固定 Chart/本地/overlay 22 passed（1.50 秒）；Ruff、wheel、原 Chart post-renderer 和标准 Go Dockerfile 构建通过。实际本地 27 项 API 检查及 18 项浏览器检查通过，原账号/历史真实 Codex 任务保留，管理页面可创建/停用，浏览器 page errors 为零。追加 Go 重启后会话/任务保留验证；本轮模型任务为零。Go/API/browser [有限收据](verification/go-control-plane-2026-10-26.json)与[管理页截图](assets/deermate-admin-go-2026-10-26.png)区分本轮和历史原生执行证据。
+
+交付补记：源码 `4af38d6` 已推送 `feat/go-control-plane`；本轮 [CI 40313922279](https://github.com/mzydmer/deermate/actions/runs/40313922279) 的 Go、双平台 Worker、契约及双传输 Gateway 六个 job 已通过，ACK 标准镜像构建仍在运行。另以实际在线备份核对原 owner ID 与密码哈希完全一致，未记录这些值。

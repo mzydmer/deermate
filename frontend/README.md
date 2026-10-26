@@ -10,7 +10,7 @@ python scripts/local_docker.py build --frontend-only
 python scripts/local_docker.py up
 ```
 
-Open [http://localhost:2026](http://localhost:2026). The root redirects to the authenticated workspace. Login uses the existing local owner account. Chat-model configuration remains a separate step; preparing a draft does not invoke a model. The home reads tasks from the latest 20 conversations, at most 20 tasks each, and labels incomplete/error results.
+Open [http://localhost:2026](http://localhost:2026). The root redirects to the authenticated workspace. Login uses the existing local owner account through Go; browser and SSR share the Go session. `/admin` provides user/role management. Chat-model configuration remains a separate step; preparing a draft does not invoke a model. The home reads tasks from the latest 20 conversations, at most 20 tasks each, and labels incomplete/error results.
 
 UI acceptance is implemented in [`verify_frontend.cjs`](../scripts/verify_frontend.cjs). Run it in an isolated browser environment with Playwright 1.62.1 and environment variables `DEERMATE_URL` (local profile only), `DEERMATE_OWNER_FILE` (private generated owner file), `DEERMATE_PLAYWRIGHT_MODULE` (module path), and `DEERMATE_OUTPUT` (private screenshot/receipt directory). `DEERMATE_BROWSER_CONTAINER=1` permits Chromium's no-sandbox launch only inside the disposable container used for these checks. The script logs in, reads existing task evidence, tests draft handoff/filtering/themes/mobile/reduced motion, and injects isolated service failures. It does not submit model work or save cookies/passwords in its receipt. Raw screenshots can contain task content; only inspected bounded captures belong in docs.
 
