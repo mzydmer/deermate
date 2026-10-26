@@ -4,6 +4,7 @@ These receipts describe known test fixtures, not private user work or a producti
 
 | Receipt | Scope |
 | --- | --- |
+| [ack-package-2026-10-25.json](ack-package-2026-10-25.json) | Artifact-derived CI evidence for four linux/amd64 image builds and non-root Gateway readiness/auth/MCP/SSH/credential-copy probes; source/ZIP hashes and real image ID. No ACR push, ACK installation, model, frontend login or home SSH claim. |
 | [gateway-ssh-2026-10-25.json](gateway-ssh-2026-10-25.json) | Combined actual Gateway → MCP → SSH → Worker run: 21 checks, generated credentials, Gateway restart, SSH-only outage/reconnect, revocation/cancel confirmation, validation outcomes and Worker recovery; [captured event replay](../assets/gateway-ssh-demo.html) |
 | [deerflow-gateway-2026-10-25.json](deerflow-gateway-2026-10-25.json) | Actual pinned Gateway/SQLite startup, MCP tool wrapper/caller, orderly process restart, original HTTP cancellation/query, validation outcomes and Worker outage/reconnect; offline Codex fixture, no configured model |
 | [ssh-transport-2026-10-25.json](ssh-transport-2026-10-25.json) | 22 generated-key SSH/HTTP/MCP protocol tests: identity, credentials, grant/connection expiry, revocation, rotation, reconnect and lost submit acknowledgement; same-host loopback endpoints, offline native fixture |

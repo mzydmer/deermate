@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "source_commit": "ca23f2c43c5d47721e0e726fbba9fef1bd6a0144",
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "ci_run_id": 40266316155,
+  "ci_url": "https://github.com/mzydmer/deermate/actions/runs/40266316155",
+  "artifact_id": 12626344052,
+  "artifact_sha256": "619a8e84f9df0b271ed49399810cdde20f72e59b48955fc32f128ac2afe56087",
+  "source_files_sha256": {
+    "scripts/ack_deploy.py": "b1671d3a675901b3ec1e4fb897a8249b10816db3163cdabeed8fd6fed53a6747",
+    "scripts/ack_image_smoke.py": "1a8959b7691495e5308e09c6306fb7cebb628f6d8ec56b8544e58f9b3547476a",
+    "tests/test_ack_deploy.py": "a00b406979df63eb18471e92c45a4a7f7e94e2a2431f7d7182293b3caa3bd9d9",
+    "deploy/ack/gateway-layer.dockerfile": "dfec7f45ea0284094ac143580ae328cfee86fcf98cde5952703d9e7009bf4f9c",
+    "pyproject.toml": "bdf798e2e0ab3ebc612e29eebf61a7dca9f81013b30e5ad0834bfc905f5603a6"
+  },
+  "image_probe": {
+    "passed": true,
+    "image_id": "sha256:3f84dd17f1ac2ec5efeab26f056e0082c3097ccdab5c9c758e19fd92010c31de",
+    "packages": {
+      "deermate": "0.1.0a1",
+      "mcp": "1.30.0",
+      "asyncssh": "2.24.1"
+    },
+    "uid": 1000,
+    "checks": [
+      "gateway_ready",
+      "unauthenticated_threads_rejected",
+      "mcp_ssh_imported",
+      "non_root_credential_copy"
+    ],
+    "limits": "Image only; no ACK/model/frontend login/home SSH test."
+  },
+  "actual_ack_installation": false,
+  "acr_push_verified": false,
+  "limits": [
+    "Linux amd64 images built and Gateway probed in GitHub CI.",
+    "Local image tags were used; images were not published to ACR.",
+    "No user cluster, real model, frontend login or home Worker connection tested."
+  ]
+}

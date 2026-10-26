@@ -9,6 +9,7 @@
 - 已有 ACK 托管集群，使用普通 Linux ECS 节点；本快速配置不覆盖 ACK Serverless/ECI/ACS 虚拟节点。
 - 本机或构建机有 Python 3.12+、Git、Docker/Buildx、**Helm 3.18+ 的 3.x 版本**和 kubectl。Worker 自身仍支持 Python 3.11+；Helm 4 不在本包验证范围。
 - kubeconfig 已配置；用 `kubectl config get-contexts` 找到明确的 ACK context。脚本每次操作都传入该 context。
+- 具备目标 namespace 的部署权限及首次创建 namespace 的权限；每个 namespace 部署一套该 Chart，其内部 Service 名固定。
 - ACR 实例/命名空间及构建推送、集群拉取权限。建立四个仓库：`deermate-gateway`、`deermate-frontend`、`deermate-nginx`、`deermate-tools`；允许自动建仓时可由首次推送创建。
 - ACK CSI 云盘 StorageClass，例如 `alicloud-disk-topology-alltype`。脚本验证 provisioner 为 `diskplugin.csi.alibabacloud.com`，申请 20 GiB RWO 云盘；不把 SQLite 放在 NAS。资源按阿里云账户规则计费。
 - 一个从 ACK 可访问、支持工具调用的 OpenAI-compatible 模型 endpoint/model ID 和 API key；使用你实际开通的模型，不在脚本中假设某个商业模型已可用。
@@ -101,7 +102,7 @@ python scripts/ack_deploy.py probe-worker
 - 一个 20 GiB 云盘 PVC：持久化 SQLite、会话检查点和 DeerFlow home。Gateway 固定单副本、`Recreate` 更新，会有短暂停机；不要手动扩容或加 HPA。
 - 保留 upstream setup/login；不设置 `DEER_FLOW_AUTH_DISABLED`。默认不创建 provisioner、执行 Pod/RBAC、PostgreSQL、Redis 或 Ingress；秘书没有配置云端本地 bash/文件工具。
 - 模型、ACR 与 Worker 凭据用 Kubernetes Secret；SSH 私钥/token 经非 root init container 复制成内存卷中的 0600 普通文件。每次 `deploy` 重启 Gateway，使 Secret 轮换生效。
-- MCP 配置以 Helm 为准，每次启动重新复制配置 seed；控制台手改 MCP 配置会被后续部署覆盖。
+- MCP/skills 扩展配置以 Helm 为准，每次启动重新复制配置 seed；控制台手改这些配置会被后续部署覆盖。
 - Helm `--atomic --wait` 检查安装/升级结果，但不回滚脚本单独更新的 Secret，也不保证外部 Worker 任务已停止。
 
 查看状态和日志：
@@ -125,6 +126,6 @@ helm --kube-context YOUR_ACK_CONTEXT -n deermate uninstall deermate
 
 ## 验证与来源
 
-本地已验证实际固定上游 Chart 在 Worker 关闭/启用两种模式下的渲染，包含持久化、权限、私密文件和撤权配置约束；镜像构建/非 root 启动由独立 Linux CI 执行，具体结果见 [STATUS](STATUS.md)。没有实际 ACK 集群安装记录，也未据此声明模型或云端到家中链路已验收。
+本地 14 项部署检查通过，覆盖实际固定 Chart 的 Worker 关闭/启用两种模式；常规回归 86 passed、6 skipped。[CI 40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155) 六个 job 全部成功，实际构建四个 linux/amd64 镜像并验证非 root Gateway 就绪、匿名访问拒绝、MCP/SSH 导入及私密凭据复制。[保留证据](verification/ack-package-2026-10-25.json)来自已校验的 CI artifact。ARM 镜像与 ACR 推送未实测；镜像仍需你构建并发布到自己的 ACR。没有实际 ACK 安装、前端登录或模型/家庭链路验收记录。
 
 参考：[ACK 云盘 StorageClass](https://www.alibabacloud.com/help/zh/ack/ack-managed-and-ack-dedicated/user-guide/use-dynamically-provisioned-disk-volumes)、[ACK 私有镜像拉取](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/user-guide/faq-about-applications)、[固定上游 Helm Chart](https://github.com/bytedance/deer-flow/tree/a1b89d0432de4e45adc59f512cb25bb386ea1e51/deploy/helm/deer-flow)、[Helm 3 post-renderer](https://v3.helm.sh/docs/topics/advanced/#post-rendering)、[kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)。

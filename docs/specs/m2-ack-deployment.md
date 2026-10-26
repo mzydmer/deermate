@@ -1,6 +1,6 @@
 # M2.4: ACK control-plane deployment package
 
-- Status: accepted; implementation in progress.
+- Status: implemented; local Chart/policy checks and Linux image CI passed. Actual ACK installation pending operator environment.
 - Requirements: FR-009, FR-012, FR-013; NFR-001, NFR-002, NFR-005–NFR-007.
 - Updated: 2026-10-25. User explicitly requested Alibaba Cloud ACK deployment scripts.
 
@@ -22,3 +22,7 @@ User instruction supersedes the earlier architecture's recommendation to defer K
 6. Publish ACK/ACR prerequisites, exact commands, troubleshooting, removal/backup boundaries and SSH/NAT limitations. Record separately: local render/tests, Linux image checks, and actual ACK installation (only when performed).
 
 This package does not create/bill a cluster, claim actual ACK installation, configure NAT/reverse tunnels, deploy a desktop Worker in Kubernetes, or establish a real-model/chat/SSH acceptance result merely by starting the UI.
+
+## Recorded evidence
+
+Local: 14 deployment tests including both actual pinned Chart modes; ordinary suite 86 passed/6 skipped; generated configuration accepted by the pinned upstream AppConfig; Helm 3.19.0 real post-renderer output checked. Linux CI [40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155), commit `ca23f2c`, built all four amd64 images and passed non-root Gateway readiness/authentication/MCP/SSH/credential-copy probes. All six CI jobs passed. See [retained artifact-derived evidence](../verification/ack-package-2026-10-25.json) and [STATUS](../STATUS.md). ARM image builds, ACR push, actual Kubernetes installation, frontend login, real model and home SSH remain unverified.

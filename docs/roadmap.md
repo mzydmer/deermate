@@ -34,6 +34,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Exercise the actual DeerFlow Gateway with SQLite-backed tracking across orderly process restart (AC-M2-01; offline native fixture and model-free tool entry).
 - [x] Add enrolled AsyncSSH forwarding with host-key verification, dedicated key/token references and instance-bound handles.
 - [x] Demonstrate actual Gateway → MCP → SSH → Worker in one run, including SSH outage/reconnect, revoked cancellation and Worker recovery, with a receipt and captured-event replay.
+- [x] Prepare a single-instance ACK control-plane package with ACR builds, the pinned upstream Helm chart, persistent block storage, authentication and optional Worker enrollment; image/cluster verification states are tracked separately in STATUS.
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.
@@ -44,6 +45,8 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 Exit criterion: start work from DeerFlow, finish remotely, return evidence, then demonstrate restart/reconnect recovery and revoked-access rejection.
 
 Run the [combined demo](demo.md) to exercise 21 checks over actual Gateway/MCP/SSH/Worker processes. Its [receipt](verification/gateway-ssh-2026-10-25.json) and [replay](assets/gateway-ssh-demo.html) include Gateway restart, SSH-only outage/reconnect, revocation and confirmed cancellation. This uses generated credentials and an offline native fixture on one host; real devices, product UI/model notifications and hard crashes remain separate acceptance targets.
+
+User-requested ACK deployment uses the [quick deployment guide](ack-deployment.md). Its single Gateway/PVC topology supersedes the earlier recommendation to defer Kubernetes; see [ADR 0005](decisions/0005-ack-control-plane.md). A deployment script and successful image probe do not establish an actual user-cluster or cloud-to-home deployment.
 
 The separate [SSH receipt](verification/ssh-transport-2026-10-25.json) covers 22 real generated-key SSH/HTTP/MCP tests, including lost acknowledgements, key rotation and revocation. Both local/SSH pinned-driver variants pass. This remains a same-host network fixture, not two-machine or NAT deployment evidence.
 
