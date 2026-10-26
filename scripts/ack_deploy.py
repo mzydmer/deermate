@@ -243,6 +243,24 @@ def values(settings):
     }
 
 
+def control_nginx(config):
+    """Route the management page to the same guarded Go service as API requests."""
+    marker = "        location = /nginx-health {"
+    if config.count(marker) != 1:
+        raise DeploymentError("Pinned nginx management insertion point changed.")
+    return config.replace(
+        marker,
+        """        location = /admin {
+            proxy_pass http://gateway_upstream;
+            proxy_set_header Host $http_host;
+            proxy_http_version 1.1;
+        }
+
+"""
+        + marker,
+    )
+
+
 def post_render(documents, settings, rollout="review"):
     """Add narrow deployment hooks and fail closed on unexpected chart output."""
     documents = copy.deepcopy([doc for doc in documents if doc])
@@ -260,6 +278,14 @@ def post_render(documents, settings, rollout="review"):
             )
         if kind == "Service" and doc["spec"].get("type", "ClusterIP") != "ClusterIP":
             raise DeploymentError("The quick profile requires private ClusterIP services.")
+        if (
+            kind == "Service"
+            and metadata.get("labels", {}).get("app.kubernetes.io/component") == "gateway"
+        ):
+            for port in doc["spec"]["ports"]:
+                port["targetPort"] = 8080
+        if kind == "ConfigMap" and "nginx.conf" in doc.get("data", {}):
+            doc["data"]["nginx.conf"] = control_nginx(doc["data"]["nginx.conf"])
         if kind == "PersistentVolumeClaim" or kind == "Secret":
             metadata.setdefault("annotations", {})["helm.sh/resource-policy"] = "keep"
         if kind == "PersistentVolumeClaim":
@@ -294,6 +320,14 @@ def post_render(documents, settings, rollout="review"):
             # package-manager download during startup.
             frontend["command"] = ["node", "/app/frontend/node_modules/next/dist/bin/next"]
             frontend["args"] = ["start", "--hostname", "0.0.0.0", "--port", "3000"]
+        if component == "nginx":
+            nginx = next(item for item in pod["containers"] if item["name"] == "nginx")
+            nginx["readinessProbe"]["httpGet"].update(
+                {
+                    "path": "/health/ready",
+                    "httpHeaders": [{"name": "Host", "value": "localhost:2026"}],
+                }
+            )
         if component != "gateway":
             continue
         gateway.append(doc)
@@ -305,6 +339,82 @@ def post_render(documents, settings, rollout="review"):
             )
         annotations = doc["spec"]["template"]["metadata"].setdefault("annotations", {})
         annotations["deermate.io/deployment-generation"] = rollout
+        runtime = next(item for item in pod["containers"] if item["name"] == "gateway")
+        auth = next(item for item in runtime["env"] if item["name"] == "AUTH_JWT_SECRET")
+        home = next(
+            mount
+            for mount in runtime["volumeMounts"]
+            if mount["mountPath"] == "/app/backend/.deer-flow"
+        )
+        runtime["env"] = [
+            item
+            for item in runtime["env"]
+            if item["name"]
+            not in {"DEER_FLOW_CHANNELS_GATEWAY_URL", "DEER_FLOW_CHANNELS_LANGGRAPH_URL"}
+        ]
+        runtime["env"].extend(
+            [
+                {"name": "DEER_FLOW_CHANNELS_GATEWAY_URL", "value": "http://127.0.0.1:8001"},
+                {"name": "DEER_FLOW_CHANNELS_LANGGRAPH_URL", "value": "http://127.0.0.1:8001/api"},
+            ]
+        )
+        # The legacy runtime/auth endpoints must not be reachable via a Pod IP.
+        runtime["args"] = [
+            arg.replace("--host 0.0.0.0", "--host 127.0.0.1") for arg in runtime["args"]
+        ]
+        for probe in ("readinessProbe", "livenessProbe"):
+            old = runtime[probe]
+            endpoint = old.pop("httpGet")["path"]
+            old["exec"] = {
+                "command": [
+                    "/app/backend/.venv/bin/python",
+                    "-c",
+                    "import urllib.request; urllib.request.urlopen("
+                    + repr("http://127.0.0.1:8001" + endpoint)
+                    + ",timeout=4)",
+                ]
+            }
+        pod["containers"].append(
+            {
+                "name": "control",
+                "image": settings["registry"] + "/deermate-control:" + settings["tag"],
+                "ports": [{"name": "control", "containerPort": 8080}],
+                "securityContext": {
+                    "runAsUser": 1000,
+                    "runAsNonRoot": True,
+                    "allowPrivilegeEscalation": False,
+                    "capabilities": {"drop": ["ALL"]},
+                },
+                "env": [
+                    copy.deepcopy(auth),
+                    {"name": "DEERMATE_RUNTIME_URL", "value": "http://127.0.0.1:8001"},
+                    {"name": "DEERMATE_DATABASE_PATH", "value": "/runtime-home/data/deerflow.db"},
+                    {"name": "DEERMATE_ORIGIN", "value": "http://localhost:2026"},
+                    {
+                        "name": "DEERMATE_ALLOWED_HOSTS",
+                        "value": "localhost:2026,127.0.0.1:2026,127.0.0.1:8080,gateway:8001",
+                    },
+                ],
+                "volumeMounts": [{**copy.deepcopy(home), "mountPath": "/runtime-home"}],
+                "resources": {
+                    "requests": {"cpu": "100m", "memory": "64Mi"},
+                    "limits": {"cpu": "1", "memory": "256Mi"},
+                },
+                "readinessProbe": {
+                    "exec": {"command": ["/deermate", "healthcheck"]},
+                    "periodSeconds": 5,
+                },
+                "livenessProbe": {
+                    "httpGet": {
+                        "path": "/health/live",
+                        "port": 8080,
+                        "httpHeaders": [{"name": "Host", "value": "127.0.0.1:8080"}],
+                    },
+                    "periodSeconds": 10,
+                    "initialDelaySeconds": 120,
+                },
+            }
+        )
         for container in pod.get("initContainers", []):
             container["image"] = settings["registry"] + "/deermate-tools:" + settings["tag"]
             if container["name"] == "init-extensions":
@@ -620,6 +730,8 @@ def build(settings, config_path, push, frontend_only=False):
     else:
         from frontend_overlay import apply as apply_frontend
 
+    if not frontend_only:
+        build_control(settings, push)
     checkout = prepare(config_path.parent)
     with tempfile.TemporaryDirectory(prefix="ack-build-", dir=config_path.parent) as temp:
         context = Path(temp)
@@ -684,6 +796,24 @@ def build(settings, config_path, push, frontend_only=False):
                 ]
             )
     print("Images pushed." if push else "Images loaded locally; use build --push for ACR.")
+
+
+def build_control(settings, push):
+    command(
+        [
+            "docker",
+            "buildx",
+            "build",
+            "--platform",
+            settings["platform"],
+            "--file",
+            ROOT / "deploy/go/Dockerfile",
+            "--tag",
+            f"{settings['registry']}/deermate-control:{settings['tag']}",
+            "--push" if push else "--load",
+            ROOT / "backend",
+        ]
+    )
 
 
 def initialize(path, registry, context, tag):

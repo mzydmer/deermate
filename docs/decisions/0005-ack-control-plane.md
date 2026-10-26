@@ -2,6 +2,9 @@
 
 Date: 2026-10-25. Status: accepted. Requirements: FR-012/FR-013, NFR-001/005/007.
 
+
+Update 2026-10-26: [ADR 0007](0007-go-control-plane.md) supersedes the control-plane language and adds a Go sidecar/API boundary. Python Helm tooling, Worker integration and single-instance storage rationale remain applicable.
+
 The user requests Alibaba Cloud ACK deployment, superseding the initial recommendation to defer Kubernetes. Keep the home Worker loopback-only and use the existing enrolled SSH connector. The application processes still need to read task contents; deploying them in ACK does not add end-to-end secrecy from the application or model provider.
 
 Reuse DeerFlow's exact previously verified commit, chart and Dockerfile inputs. Extend the backend image with the DeerMate wheel. A Python Helm 3 post-renderer adds the SSH Secret copy/mounts, managed MCP seed, retention annotations, private image pull references and admission checks. Keep the upstream checkout/templates unchanged. Helm is deployment tooling; DeerMate-owned runtime and deployment code remain Python.

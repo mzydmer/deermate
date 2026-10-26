@@ -1,8 +1,8 @@
 # 本地 Docker 运行与验收
 
-这个配置在 Mac 上运行 DeerFlow Gateway、前端和 nginx，复用 ACK 的四个镜像。本机独立 Python Worker 调用已经登录的 Codex；容器经 MCP 和生成密钥的 SSH 开发服务连接 Worker。入口为 **[http://localhost:2026](http://localhost:2026)**，只绑定 `127.0.0.1`。
+这个配置在 Mac 上运行 Go 控制端、内部 DeerFlow Gateway、前端和 nginx，复用 ACK 的五个镜像（含初始化工具）。本机独立 Python Worker 调用已经登录的 Codex；容器经 MCP 和生成密钥的 SSH 开发服务连接 Worker。入口为 **[http://localhost:2026](http://localhost:2026)**，只绑定 `127.0.0.1`。
 
-当前已验证页面、真实浏览器登录、真实 Codex 修复、独立测试和 Gateway 重启后的结果。按本轮用户选择，秘书聊天模型暂不配置；页面中的自然语言派单、模型通知、专职路由还未验收。界面已加入 DeerMate 品牌、秘书首页和只读任务工作台，默认根地址重定向到受保护的 `/workspace`；原对话与认证继续复用 DeerFlow。见 [前端说明](../frontend/README.md)。
+当前已验证页面、真实浏览器登录、真实 Codex 修复、独立测试和 Gateway 重启后的结果。按本轮用户选择，秘书聊天模型暂不配置；页面中的自然语言派单、模型通知、专职路由还未验收。界面已加入 DeerMate 品牌、秘书首页和只读任务工作台，默认根地址重定向到受保护的 `/workspace`；原对话继续复用 DeerFlow，用户/登录与前端 API 由 Go 统一提供；管理页面为 `/admin`。见 [前端说明](../frontend/README.md)。
 
 ## 在这台 Mac 上使用
 
@@ -19,7 +19,21 @@ python scripts/local_docker.py down
 python scripts/local_docker.py up
 ```
 
-`down` 仅停止这个 Compose 项目及其拥有的 Worker/SSH 进程，保留本地数据和命名卷。已实际执行完整 `down`/`up`：三个容器重新健康，原账号可登录，SQL 结果、Worker 实例/会话/attempt 保留，新 SSH capabilities 查询通过，没有新模型任务。它不是任务取消命令；原生执行活动期间不要把重启当成安全取消。Worker 运行中断仍按既有显式恢复规则处理。`up` 刷新一天有效的本地 SSH 注册；长期停留后连接到期时重新执行它。
+`down` 仅停止这个 Compose 项目及其拥有的 Worker/SSH 进程，保留本地数据和命名卷。已实际执行完整 `down`/`up`：当时三个容器重新健康（Go 迁移前），原账号可登录，SQL 结果、Worker 实例/会话/attempt 保留，新 SSH capabilities 查询通过，没有新模型任务。它不是任务取消命令；原生执行活动期间不要把重启当成安全取消。Worker 运行中断仍按既有显式恢复规则处理。`up` 刷新一天有效的本地 SSH 注册；长期停留后连接到期时重新执行它。
+
+## Go 后端迁移
+
+主服务、用户登录、管理 API 和前端 API 已切到 Go，内部 Agent 运行时和 Worker/MCP/SSH 保留 Python。现有 profile 可执行：
+
+```bash
+python scripts/local_docker.py build --control-only
+python scripts/local_docker.py up
+python scripts/verify_go_control.py --restart
+```
+
+第一次 `up` 先在原 home 卷生成 `data/backups/before-go-control.db` 在线备份，保留原账号密码、ID、任务归属和偏好。需要重新登录一次；管理页面为 [http://localhost:2026/admin](http://localhost:2026/admin)。Go 容器只接收 JWT bridge secret，不挂载 Worker 专用凭据。当前共四个常驻应用容器，Go 与 Gateway 共享原数据卷。
+
+`verify_go_control.py` 复用历史任务，不提交模型工作；验证用户创建、权限/跨用户隔离、会话撤销、密码重置与 Go 重启持久化。临时验收账号最后停用以保留审计记录。OAuth/PAT、邮件找回及项目级执行授权尚未实现，普通用户当前只可读取自己的会话。接口和边界见 [Go 后端说明](../backend/README.md)。
 
 ## 从源码搭建
 
@@ -28,7 +42,7 @@ python scripts/local_docker.py up
 Docker 安装程序来自 [Docker 官方 Mac 安装页](https://docs.docker.com/desktop/setup/install/mac-install/)。遵循其许可与首次启动流程；本仓库不重新分发 Docker Desktop。本次采用用户目录安装；图形首次设置界面因 Mac 锁屏没有操作，后台 daemon 和实际容器已验证可用。
 
 ```bash
-git clone --branch feat/deermate-workspace https://github.com/mzydmer/deermate.git
+git clone --branch feat/go-control-plane https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate

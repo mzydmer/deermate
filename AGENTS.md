@@ -13,7 +13,7 @@ Use [the roadmap](docs/roadmap.md) for milestone scope, [the evolution log](docs
 
 ## Project invariants
 
-- Maintain DeerMate-owned backend services in Python. External agent binaries retain their own runtimes; Hermesh remains optional.
+- Maintain the main/control, management, login/user and frontend-facing API backend in Go (owner's updated direction; ADR 0007). DeerFlow and the existing Python Worker/MCP/SSH remain explicit internal integration components until separately migrated. External agents retain their runtimes; Hermesh remains optional.
 - Reuse DeerFlow's existing capabilities through narrow interfaces. Check STATUS and retained receipts before extending compatibility claims; driver, Gateway/SQL, real-model, UI, and remote checks have distinct scopes.
 - Keep local M1 single-owner and loopback-only. Do not silently widen host access, network permissions, project roots, or external tool authority.
 - Preserve task/session identity and idempotency. After an uncertain interruption, require explicit recovery; never blindly replay side effects or invent a replacement native session.
@@ -31,6 +31,8 @@ Use [the roadmap](docs/roadmap.md) for milestone scope, [the evolution log](docs
 - Do not overwrite unrelated work or assume the working tree is disposable.
 
 ## Validate proportionately
+
+For Go changes, run from `backend/`: `go mod verify`, `go vet ./...`, `go test -race ./...`, and `CGO_ENABLED=0 go build ./cmd/deermate`. Deployment changes also require actual pinned Helm chart and local Compose contract checks. The Go cutover verifier reuses existing native evidence without invoking a model; do not use `verify --live` solely for API/login changes.
 
 For Python implementation changes, run the relevant tests, then the existing checks as appropriate:
 

@@ -49,7 +49,31 @@ def gateway(settings):
                     "securityContext": {"runAsUser": 1000},
                     "initContainers": [{"name": "init-extensions"}],
                     "containers": [
-                        {"name": "gateway", "image": "test-gateway:123", "volumeMounts": []}
+                        {
+                            "name": "gateway",
+                            "image": "test-gateway:123",
+                            "volumeMounts": [
+                                {
+                                    "name": "home",
+                                    "mountPath": "/app/backend/.deer-flow",
+                                    "subPath": "deer-flow",
+                                }
+                            ],
+                            "env": [
+                                {
+                                    "name": "AUTH_JWT_SECRET",
+                                    "valueFrom": {
+                                        "secretKeyRef": {
+                                            "name": "test-auth",
+                                            "key": "AUTH_JWT_SECRET",
+                                        }
+                                    },
+                                }
+                            ],
+                            "args": ["uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001"],
+                            "readinessProbe": {"httpGet": {"path": "/health/ready"}},
+                            "livenessProbe": {"httpGet": {"path": "/health/live"}},
+                        }
                     ],
                     "volumes": [],
                 },
@@ -154,7 +178,7 @@ def test_model_secret_not_embedded_in_values_and_redeploy_refreshes_credentials(
     assert pod["initContainers"][-1]["name"] == "init-worker-credentials"
     assert any(v.get("emptyDir", {}).get("medium") == "Memory" for v in pod["volumes"])
     mounts = pod["containers"][0]["volumeMounts"]
-    assert all(mount["readOnly"] for mount in mounts)
+    assert all(mount["readOnly"] for mount in mounts if mount["name"] != "home")
     config_map = result[-1]
     assert "client_key" in config_map["data"]["controller.toml"]
     assert "DEERMATE_MODEL_API_KEY" in ack.values(settings)["config"]
@@ -205,6 +229,24 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         if document["metadata"]["labels"]["app.kubernetes.io/component"] == "frontend":
             assert pod["containers"][0]["command"][0] == "node"
             assert "pnpm" not in pod["containers"][0]["command"]
+        if document["metadata"]["labels"]["app.kubernetes.io/component"] == "nginx":
+            probe = pod["containers"][0]["readinessProbe"]["httpGet"]
+            assert probe["path"] == "/health/ready"
+            assert probe["httpHeaders"] == [{"name": "Host", "value": "localhost:2026"}]
+        if document["metadata"]["labels"]["app.kubernetes.io/component"] == "gateway":
+            runtime, control = pod["containers"]
+            assert "--host 127.0.0.1" in runtime["args"][0]
+            assert "exec" in runtime["readinessProbe"]
+            assert control["name"] == "control"
+            assert control["ports"][0]["containerPort"] == 8080
+            assert not control.get("envFrom")
+            assert [e["name"] for e in control["env"] if "valueFrom" in e] == ["AUTH_JWT_SECRET"]
+            assert len(control["volumeMounts"]) == 1
+            assert control["volumeMounts"][0]["subPath"] == "deer-flow"
+    service = next(
+        d for d in documents if d["kind"] == "Service" and d["metadata"]["name"] == "gateway"
+    )
+    assert service["spec"]["ports"][0]["targetPort"] == 8080
     application = next(
         doc
         for doc in documents

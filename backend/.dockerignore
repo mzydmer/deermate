@@ -1,0 +1,4 @@
+data/
+deermate
+.env*
+*.db

@@ -1,0 +1,113 @@
+{
+  "passed": true,
+  "verified_at": "2026-10-26T11:14:00.605259+00:00",
+  "source_sha256": {
+    "backend/cmd/deermate/main.go": "c8f3b6b608f9ce0811872ebe50c2690df2b432ede4f6c209a0605822bc5ebf0f",
+    "backend/go.mod": "2298c7d5d13b3c1c8b1959e1bb91befa4f9b0a1098c1b7a8dc5645ef949a4457",
+    "backend/go.sum": "25aacb2a9aab2acd6814d3eb3fc73e6af17493c6752c3d2d64f60b08193dcd79",
+    "backend/internal/controlplane/admin.go": "0d684d7148f9b45a790730b9b6fd854b7295f4e9332e3bff40ad0dfba033d8f9",
+    "backend/internal/controlplane/admin.html": "7cf4f2b8ba4ad2a076bf12a48e7c22b9135df9c898446c990142624d11a690d8",
+    "backend/internal/controlplane/runtime.go": "913a6209513a98b8bce0bb0a4a309c8455eeba505ae8409502a3170dd6c3d749",
+    "backend/internal/controlplane/server.go": "31085b13a27a2e19fe2c50326e18ad51bd4bbe0f278978f5cafcafe39c6eb12d",
+    "backend/internal/controlplane/server_test.go": "ef31aee8fd4bd5f917bfce9ab491e81a5b555d6e6d0b6e547f82422a3dc33ffd",
+    "backend/internal/controlplane/store.go": "bc2512a95c171b87d772b76604f8d15395515634efabf7c9c0fef8d8e2358327",
+    "deploy/go/Dockerfile": "1a79e6e1450ada2f5138f2cd995e5e2e6bbc5c213fcc4ae4ab057292772940f4",
+    "deploy/local/compose.yaml": "5cd0b0c46f47d7a5f5ec6590bdaf6f848e3d273d48fd11e289f980cd0284da94",
+    "scripts/ack_deploy.py": "daa9766b06130c1e795588f154d9e9d5842afbe5ff12cc1dfe9dbd3b2472b2dd",
+    "scripts/local_docker.py": "954487fa5c4c90382baa5931348c52c029a7e3d01901f85d465b1e3c1bd10fc8",
+    "scripts/verify_frontend.cjs": "4bff6b01b8e5e581c97e5c07b3ddb5d4f00d3fd3b59bde6834c9bd310147df74",
+    "scripts/verify_go_control.py": "393a36337b226be97f84183a43bc6fde40a4567527ba1eb58e97b22be677962c"
+  },
+  "go_version": "1.27.3",
+  "go_image_id": "sha256:02af1972174a14421bed89c649f51a0fc83bd0031993ab060e1ab84ea9d90563",
+  "api": {
+    "passed": true,
+    "verified_at": "2026-10-26T11:14:00.605259+00:00",
+    "checks": [
+      "existing_owner_password_accepted_by_go",
+      "opaque_browser_session",
+      "original_native_task_retained",
+      "workspace_api_owned_by_go",
+      "admin_console",
+      "existing_preferences_preserved",
+      "admin_creates_user",
+      "new_user_login",
+      "regular_user_admin_denied",
+      "regular_user_execution_denied",
+      "cross_owner_thread_hidden",
+      "forged_internal_identity_rejected",
+      "csrf_rejected",
+      "last_admin_retained",
+      "role_change",
+      "role_change_revokes_session",
+      "promoted_user_relogin",
+      "admin_password_reset",
+      "password_reset_revokes_session",
+      "old_password_invalid",
+      "new_password_accepted",
+      "suspension_revokes_session",
+      "go_restart_preserves_session",
+      "go_restart_preserves_native_task",
+      "audit_available",
+      "logout",
+      "logout_revokes_session"
+    ],
+    "model_tasks_submitted": 0,
+    "legacy_task_id": "mcp-task-f9d3a23adc8648ac997a5f5823e89c13",
+    "limits": "Local Docker only; ACK deployment and external OAuth/PAT not verified."
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "deermate_login_rendered",
+      "real_owner_login",
+      "default_entry_redirects_to_private_workspace",
+      "managed_mcp_configuration_readable",
+      "self_hosted_lottie_rendered",
+      "real_thread_task_queries_loaded",
+      "real_task_evidence_opened",
+      "evidence_escape_dismissal",
+      "evidence_dismissal_restores_keyboard_focus",
+      "status_filter_keyboard_navigation",
+      "account_scoped_draft_handoff_without_prompt_in_url",
+      "dark_theme_rendered",
+      "reduced_motion_static_brand_and_tabs",
+      "mobile_layout_and_navigation",
+      "fault_injection_preserves_unknown_and_partial_states",
+      "go_owns_browser_authentication",
+      "go_admin_console_creates_and_suspends_user",
+      "no_browser_page_errors"
+    ],
+    "existing_task_rows": 1,
+    "page_errors": [],
+    "model_tasks_submitted": 0,
+    "limits": [
+      "Local owner/login and read-only existing task evidence; no secretary model or cloud execution.",
+      "Service errors are deliberate isolated browser route injections."
+    ]
+  },
+  "regression": {
+    "go": "go mod verify; go vet ./...; go test -race ./... passed (7 tests, 8.666s)",
+    "python": "94 passed, 6 skipped, 51.10s",
+    "pinned_chart_local_overlay": "22 passed, 1.50s",
+    "ruff": "passed",
+    "wheel": "built",
+    "helm_post_renderer": "actual pinned chart rendered"
+  },
+  "topology": {
+    "public": "127.0.0.1:2026",
+    "application_containers": [
+      "control",
+      "gateway",
+      "frontend",
+      "nginx"
+    ],
+    "runtime": "pinned DeerFlow Python",
+    "worker": "existing Python Worker/MCP/SSH"
+  },
+  "limits": [
+    "Local Docker, existing native evidence only; zero new model tasks.",
+    "ACK manifests rendered; no ACR push or cluster installation.",
+    "Single-instance SQLite; project execution grants and OAuth/PAT/MFA/recovery remain unimplemented."
+  ]
+}

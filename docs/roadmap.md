@@ -75,9 +75,22 @@ User-requested M4.1 UI work starts on the M2 runtime while specialist routing re
 
 Exit criterion: follow several different tasks from one interface without having to manually route every handoff.
 
+## M4.2 — Go main, management and frontend APIs
+
+Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) supersedes the original Python-only control plane.
+
+- [x] Implement Go login/sessions, account/admin APIs, CSRF, roles and audit.
+- [x] Keep original account IDs/passwords/preferences and historical task ownership.
+- [x] Route frontend browser/SSR APIs through Go; retain Python Agent/Worker integration.
+- [x] Provide `/admin` and verify actual create/suspend interactions.
+- [x] Add local Compose and ACK sidecar/image packaging with private runtime access.
+- [x] Verify local API restart/revocation/isolation and existing browser workspace without new model work.
+- [ ] Design project-scoped execution grants before enabling normal-user execution.
+- [ ] Add external identity/OAuth, MFA and recovery as separately specified features.
+
 ## M5 — Extend the ecosystem
 
-- [ ] Add an optional Hermesh CLI bridge; do not require Go for the default backend.
+- [ ] Add an optional Hermesh CLI bridge; keep its separate upstream implementation optional.
 - [ ] Add a browser tool and a dedicated-session macOS desktop adapter.
 - [ ] Validate third-party assistant interfaces before claiming inbound/outbound integration.
 - [ ] Publish an adapter compatibility matrix with versions and reproducible evidence.

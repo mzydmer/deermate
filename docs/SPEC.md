@@ -8,7 +8,7 @@
 
 用户通过一个私人秘书交代目标，由秘书选择获授权的专职 Agent，在用户自己的本地或云端机器完成工作，并通过统一工作台返回进展、产物与可检查的证据。
 
-默认技术方向：DeerFlow 秘书入口、Python 控制服务与 Worker、会话适配层、标准 SSH 加密连接，以及可选浏览器/桌面工具。Hermesh 作为可选生态桥接，不要求把其 Go 后端纳入默认部署。
+默认技术方向：Go 主服务、管理服务、用户登录及前端 API；DeerFlow 为内部 Agent 运行时，现有 Python Worker/MCP/SSH 及会话适配层继续复用。用户本轮要求取代原 Python 控制端限定，见 [ADR 0007](decisions/0007-go-control-plane.md)。Hermesh 保持可选生态桥接。
 
 ## 角色与边界
 
@@ -88,7 +88,7 @@
 
 | 编号 | 约束 | 当前边界 |
 | --- | --- | --- |
-| NFR-001 | DeerMate 自有后端维护在 Python，默认无需 Go | M1 与本地 MCP 桥接已符合；外部 Agent 可用其他运行时 |
+| NFR-001 | 主后端、管理后端、用户登录及前端 API 使用 Go；Python 运行时与 Worker 为明确集成边界 | 迁移见 [专项规格](specs/go-control-plane.md)；原 Python-only 控制端约束已被用户取代 |
 | NFR-002 | 不自创加密协议；明确加密端点与中继是否能读明文 | 直接 AsyncSSH 已实现，SSH 两端可读明文；Hermesh MCP 网关可读取其会话；无审计或中继部署声明 |
 | NFR-003 | 在模型提示词之外接纳权限，使用明确执行边界 | M1 仅可信本地项目；无多租户/生产隔离承诺 |
 | NFR-004 | 正常测试不需要模型凭据；真实模型测试明确标识并限定范围 | 离线协议 fixture、临时 Git 仓库和 opt-in live smoke 已具备 |

@@ -1,6 +1,6 @@
 # ADR 0001: Python-owned backend, optional Hermesh interoperability
 
-Date: 2026-10-25. Status: accepted design direction; Python Worker/MCP/direct SSH implemented, optional Hermesh bridge pending. See [the decision index](README.md) and [current status](../STATUS.md).
+Date: 2026-10-25. Status: superseded for the control plane by [ADR 0007](0007-go-control-plane.md), following the owner's explicit Go requirement on 2026-10-26. The existing Python Worker/MCP/SSH remain integration components. The original rationale below is historical.
 
 ## Context
 

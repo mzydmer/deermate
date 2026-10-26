@@ -2,6 +2,9 @@
 
 - Status: implemented; local Chart/policy checks and Linux image CI passed. Actual ACK installation pending operator environment.
 - Requirements: FR-009, FR-012, FR-013; NFR-001, NFR-002, NFR-005–NFR-007.
+
+Update 2026-10-26: the current package adds the [Go control plane](go-control-plane.md), a fifth image and loopback-only runtime. This document retains the original packaging milestone; see current [ACK guide](../ack-deployment.md).
+
 - Updated: 2026-10-25. User explicitly requested Alibaba Cloud ACK deployment scripts.
 
 ## Scope

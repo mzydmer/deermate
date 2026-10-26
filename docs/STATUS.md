@@ -6,17 +6,18 @@
 
 | 项目 | 当前事实 |
 | --- | --- |
-| 阶段 | M1–M2.5 已实现并有对应证据；M4.1 首个只读秘书工作台已通过最终浏览器与生产构建验收 |
-| 分支 | `feat/deermate-workspace`，继承运行栈和 ACK 包，新增版本化前端 overlay |
-| Worker/MCP/SSH 运行代码 | 仍为 [`f7804ee`](https://github.com/mzydmer/deermate/commit/f7804eee9f45647222ef5a48e8d19d342a161d1b)；本次改动集中在前端 overlay、构建和本地配置种子，不改 Worker/MCP/SSH 核心 |
-| Gateway 验收工具 | [`728deb7`](https://github.com/mzydmer/deermate/commit/728deb7df1553f10c2d016b91607a615961d2b10) 新增 `--transport ssh`、`--replay`；收据脚本哈希 `aaa2934058d0…` |
-| ACK 部署 | Python 配置/ACR 构建/Helm 安装脚本已准备；本轮同步修正非 root 用户身份、Node 前端启动与构建网络重试；未连接 ACK/推送 ACR |
-| 本地运行 | 用户目录 Docker Desktop 已启动；Gateway/前端/nginx 三个健康容器，入口 `http://localhost:2026`；独立 host Worker/SSH 运行 |
-| 主线/PR | 上次核对 `main` 为 `e9f228d`，无开放 PR；[比较分支](https://github.com/mzydmer/deermate/compare/main...feat/deermate-workspace) |
-| 发布 | 源码 alpha `0.1.0a1`；未合并主线、未发布 PyPI 或正式 release |
-| 下一步 | 本轮按用户选择先交付页面/登录/真实 Codex；云端凭据之后再接 ACK。聊天模型、真实家庭账户/设备另行配置验收 |
+| 阶段 | M1–M2.5 执行链路、M4.1 前端已有证据；M4.2 Go 主服务/登录/管理/前端 API 已实现并在本地验证 |
+| 分支 | `feat/go-control-plane`，继承 `5e26947` 前端与运行栈 |
+| 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
+| 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
+| 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
+| 当前验收 | 27 项实际 Go API 检查、18 项浏览器检查（含管理页面创建/停用）；原真实任务仍可读；本轮模型任务为 0 |
+| ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；实际 Chart 校验通过；未连接 ACK/推送 ACR |
+| 交付 | 本地回归完成；Git 推送/CI 以本节后续交付记录为准，历史前端 CI 与本轮分开记录 |
+| 发布 | 源码 alpha；未合并主线、未发布正式 release |
+| 下一步 | 秘书模型配置、项目级授权与专职 Agent 路由；云端凭据提供后再进行 ACK 实际部署验收 |
 
-运行代码与验收工具哈希不随纯文档提交改变；文档 HEAD 可以继续推进。接续时核对 Git 和远端状态。
+运行代码、历史证据与本轮 Go 变更应分别核对；文档 HEAD 可以继续推进。
 
 ## 已实现
 
@@ -29,7 +30,17 @@
 
 使用：[本地](local-worker.md)、[DeerFlow](deerflow.md)、[SSH](ssh-worker.md)、[组合演示](demo.md)。设计：[SPEC](SPEC.md)、[M2.3](specs/m2-gateway-ssh-demo.md)、[ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 
-## 本次工作 · M4.1 DeerMate 前端与动效
+## 本次工作 · M4.2 Go 主服务与管理后台
+
+用户明确改用 Go 维护主后端、管理后端、用户登录和前端接口。[专项规格](specs/go-control-plane.md)、[ADR 0007](decisions/0007-go-control-plane.md)、[Go 后端/API](../backend/README.md)。Go 采用标准库 net/http、纯 Go SQLite 与 bcrypt，独立镜像以 UID 1000 运行。主 API 和管理 API 是同一二进制内的模块/权限边界，不重复维护账号。
+
+Go 接管浏览器和 SSR 登录，使用摘要持久化的随机会话与会话绑定 CSRF；更改角色、密码或停用会撤销会话，保留最后一个活跃管理员。管理页 `/admin` 可创建、启停、变更角色和重置密码，并读取近期审计。前端原 API 形状继续兼容；Agent API 经真实用户/版本绑定的短期 JWT 适配到内部运行时，不使用其 internal 超级身份。
+
+本地先做 SQLite 在线备份，保留原 UUID、密码和任务归属，只要求重新登录。27 项真实 API 验收通过：跨用户访问拒绝、执行权限、CSRF、角色撤权、密码重置、停用、退出和 Go 重启后会话/原任务保留。18 项浏览器验收通过，包含原工作台 16 项和 Go 身份入口、管理页创建/停用，页面错误为零。[有限收据](verification/go-control-plane-2026-10-26.json)、[管理页截图](assets/deermate-admin-go-2026-10-26.png)。复用原真实 Codex 任务，本轮未触发模型调用。
+
+普通用户当前只可读取自己的线程/任务；项目级执行授权、OAuth/PAT、邮件找回/MFA 尚未完成。共享 SQLite 只支持固定运行时和单实例本地盘；Go 化不等于将 DeerFlow 或 Worker 重写。ACK 配置将 Go 放进原 Gateway Pod，Service 只指向 Go，Python runtime 仅监听 loopback；云端仍待实际部署。
+
+## 历史工作 · M4.1 DeerMate 前端与动效
 
 用户要求安装 transitions-dev、transitions-polish、text-to-lottie 并重构前端。三项 skill 已从作者固定版本安装到本机 Codex 目录，版本/许可见 [前端 NOTICE](../frontend/NOTICE.md)。未把 skill 集合入库。[功能规格](specs/m4-workspace-refresh.md)、[ADR 0006](decisions/0006-frontend-overlay.md)、[构建与验证](../frontend/README.md)。
 

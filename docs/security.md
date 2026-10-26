@@ -21,7 +21,7 @@ Personal messages and source code, external-service credentials, host access, pr
 
 The direct transport uses AsyncSSH, explicit known_hosts/client keys and an enrolled instance ID; it does not introduce cryptography. It disables ambient identities and non-key authentication, rechecks grants and credentials per operation, and bounds cached connection lifetime. Instance IDs prevent namespace drift, not host impersonation; host-key validation provides host authentication. SSH endpoints see plaintext. Relay deployment, automatic key enrollment, penetration testing and audit completion are not claimed.
 
-The [ACK package](ack-deployment.md) retains upstream setup/login, uses ClusterIP and localhost port-forward, and disables sandbox execution RBAC and service-account token automount. ClusterIP is not a NetworkPolicy boundary against other cluster workloads. Cluster administrators and the application can read Kubernetes Secrets; no new end-to-end privacy claim follows. SSH credentials are copied into owner-only ordinary files in a memory-backed volume. Redeploy to refresh copied credentials. One block-storage PVC, one Gateway and Recreate updates preserve the current single-instance storage contract; actual ACK/OS/network behavior still requires deployment acceptance.
+The [ACK package](ack-deployment.md) routes setup/login and public APIs through Go, uses ClusterIP and localhost port-forward, and disables sandbox execution RBAC and service-account token automount. ClusterIP is not a NetworkPolicy boundary against other cluster workloads. Cluster administrators and the application can read Kubernetes Secrets; no new end-to-end privacy claim follows. SSH credentials are copied into owner-only ordinary files in a memory-backed volume. Redeploy to refresh copied credentials. One block-storage PVC, one Gateway and Recreate updates preserve the current single-instance storage contract; actual ACK/OS/network behavior still requires deployment acceptance.
 
 Revocation rejects new remote operations and closes the controller tunnel; already admitted Worker tasks continue under existing limits. Removing a server authorized key alone does not disconnect authenticated sessions. The default 60-second connection lifetime bounds reauthentication, subject to bounded in-flight HTTP cleanup; immediate server-side revocation requires terminating active sessions. Dedicated restricted accounts and trusted provisioning remain operator responsibilities. Tests use generated keys and a temporary protocol server, not the operator's sshd.
 
@@ -46,6 +46,12 @@ An independent reviewer checks the patch and acceptance evidence; it is not assu
 ## Recovery, side effects, and cancellation
 
 Persist a task/session mapping before launching. Reconcile after a timeout or reconnect rather than replaying blindly. Deduplicate event deliveries and write operations. Record uncertain outcomes explicitly. A cancellation request remains pending until the worker reports interruption; a disconnected machine may continue working and must not be falsely displayed as stopped.
+
+## Go login and administration
+
+The public API/login boundary is Go. Go stores session-token and CSRF digests, verifies compatible password hashes, applies host/origin checks and enforces administrator routes. Password changes, role changes, suspension and logout revoke access. Existing streams are rechecked every five seconds. This revokes access without asserting that native work stopped. Last-active-admin checks and account writes are serialized inside SQLite transactions.
+
+The runtime adapter strips external bearer/internal/forwarded identities and creates a short-lived JWT for the actual user and token version. Upstream Set-Cookie values never reach the browser. Regular users cannot execute or configure the shared owner Worker; runtime ownership filtering still applies to allowed reads. OAuth/PAT, public signup, MFA and emailed recovery are disabled/unimplemented. See [Go limitations](../backend/README.md) and [ADR 0007](decisions/0007-go-control-plane.md).
 
 ## Logging and secrets
 

@@ -55,6 +55,31 @@ services:
       retries: 30
       start_period: 90s
 
+  control:
+    image: ${DEERMATE_CONTROL_IMAGE}
+    pull_policy: never
+    user: "1000:1000"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    depends_on:
+      gateway:
+        condition: service_healthy
+    env_file: ["${DEERMATE_STATE_DIR}/control.env"]
+    environment:
+      DEERMATE_RUNTIME_URL: http://gateway:8001
+      DEERMATE_DATABASE_PATH: /runtime-home/data/deerflow.db
+      DEERMATE_ORIGIN: http://localhost:2026
+      DEERMATE_ALLOWED_HOSTS: localhost:2026,127.0.0.1:2026,nginx:2026,127.0.0.1:8080,control:8080
+    volumes:
+      - home:/runtime-home
+    healthcheck:
+      test: [CMD, /deermate, healthcheck]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
   frontend:
     image: ${DEERMATE_FRONTEND_IMAGE}
     pull_policy: never
@@ -65,7 +90,7 @@ services:
     depends_on:
       init:
         condition: service_completed_successfully
-      gateway:
+      control:
         condition: service_healthy
     working_dir: /app/frontend
     entrypoint: [node, /app/frontend/node_modules/next/dist/bin/next]
@@ -73,7 +98,7 @@ services:
     env_file: ["${DEERMATE_STATE_DIR}/frontend.env"]
     environment:
       NODE_ENV: production
-      DEER_FLOW_INTERNAL_GATEWAY_BASE_URL: http://gateway:8001
+      DEER_FLOW_INTERNAL_GATEWAY_BASE_URL: http://control:8080
     volumes:
       - frontend-cache:/app/frontend/.next/cache
     healthcheck:
@@ -90,7 +115,7 @@ services:
     security_opt: [no-new-privileges:true]
     restart: unless-stopped
     depends_on:
-      gateway:
+      control:
         condition: service_healthy
       frontend:
         condition: service_healthy

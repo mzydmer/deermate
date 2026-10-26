@@ -126,3 +126,14 @@
 
 - **追加最终交付：** `fa452e3` 已推送；本地最终生产/TypeScript 编译、16 项浏览器检查通过，未新增模型任务，已有 Worker 会话/attempt 保留。已查看工作台、证据、深色/手机截图；Skia 0/45/89 及实际播放推进通过。[有限收据](verification/frontend-workspace-2026-10-26.json)保留源码/镜像/依赖身份和检查结果，不含凭据。
 - **构建范围：** 本地 npm 下载变慢后复用经 package/lock 摘要核对的同 pin 依赖镜像，重新编译最终源码。[CI 40303558560](https://github.com/mzydmer/deermate/actions/runs/40303558560) 独立执行当前源码的标准四镜像构建，六个 job success，[probe artifact](verification/workspace-package-2026-10-26.json) `12641727909` 已核对 ZIP SHA256。此后只补文档/收据；保持本地应用运行，移除临时浏览器/类型检查容器。
+
+
+## 2026-10-26 · Go 主服务、登录与管理后台（M4.2）
+
+用户最新要求将主后端、管理后端、用户管理登录及前端接口改为 Go，取代原 Python-only 控制端方向。新增 [ADR 0007](decisions/0007-go-control-plane.md) 与 [迁移规格](specs/go-control-plane.md)，保留原决策的历史理由。
+
+实现独立 Go 二进制：本地登录、摘要持久化会话、会话绑定 CSRF、用户/角色/停用/密码重置、最后活跃管理员保护、偏好、近期审计、工作区摘要和 `/admin` 页面。复用原用户 UUID/密码哈希与偏好；短期真实用户 JWT 连接内部 DeerFlow，去除浏览器伪造 internal 身份和上游认证 Cookie。普通用户执行/配置被拒绝，项目级授权另行设计。DeerFlow、现有 Worker/MCP/SSH 与部署工具保留 Python。
+
+本地 Compose 增加非 root Go 服务，只注入必要 bridge secret，先用 SQLite online backup 保存原数据，再切换 nginx/SSR 入口。ACK 五镜像构建及 Go sidecar/Service 接入保持原 RWO/Recreate 单实例；Python runtime 改为 Pod 内 loopback，健康探针携带固定允许 Host。未连接 ACK、推送 ACR 或宣称生产/HA。
+
+验证：Go 模块校验、vet、7 项竞态测试通过（最终测试 8.666 秒）；常规 Python 94 passed/6 skipped（51.10 秒）；实际固定 Chart/本地/overlay 22 passed（1.50 秒）；Ruff、wheel、原 Chart post-renderer 和标准 Go Dockerfile 构建通过。实际本地 27 项 API 检查及 18 项浏览器检查通过，原账号/历史真实 Codex 任务保留，管理页面可创建/停用，浏览器 page errors 为零。追加 Go 重启后会话/任务保留验证；本轮模型任务为零。Go/API/browser [有限收据](verification/go-control-plane-2026-10-26.json)与[管理页截图](assets/deermate-admin-go-2026-10-26.png)区分本轮和历史原生执行证据。

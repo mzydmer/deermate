@@ -6,9 +6,17 @@ Status: M1 Worker, M2.1 MCP and M2.2 enrolled direct SSH implemented; broader di
 
 DeerMate coordinates agents that already exist. DeerFlow supplies the conversation, planning, skills, and secretary experience. DeerMate adds a worker registry, bounded delegation, native session adapters, and a durable link between the conversation and execution evidence. Reuse DeerFlow's existing scheduling and background-task mechanisms where their contracts fit, rather than creating another competing scheduler.
 
-The control service and worker are maintained in Python. The initial UI reuses DeerFlow, whose frontend has its own toolchain. External agent executables remain external dependencies. The optional Hermesh bridge is not part of the default installation.
+The main/control, management, user/login and frontend-facing API backend is maintained in Go, following the owner’s updated direction in [ADR 0007](decisions/0007-go-control-plane.md). The React UI uses the DeerMate overlay; DeerFlow remains the internal Python Agent runtime, while Worker/MCP/SSH remain Python. External agents retain their runtimes. Hermesh is optional.
 
 The MCP bridge forwards three tools to the independent authenticated HTTP Worker, locally or through an enrolled SSH channel. It does not acquire a database lock or own native execution. The pinned Gateway/SQLite restart path and SSH now run in one [combined fixture demonstration](demo.md), alongside individual SSH protocol and upstream-driver checks. Real-model notifications, UI and actual two-machine deployment remain separate work.
+
+## Go API and identity boundary
+
+nginx routes public APIs/auth/admin to Go; frontend SSR validates the same Go session. One Go binary contains auth/account/admin/workspace/runtime-adapter modules, with separate admin permissions and a protected `/admin` page. Go owns account writes, opaque revocable sessions, session-bound CSRF, login throttling and bounded audit records. The runtime receives short-lived JWTs for the real user/version; browser requests never acquire its internal superuser identity.
+
+Go and pinned DeerFlow share compatible users/preferences tables and original UUIDs on local SQLite. Go adds namespaced session/audit/throttle tables. This transitional coupling preserves existing task ownership. One Go and one runtime use the same local disk with WAL/busy timeout and Recreate updates; multiple replicas/network storage are unsupported. Local cutover makes an online backup and requires one new browser login.
+
+Ordinary accounts have a narrow read-only route allowlist plus the runtime's own owner filtering. Execution/configuration stays admin-only until per-project grants exist. Closing access after suspension does not cancel admitted work. In ACK, Go is a sidecar on port 8080 behind the existing private Gateway Service; the Python runtime binds loopback port 8001. See [configuration/API guide](../backend/README.md).
 
 ## Proposed components
 

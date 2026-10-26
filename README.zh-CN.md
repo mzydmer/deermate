@@ -3,9 +3,9 @@
 <h1 align="center">DeerMate</h1>
 <p align="center"><strong>一个私人秘书，一支 Agent 团队，你自己的机器。</strong></p>
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
-<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Python 后端</p>
+<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Go 主后端</p>
 
-> **当前阶段：本地 Docker + Worker/MCP/SSH Alpha，2026-10-26。** 控制端已可启动、登录工作区，并经 Gateway → MCP → SSH → 本机 Worker 完成真实 Codex 修复、独立测试和重启保留结果。模型选工具由受保护的本地验收入口代替；自然语言派单、模型通知、真实云端/设备/NAT、专职路由和统一仪表盘仍待完成。视频仍是模拟概念预览，尚未发布 PyPI 包。
+> **当前阶段：Go 控制端 + 本地 Worker Alpha，2026-10-26。** Go 已负责主服务、管理、用户登录和前端 API，本地通过 27 项 API 与 18 项浏览器检查，保留原账号及真实 Codex 任务证据。DeerFlow/Worker 继续作为内部 Python 服务。云端、秘书模型路由及真实设备/NAT 仍待验收；视频仍是模拟概念预览。
 
 ## 你的私人 Agent 秘书
 
@@ -19,7 +19,7 @@
 
 DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、拆解任务、选择执行者、跟进长任务，最后交付可检查的结果。
 
-技术路线以 **DeerFlow + Python 控制服务 + Python Worker + 会话适配层 + 按需桌面工具**为核心。**Hermesh 作为可选桥接**，默认方案不要求 Go 服务或 Go 工具链。DeerMate 是独立项目，与这些上游项目没有官方隶属关系。
+技术路线以 **Go 主服务/管理服务 + DeerFlow 内部运行时 + Python Worker + 会话适配层 + 按需桌面工具**为核心。**Hermesh 作为可选桥接**，用户登录、角色与前端 API 统一由 Go 提供，Docker 会自动编译 Go 服务。DeerMate 是独立项目，与这些上游项目没有官方隶属关系。
 
 ## 先看概念视频
 
@@ -81,40 +81,37 @@ deermate diff TASK_ID
 
 “私人”指可以选择 DeerMate 自有服务和数据的部署位置。调用云模型时，发送的内容仍会被模型提供方处理。开源免费也不等于模型、订阅和服务器没有费用。
 
-## 架构：自有后端全部 Python
+## 架构：Go 控制端与 Python Agent 运行时
 
 ```mermaid
 flowchart TD
-    U[你：对话与工作台] --> D[DeerFlow：秘书、规划与记忆]
-    E[定时任务与仓库事件] --> D
-    D --> C[DeerMate Python 控制服务]
-    C --> P[Agent 注册、权限与路由]
-    C --> A[持久任务与会话适配层]
-    A --> S[Python SSH 连接器]
+    U[你] --> UI[DeerMate React 工作区]
+    UI --> G[Go 主 API、登录与管理]
+    G --> D[内部 DeerFlow Agent 运行时]
+    D --> M[Python MCP 与持久任务跟踪]
+    M --> S[Python SSH 连接器]
     S --> W[自有机器上的 Python Worker]
-    W --> CC[Claude Code：设计]
-    W --> CX[Codex：开发与审核]
-    W --> DS[DSH / Qoder：执行]
-    W --> UI[按需浏览器和桌面工具]
-    A -. 可选 .-> H[自托管 Hermesh 桥接]
-    W --> R[事件、产物、diff、测试证据]
-    R --> C
-    C --> D
+    W --> C[Codex app-server]
+    W --> R[Diff、独立测试与会话证据]
+    R --> D
+    G -. 规划中 .-> P[专职路由与项目授权]
+    P -. 规划中 .-> A[Claude、DeepSeek、调研与桌面适配器]
+    M -. 可选、规划中 .-> H[自托管 Hermesh 桥接]
 ```
 
 | 组件 | 拟采用技术 | 职责 |
 | --- | --- | --- |
 | 秘书入口 | DeerFlow 集成 | 复用对话、记忆、Skills 和任务能力 |
-| 控制服务 | FastAPI + Pydantic | 接纳任务、注册 Agent、校验权限、查询状态 |
+| 主服务与管理服务 | Go `net/http` | 前端 API、工作区聚合、用户角色、登录会话、CSRF 与审计 |
 | 持久化 | 首先 SQLite，必要时 PostgreSQL | 任务与远程会话映射、事件游标、恢复记录 |
 | 远程 Worker | Python asyncio | 有边界地运行外部 Agent，收集产物 |
 | 加密连接 | AsyncSSH，使用 SSH 协议 | 主机身份校验、加密传输 |
 | 会话适配器 | Python | 统一各 Agent 的启动、查询、继续、中断和结果 |
 | 界面 | 优先复用 DeerFlow | 增加远程任务卡片，避免维护两套工作台 |
 
-这里的“全 Python 后端”指 **DeerMate 自己维护的服务**。外部 Agent 可能使用 Node.js、Rust 二进制或 macOS 工具，不要求重新实现它们。Python SSH 通道不声称兼容 Hermesh 的底层协议。
+用户新要求取代原 Python-only 控制端方案。Go 负责主服务、管理、用户登录和前端 API；DeerFlow、现有 Worker/MCP/SSH 保留 Python。外部 Agent 继续使用各自运行时。Python SSH 通道不声称兼容 Hermesh 的底层协议。
 
-详细设计：[架构](docs/architecture.md) · [Python 优先决策](docs/decisions/0001-python-first.md)。
+详细设计：[架构](docs/architecture.md) · [Go 迁移决策](docs/decisions/0007-go-control-plane.md) · [Go 后端与 API](backend/README.md)。
 
 ## 接入方式
 

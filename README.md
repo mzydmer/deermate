@@ -9,13 +9,13 @@
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-6ee7b7" /></a>
   <img alt="Stage: local worker alpha" src="https://img.shields.io/badge/Stage-local_worker_alpha-fbbf24" />
-  <img alt="Backend: Python" src="https://img.shields.io/badge/Backend-Python-93c5fd" />
+  <img alt="Backend: Go" src="https://img.shields.io/badge/Backend-Go-00ADD8" />
   <img alt="Deployment goal: self hosted" src="https://img.shields.io/badge/Deployment_goal-self_hosted-c4b5fd" />
 </p>
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Local Docker + Worker/MCP/SSH alpha · 2026-10-26.** The local control plane now starts, serves login/workspace pages and completes a real Codex repair through Gateway → MCP → SSH → host Worker, including independent validation and restart persistence. Secretary-model selection is replaced by a protected local verification entry; natural-language delegation, model notifications, actual cloud/devices/NAT and the unified dashboard remain pending. The video is simulated. Install from source; no PyPI release is published.
+> **Go control plane + local Worker alpha · 2026-10-26.** Go owns main/management APIs, user login and frontend API access. Local verification covers 27 API checks and 18 browser checks, preserving the original account and real Codex task evidence. DeerFlow/Worker remain internal Python services. Cloud deployment, secretary-model routing and actual devices/NAT remain pending; the video is simulated.
 
 ## Meet your personal agent secretary
 
@@ -29,7 +29,7 @@ Or:
 
 DeerMate is an open-source project for making that workflow practical: a private assistant that remembers your preferences, delegates to specialist agents, follows long-running work, and returns evidence you can inspect.
 
-It builds around **DeerFlow**, with a **Python control service and Python worker**, provider-specific session adapters, and optional browser or desktop tools. **Hermesh is an optional bridge**, rather than a required Go service. This repository is an independent project; the upstream projects are not affiliated with it.
+It builds around **DeerFlow**, with a **Go main/management backend**, Go user/login and frontend APIs, and a Python execution worker, provider-specific session adapters, and optional browser or desktop tools. **Hermesh is an optional bridge**, rather than a required Go service. This repository is an independent project; the upstream projects are not affiliated with it.
 
 ## See the idea
 
@@ -95,39 +95,35 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 
 ```mermaid
 flowchart TD
-    You[You: chat and work dashboard] --> DeerFlow[DeerFlow: secretary and planning]
-    Events[Schedules and repository events] --> DeerFlow
-    DeerFlow --> Control[DeerMate Python control service]
-    Control --> Registry[Agent registry and policy]
-    Control --> Tasks[Durable tasks and session adapters]
+    You[You] --> UI[DeerMate React workspace]
+    UI --> Go[Go main API, login and management]
+    Go --> Runtime[Private DeerFlow Agent runtime]
+    Runtime --> Tasks[Python MCP and durable task tracking]
     Tasks --> Link[Python SSH connector]
-    Link --> Worker[Python worker on your machine]
-    Tasks -. optional .-> Hermesh[Self-hosted Hermesh bridge]
-    Hermesh -.-> External[Hermesh-managed agents]
-    Worker --> Claude[Claude Code: design]
-    Worker --> Codex[Codex: implementation and review]
-    Worker --> DSH[DeepSeek Harness or Qoder: execution]
-    Worker --> Desktop[Optional browser or desktop tools]
-    Worker --> Results[Events, artifacts, diff and evidence]
-    Results --> Control
-    Control --> DeerFlow
+    Link --> Worker[Python Worker on your machine]
+    Worker --> Codex[Codex app-server]
+    Worker --> Results[Diff, tests and native session evidence]
+    Results --> Runtime
+    Go -. planned .-> Routing[Specialist routing and project grants]
+    Routing -. planned .-> Other[Claude, DeepSeek, research and desktop adapters]
+    Tasks -. optional, planned .-> Hermesh[Self-hosted Hermesh bridge]
 ```
 
-The default backend plan is **Python end to end for DeerMate-owned services**:
+The backend follows the owner’s updated **Go control plane + Python Agent runtime/Worker** direction:
 
 | Component | Proposed implementation | Responsibility |
 | --- | --- | --- |
 | Secretary | DeerFlow integration | Conversation, planning, memory, and delegation |
-| Control service | FastAPI + Pydantic | Task admission, registry, policy, and task status |
+| Main and management backend | Go `net/http` | Frontend API boundary, workspace summary, users/roles, sessions, CSRF and audit |
 | Persistence | SQLite initially; PostgreSQL when needed | Task/session mapping, event cursors, and recovery records |
 | Remote worker | Python asyncio | Bounded subprocess execution and local artifact collection |
 | Private link | AsyncSSH using the SSH protocol | Encrypted transport with pinned host identity |
 | Agent adapters | Python wrappers for each supported interface | Normalize native agent lifecycle and output |
 | UI | Reuse DeerFlow first; add task cards | A single place to follow the work |
 
-External agents may require Node.js, Rust binaries, macOS tools, or paid subscriptions. “Python backend” describes the services we maintain, not every tool that they invoke. No Go toolchain or Go service is required by the default design.
+External agents may require Node.js, Rust binaries, macOS tools, or paid subscriptions. Go owns the public API/auth boundary; DeerFlow and Worker/MCP/SSH retain Python. Docker builds Go automatically; native backend development uses Go 1.27.3.
 
-See [architecture](docs/architecture.md) and [the Python-first decision](docs/decisions/0001-python-first.md). The SSH path does not implement or claim wire compatibility with Hermesh.
+See [Go backend / API guide](backend/README.md), [architecture](docs/architecture.md) and [ADR 0007](docs/decisions/0007-go-control-plane.md), which supersedes the original Python-only control-plane choice. The SSH path does not implement or claim wire compatibility with Hermesh.
 
 ## Connect your agents
 
@@ -173,7 +169,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M4.1 first DeerMate workspace**, on the M2.5 locally verified Docker/Worker stack.
+We track delivered work separately from planned functionality. Current stage: **M4.2 Go main/management backend**, on the locally verified workspace and Docker/Worker stack.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |

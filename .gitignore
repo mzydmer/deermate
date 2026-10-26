@@ -17,3 +17,5 @@ dist/
 deermate.toml
 controller.toml
 *.token
+/backend/data/
+/backend/deermate

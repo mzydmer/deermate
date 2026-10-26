@@ -20,7 +20,7 @@ Open a [design proposal](https://github.com/mzydmer/deermate/issues/new?template
 
 Install developer dependencies with `python -m pip install -e '.[dev]'`. Run the checks in [AGENTS.md](AGENTS.md). Ordinary tests are offline and need no model credentials; `scripts/live_smoke.py --live` is explicitly opt-in and consumes Codex quota. The separate [Gateway verifier](docs/demo.md) requires a pinned upstream checkout and frozen backend environment but makes no model calls.
 
-- Maintain DeerMate-owned backend services in Python. Hermesh is optional external interoperability, not a required Go service.
+- Maintain main/management, user/login and frontend-facing APIs in Go (ADR 0007). Keep Python DeerFlow/Worker/MCP/SSH integration explicit. Hermesh is optional interoperability.
 - Reuse upstream capabilities where practical and keep interfaces narrow.
 - Clearly label planned, mocked, and implemented behavior.
 - Use supported authentication flows. Never commit credentials, private messages, production traces, or local machine identities.

@@ -1,8 +1,14 @@
 # 在阿里云 ACK 快速部署 DeerMate
 
-默认拓扑：**ACK 上的 DeerFlow 页面 / Gateway → Python MCP → SSH → 家中 Worker / Codex**。先安装云端界面，再启用 Worker 注册。复用固定上游 `a1b89d0` 的官方 Helm Chart、前端和后端 Dockerfile；DeerMate 自有代码仍为 Python。
+默认拓扑：**ACK 上的页面 → Go 主服务/登录/管理 API → 内部 DeerFlow → Python MCP → SSH → 家中 Worker / Codex**。先安装云端界面，再启用 Worker 注册。复用固定上游 `a1b89d0` 的官方 Helm Chart、前端和后端 Dockerfile；Go 镜像独立构建；DeerFlow 与 Worker/MCP/SSH 保留 Python。
 
 本包提供可执行脚本与验证，不代表已经部署到你的 ACK。没有创建集群、连接私人设备或调用真实模型。
+
+## Go 控制端拓扑
+
+同一 Gateway Pod 内运行 Go 控制端（8080）和 Python Agent 运行时（仅 `127.0.0.1:8001`）；原 ClusterIP Service 的 targetPort 改为 Go。页面 SSR 和 nginx API 请求都先到 Go，`/admin` 提供用户/角色管理。共用原 20 GiB RWO home 的相同 subPath，保持单副本/Recreate；Go 只引用已有 auth Secret 的 `AUTH_JWT_SECRET`，不继承模型/Worker 密钥。
+
+首次在已有 ACK 数据卷升级前，先创建云盘/PVC 快照或 SQLite 在线备份并验证可恢复；本地 profile 的自动备份不等同于 ACK 云盘备份。原用户 UUID/密码/任务记录保持兼容，浏览器需重新登录。快速配置仍只面向 localhost port-forward；自定义 TLS/域名需显式调整 Go origin/host allowlist。见 [Go 后端说明](../backend/README.md)。
 
 ## 前置条件
 
@@ -10,18 +16,18 @@
 - 本机或构建机有 Python 3.12+、Git、Docker/Buildx、**Helm 3.18+ 的 3.x 版本**和 kubectl。Worker 自身仍支持 Python 3.11+；Helm 4 不在本包验证范围。
 - kubeconfig 已配置；用 `kubectl config get-contexts` 找到明确的 ACK context。脚本每次操作都传入该 context。
 - 具备目标 namespace 的部署权限及首次创建 namespace 的权限；每个 namespace 部署一套该 Chart，其内部 Service 名固定。
-- ACR 实例/命名空间及构建推送、集群拉取权限。建立四个仓库：`deermate-gateway`、`deermate-frontend`、`deermate-nginx`、`deermate-tools`；允许自动建仓时可由首次推送创建。
+- ACR 实例/命名空间及构建推送、集群拉取权限。建立五个仓库：`deermate-control`、`deermate-gateway`、`deermate-frontend`、`deermate-nginx`、`deermate-tools`；允许自动建仓时可由首次推送创建。
 - ACK CSI 云盘 StorageClass，例如 `alicloud-disk-topology-alltype`。脚本验证 provisioner 为 `diskplugin.csi.alibabacloud.com`，申请 20 GiB RWO 云盘；不把 SQLite 放在 NAS。资源按阿里云账户规则计费。
 - 一个从 ACK 可访问、支持工具调用的 OpenAI-compatible 模型 endpoint/model ID 和 API key；使用你实际开通的模型，不在脚本中假设某个商业模型已可用。
 
-镜像和模型服务均需要相应网络可达性。构建时需要访问上游 GitHub、镜像源和依赖源；运行时使用你推送到 ACR 的四个镜像。
+镜像和模型服务均需要相应网络可达性。构建时需要访问上游 GitHub、镜像源和依赖源；运行时使用你推送到 ACR 的五个镜像。
 
 ## 第一次部署
 
 从此功能分支安装（合并主线后可改用 main）：
 
 ```bash
-git clone --branch feat/deermate-workspace https://github.com/mzydmer/deermate.git
+git clone --branch feat/go-control-plane https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate

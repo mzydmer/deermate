@@ -207,6 +207,35 @@ async function main() {
       await faultPage.locator(".dm-fetch-error").waitFor({ timeout: 20000 });
     checks.push("fault_injection_preserves_unknown_and_partial_states");
     await faultContext.close();
+    assert.equal(
+      (await page.request.get(`${base}/api/v1/auth/me`)).headers()["x-deermate-backend"],
+      "go",
+    );
+    checks.push("go_owns_browser_authentication");
+    await page.setViewportSize({ width: 1440, height: 1080 });
+    await page.goto(`${base}/admin`);
+    await page.getByRole("heading", { name: "管理工作台" }).waitFor();
+    const email = `browser-${require("node:crypto").randomBytes(6).toString("hex")}@example.com`;
+    await page.getByLabel("邮箱", { exact: true }).fill(email);
+    await page.getByLabel("初始密码").fill(require("node:crypto").randomBytes(24).toString("hex"));
+    const creation = page.waitForResponse(r => r.url().endsWith("/api/v1/admin/users") && r.request().method() === "POST");
+    await page.getByRole("button", { name: "创建账号", exact: true }).click();
+    const created = await creation;
+    assert.equal(created.status(), 201);
+    const member = await created.json();
+    try {
+      const row = page.locator("#users tr").filter({ hasText: email });
+      await row.getByRole("button", { name: "停用", exact: true }).click();
+      await row.getByText("已停用", { exact: true }).waitFor();
+      checks.push("go_admin_console_creates_and_suspends_user");
+      await page.screenshot({ path: path.join(output, "admin.png"), fullPage: true });
+    } finally {
+      const csrf = (await context.cookies()).find(c => c.name === "csrf_token").value;
+      const cleanup = await page.request.patch(`${base}/api/v1/admin/users/${member.id}`, {
+        headers: { "X-CSRF-Token": csrf }, data: { disabled: true },
+      });
+      assert.equal(cleanup.status(), 200);
+    }
     assert.deepEqual(errors, []);
     checks.push("no_browser_page_errors");
     fs.writeFileSync(

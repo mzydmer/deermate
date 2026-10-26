@@ -122,6 +122,8 @@ def initialize(model):
         for doc in yaml.safe_load_all(rendered)
         if doc and doc["kind"] == "ConfigMap" and "nginx.conf" in doc.get("data", {})
     )
+    nginx = nginx.replace("server gateway:8001;", "server control:8080;")
+    nginx = ack.control_nginx(nginx)
     (config_dir / "nginx.conf").write_text(nginx)
     (config_dir / "nginx.conf").chmod(0o644)
     if not (STATE / "runtime.env").exists():
@@ -140,8 +142,15 @@ def initialize(model):
         ack.private_write(
             STATE / "frontend.env", "BETTER_AUTH_SECRET=" + secrets.token_urlsafe(40) + "\n"
         )
+    # The Go process needs the JWT signing bridge only, never Worker/internal credentials.
+    jwt = next(
+        line
+        for line in (STATE / "runtime.env").read_text().splitlines()
+        if line.startswith("AUTH_JWT_SECRET=")
+    )
+    ack.private_write(STATE / "control.env", jwt + "\n")
     env = {"DEERMATE_STATE_DIR": str(STATE)}
-    for name in ["gateway", "frontend", "nginx"]:
+    for name in ["gateway", "frontend", "nginx", "control"]:
         env[f"DEERMATE_{name.upper()}_IMAGE"] = (
             f"{settings['registry']}/deermate-{name}:{settings['tag']}"
         )
@@ -149,6 +158,30 @@ def initialize(model):
         STATE / "compose.env", "".join(f"{key}={value}\n" for key, value in env.items())
     )
     return json.loads(profile.read_text())
+
+
+def backup_before_go():
+    """SQLite online backup includes committed WAL state; never reset existing identities."""
+    if (STATE / "go-cutover.json").exists():
+        return
+    running = compose("ps", "--status", "running", "--services", capture=True).splitlines()
+    if "gateway" not in running:
+        # A stopped existing volume still needs backup. Start only the old runtime first.
+        compose("up", "--detach", "--wait", "init", "gateway")
+    code = (
+        "import sqlite3,pathlib,os; "
+        "p=pathlib.Path('/app/backend/.deer-flow/data/deerflow.db'); "
+        "d=p.parent/'backups'; d.mkdir(mode=0o700,exist_ok=True); "
+        "b=d/'before-go-control.db'; "
+        "source=sqlite3.connect(p); target=sqlite3.connect(b); "
+        "source.backup(target); "
+        "assert target.execute('PRAGMA integrity_check').fetchone()[0]=='ok'; "
+        "target.close(); source.close(); os.chmod(b,0o600)"
+    )
+    compose("exec", "--no-TTY", "gateway", "/app/backend/.venv/bin/python", "-c", code)
+    ack.private_write(
+        STATE / "go-cutover.json", json.dumps({"backup": "data/backups/before-go-control.db"})
+    )
 
 
 def owned(entry):
@@ -570,6 +603,7 @@ def main():
     )
     image = sub.add_parser("build")
     image.add_argument("--frontend-only", action="store_true", help="rebuild only the UI image")
+    image.add_argument("--control-only", action="store_true", help="build only the Go backend")
     sub.add_parser("up")
     test = sub.add_parser("verify")
     test.add_argument(
@@ -593,13 +627,21 @@ def main():
         else:
             profile = json.loads((STATE / "profile.json").read_text())
         if args.action == "build":
-            ack.build(
-                ack.load(STATE / "images.yaml"), STATE / "images.yaml", False, args.frontend_only
-            )
+            if args.control_only:
+                ack.build_control(ack.load(STATE / "images.yaml"), False)
+            else:
+                ack.build(
+                    ack.load(STATE / "images.yaml"),
+                    STATE / "images.yaml",
+                    False,
+                    args.frontend_only,
+                )
         elif args.action == "up":
+            profile = initialize(None)
             token, instance = host_worker(profile)
             ssh_worker(profile, token, instance)
             upload_stage()
+            backup_before_go()
             compose("up", "--detach", "--force-recreate", "--wait", "--wait-timeout", "240")
             print("Local control plane: " + URL)
         elif args.action == "verify":
