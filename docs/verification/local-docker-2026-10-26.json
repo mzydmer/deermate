@@ -104,5 +104,17 @@
     "Actual browser login used isolated Linux Chromium, without locked Mac screen or personal browser data.",
     "Generated-key SSH development server; no OS OpenSSH account, second device, NAT or cloud test.",
     "Source hashes record retained source snapshot; local development image IDs are recorded separately."
-  ]
+  ],
+  "source_commit": "bf027200b68af6c6ec89505ad8621e6fadd41088",
+  "complete_profile_stop_start": {
+    "passed": true,
+    "checks": [
+      "compose_down_up_healthy",
+      "owner_login_preserved",
+      "original_gateway_result_preserved",
+      "worker_instance_session_attempt_preserved",
+      "fresh_ssh_capabilities_after_restart"
+    ],
+    "additional_native_tasks_started": 0
+  }
 }

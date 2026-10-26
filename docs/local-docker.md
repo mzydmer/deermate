@@ -19,7 +19,7 @@ python scripts/local_docker.py down
 python scripts/local_docker.py up
 ```
 
-`down` 仅停止这个 Compose 项目及其拥有的 Worker/SSH 进程，保留本地数据和命名卷。它不是任务取消命令；原生执行活动期间不要把重启当成安全取消。Worker 运行中断仍按既有显式恢复规则处理。`up` 刷新一天有效的本地 SSH 注册；长期停留后连接到期时重新执行它。
+`down` 仅停止这个 Compose 项目及其拥有的 Worker/SSH 进程，保留本地数据和命名卷。已实际执行完整 `down`/`up`：三个容器重新健康，原账号可登录，SQL 结果、Worker 实例/会话/attempt 保留，新 SSH capabilities 查询通过，没有新模型任务。它不是任务取消命令；原生执行活动期间不要把重启当成安全取消。Worker 运行中断仍按既有显式恢复规则处理。`up` 刷新一天有效的本地 SSH 注册；长期停留后连接到期时重新执行它。
 
 ## 从源码搭建
 
