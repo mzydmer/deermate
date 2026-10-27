@@ -1,0 +1,43 @@
+{
+  "scope": "Alibaba Cloud SWAS resource provisioning only; application deployment pending",
+  "based_on_commit": "9e966d9",
+  "region": "cn-beijing",
+  "os": "Ubuntu 24.04.2 LTS",
+  "architecture": "x86_64",
+  "purchased_spec": {
+    "vcpu": 2,
+    "memory_gib": 2,
+    "system_disk_gib": 40,
+    "duration_years": 1
+  },
+  "payment": {
+    "completed": true,
+    "cash_cny": 0,
+    "auto_renew_selected_at_purchase": false,
+    "renewal_price_guaranteed": false
+  },
+  "observed_host": {
+    "memory_total_mib": 1613,
+    "memory_available_mib_before_install": 1225,
+    "disk_free_before_install": "35G",
+    "sudo_noninteractive": true,
+    "memory_available_mib_after_docker_install": 1108,
+    "disk_free_after_docker_install": "35G"
+  },
+  "remote_console": {
+    "workbench_passwordless_connected": true,
+    "mode": "Shell",
+    "new_ssh_key_added": false
+  },
+  "deployment": {
+    "docker_install": "completed and verified active",
+    "app_containers_started": false,
+    "model_calls": 0,
+    "home_worker_registered": false,
+    "public_app_port_opened": false,
+    "docker_engine": "29.1.3",
+    "docker_compose": "2.40.3+ds1-0ubuntu1~24.04.1"
+  },
+  "blocker": "Workbench browser upload requires enabling extension local file URL access. A separately scoped temporary SSH key is prepared, pending explicit access approval; not installed.",
+  "evidence": "Console payment-success, running-instance screenshots and private receipts retained in Git-ignored directory; no account/instance/IP/credential identifiers included here."
+}
