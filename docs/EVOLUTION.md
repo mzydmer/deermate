@@ -159,3 +159,9 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 按用户明确要求，将主线从 `e9f228d` fast-forward 到 `51d58b2`。当前开发 head 包含所有十个功能分支，保留原有提交历史及分支，没有压缩、重写或删除。GitHub 连接器创建 PR 返回 403；改用已有 SSH Git 权限，通过普通推送完成远端主线更新。无 PR 创建，不声称存在审阅/批准记录。
 
 合并包含 Worker/Codex、MCP/SSH、Go 主服务/管理/认证/前端 API、Docker/ACK 包，以及工作台和 design.md。已核对来源 `c349431` 的 [CI 40318918329](https://github.com/mzydmer/deermate/actions/runs/40318918329) 七个 job 全部成功；其后为文档更新，实际功能代码与已验收来源一致。主线安装说明改用 main；主线 CI 结果另行核对。原生模型任务未重跑，本地服务/账户/任务数据保留。此为源码 alpha 集成，不是 release、ACK 安装或专职路由完成声明。
+
+## 2026-10-26 · 阿里云 ACK 控制台检查与创建草案
+
+用户请求部署 ACK，随后明确尚无集群、先准备创建方案。已检查登录后的杭州/北京 ACK 列表及北京 ACR，并填写尚未提交的基础版单 ECS 开发集群草案。记录实际控制台列出的节点、磁盘、NAT、EIP、CLB 固定报价及未计价项；创建预算、RAM 角色授权、ACR 凭证和集群 API 连通方式仍待确认。账号、网络标识、截图和私有草案留在 Git 忽略目录。
+
+应用草案未复制任何凭据，registry 使用 `pending.invalid`、context 使用 `ACK_NOT_CREATED`，防止被误认为可执行的云配置。实际固定 Chart 离线渲染为 11 个资源/3 个 Deployment，未访问集群 API；没有创建资源、RAM 授权、镜像推送、Helm 安装或模型任务。当前控制台报价与范围见[有限记录](verification/ack-console-plan-2026-10-26.json)；不构成 ACK 实际验收或家庭 Worker 连通证明。

@@ -12,12 +12,22 @@
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
 | 当前验收 | Go 迁移历史 27 项 API 检查；本轮 25 项浏览器检查（含主题/手机/管理弹窗），原任务仍可读，模型任务 0 |
-| ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；实际 Chart 校验通过；未连接 ACK/推送 ACR |
+| ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
 | 交付 | M1–M4.3 全部已有实现进入 main；来源 CI 40318918329 七个 job 全部 success；主线 CI 结果单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 秘书模型配置、项目级授权与专职 Agent 路由；云端凭据提供后再进行 ACK 实际部署验收 |
+| 下一步 | 用户确认 ACK 创建地域、资源预算和所需服务授权后，创建集群/ACR 并进行实际部署验收；项目级授权与专职 Agent 路由仍待开发 |
 
 运行代码、历史证据与本轮 Go 变更应分别核对；文档 HEAD 可以继续推进。
+
+## ACK 创建准备 · 2026-10-26
+
+用户确认尚无 ACK 集群，要求先准备创建方案。已通过其已登录的控制台检查杭州、北京列表（均为 0 条）及北京 ACR（个人版尚未创建）。准备 `deermate-dev` 北京 ACK 基础版、普通 amd64 ECS 单节点 `ecs.e-c1m2.xlarge`（4 vCPU/8 GiB）、80 GiB 系统盘、120 GiB 容器运行时盘；应用另申请现有部署包要求的 20 GiB RWO PVC。此为个人开发/测试草案，单节点与 SQLite 均不提供 HA。
+
+控制台显示 ECS/系统盘/运行时盘分别约 ¥0.45/0.08/0.13 每小时，另有 NAT ¥0.184/小时、出口 EIP ¥0.020/小时及 API Server 私网 CLB ¥0.147/小时；这些已列固定项合计约 ¥1.011/小时、720 小时约 ¥727.92。**尚未计入应用 PVC、NAT CU、CLB LCU、公网流量、模型调用及可选监控等，不能视为总价或费用上限。** Pro 控制面报价另加 ¥0.640/小时。价格仅记录本次控制台观察，实际创建前重新核对。
+
+私有 `.deermate/ack/` 保留创建计划、故意使用不可访问占位 registry/context 的应用配置草案、脱敏 Helm review 清单及报价截图。使用实际固定 Chart 离线渲染通过：11 个资源、3 个应用 Deployment；Gateway 同 Pod 的 Go/Python 边界、无自动 ServiceAccount token、ClusterIP 与单实例 PVC 保持。没有访问 Kubernetes API、复制模型密钥或调用模型。
+
+创建向导还需要 `AliyunOOSLifecycleHook4CSRole` 授权；未接受任何 RAM 授权、协议或创建订单。ACR 仍需开通并由用户完成访问凭证设置。草案 API Server 为私网，本机无法直接连接；实际部署前必须选择同 VPC Workbench 或明确批准的受限公网 API 方案。家中 Worker 保持禁用，尚无云端可达链路。见[准备记录](verification/ack-console-plan-2026-10-26.json)与[部署指南](ack-deployment.md)。
 
 ## 主线集成 · 2026-10-26
 

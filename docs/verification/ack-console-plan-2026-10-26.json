@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-26",
+  "scope": "Authenticated console inspection and unsubmitted creation plan; offline application Helm rendering",
+  "source_commit": "4761a5d77beffece18cc6866104d7f466f21e7d7",
+  "user_direction": "No existing ACK cluster; prepare a creation plan first",
+  "observed_cluster_records": {"cn-hangzhou": 0, "cn-beijing": 0},
+  "beijing_acr_personal_instance_created": false,
+  "proposed": {
+    "cluster": "deermate-dev",
+    "region": "cn-beijing",
+    "edition": "ACK managed Basic for personal development/test",
+    "nodes": 1,
+    "instance_type": "ecs.e-c1m2.xlarge",
+    "vcpu": 4,
+    "memory_gib": 8,
+    "system_disk_gib": 80,
+    "runtime_disk_gib": 120,
+    "application_rwo_pvc_gib": 20,
+    "home_worker_enabled": false
+  },
+  "console_reference_cny_per_hour": {
+    "ecs": 0.45,
+    "system_disk": 0.08,
+    "runtime_disk": 0.13,
+    "nat_gateway": 0.184,
+    "egress_eip": 0.020,
+    "api_server_internal_clb": 0.147,
+    "listed_fixed_subtotal": 1.011,
+    "optional_pro_management_extra": 0.640
+  },
+  "listed_fixed_subtotal_720_hours_cny": 727.92,
+  "excluded_costs": ["20Gi application PVC", "NAT CU", "CLB LCU", "Internet traffic", "model calls", "optional extra API EIP", "optional logging/monitoring/backups"],
+  "offline_render": {"result": "passed", "resources": 11, "application_deployments": 3, "automatic_service_account_tokens": false},
+  "remaining": ["Confirm region, network use, budget and final quote", "Review required ACK RAM role grants", "Create ACR if eligible and complete access credential setup", "Choose private Workbench or restricted public API connectivity", "Create cloud resources", "Build and push five images", "Install and verify application", "Separately connect a reachable home Worker"],
+  "resources_created": false,
+  "ram_grants_accepted": false,
+  "images_pushed": false,
+  "cluster_api_contacted": false,
+  "model_calls": 0,
+  "private_evidence": "Creation plan, application config draft, redacted Helm review YAML and console quote screenshot retained under ignored .deermate/ack/; no credentials or account/network identifiers in this receipt.",
+  "references": ["https://help.aliyun.com/zh/ack/ack-managed-and-ack-dedicated/product-overview/ack-pro-cluster-billing/", "https://help.aliyun.com/en/ack/ack-managed-and-ack-dedicated/user-guide/access-clusters/", "https://help.aliyun.com/en/acr/user-guide/create-a-container-registry-personal-edition-instance"]
+}
