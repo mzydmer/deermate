@@ -78,6 +78,8 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 
 **Deploy the control plane to Alibaba Cloud ACK:** [quick deployment guide](docs/ack-deployment.md). Python scripts build ACR images and install the pinned DeerFlow Helm chart with private access, persistent cloud-disk state and optional enrolled home Worker. Actual cluster installation and cloud-to-home acceptance remain operator-specific.
 
+**Lowest-cost personal trial:** the optional [single-host Docker bundle](docs/single-host.md) uses four prebuilt images, one server and local disks, without managed Kubernetes or a load balancer. A 2 vCPU/2 GiB host is a candidate; the container memory budget is tested separately from actual cloud/model workloads. Go authentication and management remain in place; initial access uses a localhost SSH tunnel.
+
 | Capability | Intended experience | Status |
 | --- | --- | --- |
 | A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | Planned |

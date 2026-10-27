@@ -46,7 +46,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev]'
-      - run: ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py frontend/motion/generate.py
+      - run: ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py deploy/single-host/init.py frontend/motion/generate.py
       - run: python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json
       - run: python -m build --wheel
       - uses: actions/upload-artifact@v4
@@ -73,7 +73,7 @@ jobs:
           sudo install linux-amd64/helm /usr/local/bin/helm
       - run: python scripts/ack_deploy.py init --registry registry.example.invalid/deermate-ci --context ci-no-cluster --tag ci
       - run: python scripts/ack_deploy.py prepare
-      - run: python -m pytest -q tests/test_ack_deploy.py
+      - run: python -m pytest -q tests/test_ack_deploy.py tests/test_single_host.py
         env:
           DEERMATE_ACK_UPSTREAM: ${{ github.workspace }}/.deermate/ack/deer-flow
           DEERMATE_HELM: /usr/local/bin/helm

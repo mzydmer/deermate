@@ -21,6 +21,8 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 
 技术路线以 **Go 主服务/管理服务 + DeerFlow 内部运行时 + Python Worker + 会话适配层 + 按需桌面工具**为核心。**Hermesh 作为可选桥接**，用户登录、角色与前端 API 统一由 Go 提供，Docker 会自动编译 Go 服务。DeerMate 是独立项目，与这些上游项目没有官方隶属关系。
 
+**最低成本试运行：** 可选[单机 Docker 部署](docs/single-host.md)，复用四个预构建镜像、服务器系统盘与网络，保留 Go 登录和管理功能。2 核 2 GiB 为单人试运行候选；容器内存限额验证与真实云主机/模型负载分别验收。无需为此创建 ACK、NAT 或负载均衡，初次使用 SSH 本地转发访问。
+
 ## 先看概念视频
 
 [![播放 DeerMate 概念视频：模拟流程，非真实运行录屏](docs/assets/concept-preview.gif)](https://github.com/mzydmer/deermate/blob/main/docs/assets/deermate-concept.mp4)

@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-26",
+  "scope": "Isolated Linux containers on the existing Intel Mac Docker Desktop VM; candidate single-host budget profile, not actual 2GiB VM/cloud/model acceptance",
+  "based_on_commit": "04b2cc4c1b0b236e21f59875b0766e6e67ed30e1",
+  "source_sha256": {
+    "scripts/single_host.py": "374a56227d786557b5930b7c0a7de6a9294027f74bb6bce80937884ff9e8f243",
+    "deploy/single-host/init.py": "cc21d8207d1e856628004e82fba09702b04795cd3a6a19686642ddb3fad24645",
+    "deploy/single-host/start.sh": "4df4eb909d97dea4488613f99b775ab03f37a21b9f75fe885520fa79d54f5f5e"
+  },
+  "limits": {
+    "gateway_mib": 1024,
+    "control_mib": 128,
+    "frontend_mib": 256,
+    "nginx_mib": 64,
+    "total_running_mib": 1472,
+    "total_cpu": 2,
+    "published_port": "127.0.0.1:12027 -> nginx:2026"
+  },
+  "http_checks": [
+    "anonymous_workspace_rejected",
+    "bootstrap_created_owner",
+    "owner_login",
+    "owner_session",
+    "workspace_html",
+    "go_admin_html",
+    "internal_runtime_model_route",
+    "worker_not_registered",
+    "foreign_origin_rejected",
+    "bounded_read_burst__api_deermate_v1_workspace",
+    "bounded_read_burst__api_models",
+    "bounded_read_burst__api_mcp_config",
+    "bounded_read_burst__workspace",
+    "bounded_read_burst__admin"
+  ],
+  "restart_checks": [
+    "session_survived_restart",
+    "workspace_after_restart",
+    "admin_after_restart",
+    "runtime_after_restart",
+    "owner_not_reset"
+  ],
+  "bounded_read_requests": 40,
+  "max_read_concurrency": 4,
+  "probe_corrections": "Corrected probe assumptions: Go initialize returns 201 and MCP response uses mcp_servers; use the actual Go workspace read endpoint. No application change.",
+  "images": {
+    "gateway": {
+      "image_id": "sha256:e789b51f7e406a4db39cf6c3b95c68f77c748e43b2681723c87dce018be354f3",
+      "health": "healthy",
+      "oom_killed_observed": false,
+      "memory_limit_bytes": 1073741824
+    },
+    "control": {
+      "image_id": "sha256:4f50e8e2996df720da019cd9c1f87978e4b790112094b34661bc3c7797bb10d1",
+      "health": "healthy",
+      "oom_killed_observed": false,
+      "memory_limit_bytes": 134217728
+    },
+    "frontend": {
+      "image_id": "sha256:4c2187deede5f0b9eb5348e5ac8de9a049dda11388fa76c88b07a99517cbb7bb",
+      "health": "healthy",
+      "oom_killed_observed": false,
+      "memory_limit_bytes": 268435456
+    },
+    "nginx": {
+      "image_id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "health": "healthy",
+      "oom_killed_observed": false,
+      "memory_limit_bytes": 67108864
+    }
+  },
+  "validation": {
+    "ordinary_pytest": {
+      "passed": 96,
+      "skipped": 7,
+      "seconds": 50.84
+    },
+    "actual_chart_local_overlay_bundle": {
+      "passed": 25,
+      "seconds": 1.37
+    },
+    "ruff": "passed",
+    "wheel": "built"
+  },
+  "model_calls": 0,
+  "cloud_resources_created": false,
+  "agreements_accepted": false,
+  "home_worker_registered": false,
+  "preservation": "Existing deermate-local services/volumes and native Worker untouched; fresh generated fixture account and fresh named volumes used for the isolated run.",
+  "price_scope": "Authenticated purchase preview retained privately: cn-beijing 2vCPU/2GiB/40GiB Ubuntu24.04 1year, automatic renewal disabled. No purchase or renewal-price guarantee.",
+  "exclusions": [
+    "Real 2GiB cloud VM and host OS headroom",
+    "Model generation/concurrency",
+    "Cloud install and network access",
+    "Home Worker/SSH connectivity",
+    "Public TLS/domain configuration"
+  ],
+  "private_evidence": "Ignored .deermate/single-host/: API/limits receipts, test credentials, deployment bundle and console screenshot. No account or coupon identifiers in this receipt.",
+  "fixture_cleanup": "Isolated budget-check containers, network and fresh volumes removed after verification; existing local services remain running.",
+  "private_transfer_archives": "Four prebuilt images exported to a private compressed archive (~1464 MiB); portable configuration bundle prepared separately; integrity digests retained privately."
+}

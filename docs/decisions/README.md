@@ -11,6 +11,7 @@ Record significant choices and their consequences here. Current implementation a
 | [0005](0005-ack-control-plane.md) | Accepted | Single-instance ACK control plane using the pinned upstream chart and Python post-renderer | Deployment package; actual ACK installation remains operator-specific |
 | [0006](0006-frontend-overlay.md) | Accepted | Hash-checked source overlay, bounded task desk and accessible motion | First DeerMate workspace; secretary routing/device liveness remain separate |
 | [0007](0007-go-control-plane.md) | Accepted | Go main/management/login/frontend APIs; pinned Python runtime integration | Shared compatible identity tables, revocable sessions, admin console, local/ACK integration |
+| [0008](0008-single-host-budget.md) | Accepted as optional target | Single-host Compose bundle for a personal budget trial | Prebuilt images, memory ceilings, loopback access; actual cloud purchase/deployment separate |
 
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 

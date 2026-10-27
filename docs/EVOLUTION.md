@@ -165,3 +165,11 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 用户请求部署 ACK，随后明确尚无集群、先准备创建方案。已检查登录后的杭州/北京 ACK 列表及北京 ACR，并填写尚未提交的基础版单 ECS 开发集群草案。记录实际控制台列出的节点、磁盘、NAT、EIP、CLB 固定报价及未计价项；创建预算、RAM 角色授权、ACR 凭证和集群 API 连通方式仍待确认。账号、网络标识、截图和私有草案留在 Git 忽略目录。
 
 应用草案未复制任何凭据，registry 使用 `pending.invalid`、context 使用 `ACK_NOT_CREATED`，防止被误认为可执行的云配置。实际固定 Chart 离线渲染为 11 个资源/3 个 Deployment，未访问集群 API；没有创建资源、RAM 授权、镜像推送、Helm 安装或模型任务。当前控制台报价与范围见[有限记录](verification/ack-console-plan-2026-10-26.json)；不构成 ACK 实际验收或家庭 Worker 连通证明。
+
+## 2026-10-26 · 最低成本单机运行候选
+
+用户认为 ACK 报价过高，要求最便宜的最小配置。增加可选 [Compose 单机包](single-host.md)与 [ADR 0008](decisions/0008-single-host-budget.md)，使用已有四镜像、本机磁盘和新生成内部密钥，无需 ACK/NAT/负载均衡/镜像仓库。保留 Go 用户/API 权限、非 root、loopback 发布与 SQLite/home；移除本地开发 submit shim，默认模型/MCP 为空，不搬运原生账号或原数据。2 核/2 GiB 是待目标机验收候选，限额不是低内存主机保证。
+
+独立新卷测试四个容器，在合计 1472 MiB/2 核的常驻限额下健康运行，14 项 HTTP 检查和 5 项重启保留检查通过；原部署/Worker 保留。首次探针的 HTTP 状态码、MCP 字段和只读路由预期已按源码修正，应用认证未改变。模型调用 0，未做模型并发或实际 2 GiB 云主机测试。常规回归 96 passed/7 skipped（50.84 秒），实际 Chart/本地/overlay/单机专项 25 passed（1.37 秒），Ruff/wheel 通过；新脚本 lint/渲染检查已接入 CI，远端结果另查。
+
+控制台核对北京轻量 2 核 2 GiB/40 GiB/Ubuntu 24.04 的首年活动与券后报价，自动续费关闭；价格截图/私人计划留在忽略目录，账号/优惠券标识不入库。没有购买、接受协议或声称云端安装完成。来源和边界见[有限收据](verification/single-host-2026-10-26.json)。
