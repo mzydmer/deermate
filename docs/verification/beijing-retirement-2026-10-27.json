@@ -1,16 +1,18 @@
 {
-  "recorded_at_utc": "2026-10-28T04:35:05.414357+00:00",
+  "recorded_at_utc": "2026-10-28T04:49:59.776236+00:00",
   "scope": "Owner-requested retirement of the former private Beijing deployment; Singapore public service retained",
   "beijing": {
     "application_stopped": true,
-    "instance_console_state": "已停机",
-    "permanent_unsubscription_submitted": false,
-    "permanent_release_confirmed": false,
-    "unsubscription_state": "Owner authorized; three UI submission attempts stopped at a blank Alibaba identity verification window; no completion receipt",
+    "instance_console_state": "当前资源不存在",
+    "permanent_unsubscription_submitted": true,
+    "permanent_release_confirmed": true,
+    "unsubscription_state": "Completed after user finished Alibaba identity verification; refund detail explicitly reports success",
     "permanent_release_authorized": true,
     "refund_rules_accepted_by_owner": true,
     "same_account_sso_refreshed": true,
-    "identity_verification_completed": false
+    "identity_verification_completed": true,
+    "beijing_region_resource_list_empty": true,
+    "identity_verification_completed_by_user": true
   },
   "backup": {
     "consistent_database_quick_check": "ok",
@@ -23,7 +25,7 @@
   "refund_preview": {
     "cash_and_voucher_distinguished": true,
     "extra_payment": false,
-    "actual_refund_verified": false,
+    "actual_refund_verified": true,
     "amounts_retained_in_private_operator_record": true
   },
   "singapore_after_beijing_poweroff": {
@@ -38,15 +40,38 @@
     "model_calls": 0
   },
   "limitations": [
-    "Stopping a prepaid instance is not unsubscription",
-    "Beijing no longer provides an online rollback while powered off",
-    "A final local backup does not make the cloud release reversible",
+    "Beijing is permanently released and no longer provides an online rollback",
+    "Local final backups do not make cloud resource release reversible",
     "Historical public-IP receipt records the earlier retained rollback state",
-    "Further progress requires completing the vendor identity verification, not renewed user permission to retire Beijing"
+    "This retirement audit did not invoke models or enroll home Workers"
   ],
   "singapore_during_unsubscription": {
     "normal_https_validation": true,
     "five_page_and_api_checks_passed": true,
     "model_calls": 0
+  },
+  "refund_result": {
+    "status": "退款成功（含券）",
+    "voucher_refund_completed": true,
+    "cash_refund_zero": true,
+    "extra_payment": false,
+    "actual_amounts_and_order_identifiers_retained_privately": true
+  },
+  "singapore_during_release_audit": {
+    "normal_https_validation": true,
+    "checks": {
+      "/workspace": 200,
+      "/admin": 200,
+      "/api/v1/auth/me": 200,
+      "/api/deermate/v1/workspace": 200,
+      "/api/deermate/v1/info": 200
+    },
+    "model_calls": 0
+  },
+  "cleanup": {
+    "old_beijing_loopback_tunnel_closed": true,
+    "obsolete_beijing_ssh_profile_archived": true,
+    "singapore_ssh_profile_preserved": true,
+    "backups_retained_locally": true
   }
 }

@@ -1,12 +1,12 @@
 # Single-host public IP HTTPS
 
-- Status: implemented and verified for the approved Singapore personal trial; 41 HTTP checks plus browser and controlled reboot acceptance. The former Beijing node is now backed up locally and powered off at the owner’s request; irreversible unsubscription is authorized but awaits completion of Alibaba identity verification.
+- Status: implemented and verified for the approved Singapore personal trial; 41 HTTP checks plus browser and controlled reboot acceptance. The former Beijing node is backed up locally and permanently unsubscribed/released at the owner’s request; the refund result is verified.
 - Requirements: FR-009, NFR-001, NFR-005–NFR-007.
 - User direction: defer domain purchase and prioritize public browser access without buying a domain.
 
 ## Approved target
 
-One Singapore SWAS international instance, amd64 Ubuntu 24.04, 2 vCPU / 2 GiB / 40 GiB. The current one-month preview is CNY39 before an existing coupon, CNY0 cash after it, with automatic renewal disabled. The BGP route is not China-optimized. This was a separate node with Beijing initially retained for rollback. The owner subsequently requested Beijing retirement; final application backups are local and the old node is powered off. Do not turn the earlier private-host approval into permission for this new destination.
+One Singapore SWAS international instance, amd64 Ubuntu 24.04, 2 vCPU / 2 GiB / 40 GiB. The current one-month preview is CNY39 before an existing coupon, CNY0 cash after it, with automatic renewal disabled. The BGP route is not China-optimized. This was a separate node with Beijing initially retained for rollback. The owner subsequently requested Beijing retirement; final application backups are local and the old node is permanently released. Do not turn the earlier private-host approval into permission for this new destination.
 
 Serve authenticated DeerMate using a publicly trusted IP certificate and an HTTPS edge on TCP 443. TCP 80 is for certificate validation/HTTPS redirect, never a plaintext login endpoint. Keep the existing nginx on loopback 2027 and all Worker/runtime/admin transport ports private. Change the Go canonical origin and exact Host allowlist to the assigned new IP while retaining health-check hosts. Preserve account identity and use a consistent SQLite backup. Do not transfer host native/Codex/Worker credentials.
 
@@ -33,4 +33,4 @@ The approved one-month instance was paid at CNY0 cash. Existing cloud account id
 
 ## Retirement follow-up
 
-The owner superseded the online rollback arrangement after successful public deployment. Beijing application data/configuration and a final consistent database were downloaded and verified before normal poweroff; the Singapore service passed five further page/API checks afterward. Permanent unsubscription is explicitly authorized; the official identity verification window remains blank, so completion and release are unverified; see the [retirement receipt](../verification/beijing-retirement-2026-10-27.json).
+The owner superseded the online rollback arrangement after successful public deployment. Beijing application data/configuration and a final consistent database were downloaded and verified before normal poweroff; the Singapore service passed five further page/API checks afterward. After explicit authorization and the user completing vendor identity verification, the refund detail reports success and the Beijing resource no longer exists; see the [retirement receipt](../verification/beijing-retirement-2026-10-27.json).
