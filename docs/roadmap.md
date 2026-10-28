@@ -37,7 +37,8 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Prepare a single-instance ACK control-plane package with ACR builds, the pinned upstream Helm chart, persistent block storage, authentication and optional Worker enrollment; image/cluster verification states are tracked separately in STATUS.
 - [x] Run a loopback-only local Docker profile, log in through a real browser, and complete a real Codex repair through Gateway/MCP/SSH with retained validation, idempotency and restart evidence; secretary model remains unconfigured.
 - [x] Prepare an optional [single-host budget bundle](single-host.md), preserving Go authentication and private access; validate fresh startup, bounded reads and restart persistence under container memory ceilings.
-- [ ] Purchase and validate the selected minimum cloud host, including real host headroom, model workload and separately authorized home connectivity.
+- [x] Purchase and validate the selected minimum cloud host: actual headroom, bounded HTTP/browser access and controlled full-host reboot ([receipt](verification/single-host-cloud-2026-10-27.json)).
+- [ ] Validate the cloud model workload and separately authorized home Worker connectivity.
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.

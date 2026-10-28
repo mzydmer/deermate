@@ -94,7 +94,7 @@
 | NFR-004 | 正常测试不需要模型凭据；真实模型测试明确标识并限定范围 | 离线协议 fixture、临时 Git 仓库和 opt-in live smoke 已具备 |
 | NFR-005 | 保存可复核的状态、事件、补丁和验证记录 | Worker 本地 SQLite；本地 Docker 命名卷与 Gateway 重启保留结果已验证；ACK 云盘实际部署待验收；无总容量配额或通用脱敏保证 |
 | NFR-006 | 区分实现、验证、合并和发布，维护可接续文档 | 以 STATUS、EVOLUTION、ADR 和 Git/CI 证据管理 |
-| NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；本地 Compose 实测 Intel Docker Desktop；可选[单机包](specs/single-host-minimal.md)面向预构建 amd64 Linux 镜像，2 核 2 GiB 云主机为待目标机验收候选；暂不支持 Windows |
+| NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；本地 Compose 实测 Intel Docker Desktop；可选[单机包](specs/single-host-minimal.md)面向预构建 amd64 Linux 镜像，2 核 2 GiB 轻量云主机基础页面/API 和受控整机重启已验收，模型负载/家庭 Worker 另测；暂不支持 Windows |
 | NFR-008 | 所有前端遵循统一 Vercel/Geist 风格规范与可访问性基线，React/Go 共用视觉 token | [design.md](../design.md) 为规范；token 同步/CI 检查，现有页面按修改范围迁移 |
 
 ## 验收与证据映射

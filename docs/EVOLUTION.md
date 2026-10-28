@@ -182,3 +182,14 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 现有 Workbench 免密普通 Shell 已连接，sudo 可用。通过 Ubuntu 官方 apt 源安装 Docker，实际验证引擎 29.1.3 active 与 Compose 2.40.3。内核可见总内存 1613 MiB，Docker 安装后 available 1108 MiB、磁盘剩余约 35 GiB；标称套餐尚不等于应用容量验收。
 
 本机部署包及摘要已准备。浏览器上传要求扩展本地文件权限；当前采用待确认的独立临时 SSH 访问方案，密钥尚未添加，应用未上传/启动。没有云端模型、家庭 Worker 或应用验收声明。[资源准备收据](verification/single-host-cloud-2026-10-26.json)只记录有限事实；私密标识、凭据和截图不入库。
+
+
+## 2026-10-27 · 最低成本云端单机部署与整机重启验收
+
+收到用户对临时 admin SSH 的明确确认后，完成专用公钥登记、控制台核对的主机公钥固定和传输限制。初版 `permitlisten=none` 公钥选项写法不适用，改用 admin 的 sshd 本地转发限制，语法/生效配置通过；`-R` 与其他目的端口实际被拒绝。24 小时公钥、私人访问脚本和凭据不入库。
+
+上传约 1464 MiB 预构建镜像与新配置，两份 SHA-256 通过；四个 image ID 与已有验证来源一致。Ubuntu Docker 29.1.3 / Compose 2.40.3 下四服务健康，唯一应用入口为 loopback 2027。原本地 2026 四服务及其数据保持。本轮无需新构建镜像或修改应用认证。
+
+实际 18 项初始 HTTP 检查通过，包含 40 次、并发上限 4 的只读请求及匿名/Host/Origin/CSRF 边界。随后受控重启整台主机，boot identity 改变、四服务自动恢复；10 项重启后检查证明原 owner 与会话保留。内置浏览器实际登录、工作台 Gateway 正常、管理页账号列表和重启后页面均核验。初次验收探针修正 canonical localhost 与初始 email 格式；固定上游 redirect 和现有 Go 校验保持不变。
+
+目标机 OS 可见总内存 1613 MiB，负载后/重启后 available 约 695/831 MiB，磁盘约 26.9 GiB；观察点没有 OOM、服务重启计数为零。[有限收据](verification/single-host-cloud-2026-10-27.json)不含云/账号/订单/密钥标识。模型调用 0、家庭 Worker 为空；没有声称模型容量、云到家庭执行链路、公网 TLS、HA 或硬崩溃恢复。下一步单独接模型并设计受限家庭网络。

@@ -1,0 +1,301 @@
+{
+  "date": "2026-10-27",
+  "scope": "Actual Alibaba Cloud SWAS; initial HTTP/browser acceptance and controlled full-host reboot. No model or native Agent task.",
+  "bundle_implementation_commit": "9e966d9",
+  "prior_provisioning_receipt": "single-host-cloud-2026-10-26.json",
+  "target": {
+    "region": "cn-beijing",
+    "purchased_vcpu": 2,
+    "purchased_memory_gib": 2,
+    "purchased_system_disk_gib": 40,
+    "os": "Ubuntu 24.04",
+    "docker_engine": "29.1.3",
+    "docker_compose": "2.40.3"
+  },
+  "transport": {
+    "host_key_pinned_from_authenticated_console": true,
+    "temporary_key_lifetime_hours": 24,
+    "remote_forward_rejected": true,
+    "other_destination_rejected": true,
+    "loopback_only_web_port": 2027,
+    "access": "localhost:2027 through temporary SSH; separate browser profile from original localhost:2026"
+  },
+  "archive_sha256": {
+    "images.tar.gz": "4f68099456412e14dc4cbdf4cea7bb15bac80343b1def821ad0d98524150face",
+    "bundle.tar.gz": "7d32cf992fadca7f0dd795ab0247cf1bc90db5a8a75855708d42cac14aaee013"
+  },
+  "http_initial": {
+    "timestamp_utc": "2026-10-28T00:40:08.517206+00:00",
+    "scope": "Actual Alibaba SWAS through temporary pinned SSH; HTTP only, no model/native task",
+    "phase": "initial",
+    "checks": [
+      "anonymous_workspace_rejected",
+      "setup_status_available",
+      "created_cloud_owner",
+      "owner_login",
+      "owner_session",
+      "workspace_html",
+      "go_admin_html",
+      "go_control_backend",
+      "models_route",
+      "worker_not_registered",
+      "foreign_origin_rejected",
+      "unknown_host_rejected",
+      "csrf_required",
+      "bounded_read_burst__api_deermate_v1_workspace",
+      "bounded_read_burst__api_models",
+      "bounded_read_burst__api_mcp_config",
+      "bounded_read_burst__workspace",
+      "bounded_read_burst__admin"
+    ],
+    "read_burst_requests": 40,
+    "max_read_concurrency": 4,
+    "model_calls": 0
+  },
+  "http_after_host_reboot": {
+    "timestamp_utc": "2026-10-28T00:43:30.038593+00:00",
+    "scope": "Actual Alibaba SWAS through temporary pinned SSH; HTTP only, no model/native task",
+    "phase": "restart",
+    "checks": [
+      "session_survived_restart",
+      "owner_identity_preserved",
+      "workspace_html",
+      "go_admin_html",
+      "go_control_backend",
+      "models_route",
+      "worker_not_registered",
+      "foreign_origin_rejected",
+      "unknown_host_rejected",
+      "csrf_required"
+    ],
+    "read_burst_requests": 0,
+    "max_read_concurrency": 1,
+    "model_calls": 0
+  },
+  "host_boot_identity_changed": true,
+  "before_reboot": {
+    "timestamp_utc": "2026-10-28T00:42:01.378344+00:00",
+    "services": {
+      "gateway": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:e789b51f7e406a4db39cf6c3b95c68f77c748e43b2681723c87dce018be354f3",
+        "memory_limit_bytes": 1073741824,
+        "memory_swap_limit_bytes": 1073741824,
+        "user": "1000:1000",
+        "published_ports": {
+          "8001/tcp": null
+        },
+        "memory_current_bytes": 443076608,
+        "memory_peak_bytes": 455598080,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "control": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:4f50e8e2996df720da019cd9c1f87978e4b790112094b34661bc3c7797bb10d1",
+        "memory_limit_bytes": 134217728,
+        "memory_swap_limit_bytes": 134217728,
+        "user": "1000:1000",
+        "published_ports": {
+          "8080/tcp": null
+        }
+      },
+      "frontend": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:4c2187deede5f0b9eb5348e5ac8de9a049dda11388fa76c88b07a99517cbb7bb",
+        "memory_limit_bytes": 268435456,
+        "memory_swap_limit_bytes": 268435456,
+        "user": "1000:1000",
+        "published_ports": {
+          "3000/tcp": null
+        },
+        "memory_current_bytes": 223330304,
+        "memory_peak_bytes": 244740096,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "nginx": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+        "memory_limit_bytes": 67108864,
+        "memory_swap_limit_bytes": 67108864,
+        "user": "101:101",
+        "published_ports": {
+          "2026/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "2027"
+            }
+          ],
+          "80/tcp": null
+        },
+        "memory_current_bytes": 13250560,
+        "memory_peak_bytes": 17121280,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    "host_memory": {
+      "MemTotal_kib": 1651804,
+      "MemAvailable_kib": 711484,
+      "SwapTotal_kib": 0,
+      "SwapFree_kib": 0
+    },
+    "disk_total_bytes": 41882943488,
+    "disk_free_bytes": 28898742272
+  },
+  "after_reboot": {
+    "timestamp_utc": "2026-10-28T00:43:31.134820+00:00",
+    "services": {
+      "gateway": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:e789b51f7e406a4db39cf6c3b95c68f77c748e43b2681723c87dce018be354f3",
+        "memory_limit_bytes": 1073741824,
+        "memory_swap_limit_bytes": 1073741824,
+        "user": "1000:1000",
+        "published_ports": {
+          "8001/tcp": null
+        },
+        "memory_current_bytes": 455172096,
+        "memory_peak_bytes": 470159360,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "control": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:4f50e8e2996df720da019cd9c1f87978e4b790112094b34661bc3c7797bb10d1",
+        "memory_limit_bytes": 134217728,
+        "memory_swap_limit_bytes": 134217728,
+        "user": "1000:1000",
+        "published_ports": {
+          "8080/tcp": null
+        }
+      },
+      "frontend": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:4c2187deede5f0b9eb5348e5ac8de9a049dda11388fa76c88b07a99517cbb7bb",
+        "memory_limit_bytes": 268435456,
+        "memory_swap_limit_bytes": 268435456,
+        "user": "1000:1000",
+        "published_ports": {
+          "3000/tcp": null
+        },
+        "memory_current_bytes": 215900160,
+        "memory_peak_bytes": 224305152,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "nginx": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+        "memory_limit_bytes": 67108864,
+        "memory_swap_limit_bytes": 67108864,
+        "user": "101:101",
+        "published_ports": {
+          "2026/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "2027"
+            }
+          ],
+          "80/tcp": null
+        },
+        "memory_current_bytes": 13197312,
+        "memory_peak_bytes": 15839232,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    "host_memory": {
+      "MemTotal_kib": 1651804,
+      "MemAvailable_kib": 851252,
+      "SwapTotal_kib": 0,
+      "SwapFree_kib": 0
+    },
+    "disk_total_bytes": 41882943488,
+    "disk_free_bytes": 28916731904
+  },
+  "browser_checks": [
+    "actual_owner_sign_in",
+    "workspace_gateway_normal",
+    "empty_model_and_worker_states_visible",
+    "go_admin_account_list",
+    "admin_session_after_host_reboot",
+    "workspace_after_host_reboot"
+  ],
+  "probe_corrections": [
+    "Use canonical localhost endpoint: pinned upstream nginx redirects 127.0.0.1 to localhost.",
+    "Use accepted initial account email format; .local is explicitly rejected by existing Go validation.",
+    "Corrected invalid permitlisten=none key option; enforce admin local-only forwarding using sshd Match, validate/reload, and test rejections. No application authentication behavior changed."
+  ],
+  "model_calls": 0,
+  "home_worker_registered": false,
+  "original_local_services": "all four still healthy; original volumes and native accounts untouched",
+  "exclusions": [
+    "Model workload and concurrency capacity",
+    "Cloud-to-home Worker/NAT/relay connectivity",
+    "Public domain/TLS exposure",
+    "Hard-crash recovery, HA and automated backup"
+  ],
+  "private_evidence": "Ignored .deermate/single-host contains credentials, pinned SSH config, raw receipts and screenshots; account, cloud instance/IP, order, key and boot identifiers are excluded from this public receipt."
+}
