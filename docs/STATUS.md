@@ -16,7 +16,7 @@
 | 低成本单机包 | 四镜像 Compose 包已实现；1472 MiB 容器限额下 14 项接口、5 项重启保留检查通过；实际 2 核/2 GiB 云主机已部署；18 项初始接口与 10 项整机重启后检查通过，浏览器登录/工作台/管理页已核验 |
 | 交付 | M1–M4.3 全部已有实现进入 main；来源 CI 40318918329 七个 job 全部 success；主线 CI 结果单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 用户已否决原 ACK 报价；最低成本轻量服务器已部署并完成有限验收；按用户新要求先配置域名和 HTTPS；域名选择、购买及 ICP 备案待完成，模型与家庭 Worker 后续单独接入；项目级授权与专职 Agent 路由仍待开发 |
+| 下一步 | 用户已否决原 ACK 报价；最低成本轻量服务器已部署并完成有限验收；用户改为暂缓域名、优先公网 IP；新加坡零元首月草案及 IP HTTPS 已准备，新增实例/迁移/公开入口等待确认；模型与家庭 Worker 后续单独接入；项目级授权与专职 Agent 路由仍待开发 |
 
 运行代码、历史证据与本轮 Go 变更应分别核对；文档 HEAD 可以继续推进。
 
@@ -51,6 +51,14 @@
 当前北京节点对外提供域名网站需先完成 ICP 备案，见[阿里云说明](https://help.aliyun.com/zh/simple-application-server/user-guide/manage-domain-names/)；注册、实名认证和备案不是安装 HTTPS 可替代的步骤。选定域名后，先核对注册结算及备案状态，再安排 DNS/公网入口和 HTTPS 验收。
 
 已准备 Caddy HTTPS → 现有 loopback nginx → Go/前端的草案，以及 Go Origin/Host 变更草案；示例域名配置在本地隔离容器以 Caddy v2.11.7、network=none 通过 validate。仅为语法/模块准备，不证明证书签发、续期、真实域名或 HTTPS Cookie/流式请求；云端仍仅应用 loopback 2027，没有启动公网 Web 监听。使用 [Caddy 自动 HTTPS](https://caddyserver.com/docs/automatic-https)与 [Let's Encrypt](https://letsencrypt.org/getting-started/)的方案待域名确认后实施。
+
+### 公网 IP 方案待确认 · 2026-10-27
+
+用户选择过域名候选，随后明确暂不买域名、优先实现公网访问。域名注册草案已停止，未创建域名订单。现有北京实例仍是已验收的 SSH/loopback 部署；阿里云[通用网站备案说明](https://help.aliyun.com/zh/icp-filing/basic-icp-service/product-overview/icp-filing-requirements-for-a-regular-website)也将中国内地服务器的 IP 网站访问纳入备案要求，没有将 IP 或其他端口当作替代方案。
+
+重新登录同一云账号后核对购买预览：新加坡国际型 2 vCPU/2 GiB/40 GiB、Ubuntu 24.04、200 Mbps 峰值、无固定流量、1 IPv4；非中国优化 BGP，1 个月标价 ¥39，使用现有优惠券抵扣 ¥39 后预览实付 ¥0，自动续费关闭。尚未提交订单，也未创建第二台实例；首月券后预览不是后续免费或续费承诺。拟保留北京实例回退；仅当新草案得到确认后，将现有 DeerMate 云端账号/配置迁往新实例。
+
+现有北京 SQLite 已执行 online backup，quick_check 通过，未中断原服务。IP HTTPS 草案使用 Let's Encrypt `shortlived` profile，在 Caddy v2.11.7 的隔离无网络容器通过 validate；只证明配置/模块可加载。根据 [CA 官方说明](https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability/)，IP 证书已开放，当前有效期 160 小时，需要自动续期。实际证书、公开监听、Secure Cookie、外部浏览器及续期均未验收。新实例临时 SSH 公钥仅在本机生成，未登记。私人创建/访问/迁移草案及报价截图留在忽略目录；待用户对新实例、条款、24 小时 SSH、迁移和 80/443 公开入口确认后再执行。见[公网 IP 草案](specs/single-host-public-ip.md)。
 
 ## ACK 创建准备 · 2026-10-26
 
@@ -181,7 +189,7 @@ Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skip
 
 ## 下一项工作
 
-1. 按本轮域名候选选择结果准备实际注册订单；确认域名/备案与公网访问范围后，再应用 HTTPS 草案并验收真实证书、登录 Cookie、Host/Origin 与长连接。
+1. 暂缓域名购买。待用户确认新加坡零元首月草案后，重新核对金额/续费状态并创建单个实例，固定新主机身份后迁移，使用公网 IP HTTPS 验收；保留北京回退。
 2. 本地保持可运行；云端单机基础验收已通过；保持现有私密入口，下一步按[单机指南](single-host.md)单独配置聊天模型并验证有限模型负载。ACK 作为可选方案保留。
 3. 对明确注册的真实设备验收受限 OS/OpenSSH 策略、网络可达性与服务重启；不扫描或登录未注册主机。
 4. 配置模型后单独验证通知和聊天入口；保留任务身份、取消确认和外部输入权限边界。
