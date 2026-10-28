@@ -1,12 +1,12 @@
 # Single-host public IP HTTPS
 
-- Status: implemented and verified for the approved Singapore personal trial; 41 HTTP checks plus browser and controlled reboot acceptance. Existing Beijing deployment stays private.
+- Status: implemented and verified for the approved Singapore personal trial; 41 HTTP checks plus browser and controlled reboot acceptance. The former Beijing node is now backed up locally and powered off at the owner’s request; irreversible unsubscription awaits final confirmation.
 - Requirements: FR-009, NFR-001, NFR-005–NFR-007.
 - User direction: defer domain purchase and prioritize public browser access without buying a domain.
 
 ## Approved target
 
-One Singapore SWAS international instance, amd64 Ubuntu 24.04, 2 vCPU / 2 GiB / 40 GiB. The current one-month preview is CNY39 before an existing coupon, CNY0 cash after it, with automatic renewal disabled. The BGP route is not China-optimized. This is a separate node; retain the Beijing node and online backup as rollback. Do not turn the earlier private-host approval into permission for this new destination.
+One Singapore SWAS international instance, amd64 Ubuntu 24.04, 2 vCPU / 2 GiB / 40 GiB. The current one-month preview is CNY39 before an existing coupon, CNY0 cash after it, with automatic renewal disabled. The BGP route is not China-optimized. This was a separate node with Beijing initially retained for rollback. The owner subsequently requested Beijing retirement; final application backups are local and the old node is powered off. Do not turn the earlier private-host approval into permission for this new destination.
 
 Serve authenticated DeerMate using a publicly trusted IP certificate and an HTTPS edge on TCP 443. TCP 80 is for certificate validation/HTTPS redirect, never a plaintext login endpoint. Keep the existing nginx on loopback 2027 and all Worker/runtime/admin transport ports private. Change the Go canonical origin and exact Host allowlist to the assigned new IP while retaining health-check hosts. Preserve account identity and use a consistent SQLite backup. Do not transfer host native/Codex/Worker credentials.
 
@@ -30,3 +30,7 @@ Let's Encrypt IP certificates require its shortlived profile (currently 160 hour
 ## Verification · 2026-10-27
 
 The approved one-month instance was paid at CNY0 cash. Existing cloud account identity/configuration was restored before public startup. The final renderer includes an exact default SNI for IP clients and explicit 421 rejection for unknown HTTP hosts. Initial HTTPS acceptance passed 24 checks and 40 bounded reads; controlled host reboot acceptance passed 17 checks. Browser workspace/admin sessions survived; the original certificate persisted. A separate cloud node confirmed six application/admin/Worker ports closed or filtered. Host headroom and limitations are in the [receipt](../verification/single-host-public-ip-2026-10-27.json). Source checks passed 103 tests (7 skipped) and 32 actual-chart/Compose/overlay/HTTPS contract checks. No model or home Worker task was executed.
+
+## Retirement follow-up
+
+The owner superseded the online rollback arrangement after successful public deployment. Beijing application data/configuration and a final consistent database were downloaded and verified before normal poweroff; the Singapore service passed five further page/API checks afterward. Permanent unsubscription remains pending action-time confirmation; see the [retirement receipt](../verification/beijing-retirement-2026-10-27.json).

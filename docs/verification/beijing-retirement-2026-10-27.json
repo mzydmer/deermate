@@ -1,0 +1,42 @@
+{
+  "recorded_at_utc": "2026-10-28T04:09:19.505236+00:00",
+  "scope": "Owner-requested retirement of the former private Beijing deployment; Singapore public service retained",
+  "beijing": {
+    "application_stopped": true,
+    "instance_console_state": "已停机",
+    "permanent_unsubscription_submitted": false,
+    "permanent_release_confirmed": false,
+    "unsubscription_state": "Awaiting action-time confirmation for irreversible release and refund rules"
+  },
+  "backup": {
+    "consistent_database_quick_check": "ok",
+    "full_application_home_archive": true,
+    "application_configuration_archive": true,
+    "three_sha256_checks_passed_after_local_download": true,
+    "location": "Private local deployment directory; not committed",
+    "native_mac_credentials_included": false
+  },
+  "refund_preview": {
+    "cash_and_voucher_distinguished": true,
+    "extra_payment": false,
+    "actual_refund_verified": false,
+    "amounts_retained_in_private_operator_record": true
+  },
+  "singapore_after_beijing_poweroff": {
+    "normal_https_validation": true,
+    "checks": {
+      "/workspace": 200,
+      "/admin": 200,
+      "/api/v1/auth/me": 200,
+      "/api/deermate/v1/workspace": 200,
+      "/api/deermate/v1/info": 200
+    },
+    "model_calls": 0
+  },
+  "limitations": [
+    "Stopping a prepaid instance is not unsubscription",
+    "Beijing no longer provides an online rollback while powered off",
+    "A final local backup does not make the cloud release reversible",
+    "Historical public-IP receipt records the earlier retained rollback state"
+  ]
+}

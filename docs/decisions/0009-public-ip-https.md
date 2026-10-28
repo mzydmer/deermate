@@ -24,3 +24,7 @@ A domain would add registration and DNS lifecycle work the owner deferred. A sel
 IP certificates currently last about 160 hours. Configured automatic renewal and first issuance are distinct from observing a real renewal. Persistent storage, running Docker/Caddy and reachable validation ports are operational dependencies. This remains one small host with SQLite and no HA; bounded page checks do not prove model/Worker capacity. Cloud auto-renewal stays off under the selected one-month purchase; later pricing is not guaranteed.
 
 See the [specification](../specs/single-host-public-ip.md), [operator guide](../single-host.md), [filing requirements](https://help.aliyun.com/zh/icp-filing/basic-icp-service/product-overview/icp-filing-requirements-for-a-regular-website), [IP certificate announcement](https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability/) and [Caddy issuer configuration](https://caddyserver.com/docs/caddyfile/directives/tls).
+
+## Retirement follow-up · 2026-10-27
+
+The owner subsequently requested retiring the Beijing rollback host. Its final application home/configuration and consistent database are backed up and verified locally, and the node is powered off. Singapore public access was rechecked afterward. Permanent unsubscription remains pending final confirmation; this changes the operational rollback arrangement, not the HTTPS architecture. See the [retirement receipt](../verification/beijing-retirement-2026-10-27.json).
