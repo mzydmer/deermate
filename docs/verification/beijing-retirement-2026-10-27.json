@@ -1,12 +1,16 @@
 {
-  "recorded_at_utc": "2026-10-28T04:09:19.505236+00:00",
+  "recorded_at_utc": "2026-10-28T04:35:05.414357+00:00",
   "scope": "Owner-requested retirement of the former private Beijing deployment; Singapore public service retained",
   "beijing": {
     "application_stopped": true,
     "instance_console_state": "已停机",
     "permanent_unsubscription_submitted": false,
     "permanent_release_confirmed": false,
-    "unsubscription_state": "Awaiting action-time confirmation for irreversible release and refund rules"
+    "unsubscription_state": "Owner authorized; three UI submission attempts stopped at a blank Alibaba identity verification window; no completion receipt",
+    "permanent_release_authorized": true,
+    "refund_rules_accepted_by_owner": true,
+    "same_account_sso_refreshed": true,
+    "identity_verification_completed": false
   },
   "backup": {
     "consistent_database_quick_check": "ok",
@@ -37,6 +41,12 @@
     "Stopping a prepaid instance is not unsubscription",
     "Beijing no longer provides an online rollback while powered off",
     "A final local backup does not make the cloud release reversible",
-    "Historical public-IP receipt records the earlier retained rollback state"
-  ]
+    "Historical public-IP receipt records the earlier retained rollback state",
+    "Further progress requires completing the vendor identity verification, not renewed user permission to retire Beijing"
+  ],
+  "singapore_during_unsubscription": {
+    "normal_https_validation": true,
+    "five_page_and_api_checks_passed": true,
+    "model_calls": 0
+  }
 }

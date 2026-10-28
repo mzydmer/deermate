@@ -1,6 +1,6 @@
 # Single-host public IP HTTPS
 
-- Status: implemented and verified for the approved Singapore personal trial; 41 HTTP checks plus browser and controlled reboot acceptance. The former Beijing node is now backed up locally and powered off at the owner’s request; irreversible unsubscription awaits final confirmation.
+- Status: implemented and verified for the approved Singapore personal trial; 41 HTTP checks plus browser and controlled reboot acceptance. The former Beijing node is now backed up locally and powered off at the owner’s request; irreversible unsubscription is authorized but awaits completion of Alibaba identity verification.
 - Requirements: FR-009, NFR-001, NFR-005–NFR-007.
 - User direction: defer domain purchase and prioritize public browser access without buying a domain.
 
@@ -33,4 +33,4 @@ The approved one-month instance was paid at CNY0 cash. Existing cloud account id
 
 ## Retirement follow-up
 
-The owner superseded the online rollback arrangement after successful public deployment. Beijing application data/configuration and a final consistent database were downloaded and verified before normal poweroff; the Singapore service passed five further page/API checks afterward. Permanent unsubscription remains pending action-time confirmation; see the [retirement receipt](../verification/beijing-retirement-2026-10-27.json).
+The owner superseded the online rollback arrangement after successful public deployment. Beijing application data/configuration and a final consistent database were downloaded and verified before normal poweroff; the Singapore service passed five further page/API checks afterward. Permanent unsubscription is explicitly authorized; the official identity verification window remains blank, so completion and release are unverified; see the [retirement receipt](../verification/beijing-retirement-2026-10-27.json).
