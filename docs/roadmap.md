@@ -38,6 +38,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Run a loopback-only local Docker profile, log in through a real browser, and complete a real Codex repair through Gateway/MCP/SSH with retained validation, idempotency and restart evidence; secretary model remains unconfigured.
 - [x] Prepare an optional [single-host budget bundle](single-host.md), preserving Go authentication and private access; validate fresh startup, bounded reads and restart persistence under container memory ceilings.
 - [x] Purchase and validate the selected minimum cloud host: actual headroom, bounded HTTP/browser access and controlled full-host reboot ([receipt](verification/single-host-cloud-2026-10-27.json)).
+- [x] Deploy the separately approved public IPv4 HTTPS profile, migrate the cloud owner, and verify trusted TLS, access boundaries and reboot persistence ([receipt](verification/single-host-public-ip-2026-10-27.json)); real certificate renewal/model/home Worker acceptance remain separate.
 - [ ] Validate the cloud model workload and separately authorized home Worker connectivity.
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.

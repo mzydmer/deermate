@@ -40,7 +40,7 @@ For Go changes, run from `backend/`: `go mod verify`, `go vet ./...`, `go test -
 For Python implementation changes, run the relevant tests, then the existing checks as appropriate:
 
 ```bash
-ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/single_host.py deploy/single-host/init.py frontend/motion/generate.py
+ruff check src tests scripts/live_smoke.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/single_host.py scripts/single_host_https.py deploy/single-host/init.py frontend/motion/generate.py
 python -m pytest -q
 python -m build --wheel
 ```

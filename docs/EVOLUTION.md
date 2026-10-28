@@ -209,3 +209,13 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 同账号重新登录后实际比较通用型与国际型，选择更低标价的国际型 2 核/2 GiB/40 GiB / Ubuntu 24.04，1 个月 ¥39、使用现有券后预览 ¥0、自动续费关闭；非中国优化线路的取舍保留。新订单/资源、跨地域账号配置迁移、24 小时临时 SSH、80/443 公网入口与证书条款已组成可审核草案，等待用户确认，没有提前创建新实例或授权。
 
 原云端 SQLite online backup 与 quick_check 已完成，原服务保持。IP HTTPS 的 Let's Encrypt shortlived/Caddy 示例在 network=none 的隔离容器 validate 通过，issuer 内目录字段按实际 CLI 结果修正为 dir；临时容器已移除。此证据不代表证书签发或自动续期验证。私人密钥、备份路径、账号、优惠券及报价截图不入库。
+
+## 2026-10-27 · 公网 IP HTTPS 部署验收
+
+用户明确批准新加坡零元首月方案、条款、临时 SSH、云账号/配置迁移及公网 80/443 后，已完成国际型 2 vCPU/2 GiB/40 GiB Ubuntu 24.04 实例购买，实付 ¥0、购买时自动续费关闭。保留北京私有实例回退，域名未购买；首月券后优惠不保证续费价格。
+
+新增 `scripts/single_host_https.py` 和 [ADR 0009](decisions/0009-public-ip-https.md)：可选受限 Caddy 2.11.7 edge、持久证书卷、精确 Go HTTPS Origin/Host 与 Secure Cookie，保留原 Compose 备份及私有默认。目标主机公钥经 Workbench 核对；临时密钥限制已实际验证，私钥未离开本机。现有云 SQLite 一致性快照和 5 份应用配置核对后恢复，原 owner UUID/密码保留，没有复制 Mac/native/Worker 凭据。外部验收修正了 IP 无 SNI 客户端的证书选择和未知 Host 空响应，最终正常证书校验与 421 拒绝均通过。
+
+实际完成 24 项初始 HTTPS 检查（含 40 次、并发上限 4 的只读请求）、17 项受控整机重启后检查，以及浏览器登录/工作台/管理账号行与重启后会话保留。证书签发为 Let's Encrypt `shortlived`，正常链/IP SAN 验证通过，同一证书在重启后保留；自动续期配置已启用，尚未观察到真实续期。另一云节点验证 80/443 可达、6 个内部应用/管理/Worker 端口关闭或过滤；没有将受本机代理影响的裸 TCP 结果作为隔离证据。目标机可见内存 1613 MiB，请求后/重启后 available 约 717/829 MiB，磁盘剩余 26.7 GiB，观察点无 OOM；北京及原 Mac 四服务仍健康。见[有限验收收据](verification/single-host-public-ip-2026-10-27.json)。
+
+最终 `python -m pytest -q` 为 **103 passed / 7 skipped**；设置实际上游和 Helm 后，固定 Chart/本地 Compose/overlay/单机/HTTPS 专项为 **32 passed**。Ruff、wheel、最终 Caddy 无网络 validate 通过；CI 增加新 renderer 的 lint 和实际 bundle 契约覆盖。模型调用 0、家庭 Worker 未配置；模型容量、云到家庭执行、HA 和实际证书续期仍另行验收。私人地址/账号/云标识/截图留在忽略目录，公开收据只保留脱敏事实。

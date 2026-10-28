@@ -12,6 +12,7 @@ Record significant choices and their consequences here. Current implementation a
 | [0006](0006-frontend-overlay.md) | Accepted | Hash-checked source overlay, bounded task desk and accessible motion | First DeerMate workspace; secretary routing/device liveness remain separate |
 | [0007](0007-go-control-plane.md) | Accepted | Go main/management/login/frontend APIs; pinned Python runtime integration | Shared compatible identity tables, revocable sessions, admin console, local/ACK integration |
 | [0008](0008-single-host-budget.md) | Accepted as optional target | Single-host Compose bundle for a personal budget trial | Prebuilt images, memory ceilings, loopback access; actual cloud purchase/deployment separate |
+| [0009](0009-public-ip-https.md) | Accepted as optional public target | Exact public IPv4 HTTPS via a persistent Caddy edge | Private default retained; cloud account migration and external acceptance tracked separately |
 
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 

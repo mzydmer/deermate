@@ -60,3 +60,30 @@ docker compose start
 北京轻量 2 核/2 GiB/40 GiB、Ubuntu 24.04，Docker 29.1.3 / Compose 2.40.3，四个固定镜像已加载并健康运行。18 项初始接口检查（含 40 次、并发上限 4 的只读请求）和 10 项受控整机重启后检查通过；浏览器实际登录工作台和 Go 管理页，原会话/owner 在重启后保留。请求后与重启后主机 available 约 695/831 MiB，磁盘剩余约 26.9 GiB，没有观察到 OOM。
 
 此范围不含模型调用、家庭 Worker、完整自动路由或公网域名/TLS。初始模型/MCP 仍为空；新 owner、内部密钥和访问资料留在私人目录。临时 SSH 新登录权限为 24 小时；到期不自动终止已经认证的会话，结束访问时应关闭对应隧道。不要为了继续部署而直接延长权限或关闭主机身份校验。详见[验收收据](verification/single-host-cloud-2026-10-27.json)。
+
+## 可选公网 IPv4 HTTPS
+
+`scripts/single_host_https.py` 为另行批准的公网部署生成配置，默认单机包仍仅绑定 loopback。选择适合提供公网网站的地域；中国内地 IP 网站也有备案要求。公网方案和验收条件见[专项规格](specs/single-host-public-ip.md)。
+
+先在新节点加载应用镜像、启动私有包，并迁移经过一致性备份的账号数据库与应用配置。确认 `/api/v1/auth/setup-status` 的 `needs_setup=false`，并验证恢复后的 owner 身份，之后再启动公网入口。不要将未经初始化的管理入口公开，也不要把本机 Codex/Worker/SSH 凭据放入迁移包。
+
+在安装了项目部署依赖的受信机器上，对该目标的独立 bundle 执行：
+
+```bash
+python scripts/single_host_https.py --bundle /path/to/target-bundle --public-ip YOUR_PUBLIC_IPV4
+```
+
+脚本只更新文件，不创建云资源、不启动容器、不签发证书。它要求原 nginx 为 `127.0.0.1:2027`，保留 `compose.before-https.yaml`，拒绝重复覆盖，并在现有 `compose.yaml` 中加入 edge，确保后续 `start.sh` 仍使用相同配置。将更新后的 Compose 与 `edge/Caddyfile` 安装到目标 bundle；保留原 `.env`、内部密钥及运行数据。
+
+目标机拉取固定官方 Caddy 镜像，确认云防火墙允许 TCP 80/443，然后在 bundle 目录执行：
+
+```bash
+docker pull caddy@sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8
+./start.sh
+```
+
+edge 使用 host 网络访问 loopback nginx，只增加 `NET_BIND_SERVICE` capability，根文件系统只读、内存限额 128 MiB，证书和 ACME 状态存放在独立命名卷。管理员 API 仅监听 `127.0.0.1:2019`；HTTP/3 未启用。配置精确 IP 的 `default_sni`，支持不发送 SNI 的 IP 客户端；错误 Host 在 edge 明确返回 421。四个应用容器的监听和权限保持原配置，Go 改用精确的 HTTPS Origin/Host 和 Secure Cookie。容器限额合计不是主机内存预留，须重新测量真实小主机的余量。
+
+使用 Let's Encrypt `shortlived` IP 证书，Caddy 管理签发和自动续期；需接受 CA 订户协议并持续保留证书存储与公网验证端口。当前证书生命周期约 160 小时，首次签发成功不等于已观察到续期。用正常证书校验的外部浏览器和客户端验收 HTTPS、HTTP 跳转、登录和重启保留；不要忽略 TLS 错误。证书失效时应检查 edge 日志、时钟、存储和 80/443 连通性。
+
+回退配置时，先用当前 Compose 停止 `edge`，再恢复 `compose.before-https.yaml` 并运行 `start.sh`，避免旧 edge 容器继续提供公网访问。另一台旧私有节点可保留回退；在新节点产生数据后，回切前还需做新的数据库一致性备份，不能直接用旧快照覆盖新工作。

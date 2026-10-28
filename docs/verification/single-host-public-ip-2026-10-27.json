@@ -1,0 +1,329 @@
+{
+  "verified_at_utc": "2026-10-28T03:45:55.882166+00:00",
+  "scope": "Separate public IPv4 HTTPS personal trial; bounded HTTP/browser checks and controlled full-host reboot; no model/native/Worker execution",
+  "purchase": {
+    "region": "ap-southeast-1",
+    "family": "International BGP non-China-optimized",
+    "vcpu": 2,
+    "nominal_memory_gib": 2,
+    "system_disk_gib": 40,
+    "image": "Ubuntu 24.04",
+    "duration_months": 1,
+    "listed_price_cny": 39,
+    "coupon_applied_cny": 39,
+    "cash_paid_cny": 0,
+    "automatic_renewal_at_purchase": false,
+    "later_renewal_price_guaranteed": false,
+    "domain_purchased": false
+  },
+  "source": {
+    "bundle_packaging_source": "9e966d9",
+    "https_renderer": "scripts/single_host_https.py",
+    "private_default_retained": true,
+    "active_configuration_matches_renderer": true,
+    "image_ids": {
+      "gateway": "sha256:e789b51f7e406a4db39cf6c3b95c68f77c748e43b2681723c87dce018be354f3",
+      "control": "sha256:4f50e8e2996df720da019cd9c1f87978e4b790112094b34661bc3c7797bb10d1",
+      "frontend": "sha256:4c2187deede5f0b9eb5348e5ac8de9a049dda11388fa76c88b07a99517cbb7bb",
+      "nginx": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "edge": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8"
+    }
+  },
+  "migration": {
+    "consistent_online_backup": true,
+    "sqlite_quick_check": "ok",
+    "users": 1,
+    "target_was_uninitialized": true,
+    "owner_uuid_preserved": true,
+    "five_source_app_config_files_match_bundle": true,
+    "beijing_rollback_running_and_private": true,
+    "native_mac_worker_credentials_copied": false
+  },
+  "ssh": {
+    "host_key_pinned_from_authenticated_console": true,
+    "new_key_lifetime_hours": 24,
+    "key_restrictions": [
+      "restrict",
+      "port-forwarding",
+      "permitopen=127.0.0.1:2027",
+      "expiry-time"
+    ],
+    "server_allow_tcp_forwarding": "local",
+    "verified": {
+      "allowed_loopback_forward_works": true,
+      "other_destination_rejected": true,
+      "remote_forward_rejected": true
+    },
+    "private_keys_retained_on_local_machine": true
+  },
+  "https": {
+    "issuer": "Lets Encrypt",
+    "client": "Caddy 2.11.7",
+    "profile": "shortlived",
+    "certificate_lifetime_hours": 159.99972222222223,
+    "normal_chain_and_ip_san_verification": true,
+    "default_sni_exact_public_ip": true,
+    "unknown_http_host_rejected_with": 421,
+    "http_redirect_to_https": true,
+    "secure_httponly_samesite_lax_session_cookie": true,
+    "secure_readable_csrf_cookie": true,
+    "certificate_storage_persistent": true,
+    "automatic_renewal_configured": true,
+    "actual_renewal_observed": false,
+    "certificate_preserved_after_reboot": true,
+    "admin_bind": "127.0.0.1:2019",
+    "https_protocols": [
+      "h1",
+      "h2"
+    ]
+  },
+  "network": {
+    "external_probe_vantage": "Beijing cloud host, outside the Singapore target",
+    "tcp_80_and_443_reachable": true,
+    "closed_or_filtered_application_ports": [
+      2027,
+      8001,
+      8080,
+      3000,
+      18777,
+      2019
+    ],
+    "nginx_bind": "127.0.0.1:2027",
+    "edge_root_read_only": true,
+    "edge_cap_add": [
+      "CAP_NET_BIND_SERVICE"
+    ],
+    "edge_memory_limit_bytes": 134217728
+  },
+  "http": {
+    "initial": {
+      "timestamp_utc": "2026-10-28T03:36:33.765041+00:00",
+      "phase": "initial",
+      "scope": "Actual public IP HTTPS; authenticated reads; no model/native task",
+      "checks": [
+        "trusted_chain_and_ip_san",
+        "http_redirects_to_https",
+        "anonymous_workspace_rejected",
+        "migrated_owner_already_initialized",
+        "existing_owner_login",
+        "secure_httponly_session_cookie",
+        "secure_readable_csrf_cookie",
+        "owner_session",
+        "original_owner_uuid_preserved",
+        "workspace_html",
+        "go_admin_html",
+        "models_route",
+        "workspace_api",
+        "go_control_backend",
+        "worker_not_registered",
+        "foreign_origin_rejected",
+        "plaintext_origin_rejected",
+        "unknown_host_rejected",
+        "csrf_required",
+        "bounded_read_burst__api_deermate_v1_workspace",
+        "bounded_read_burst__api_models",
+        "bounded_read_burst__api_mcp_config",
+        "bounded_read_burst__workspace",
+        "bounded_read_burst__admin"
+      ],
+      "read_burst_requests": 40,
+      "max_read_concurrency": 4,
+      "model_calls": 0
+    },
+    "after_reboot": {
+      "timestamp_utc": "2026-10-28T03:41:20.544437+00:00",
+      "phase": "restart",
+      "scope": "Actual public IP HTTPS; authenticated reads; no model/native task",
+      "checks": [
+        "trusted_chain_and_ip_san",
+        "certificate_survived_reboot",
+        "http_redirects_to_https",
+        "anonymous_workspace_rejected",
+        "migrated_owner_already_initialized",
+        "public_session_survived_reboot",
+        "original_owner_uuid_preserved",
+        "workspace_html",
+        "go_admin_html",
+        "models_route",
+        "workspace_api",
+        "go_control_backend",
+        "worker_not_registered",
+        "foreign_origin_rejected",
+        "plaintext_origin_rejected",
+        "unknown_host_rejected",
+        "csrf_required"
+      ],
+      "read_burst_requests": 0,
+      "max_read_concurrency": 1,
+      "model_calls": 0
+    },
+    "total_checks": 41
+  },
+  "browser": {
+    "normal_https_page": true,
+    "original_owner_login": true,
+    "workspace_gateway_ready": true,
+    "admin_owner_row_loaded": true,
+    "session_and_workspace_after_reboot": true,
+    "admin_owner_row_after_reboot": true
+  },
+  "host": {
+    "boot_identity_changed": true,
+    "os_visible_memory_mib": 1613.1,
+    "initial_available_mib": 717.3,
+    "after_reboot_available_mib": 829.2,
+    "after_reboot_disk_free_gib": 26.7,
+    "observed_oom": false,
+    "services": {
+      "gateway": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:e789b51f7e406a4db39cf6c3b95c68f77c748e43b2681723c87dce018be354f3",
+        "memory_limit_bytes": 1073741824,
+        "memory_swap_limit_bytes": 1073741824,
+        "user": "1000:1000",
+        "read_only_root": false,
+        "cap_drop": [
+          "ALL"
+        ],
+        "cap_add": null,
+        "security_options": [
+          "no-new-privileges:true"
+        ],
+        "memory_current_bytes": 453001216,
+        "memory_peak_bytes": 468824064,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "control": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:4f50e8e2996df720da019cd9c1f87978e4b790112094b34661bc3c7797bb10d1",
+        "memory_limit_bytes": 134217728,
+        "memory_swap_limit_bytes": 134217728,
+        "user": "1000:1000",
+        "read_only_root": false,
+        "cap_drop": [
+          "ALL"
+        ],
+        "cap_add": null,
+        "security_options": [
+          "no-new-privileges:true"
+        ]
+      },
+      "frontend": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:4c2187deede5f0b9eb5348e5ac8de9a049dda11388fa76c88b07a99517cbb7bb",
+        "memory_limit_bytes": 268435456,
+        "memory_swap_limit_bytes": 268435456,
+        "user": "1000:1000",
+        "read_only_root": false,
+        "cap_drop": [
+          "ALL"
+        ],
+        "cap_add": null,
+        "security_options": [
+          "no-new-privileges:true"
+        ],
+        "memory_current_bytes": 186855424,
+        "memory_peak_bytes": 198590464,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "nginx": {
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+        "memory_limit_bytes": 67108864,
+        "memory_swap_limit_bytes": 67108864,
+        "user": "101:101",
+        "read_only_root": false,
+        "cap_drop": [
+          "ALL"
+        ],
+        "cap_add": null,
+        "security_options": [
+          "no-new-privileges:true"
+        ],
+        "memory_current_bytes": 13230080,
+        "memory_peak_bytes": 16318464,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      "edge": {
+        "running": true,
+        "health": null,
+        "oom_killed": false,
+        "restarts": 0,
+        "image_id": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8",
+        "memory_limit_bytes": 134217728,
+        "memory_swap_limit_bytes": 134217728,
+        "user": "0:0",
+        "read_only_root": true,
+        "cap_drop": [
+          "ALL"
+        ],
+        "cap_add": [
+          "CAP_NET_BIND_SERVICE"
+        ],
+        "security_options": [
+          "no-new-privileges:true"
+        ],
+        "memory_current_bytes": 64528384,
+        "memory_peak_bytes": 64995328,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    }
+  },
+  "local_validation": {
+    "pytest_passed": 103,
+    "pytest_skipped": 7,
+    "actual_pinned_chart_local_compose_overlay_and_https_contract_passed": 32,
+    "ruff": "passed",
+    "wheel": "passed",
+    "final_caddy_config_validate_network_none": "passed",
+    "local_2026_original_four_containers": "healthy"
+  },
+  "limitations": [
+    "No model calls",
+    "No home Worker enrollment or cloud-to-home task",
+    "No model/load/HA claim",
+    "Certificate renewal configured, not yet observed",
+    "Temporary SSH access expires; expiry does not terminate already authenticated sessions",
+    "Single-host SQLite and manually retained rollback; no managed backup/failover"
+  ]
+}

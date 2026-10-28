@@ -14,9 +14,10 @@
 | 当前验收 | Go 迁移历史 27 项 API 检查；本轮 25 项浏览器检查（含主题/手机/管理弹窗），原任务仍可读，模型任务 0 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
 | 低成本单机包 | 四镜像 Compose 包已实现；1472 MiB 容器限额下 14 项接口、5 项重启保留检查通过；实际 2 核/2 GiB 云主机已部署；18 项初始接口与 10 项整机重启后检查通过，浏览器登录/工作台/管理页已核验 |
+| 公网 IP HTTPS | 新加坡 2 核/2 GiB/40 GiB；首月实付 ¥0、购买时实例自动续费关闭；账号/配置已迁移，Caddy IP 证书签发、41 项 HTTPS/安全/重启检查与浏览器验收通过；证书自动续期已配置，尚未观察实际续期 |
 | 交付 | M1–M4.3 全部已有实现进入 main；来源 CI 40318918329 七个 job 全部 success；主线 CI 结果单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 用户已否决原 ACK 报价；最低成本轻量服务器已部署并完成有限验收；用户改为暂缓域名、优先公网 IP；新加坡零元首月草案及 IP HTTPS 已准备，新增实例/迁移/公开入口等待确认；模型与家庭 Worker 后续单独接入；项目级授权与专职 Agent 路由仍待开发 |
+| 下一步 | 新加坡公网 IP HTTPS 已部署并通过 41 项接口与浏览器/整机重启检查，北京私有实例保留回退；模型与家庭 Worker 后续单独接入；项目级授权与专职 Agent 路由仍待开发 |
 
 运行代码、历史证据与本轮 Go 变更应分别核对；文档 HEAD 可以继续推进。
 
@@ -52,13 +53,23 @@
 
 已准备 Caddy HTTPS → 现有 loopback nginx → Go/前端的草案，以及 Go Origin/Host 变更草案；示例域名配置在本地隔离容器以 Caddy v2.11.7、network=none 通过 validate。仅为语法/模块准备，不证明证书签发、续期、真实域名或 HTTPS Cookie/流式请求；云端仍仅应用 loopback 2027，没有启动公网 Web 监听。使用 [Caddy 自动 HTTPS](https://caddyserver.com/docs/automatic-https)与 [Let's Encrypt](https://letsencrypt.org/getting-started/)的方案待域名确认后实施。
 
-### 公网 IP 方案待确认 · 2026-10-27
+### 公网 IP HTTPS 已部署 · 2026-10-27
 
 用户选择过域名候选，随后明确暂不买域名、优先实现公网访问。域名注册草案已停止，未创建域名订单。现有北京实例仍是已验收的 SSH/loopback 部署；阿里云[通用网站备案说明](https://help.aliyun.com/zh/icp-filing/basic-icp-service/product-overview/icp-filing-requirements-for-a-regular-website)也将中国内地服务器的 IP 网站访问纳入备案要求，没有将 IP 或其他端口当作替代方案。
 
-重新登录同一云账号后核对购买预览：新加坡国际型 2 vCPU/2 GiB/40 GiB、Ubuntu 24.04、200 Mbps 峰值、无固定流量、1 IPv4；非中国优化 BGP，1 个月标价 ¥39，使用现有优惠券抵扣 ¥39 后预览实付 ¥0，自动续费关闭。尚未提交订单，也未创建第二台实例；首月券后预览不是后续免费或续费承诺。拟保留北京实例回退；仅当新草案得到确认后，将现有 DeerMate 云端账号/配置迁往新实例。
+用户明确确认新实例、条款、24 小时临时 SSH、账号/配置迁移与 80/443 公开入口后，已创建新加坡国际型 2 vCPU/2 GiB/40 GiB、Ubuntu 24.04 实例：非中国优化 BGP、200 Mbps 峰值、无固定流量、1 IPv4；1 个月标价 ¥39、优惠券抵扣 ¥39，收银台支付成功、实付 ¥0，购买时自动续费关闭。首月优惠不代表后续免费或续费同价。北京四服务仍健康，Web 仍仅绑定 loopback；原 Mac 2026 四服务也保持健康。
 
-现有北京 SQLite 已执行 online backup，quick_check 通过，未中断原服务。IP HTTPS 草案使用 Let's Encrypt `shortlived` profile，在 Caddy v2.11.7 的隔离无网络容器通过 validate；只证明配置/模块可加载。根据 [CA 官方说明](https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability/)，IP 证书已开放，当前有效期 160 小时，需要自动续期。实际证书、公开监听、Secure Cookie、外部浏览器及续期均未验收。新实例临时 SSH 公钥仅在本机生成，未登记。私人创建/访问/迁移草案及报价截图留在忽略目录；待用户对新实例、条款、24 小时 SSH、迁移和 80/443 公开入口确认后再执行。见[公网 IP 草案](specs/single-host-public-ip.md)。
+通过已登录 Workbench 核对固定新主机公钥，登记独立 24 小时 admin 临时公钥；实际验证允许 loopback 2027、拒绝其他转发目标和远程转发。私钥始终留在本机。直传较慢后，用既有北京运维连接中转 SSH 字节流，仍使用本机密钥及新主机公钥校验，没有复制私钥或放宽转发授权。
+
+上传归档哈希通过，四应用镜像 ID 与原验收镜像一致；新增 digest 固定的官方 Caddy 2.11.7。原云数据库通过 SQLite online backup、quick_check 与目标空账号检查后恢复，原 owner UUID/密码继续有效；5 份源应用配置与迁移包哈希一致，没有复制 Mac/native/Worker 凭据。新节点先私有启动，再恢复账号，最后启动公开 edge。
+
+新增 `scripts/single_host_https.py`，保留私有默认和原 Compose 备份，精确设置 Go HTTPS Origin/Host；edge 使用只读根文件系统、仅 `NET_BIND_SERVICE`、128 MiB 限额、独立持久证书卷与 loopback 管理 API。实际签发 Let's Encrypt `shortlived` IP 证书（约 160 小时），正常信任链和 IP SAN 验证通过。外部验收修正了不发送 SNI 的 IP 客户端证书选择，以及错误 Host 的空响应；最终 `default_sni` 精确绑定公网 IP，未知 Host 明确返回 421。没有绕过 TLS 校验。
+
+**24 项初始 + 17 项整机重启后 HTTPS 检查通过**，含 40 次、并发上限 4 的只读请求：旧账号登录、UUID、工作台/Go 管理页/API、匿名拒绝、Secure/HttpOnly/SameSite Cookie、外部及明文 Origin、Host/CSRF 限制。浏览器真实登录并加载 owner 管理行，整机重启后刷新工作台与管理页仍有效。boot identity 确认改变，原登录会话及同一张证书保留，四应用容器健康、edge 运行，观察点无 OOM 或应用容器重启计数增加。由另一云节点外部探测确认 80/443 可达，2027/8001/8080/3000/18777/2019 关闭或被过滤；本机代理会影响裸 TCP 探测，未将该结果作为隔离证据。
+
+内核可见 1613 MiB，有限请求后 available 约 717 MiB，重启后约 829 MiB，磁盘剩余约 26.7 GiB。证书持久存储和自动续期已配置，**尚未观察真实续期**；模型调用 0、模型/MCP 为空、家庭 Worker 未接入，没有模型容量、云到家庭任务或 HA 声明。公网地址、账号密码、云标识和截图留在私人目录；公开[验收收据](verification/single-host-public-ip-2026-10-27.json)不含这些值。设计见[专项规格](specs/single-host-public-ip.md)、[ADR 0009](decisions/0009-public-ip-https.md)与[部署指南](single-host.md)。
+
+最终代码回归 **103 passed / 7 skipped**；实际固定 Chart/本地 Compose/overlay/单机/HTTPS 契约 **32 passed**，Ruff、wheel 与隔离 Caddy validate 通过。来源与本轮 CI 分开记录；未发布正式 release。下一步单独配置聊天模型、家庭 Worker，再做受限真实任务验收。
 
 ## ACK 创建准备 · 2026-10-26
 
