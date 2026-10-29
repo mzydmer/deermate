@@ -2,7 +2,7 @@
 
 这个配置在 Mac 上运行 Go 控制端、内部 DeerFlow Gateway、前端和 nginx，复用 ACK 的五个镜像（含初始化工具）。本机独立 Python Worker 调用已经登录的 Codex；容器经 MCP 和生成密钥的 SSH 开发服务连接 Worker。入口为 **[http://localhost:2026](http://localhost:2026)**，只绑定 `127.0.0.1`。
 
-当前已验证页面、真实浏览器登录、真实 Codex 修复、独立测试和 Gateway 重启后的结果。按本轮用户选择，秘书聊天模型暂不配置；页面中的自然语言派单、模型通知、专职路由还未验收。界面已加入 DeerMate 品牌、秘书首页和只读任务工作台，默认根地址重定向到受保护的 `/workspace`；原对话继续复用 DeerFlow，用户/登录与前端 API 由 Go 统一提供；管理页面为 `/admin`。见 [前端说明](../frontend/README.md)。
+当前已验证页面、真实浏览器登录、真实 Codex 修复、独立测试和 Gateway 重启后的结果。2026-10-28 已用实际千问模型通过正式聊天 API 自行检查 Worker、提交 MCP 后台任务，真实 Codex 修复后独立测试通过，通知 delivered；该次模型入口为 HTTP，未另做浏览器输入派单验收。界面已加入 DeerMate 品牌、秘书首页和只读任务工作台，默认根地址重定向到受保护的 `/workspace`；原对话继续复用 DeerFlow，用户/登录与前端 API 由 Go 统一提供；管理页面为 `/admin`。见 [前端说明](../frontend/README.md)。
 
 ## 在这台 Mac 上使用
 

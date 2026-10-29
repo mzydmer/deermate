@@ -245,3 +245,13 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 预检专项 45 passed；最终全量 148 passed / 7 skipped（63.03 秒，一条已有 Starlette 弃用提示）；固定上游 local/SSH driver 与实际 Gateway 4 passed（104.17 秒）。最终 SSH Gateway 独立跑过 26 项检查，[收据](verification/worker-preflight-gateway-2026-10-28.json)保留源码/脚本哈希与有限结果。Ruff、wheel 和 diff whitespace 检查通过。本机运行中的 Worker 也通过新 doctor 命令的真实 HTTP 检查，未提交新原生任务。
 
 更新[规格](specs/m2-worker-preflight.md)、README、接入指南、SPEC、STATUS 和 roadmap。MCP 增量工具正常出现在 DeerFlow 工具发现中，原三个后台任务契约和 SQL 跟踪继续通过。公网容器未在本轮升级，真实家庭 OpenSSH/NAT、配置模型后的派单/通知与容量仍待单独接入验收；本轮模型调用为 0。
+
+## 2026-10-28 · 真实秘书模型、原生派单与结果通知
+
+复用本机已保存的千问模型，通过受认证 HTTPS 管理接口接入云端，未写出明文模型 key；云端 catalog/key 均为 0600，加密内容和正式聊天 run 已验证。另更新本地 Gateway 的 Worker wheel，保留原账号、数据库、Go/前端镜像，升级前做一致性备份；仅刷新同机生成密钥的开发注册，没有改变系统 SSH 或云端访问授权。
+
+新增 `scripts/verify_secretary.py`，显式 `--live` 后使用正式 thread/run/checkpoint API，让真实模型先做 MCP 预检再提交一次 demo 任务。真实 Codex 的一行补丁、原生会话/attempt 1、独立测试退出码 0 与 SQL/MCP 结果核对通过，通知 delivered。验收器只读访问操作员本机 Worker 的实例/请求指纹映射，不扩大公共 API 或 MCP 读库权限。稳定 intent 和 run attempted 在发送前持久化；超时/重启只核对，不自动重放。修复本地旧 submit shim 按名字选择工具，兼容新增预检。
+
+初次 12/32 图步骤不足，分别留下聊天/派单 run error；已接纳任务仍完成并通知。保留失败证据并只读核对，修正为 128 图步骤后用独立有界新尝试通过。整轮两项原生任务、9 次 runtime 可观测 LLM 调用，另 2 次 provider 工具探针；不将其等同于账单或 SDK 请求数。最终全量 170 passed / 7 skipped（62.46 秒）、实际固定部署契约 29 passed（1.78 秒）；Ruff/wheel 通过。一条已有 Starlette 弃用提示保留。[公开有限收据](verification/secretary-live-2026-10-28.json)记录源码哈希、成功范围和失败尝试。
+
+真实云到家庭仍需网络接入。已准备两组专用账号/限时密钥、loopback 反向转发、到期移除/断开 timer 及回退脚本；目标 Ubuntu 仅临时配置通过 sshd 语法/生效策略检查，没有激活配置、创建账号或注册云 Worker。新增登录/转发权限已请求用户确认，见[方案](specs/m2-home-reverse-link.md)与[拟议 ADR 0010](decisions/0010-temporary-home-reverse-link.md)。Go 主/管理/登录/前端 API 边界保持；本轮不是浏览器派单、家庭系统 sshd 或公网 Gateway 镜像升级验收。

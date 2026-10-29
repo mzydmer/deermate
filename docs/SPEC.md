@@ -27,7 +27,7 @@
 
 | 编号 | 需求与关键行为 | 实现阶段 |
 | --- | --- | --- |
-| FR-001 | 单一私人秘书入口，保留偏好和任务上下文 | MCP 接入与 ACK 的 DeerFlow 入口部署包已实现；真实模型选工具、通知和完整秘书体验待验收 |
+| FR-001 | 单一私人秘书入口，保留偏好和任务上下文 | 正式 HTTP run 已验证真实模型选 MCP 工具、原生执行与本地通知 delivered；浏览器输入、云到家庭及完整秘书体验待验收 |
 | FR-002 | 只接受管理员注册的项目；请求不能任意指定主机路径、执行命令或扩展权限 | M1 已实现本地接纳 |
 | FR-003 | 相同幂等键与相同请求返回已有任务；不同内容复用键返回冲突；继续操作也有独立幂等键 | M1 已实现 |
 | FR-004 | 保存任务、原生会话、轮次与事件游标；支持查询、中断和继续同一会话 | M1 Codex 已实现 |
@@ -38,7 +38,7 @@
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
 | FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
 | FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2 已实现只读连接/身份/协议预检；项目授权、容量及自动路由仍规划 |
-| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；本地页面/登录通过，模型选工具和通知未验证 |
+| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；后续正式 HTTP run 的真实模型选工具、独立结果与本地通知通过 |
 | FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；M2.3 组合链路已验证 SSH 断线重连、撤权与取消；真实双机/OpenSSH 部署与 NAT 未验收 |
 | FR-014 | GitHub 事件验签、去重、issue 修复和独立 PR 审核；创建 PR、评论、合并、发布分别授权 | M3 规划 |
 | FR-015 | 竞品/资料 watchlist、历史快照对比、引用来源和有实质变化才通知 | M4 规划 |
@@ -116,6 +116,8 @@
 M2.1 的具体映射、取消确认预算、错误与结果边界见[功能规格](specs/m2-deerflow-task-bridge.md)；配置步骤见 [DeerFlow 接入指南](deerflow.md)。桥接暴露三个后台任务工具 `submit_task`、`get_task_status`、`cancel_task` 及只读 `check_worker_connection`，不直接读取数据库或持有执行进程。表单、review 和 recovery 映射为需要处理的状态，继续使用既有本地 CLI 完成决策。
 
 连接预检 `deermate ... doctor` / `check_worker_connection` 使用既有凭据和注册权限验证连接、身份与协议，不创建任务。时间点上的 `reachable` 不代表原生执行准备完成或授权派单；受阻不表示任务已停止。契约、错误码、期限和验收标准见 [M2 预检规格](specs/m2-worker-preflight.md)。
+
+真实模型验收通过正式 HTTP run 触发，不用 submit shim；云端聊天与本地模型选工具/真实 Codex/独立测试/通知的证据分开保存。验收器在发送前保存稳定身份，超时后只读核对，不自动重放；图步骤不等于成本配额。见[真实模型规格](specs/m2-secretary-live-dispatch.md)与[验收指南](secretary-acceptance.md)。
 
 M2.2 将同一 API 通过管理员注册的 SSH 连接使用；远程 MCP 句柄为 `instance_id:task_id`，本地 ID 不变。所有操作先检查注册权限与 Worker 身份，撤权不代表已接纳任务停止。配置、轮换和撤权窗口见 [SSH 指南](ssh-worker.md)与 [ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 

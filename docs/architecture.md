@@ -8,7 +8,7 @@ DeerMate coordinates agents that already exist. DeerFlow supplies the conversati
 
 The main/control, management, user/login and frontend-facing API backend is maintained in Go, following the owner’s updated direction in [ADR 0007](decisions/0007-go-control-plane.md). The React UI uses the DeerMate overlay; DeerFlow remains the internal Python Agent runtime, while Worker/MCP/SSH remain Python. External agents retain their runtimes. Hermesh is optional.
 
-The MCP bridge forwards three tools to the independent authenticated HTTP Worker, locally or through an enrolled SSH channel. It does not acquire a database lock or own native execution. The pinned Gateway/SQLite restart path and SSH now run in one [combined fixture demonstration](demo.md), alongside individual SSH protocol and upstream-driver checks. Real-model notifications, UI and actual two-machine deployment remain separate work.
+The MCP bridge forwards three task tools and a read-only connection check to the independent authenticated HTTP Worker, locally or through an enrolled SSH channel. It does not acquire a database lock or own native execution. The pinned Gateway/SQLite restart path and SSH run in the [combined fixture demonstration](demo.md). Later [real-model acceptance](secretary-acceptance.md) also verifies local model-selected submission, real Codex evidence and delivered notification; cloud-to-home and browser input/streaming acceptance remain separate work.
 
 ## Go API and identity boundary
 

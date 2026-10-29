@@ -11,16 +11,31 @@
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 本轮 Worker 预检专项 45 passed、全量 148 passed / 7 skipped；固定上游 driver/Gateway 4 passed，最终 SSH Gateway 26 项检查通过。Go 迁移 27 项 API 与 25 项浏览器检查为历史证据；本轮模型调用 0 |
+| 当前验收 | 本轮全量 170 passed / 7 skipped、固定部署契约 29 passed；云端真实聊天与本地模型选工具→SSH→真实 Codex→独立测试→通知 delivered 已通过。此前预检/Gateway/Go/浏览器证据分别保留 |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
+| 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地正常 run 由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
 | 低成本单机包 | 四镜像 Compose 包已实现；1472 MiB 容器限额下 14 项接口、5 项重启保留检查通过；实际 2 核/2 GiB 云主机已部署；18 项初始接口与 10 项整机重启后检查通过，浏览器登录/工作台/管理页已核验 |
 | 公网 IP HTTPS | 新加坡 2 核/2 GiB/40 GiB；首月实付 ¥0、购买时实例自动续费关闭；账号/配置已迁移，Caddy IP 证书签发、41 项 HTTPS/安全/重启检查与浏览器验收通过；证书自动续期已配置，尚未观察实际续期 |
 | 交付 | M1–M4.3 已有实现进入 main；本轮预检本地验证通过。历史来源 CI 40318918329 七个 job success 仅代表对应提交，新提交 CI 单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 新加坡公网 IP HTTPS 已部署并通过 41 项接口与浏览器/整机重启检查，北京已完成退订和释放，最终备份保存在本机；模型与家庭 Worker 后续单独接入；项目级授权与专职 Agent 路由仍待开发 |
+| 下一步 | 云端模型可聊天，本地模型派单/通知已验证；云到家庭的 24 小时受限反向 SSH 方案已准备，新增账号/转发权限待用户确认。项目级 Go 执行授权与专职路由仍待开发 |
 
 运行代码、历史证据与本轮 Worker 预检应分别核对；文档 HEAD 可以继续推进。
+
+## 真实模型聊天与派单 · 2026-10-28
+
+新增 [`verify_secretary.py`](../scripts/verify_secretary.py) 与[验收指南](secretary-acceptance.md)，使用真实 Go 登录和正式 thread/run/checkpoint/MCP HTTP API，未使用开发 submit shim 替代模型。云端已有管理员配置了复用的千问模型，模型 key 仅在内存中从本机受信运行时取得，通过正常 HTTPS 管理接口保存到云端独立加密目录，未写出明文 key。catalog/key 实际均为 0600；流式工具探针通过，正式聊天 run success、1 次 LLM 调用、0 项 MCP 任务。观察时 available 664 MiB，Gateway 无 OOM；只代表单次低并发聊天，不是压力容量结论。
+
+本机 Gateway 以原不可变镜像为基底、无网络/不更新依赖地安装当前 Worker wheel，并保留原账号、数据、前端和 Go 镜像；升级前已做 SQLite 一致性备份。仅刷新原同机生成密钥的开发注册，未修改 Mac 系统 sshd 或云端登录权限。修复本地 submit shim 按工具名选择，兼容新增只读预检；实际派单验收走的是正式 run API。
+
+真实千问先调用 `deermate_check_worker_connection`，再调用一次 `deermate_submit_task`；正常 run success、3 次 LLM 调用，SQL 恰好一个后台任务。真实 Codex 在注册 demo 的独立 worktree 修复 `answer.py`，Worker 独立 unittest 退出码 0；只读本机请求映射、Worker 实例、原生 session、attempt 1 与 HTTP 结果相符，补丁仅修改预期文件。完成通知另一个真实模型 run success，状态 delivered。[脱敏收据](verification/secretary-live-2026-10-28.json)绑定验收脚本和 Worker 源码哈希。
+
+验收过程中发现图步数包含 middleware：初次 12/32 步分别使聊天/派单 run 失败，后者已接纳的任务仍完成并送达通知。保留原状态只读核对，未自动重放；修正为 128 图步骤后用独立有界新尝试通过。整轮合计 2 项原生任务、运行时可观测 LLM 调用 9 次，另有 2 次有界 provider 工具探针；这些不是实际账单或 SDK 内部请求次数。相同验收命令的重跑只核对原 run，不新增模型任务。
+
+最终 `pytest` **170 passed / 7 skipped**（62.46 秒，一条已有 Starlette 弃用提示）；实际固定 Chart/本地 Compose/单机/HTTPS 契约 **29 passed**（1.78 秒）；Ruff、wheel 通过。Go/前端源码未变，未重复做浏览器输入验收。云端 Gateway 镜像未在本轮升级，云端 MCP 仍为空；本地 SSH 仍是同机开发服务。云到家庭 OpenSSH/NAT、更多岗位和项目权限仍未验收。
+
+[反向接入方案](specs/m2-home-reverse-link.md)与 [ADR 0010](decisions/0010-temporary-home-reverse-link.md)已准备：两组独立专用密钥/无 shell 账号、loopback 单端口、24 小时期限和强制断开 timer；目标 Ubuntu 上仅用临时文件通过 `sshd -t` 与两个模拟用户的生效策略检查，未修改活动配置。新增登录/转发权限已提交用户确认；当前没有安装账号、启动反向监听、复制 Worker 凭据到云端或延长原 admin 密钥。
 
 ## Worker 连接预检 · 2026-10-28
 
@@ -217,10 +232,10 @@ Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skip
 
 ## 下一项工作
 
-1. 新加坡公网 IP HTTPS 已验收，域名购买继续暂缓。北京已完成退订释放与退款核对，最终备份留在本机；继续按需接入模型和家庭 Worker。
-2. 本地保持可运行；新加坡公网入口保留登录认证，下一步按[单机指南](single-host.md)单独配置聊天模型并验证有限模型负载。ACK 作为可选方案保留。
-3. 对明确注册的真实设备验收受限 OS/OpenSSH 策略、网络可达性与服务重启；不扫描或登录未注册主机。
-4. 配置模型后单独验证通知和聊天入口；保留任务身份、取消确认和外部输入权限边界。
+1. 云端正常聊天和本地真实模型派单/通知已验收；按[反向接入方案](specs/m2-home-reverse-link.md)等待新增 SSH 账号/转发权限确认，再安装并验收云到家庭链路。
+2. 本地保持可运行；公网入口保留 Go 登录认证。云端模型目前仅验收单次低并发聊天，实际家庭任务负载另测；ACK 作为可选方案保留。
+3. 对明确注册的真实设备验收受限 OS/OpenSSH 策略、网络可达性、到期断开与服务重启；不扫描或登录未注册主机。
+4. 浏览器输入聊天、流式呈现及云端任务通知另验；保留任务身份、取消确认和外部输入权限边界。
 5. NAT/反向连接独立设计，再扩展专职 Agent 路由与工作台。
 
 按 [AGENTS.md](../AGENTS.md) 接续；行为变化更新 spec，有意义结果追加 EVOLUTION，当前状态维护于此。

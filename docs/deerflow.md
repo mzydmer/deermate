@@ -45,6 +45,8 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 
 秘书可无参数调用 `check_worker_connection`，检查管理员预先指定的本地/SSH Worker，不接受临时主机或凭据。返回 `reachable` / `blocked` 及诊断，但不检查 Codex 登录、容量、项目授权或任务结果。CLI 等价入口为 `deermate ... doctor`；详见 [SSH 预检说明](ssh-worker.md#连接预检)。
 
+2026-10-28 已额外使用真实千问，经正式 run API 自行选择预检/提交工具，完成本机真实 Codex 修复、独立测试与通知 delivered；这与下文无模型 fixture 的旧验收不同。复现方法和计费/恢复边界见[真实模型指南](secretary-acceptance.md)，云端到家庭接入仍待授权部署。
+
 提交参数示例：
 
 ```json

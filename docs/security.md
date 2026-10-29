@@ -2,7 +2,7 @@
 
 Status: Worker, MCP and enrolled direct SSH transport alpha. Bearer authentication, local Host/Origin checks, project admission, native sandbox policies and single-owner state remain in force. Broader deployment requirements below are not all implemented or independently audited. Updated: 2026-10-25. See [local limits](local-worker.md) and [SSH scope](ssh-worker.md).
 
-The M2.1 stdio MCP bridge uses that same single owner's local bearer authority. It forwards to a fixed loopback endpoint with proxy discovery and redirects disabled, and does not add a network listener, new grants, or direct database access. Run it only in a trusted local DeerFlow process with deliberate access to the Worker token; its three tools can act on that owner's registered projects/tasks. Bounded summaries may still contain project content; no universal redaction is claimed. See [the setup and deployment limits](deerflow.md).
+The stdio MCP bridge uses that same single owner's local bearer authority. It forwards to a fixed loopback endpoint with proxy discovery and redirects disabled, and does not add a public network listener, new grants, or direct database access. Run it only in a trusted DeerFlow process with deliberate access to the Worker token; its three task tools can act on that owner's registered projects/tasks, while the additive connection check is read-only. Bounded summaries may still contain project content; no universal redaction is claimed. The operator-only live verifier may inspect its local Worker database read-only to cross-check request identity; this does not grant database access to MCP or public APIs. See [the setup and deployment limits](deerflow.md).
 
 ## What must be protected
 

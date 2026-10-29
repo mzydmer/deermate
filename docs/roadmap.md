@@ -40,7 +40,9 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Purchase and validate the selected minimum cloud host: actual headroom, bounded HTTP/browser access and controlled full-host reboot ([receipt](verification/single-host-cloud-2026-10-27.json)).
 - [x] Deploy the separately approved public IPv4 HTTPS profile, migrate the cloud owner, and verify trusted TLS, access boundaries and reboot persistence ([receipt](verification/single-host-public-ip-2026-10-27.json)); real certificate renewal/model/home Worker acceptance remain separate.
 - [x] Add read-only CLI/MCP Worker preflight with authenticated bounded capabilities, SSH grant/identity checks, protocol admission and sanitized failure reports ([spec](specs/m2-worker-preflight.md)); connectivity does not imply native execution readiness.
-- [ ] Validate the cloud model workload and separately authorized home Worker connectivity.
+- [x] Verify encrypted managed model configuration and one real cloud chat through Go and the normal Gateway run API; higher-load capacity remains separate.
+- [x] Verify local real model-selected MCP preflight/submission, native Codex evidence and delivered model notification through the normal run API ([receipt](verification/secretary-live-2026-10-28.json)).
+- [ ] Validate separately authorized cloud-to-home Worker connectivity; temporary reverse SSH plan prepared, deployment authority pending ([proposal](specs/m2-home-reverse-link.md)).
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.

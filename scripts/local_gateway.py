@@ -38,7 +38,11 @@ async def submit(request: Request, body: Submission):
     if thread is None:
         raise HTTPException(404, "Thread not found")
     tools = await get_mcp_tools()
-    if [tool.name for tool in tools] != ["deermate_submit_task"]:
+    by_name = {tool.name: tool for tool in tools}
+    if "deermate_submit_task" not in by_name or set(by_name) - {
+        "deermate_submit_task",
+        "deermate_check_worker_connection",
+    }:
         raise HTTPException(503, "Expected enrolled Worker tool is unavailable")
     runtime = SimpleNamespace(
         context={
@@ -50,7 +54,7 @@ async def submit(request: Request, body: Submission):
         tool_call_id=uuid.uuid4().hex,
     )
     try:
-        result = await tools[0].coroutine(
+        result = await by_name["deermate_submit_task"].coroutine(
             runtime=runtime, project_id="demo", prompt=body.prompt, idempotency_key=body.key
         )
     except DuplicateMcpRemoteTaskError as error:
