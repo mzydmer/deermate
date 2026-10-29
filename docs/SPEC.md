@@ -1,6 +1,6 @@
 # DeerMate 基础规格
 
-文档版本：0.1。更新：2026-10-25。本文记录产品行为与验收基线；当前交付状态以 [STATUS.md](STATUS.md) 为准，历史变化见 [EVOLUTION.md](EVOLUTION.md)。
+文档版本：0.1。更新：2026-10-28。本文记录产品行为与验收基线；当前交付状态以 [STATUS.md](STATUS.md) 为准，历史变化见 [EVOLUTION.md](EVOLUTION.md)。
 
 需求编号在后续版本保持稳定。编号被替代时保留替代关系，不将旧编号重新分配给另一种功能。状态中的“已实现”只描述实现范围，不意味着已合并、发布或通过生产安全审计。
 
@@ -27,7 +27,7 @@
 
 | 编号 | 需求与关键行为 | 实现阶段 |
 | --- | --- | --- |
-| FR-001 | 单一私人秘书入口，保留偏好和任务上下文 | 正式 HTTP run 已验证真实模型选 MCP 工具、原生执行与本地通知 delivered；浏览器输入、云到家庭及完整秘书体验待验收 |
+| FR-001 | 单一私人秘书入口，保留偏好和任务上下文 | 正式 HTTP run 已验证云端真实模型选 MCP 工具、家庭原生执行与通知 delivered；浏览器输入和完整秘书体验待验收 |
 | FR-002 | 只接受管理员注册的项目；请求不能任意指定主机路径、执行命令或扩展权限 | M1 已实现本地接纳 |
 | FR-003 | 相同幂等键与相同请求返回已有任务；不同内容复用键返回冲突；继续操作也有独立幂等键 | M1 已实现 |
 | FR-004 | 保存任务、原生会话、轮次与事件游标；支持查询、中断和继续同一会话 | M1 Codex 已实现 |
@@ -38,8 +38,8 @@
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
 | FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
 | FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2 已实现只读连接/身份/协议预检；项目授权、容量及自动路由仍规划 |
-| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；后续正式 HTTP run 的真实模型选工具、独立结果与本地通知通过 |
-| FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；M2.3 组合链路已验证 SSH 断线重连、撤权与取消；真实双机/OpenSSH 部署与 NAT 未验收 |
+| FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；后续正式云端 HTTP run 的真实模型选工具、家庭独立结果与通知通过 |
+| FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；同机 fixture 验证断线/撤权/取消；另已验证受限云端 OpenSSH→Mac 出站反向链路、真实派单和断线恢复，通用配对与实际到期另验 |
 | FR-014 | GitHub 事件验签、去重、issue 修复和独立 PR 审核；创建 PR、评论、合并、发布分别授权 | M3 规划 |
 | FR-015 | 竞品/资料 watchlist、历史快照对比、引用来源和有实质变化才通知 | M4 规划 |
 | FR-016 | 按需浏览器和独立桌面会话；同一桌面会话不能被多个任务同时操作 | M4–M5 规划 |
@@ -94,7 +94,7 @@
 | NFR-004 | 正常测试不需要模型凭据；真实模型测试明确标识并限定范围 | 离线协议 fixture、临时 Git 仓库和 opt-in live smoke 已具备 |
 | NFR-005 | 保存可复核的状态、事件、补丁和验证记录 | Worker 本地 SQLite；本地 Docker 命名卷与 Gateway 重启保留结果已验证；ACK 云盘实际部署待验收；无总容量配额或通用脱敏保证 |
 | NFR-006 | 区分实现、验证、合并和发布，维护可接续文档 | 以 STATUS、EVOLUTION、ADR 和 Git/CI 证据管理 |
-| NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；本地 Compose 实测 Intel Docker Desktop；可选[单机包](specs/single-host-minimal.md)面向预构建 amd64 Linux 镜像，2 核 2 GiB 轻量云主机基础页面/API 和受控整机重启已验收，模型负载/家庭 Worker 另测；暂不支持 Windows |
+| NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；本地 Compose 实测 Intel Docker Desktop；可选[单机包](specs/single-host-minimal.md)面向预构建 amd64 Linux 镜像，2 核 2 GiB 轻量云主机基础页面/API 和受控整机重启已验收，单次低并发云端模型/家庭 Codex 另有通过证据，不代表容量；暂不支持 Windows |
 | NFR-008 | 所有前端遵循统一 Vercel/Geist 风格规范与可访问性基线，React/Go 共用视觉 token | [design.md](../design.md) 为规范；token 同步/CI 检查，现有页面按修改范围迁移 |
 
 ## 验收与证据映射
@@ -108,7 +108,7 @@
 | AC-M1-05 | 验证失败、无验证、权限拒绝、超时、异常协议不能伪装成验证成功 | [test_worker.py](../tests/test_worker.py)、[test_rpc.py](../tests/test_rpc.py) |
 | AC-M1-06 | 无 token、非本地主机、浏览器来源、超大请求或任意执行命令被拒绝 | [test_api.py](../tests/test_api.py) |
 | AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 本地及 SSH 两种实际 Gateway 路径通过：SQL/进程重启、原始查询/取消、Worker 失联恢复；模型选工具由测试入口代替，见[M2.3](specs/m2-gateway-ssh-demo.md) |
-| AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | SSH 协议及完整 Gateway 链路的同机 fixture 范围通过；撤权后不假称已取消、恢复授权后确认先前取消，且无新原生会话/轮次；真实双机/OpenSSH/NAT 待验收，见[M2.2](specs/m2-ssh-worker.md)与[M2.3](specs/m2-gateway-ssh-demo.md) |
+| AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | SSH 协议及完整 Gateway 链路的同机 fixture 范围通过；撤权后不假称已取消、恢复授权后确认先前取消，且无新原生会话/轮次；另有实际云端受限账号/家庭反向链路断线恢复与只读核对，见[家庭链路](specs/m2-home-reverse-link.md)；实际到期仍待观察。基础 fixture 见[M2.2](specs/m2-ssh-worker.md)与[M2.3](specs/m2-gateway-ssh-demo.md) |
 | AC-M2-03 | 本地容器服务可登录，经 SSH 调用真实 Codex 并返回独立验证；重启保留结果，重复请求不重复执行 | [M2.5 规格](specs/m2-local-docker.md)、[本地 Docker 指南](local-docker.md)、[真实验收收据](verification/local-docker-2026-10-26.json)；模型选工具由本地管理员/key 入口替代 |
 
 上述文件是证据入口，不表示每项已覆盖所有边界。当前跑过哪些命令、对应哪个代码版本，以 [STATUS.md](STATUS.md) 为准。
@@ -117,7 +117,7 @@ M2.1 的具体映射、取消确认预算、错误与结果边界见[功能规�
 
 连接预检 `deermate ... doctor` / `check_worker_connection` 使用既有凭据和注册权限验证连接、身份与协议，不创建任务。时间点上的 `reachable` 不代表原生执行准备完成或授权派单；受阻不表示任务已停止。契约、错误码、期限和验收标准见 [M2 预检规格](specs/m2-worker-preflight.md)。
 
-真实模型验收通过正式 HTTP run 触发，不用 submit shim；云端聊天与本地模型选工具/真实 Codex/独立测试/通知的证据分开保存。验收器在发送前保存稳定身份，超时后只读核对，不自动重放；图步骤不等于成本配额。见[真实模型规格](specs/m2-secretary-live-dispatch.md)与[验收指南](secretary-acceptance.md)。
+真实模型验收通过正式 HTTP run 触发，不用 submit shim；云端聊天、本地派单和实际云到家庭模型派单/真实 Codex/独立测试/通知的证据分开保存。验收器在发送前保存稳定身份，超时后只读核对，不自动重放；图步骤不等于成本配额。见[真实模型规格](specs/m2-secretary-live-dispatch.md)与[验收指南](secretary-acceptance.md)。
 
 M2.2 将同一 API 通过管理员注册的 SSH 连接使用；远程 MCP 句柄为 `instance_id:task_id`，本地 ID 不变。所有操作先检查注册权限与 Worker 身份，撤权不代表已接纳任务停止。配置、轮换和撤权窗口见 [SSH 指南](ssh-worker.md)与 [ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 

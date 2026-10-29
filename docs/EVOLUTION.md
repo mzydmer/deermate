@@ -255,3 +255,15 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 初次 12/32 图步骤不足，分别留下聊天/派单 run error；已接纳任务仍完成并通知。保留失败证据并只读核对，修正为 128 图步骤后用独立有界新尝试通过。整轮两项原生任务、9 次 runtime 可观测 LLM 调用，另 2 次 provider 工具探针；不将其等同于账单或 SDK 请求数。最终全量 170 passed / 7 skipped（62.46 秒）、实际固定部署契约 29 passed（1.78 秒）；Ruff/wheel 通过。一条已有 Starlette 弃用提示保留。[公开有限收据](verification/secretary-live-2026-10-28.json)记录源码哈希、成功范围和失败尝试。
 
 真实云到家庭仍需网络接入。已准备两组专用账号/限时密钥、loopback 反向转发、到期移除/断开 timer 及回退脚本；目标 Ubuntu 仅临时配置通过 sshd 语法/生效策略检查，没有激活配置、创建账号或注册云 Worker。新增登录/转发权限已请求用户确认，见[方案](specs/m2-home-reverse-link.md)与[拟议 ADR 0010](decisions/0010-temporary-home-reverse-link.md)。Go 主/管理/登录/前端 API 边界保持；本轮不是浏览器派单、家庭系统 sshd 或公网 Gateway 镜像升级验收。
+
+## 2026-10-28 · 获批临时云到家庭链路与真实派单
+
+用户单独批准两组无 shell/无 sudo 的专用 SSH 账号、单端口转发和最多 24 小时期限后，经阿里云命令助手安装。Mac 主动出站，把已有 loopback Worker 接到云端 loopback 监听；独立 reader 账号仅可读取该监听。固定主机密钥、应用实例与 demo 项目权限保持，Mac 系统 sshd 未修改，原 admin 密钥未延长。实际 sshd 语法/生效策略、特权组检查、9 项正负向 SSH 用例和 systemd timer 验证通过。timer 已 active，固定 UTC 2026-10-30 02:29:56 移除公钥/云端 Worker 凭据并终止专用会话；实际到期尚未观察。
+
+云端从已核对 SHA 的公开 `2e7fdac` 源码构建 wheel，采用当前依赖版本约束和预缓存离线 uvx；未放宽 HTTP 命令白名单。原 Gateway 镜像保持；固定上游后台工具快照不支持热启用，按其生命周期账本/锁激活并做受控 Gateway 重启。首次未启用工具的模型 run 接纳零任务，保留其记录，未重放。临时凭据 staging 已从活动配置和回退归档移除，运行时文件仅 owner 可读，反向私钥和原生登录留在 Mac。
+
+正式云端 run success（3 次 LLM 调用）由真实模型先预检再提交一次，家中 Codex 完成一个 demo 修复。MCP/Worker 恰好一个任务，原生 session、请求映射及 attempt 1 对应，补丁只改预期文件，独立 unittest exit 0，通知 delivered。主动断开专用反向会话后 connector 恢复传输，同一 intent 只读重查通过，没有追加模型/原生执行。浏览器确认公网任务、补丁摘要和独立验证抽屉，未重验浏览器输入/流式 UI。
+
+验收器新增可选公网 IP SSH 路径交叉核对，必须与 HTTPS origin 同主机且与独立本机 Worker 身份一致，阻断时在模型 run 前退出。新增 5 项离线用例，验收器专项 27 passed；全量 **175 passed / 7 skipped**（63.83 秒，一条已有 Starlette 弃用提示），Ruff/wheel 通过。上轮固定部署契约 29 passed，本轮未改镜像模板、Go 或前端，未重复运行。更新[接入规格](specs/m2-home-reverse-link.md)、[Accepted ADR 0010](decisions/0010-temporary-home-reverse-link.md)、[验收指南](secretary-acceptance.md)及[独立脱敏收据](verification/home-link-2026-10-28.json)。
+
+本次证明一个手工配置的限时 alpha 链路；两条 SSH 都在可信云主机终止，云端可读内容。通用设备配对、Mac 重启守护、正式永久接入、项目级 Go 授权及专职路由仍需开发；没有新增付费云资源或公开 Worker 端口。

@@ -1,6 +1,6 @@
 # M2 real secretary model acceptance
 
-- **Status:** Implemented; cloud-to-home acceptance remains pending
+- **Status:** Implemented; local and separately approved temporary cloud-to-home acceptance verified
 - **Milestone:** M2
 - **Requirement IDs:** FR-001, FR-003, FR-006, FR-010, FR-012, FR-013; NFR-004, NFR-005, NFR-006 in [SPEC.md](../SPEC.md)
 - **Updated:** 2026-10-28
@@ -28,10 +28,11 @@ Chat acceptance checks an actual assistant response and zero MCP tasks. Dispatch
 | AC-LM-03 | Lost acknowledgements/restart do not cause verifier replay; unsafe origin/state/account input is rejected | Offline verifier contract tests |
 | AC-LM-04 | Local verification shim selects tools by name after additive preflight discovery | Offline contract plus actual local stack |
 | AC-LM-05 | Retained receipts contain only bounded facts, no account, origin, key, prompt or raw model/native output | Receipt projection tests and manual review |
+| AC-LM-06 | Optional public-IP SSH route evidence matches the independently checked local Worker before any model run; wrong origin/instance or blocked route is rejected | Five offline cases and actual cloud-to-home acceptance |
 
 ## Failure cases and limits
 
-An enabled MCP entry does not prove reachable enrollment; use doctor first. Expired real host grants are not extended by this verifier. Actual cloud-to-home connectivity, reverse tunnels/NAT and restricted system accounts require their own design and explicit deployment authority. A local Docker SSH fixture is not evidence of those properties. Notification model runs are separate from initial submission and must be reported independently.
+An enabled MCP entry does not prove reachable enrollment; use doctor first. Expired real host grants are not extended by this verifier. Cloud-to-home connectivity and restricted system accounts require their own design and explicit deployment authority, recorded in the [temporary link spec](m2-home-reverse-link.md). A local Docker SSH fixture is not evidence of those properties. Notification model runs are separate from initial submission and must be reported independently.
 
 ## Implementation, rollout and verification
 
@@ -43,4 +44,5 @@ Added `scripts/verify_secretary.py`, offline contract tests and the [acceptance 
 - Initial graph budgets of 12/32 were too low because middleware also consumes graph steps. Those attempts were retained, not replayed; one had admitted work that completed and notified despite its initial run error. Final 128-step acceptance used a new explicit bounded intent. Across all attempts: two native tasks, nine runtime-observed LLM calls and two provider probes. These are observed run counts, not billing or SDK-request counts.
 - Read-only rechecks of saved intents passed without another model/native run. The [sanitized receipt](../verification/secretary-live-2026-10-28.json) binds verifier/Worker hashes and preserves successful scopes and initial failures.
 - The updated local shim was separately called with an already tracked native key: HTTP 409 preserved its existing owner, with zero new native tasks. This checks additive tool discovery without replacing the real model acceptance or invoking native execution again.
-- Local Gateway updated from its existing immutable image with the current wheel and no dependency/network update, after a DB backup. Cloud model configuration changed through the public API; its Gateway image and empty MCP registry remain unchanged. [Reverse link proposal](m2-home-reverse-link.md) is prepared and awaiting new SSH-grant approval, not active.
+- In the initial acceptance, local Gateway updated from its existing immutable image with the current wheel and no dependency/network update, after a DB backup. Cloud model configuration changed through the public API; its Gateway image and empty MCP registry were unchanged at that point.
+- Subsequent approved cloud-to-home acceptance added an optional public-IP SSH route check and five offline cases. Full suite: **175 passed / 7 skipped**, 63.83 seconds; focused verifier: **27 passed**. The normal cloud model selected preflight and submission (3 LLM calls, one native task), with matched session/attempt, independent validation exit 0 and delivered notification. The installed cloud MCP package uses offline `uvx`; toolset activation required a controlled Gateway restart, preserving its image. A prior disabled-toolset run admitted zero tasks. Read-only recheck after actual reverse-session disconnection retained the existing task without another submission. [Separate receipt](../verification/home-link-2026-10-28.json); actual expiry and generic device pairing remain pending.

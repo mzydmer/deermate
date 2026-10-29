@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "scope": "One approved temporary cloud OpenSSH to home Mac Worker deployment; real model-selected Codex task",
+  "checked_at": "2026-10-29T04:56:30.263626+00:00",
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "worker_source_sha256": "1e0b7555523a58f6eb256efba018883f896852e7af0a7160a8d38bcc1a7c2620",
+  "verifier_sha256": "f3ade688f7d41203b57add8b09c5cc38cbf5eb50fe2ff559c4127008319edcd8",
+  "deployed_worker_package": {
+    "source_commit": "2e7fdac4754ddd10e4160448ab01114c61be75bd",
+    "source_archive_sha256": "a71c660a2448fa680337ab0713fab1bf0379f9a2241dc1a4877c94c0e2f90109",
+    "archive_digest_verified": true,
+    "constrained_uvx_cache_prefetched": true,
+    "offline_doctor_passed": true,
+    "gateway_image_changed": false,
+    "gateway_restarted_for_toolset_snapshot": true
+  },
+  "authority": {
+    "owner_approved_specific_accounts_and_forwarding": true,
+    "mac_initiated_outbound_only": true,
+    "mac_system_sshd_changed": false,
+    "cloud_listener_loopback_only": true,
+    "native_credentials_stayed_on_mac": true,
+    "original_admin_key_extended": false,
+    "registered_projects": [
+      "demo"
+    ],
+    "concurrency": 1,
+    "native_deadline_seconds": 180,
+    "cloud_credentials_owner_only": true,
+    "automatic_pairing": false
+  },
+  "expiry": {
+    "deadline_utc": "2026-10-30T02:29:56+00:00",
+    "authorized_key_expiry_configured": true,
+    "server_timer_active_at_check": true,
+    "server_unit_validation_passed": true,
+    "removes_keys_and_cloud_worker_credentials": true,
+    "terminates_dedicated_account_sessions": true,
+    "actual_expiry_observed": false
+  },
+  "ssh_policy_checks": {
+    "count": 9,
+    "passed": true,
+    "checks": [
+      "reverse_account_exec_rejected",
+      "reverse_account_local_forward_rejected",
+      "reverse_other_listener_rejected",
+      "reader_account_exec_rejected",
+      "reader_other_target_rejected",
+      "reader_remote_forward_rejected",
+      "reader_exact_loopback_target_allowed",
+      "cross_account_key_rejected",
+      "untrusted_host_key_rejected"
+    ]
+  },
+  "cloud_policy_audit": {
+    "checked_at": "2026-10-29T04:39:40.098392+00:00",
+    "passed": true,
+    "checks": [
+      "deermate-reverse_restricted_policy_and_no_privileged_group",
+      "deermate-reader_restricted_policy_and_no_privileged_group"
+    ],
+    "loopback_listener_only": true,
+    "expiry_timer_active": true,
+    "expiry_unit_validated": true,
+    "expiry_observed": false,
+    "rollback_secret_env_removed": true,
+    "gateway_image_preserved": true,
+    "gateway_oom_killed": false,
+    "mem_available_mib": 612,
+    "controller_keepalive_seconds": 15
+  },
+  "cloud_home_dispatch": {
+    "schema_version": 1,
+    "verifier_sha256": "f3ade688f7d41203b57add8b09c5cc38cbf5eb50fe2ff559c4127008319edcd8",
+    "checked_at": "2026-10-29T04:46:19.485914+00:00",
+    "mode": "dispatch",
+    "normal_run_api": true,
+    "submit_shim_used": false,
+    "run_status": "success",
+    "llm_call_count": 3,
+    "tool_names": [
+      "deermate_check_worker_connection",
+      "deermate_submit_task"
+    ],
+    "mcp_tasks": 1,
+    "cloud_to_home_verified": true,
+    "network_evidence": {
+      "kind": "public_control_to_local_worker",
+      "checked_at": "2026-10-29T04:46:16.453880+00:00",
+      "ssh_host_key_pinned": true,
+      "worker_instance_matches_local": true
+    },
+    "native_attempt": 1,
+    "independent_validation_exit_code": 0,
+    "expected_patch_verified": true,
+    "notification_status": "delivered",
+    "passed": true
+  },
+  "recovery": {
+    "controlled_reverse_account_disconnect": true,
+    "connector_reestablished_transport": true,
+    "ready_events_observed": 3,
+    "controlled_disconnect_reconnect_at": "2026-10-29T04:39:44.372283+00:00",
+    "lease_deadline_unchanged": true,
+    "read_only_same_intent_recheck_passed": true,
+    "same_native_session_and_attempt": true,
+    "new_model_or_native_submission_on_recheck": false,
+    "connector_sha256": "0b0fad2bd9d591d59855968a3260e27d6190931bd99be0d6246b8275e079b454"
+  },
+  "browser": {
+    "authenticated_public_task_and_evidence_drawer_checked": true,
+    "completed_and_independent_test_exit_zero_visible": true,
+    "chat_typing_or_streaming_reverified": false
+  },
+  "initial_blocked_attempt": {
+    "reason": "durable task bindings require Gateway startup activation",
+    "model_run_retained": true,
+    "runtime_observed_llm_calls": 1,
+    "mcp_tasks": 0,
+    "native_tasks": 0,
+    "automatically_replayed": false
+  },
+  "checks": {
+    "offline_pytest_passed": 175,
+    "offline_pytest_skipped": 7,
+    "offline_pytest_seconds": 63.83,
+    "focused_verifier_passed": 27,
+    "ruff": true,
+    "wheel": true,
+    "prior_pinned_deployment_contract_passed": 29,
+    "deployment_contract_rerun_this_change": false
+  },
+  "limits": [
+    "Manually provisioned temporary single-owner alpha; not a published generic enrollment installer.",
+    "Both SSH legs terminate on the trusted cloud host; the cloud can read task content.",
+    "Timer configuration/active state checked; future expiry has not yet been observed.",
+    "Mac reboot supervision, general pairing, device-loss recovery and permanent access remain separate.",
+    "One low-concurrency native task is not a load/capacity or isolation audit.",
+    "Ordinary generated-key SSH fixtures retain their separate historical scope."
+  ]
+}

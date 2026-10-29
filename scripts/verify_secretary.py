@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import fcntl
 import hashlib
+import ipaddress
 import json
 import os
 import re
@@ -20,7 +21,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
-from deermate.bridge import TaskBridge, read_token
+from deermate.bridge import BridgeError, TaskBridge, read_token
 from deermate.config import load_settings
 from deermate.store import digest
 
@@ -225,6 +226,36 @@ async def worker_check(settings, port):
         await bridge.close()
 
 
+async def remote_route_check(config, worker_id, url, instance_id):
+    """Prove a pinned public SSH round trip to the independently checked local Worker."""
+    from deermate.remote_config import enrolled_worker
+    from deermate.ssh import RemoteTaskBridge
+
+    target = enrolled_worker(config, worker_id)
+    host = urlsplit(url).hostname
+    try:
+        public = ipaddress.ip_address(host).is_global
+    except ValueError:
+        public = False
+    if urlsplit(url).scheme != "https" or not public or target.host != host:
+        raise AcceptanceError("Remote route must use the control origin's exact public HTTPS host.")
+    if target.expected_instance_id != instance_id:
+        raise AcceptanceError("SSH enrollment does not match the local Worker instance.")
+    bridge = RemoteTaskBridge(config, worker_id)
+    try:
+        result = await bridge.check_connection()
+    finally:
+        await bridge.close()
+    if result["status"] != "reachable" or result["capabilities"]["instance_id"] != instance_id:
+        raise AcceptanceError("Public SSH route to the local Worker was not confirmed.")
+    return {
+        "kind": "public_control_to_local_worker",
+        "checked_at": result["checked_at"],
+        "ssh_host_key_pinned": True,
+        "worker_instance_matches_local": True,
+    }
+
+
 def native_reference(settings, value, instance_id):
     # Public task views intentionally omit the remote handle and request key.
     # The operator's local verifier may inspect its registered Worker DB read-only.
@@ -270,6 +301,10 @@ def _verify(args):
     ):
         raise AcceptanceError("Account file must contain only email and password.")
     settings = None
+    route = None
+    controller = getattr(args, "ssh_controller_config", None)
+    if controller and args.mode != "dispatch":
+        raise AcceptanceError("SSH route evidence requires dispatch mode and a local Worker check.")
     if args.mode == "dispatch":
         if not args.worker_config:
             raise AcceptanceError("Dispatch requires an explicitly registered local Worker config.")
@@ -284,6 +319,12 @@ def _verify(args):
         preflight = asyncio.run(worker_check(settings, args.worker_port))
         if preflight["status"] != "reachable":
             raise AcceptanceError("Local Worker preflight failed; no model run attempted.")
+        if controller:
+            route = asyncio.run(
+                remote_route_check(
+                    controller, args.ssh_worker, url, preflight["capabilities"]["instance_id"]
+                )
+            )
     path = args.state_dir / "intent.json"
     value = intent(path, url=url, mode=args.mode, model=args.model, project=args.project)
     with httpx.Client(
@@ -331,8 +372,10 @@ def _verify(args):
             "llm_call_count": run["llm_call_count"],
             "tool_names": sorted(set(calls)),
             "mcp_tasks": len(tasks),
-            "cloud_to_home_verified": False,
+            "cloud_to_home_verified": route is not None,
         }
+        if route:
+            receipt["network_evidence"] = route
         if args.mode == "chat":
             if calls or tasks or not any("DEERMATE_CHAT_OK" in text for text in texts):
                 raise AcceptanceError("Chat response or no-task boundary was not confirmed.")
@@ -402,6 +445,12 @@ def main():
     parser.add_argument("--project", default="demo")
     parser.add_argument("--worker-config", type=Path)
     parser.add_argument("--worker-port", type=int, default=18777)
+    parser.add_argument(
+        "--ssh-controller-config",
+        type=Path,
+        help="also check a registered public SSH route to this local Worker",
+    )
+    parser.add_argument("--ssh-worker", default="home")
     parser.add_argument("--state-dir", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
     args = parser.parse_args()
@@ -410,6 +459,7 @@ def main():
         print(json.dumps(result, indent=2))
     except (
         AcceptanceError,
+        BridgeError,
         OSError,
         ValueError,
         KeyError,

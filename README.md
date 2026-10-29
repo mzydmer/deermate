@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Go control plane + local Worker alpha · 2026-10-26.** Go owns main/management APIs, user login and frontend API access. Local verification covers 27 API checks and 18 browser checks, preserving the original account and real Codex task evidence. DeerFlow/Worker remain internal Python services. Cloud deployment, secretary-model routing and actual devices/NAT remain pending; the video is simulated.
+> **Go control plane + cloud-to-home alpha · 2026-10-28.** A real cloud secretary model now delegates through a separately approved temporary SSH link to home Codex, returning an independently tested patch and delivered notification. Go owns login/management/public APIs; DeerFlow/Worker remain internal Python services. Device pairing and specialist routing remain planned; the video is simulated. [Verified scope and limits](docs/specs/m2-home-reverse-link.md).
 
 ## Meet your personal agent secretary
 
@@ -46,7 +46,6 @@ Python 3.11+, Git, and macOS or Linux are required. Codex must be installed and 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
-git checkout feat/deermate-workspace  # until the implementation branch is merged
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
@@ -65,19 +64,19 @@ deermate diff TASK_ID
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
 
-To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. A real model has now selected MCP tools through the normal run API, completed a real local Codex repair and delivered its notification. See [live acceptance](docs/secretary-acceptance.md); cloud-to-home networking remains separate work.
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. A real model has now selected MCP tools through the normal run API, completed a real local Codex repair and delivered its notification. See [live acceptance](docs/secretary-acceptance.md). A separately approved temporary cloud-to-home link has also passed real model/Codex dispatch, independent validation, notification and nine OpenSSH policy checks ([receipt](docs/verification/home-link-2026-10-28.json)); automatic pairing and actual lease expiry remain unverified.
 
 Run `deermate --config controller.toml --worker home doctor` before dispatching to an enrolled home Worker. It checks credentials, pinned identities and protocol, returns sanitized JSON and exits nonzero when blocked. A reachable API does not establish native-agent login, capacity or project authorization. See the [SSH setup and preflight guide](docs/ssh-worker.md).
 
 ## What we are building
 
-For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; actual device/account/network deployment still needs validation.
+For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; each additional device/account/network deployment needs its own enrollment and acceptance.
 
 **Run the backend demo:** [one-command walkthrough](docs/demo.md) · [captured event replay](docs/assets/gateway-ssh-demo.html) · [21-check receipt](docs/verification/gateway-ssh-2026-10-25.json). It exercises the actual Gateway → MCP → SSH → Worker path, including repair, validation failure, restart, reconnect and revocation. Download the HTML to replay it locally. Generated keys, same-host processes and an offline native fixture keep its scope explicit; the concept video above remains simulated.
 
-**Run the full local Docker profile:** [startup, login and real Codex verification](docs/local-docker.md) · [retained live receipt](docs/verification/local-docker-2026-10-26.json). On the tested Mac it serves `http://localhost:2026`; a generated private owner password and named volumes preserve account/task state. No cloud key is needed. Secretary chat remains unconfigured.
+**Run the full local Docker profile:** [startup, login and real Codex verification](docs/local-docker.md) · [retained live receipt](docs/verification/local-docker-2026-10-26.json). On the tested Mac it serves `http://localhost:2026`; a generated private owner password and named volumes preserve account/task state. No cloud key is needed. Fresh profiles leave the model empty; existing managed models can be configured separately.
 
-**DeerMate workspace:** the default address opens the protected secretary home, with real recent tasks, a validation-evidence drawer, account-scoped draft handoff, accessible motion and an original Lottie mark. See [frontend source and checks](frontend/README.md). Specialist routing and secretary-model acceptance remain separate.
+**DeerMate workspace:** the default address opens the protected secretary home, with real recent tasks, a validation-evidence drawer, account-scoped draft handoff, accessible motion and an original Lottie mark. See [frontend source and checks](frontend/README.md). Specialist routing and browser chat input/streaming acceptance remain separate.
 
 **Deploy the control plane to Alibaba Cloud ACK:** [quick deployment guide](docs/ack-deployment.md). Python scripts build ACR images and install the pinned DeerFlow Helm chart with private access, persistent cloud-disk state and optional enrolled home Worker. Actual cluster installation and cloud-to-home acceptance remain operator-specific.
 
@@ -87,7 +86,7 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 | --- | --- | --- |
 | A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | Planned |
 | Specialist routing | Choose an eligible agent by role, project, device availability, and budget | Planned |
-| Home and cloud workers | Run bounded work on machines you own; show offline devices explicitly | Planned |
+| Home and cloud workers | Run bounded work on machines you own; show offline devices explicitly | One temporary cloud-to-home task verified; guided device enrollment pending |
 | Durable sessions | Local start/status/events/interrupt/resume; idempotent submission and explicit restart recovery | Local implementation |
 | Repository maintenance | Triage issues, prepare fixes, collect CI evidence, and request independent review | Planned |
 | Research watchlists | Track changes, keep citations, compare snapshots, and surface meaningful updates | Planned |
@@ -180,7 +179,7 @@ We track delivered work separately from planned functionality. Current stage: **
 | --- | --- | --- |
 | M0 | English/Chinese README, architecture, security boundaries, contracts, concept film | In this repository |
 | M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
-| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH implemented; actual devices, restricted accounts and NAT pending |
+| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH and temporary cloud-to-home task verified; automatic enrollment and expiry observation pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
@@ -191,7 +190,7 @@ Historical M2.1 verification had 51 passing normal tests (two opt-in upstream ch
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **94 passed, 6 opt-in cases skipped**; actual Chart/local/overlay policy checks separately pass 22 cases. The new Docker run passes 14 real Gateway/SSH/Codex checks plus four browser checks. Earlier fixture runs of both actual Gateway modes (local: 14 checks; SSH: 21), pinned drivers and the [22-case SSH receipt](docs/verification/ssh-transport-2026-10-25.json) remain historical evidence. Actual devices/OpenSSH/NAT and secretary-model conversation need separate acceptance; see [STATUS](docs/STATUS.md).
+The current normal suite has **175 passed, 7 opt-in cases skipped**. Real cloud-model-to-home-Codex acceptance passed one bounded task, independent tests and delivered notification; nine actual cloud OpenSSH checks passed. The prior fixed deployment contract suite passed 29 cases and was not rerun for this verifier-only code change. Earlier fixture receipts retain their original scope; see [STATUS](docs/STATUS.md) and the [new receipt](docs/verification/home-link-2026-10-28.json).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

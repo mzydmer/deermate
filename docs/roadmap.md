@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight implemented; cloud model workload, home devices and NAT remain pending. Updated: 2026-10-28. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight and one real cloud-model-to-home-Codex task verified over an approved temporary reverse SSH link; general enrollment and actual expiry observation remain pending. Updated: 2026-10-28. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -42,11 +42,12 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Add read-only CLI/MCP Worker preflight with authenticated bounded capabilities, SSH grant/identity checks, protocol admission and sanitized failure reports ([spec](specs/m2-worker-preflight.md)); connectivity does not imply native execution readiness.
 - [x] Verify encrypted managed model configuration and one real cloud chat through Go and the normal Gateway run API; higher-load capacity remains separate.
 - [x] Verify local real model-selected MCP preflight/submission, native Codex evidence and delivered model notification through the normal run API ([receipt](verification/secretary-live-2026-10-28.json)).
-- [ ] Validate separately authorized cloud-to-home Worker connectivity; temporary reverse SSH plan prepared, deployment authority pending ([proposal](specs/m2-home-reverse-link.md)).
-- [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
+- [x] Validate separately authorized cloud-to-home connectivity: real model-selected home Codex task, independent test and delivered notification over a temporary reverse SSH link ([scope](specs/m2-home-reverse-link.md), [receipt](verification/home-link-2026-10-28.json)).
+- [x] Validate the two restricted cloud OpenSSH accounts and Mac outbound connection: nine actual permission checks; Mac system sshd remains unchanged.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.
 - [ ] Recover after controller restart and network loss without replaying side effects.
-- [ ] Decide NAT traversal and reverse-forwarding enrollment, threat model, and operational requirements.
+- [x] Define and verify one explicitly approved temporary reverse-forwarding topology and threat boundary ([ADR 0010](decisions/0010-temporary-home-reverse-link.md)).
+- [ ] Productize device enrollment, Mac restart supervision and expiry/device-loss recovery; observe the installed lease actually expire.
 - [x] Document direct-SSH authentication, rotation, expiry and revocation windows.
 - [ ] Validate device-loss recovery and NAT enrollment operationally.
 

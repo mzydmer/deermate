@@ -4,6 +4,8 @@ These receipts describe known test fixtures, not private user work or a producti
 
 | Receipt | Scope |
 | --- | --- |
+| [home-link-2026-10-28.json](home-link-2026-10-28.json) | Approved temporary cloud OpenSSH→Mac link: nine permission checks, real cloud model→home Codex→independent validation→delivered notification, transport reconnect and read-only task reconciliation. Expiry timer installed/active; actual expiry not yet observed. |
+| [secretary-live-2026-10-28.json](secretary-live-2026-10-28.json) | Earlier cloud chat and local model-selected dispatch/notification; its prepared-only reverse-link status is historical and superseded by the separate home-link receipt. |
 | [ack-package-2026-10-25.json](ack-package-2026-10-25.json) | Artifact-derived CI evidence for four linux/amd64 image builds and non-root Gateway readiness/auth/MCP/SSH/credential-copy probes; source/ZIP hashes and real image ID. No ACR push, ACK installation, model, frontend login or home SSH claim. |
 | [gateway-ssh-2026-10-25.json](gateway-ssh-2026-10-25.json) | Combined actual Gateway → MCP → SSH → Worker run: 21 checks, generated credentials, Gateway restart, SSH-only outage/reconnect, revocation/cancel confirmation, validation outcomes and Worker recovery; [captured event replay](../assets/gateway-ssh-demo.html) |
 | [deerflow-gateway-2026-10-25.json](deerflow-gateway-2026-10-25.json) | Actual pinned Gateway/SQLite startup, MCP tool wrapper/caller, orderly process restart, original HTTP cancellation/query, validation outcomes and Worker outage/reconnect; offline Codex fixture, no configured model |

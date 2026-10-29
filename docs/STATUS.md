@@ -11,19 +11,29 @@
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 本轮全量 170 passed / 7 skipped、固定部署契约 29 passed；云端真实聊天与本地模型选工具→SSH→真实 Codex→独立测试→通知 delivered 已通过。此前预检/Gateway/Go/浏览器证据分别保留 |
+| 当前验收 | 本轮全量 175 passed / 7 skipped；云端模型→受限 OpenSSH 反向链路→家庭真实 Codex→独立测试→通知 delivered 已通过，9 项实际 SSH 策略检查通过。固定部署契约 29 passed 是上轮证据 |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
-| 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地正常 run 由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
+| 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地及云到家庭正常 run 均由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
 | 低成本单机包 | 四镜像 Compose 包已实现；1472 MiB 容器限额下 14 项接口、5 项重启保留检查通过；实际 2 核/2 GiB 云主机已部署；18 项初始接口与 10 项整机重启后检查通过，浏览器登录/工作台/管理页已核验 |
 | 公网 IP HTTPS | 新加坡 2 核/2 GiB/40 GiB；首月实付 ¥0、购买时实例自动续费关闭；账号/配置已迁移，Caddy IP 证书签发、41 项 HTTPS/安全/重启检查与浏览器验收通过；证书自动续期已配置，尚未观察实际续期 |
-| 交付 | M1–M4.3 已有实现进入 main；本轮预检本地验证通过。历史来源 CI 40318918329 七个 job success 仅代表对应提交，新提交 CI 单独核对 |
+| 交付 | M1–M4.3 已有实现进入 main；本轮临时云到家庭接入与增量验收通过。历史来源 CI 40318918329 七个 job success 仅代表对应提交，新提交 CI 单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 云端模型可聊天，本地模型派单/通知已验证；云到家庭的 24 小时受限反向 SSH 方案已准备，新增账号/转发权限待用户确认。项目级 Go 执行授权与专职路由仍待开发 |
+| 下一步 | 已批准的临时云到家庭链路已安装验收；UTC 2026-10-30 02:29:56 到期关闭已配置，实际到期待观察。下一步整理可复用设备接入，再做 Go 项目授权与专职路由 |
 
 运行代码、历史证据与本轮 Worker 预检应分别核对；文档 HEAD 可以继续推进。
 
-## 真实模型聊天与派单 · 2026-10-28
+## 云到家庭真实派单 · 2026-10-28
+
+用户单独确认新增 SSH 权限后，已在既有新加坡主机安装两个无 shell/无 sudo 的限时专用账号。Mac 主动连接云端，Worker 仍只监听本机 loopback；云端反向监听也仅 loopback，无新增公网端口或付费资源。固定主机密钥、Worker 实例与注册 demo 权限保持，原 admin 密钥未延长、Mac 系统 sshd 未改。实际策略/组权限、9 项 SSH 正反向限制、loopback 监听和 systemd timer 均通过；到期会移除密钥、云端 Worker 凭据并断开专用账号会话。截止 **2026-10-30 02:29:56 UTC**；timer active 已核对，尚未观察实际到期。
+
+云端 MCP 从 SHA 校验后的公开 `2e7fdac` 源码构建 Worker wheel，用固定版本约束和离线 `uvx` 缓存启动。Gateway 镜像保持；按固定上游的生命周期账本激活后台工具后做一次受控 Gateway 重启。临时凭据字段已从活动配置/回退归档移除，运行时凭据仅 owner 可读，原生 Codex 登录留在 Mac。
+
+正式云端 run 成功，3 次 LLM 调用，真实模型先预检再提交一次 demo 修复；恰好一个 MCP/原生任务，attempt 1、原生 session 与本机 Worker 请求映射相符，预期单文件补丁和独立测试 exit 0，通知 **delivered**。首次工具快照未启用时的模型 run 未接纳任务，保留原记录，没有重放。任务完成后主动断开反向会话，connector 恢复传输；重跑同一 intent 只读核对原任务，未追加模型/原生执行。浏览器已检查公网任务与独立验证抽屉，输入/流式 UI 尚未重验。
+
+[脱敏收据](verification/home-link-2026-10-28.json)、[接入规格](specs/m2-home-reverse-link.md)、[ADR 0010](decisions/0010-temporary-home-reverse-link.md)保留实际范围。全量 **175 passed / 7 skipped**（63.83 秒，一条已有 Starlette 弃用提示）；验收器专项 **27 passed**。固定部署契约上轮 29 passed，本轮未改镜像/Chart/Compose/Go/前端。该接入是手工配置的限时 alpha；通用配对、Mac 重启守护、设备丢失恢复和永久接入仍待开发。
+
+## 上轮证据 · 真实模型聊天与本地派单 · 2026-10-28
 
 新增 [`verify_secretary.py`](../scripts/verify_secretary.py) 与[验收指南](secretary-acceptance.md)，使用真实 Go 登录和正式 thread/run/checkpoint/MCP HTTP API，未使用开发 submit shim 替代模型。云端已有管理员配置了复用的千问模型，模型 key 仅在内存中从本机受信运行时取得，通过正常 HTTPS 管理接口保存到云端独立加密目录，未写出明文 key。catalog/key 实际均为 0600；流式工具探针通过，正式聊天 run success、1 次 LLM 调用、0 项 MCP 任务。观察时 available 664 MiB，Gateway 无 OOM；只代表单次低并发聊天，不是压力容量结论。
 
@@ -35,9 +45,9 @@
 
 最终 `pytest` **170 passed / 7 skipped**（62.46 秒，一条已有 Starlette 弃用提示）；实际固定 Chart/本地 Compose/单机/HTTPS 契约 **29 passed**（1.78 秒）；Ruff、wheel 通过。Go/前端源码未变，未重复做浏览器输入验收。云端 Gateway 镜像未在本轮升级，云端 MCP 仍为空；本地 SSH 仍是同机开发服务。云到家庭 OpenSSH/NAT、更多岗位和项目权限仍未验收。
 
-[反向接入方案](specs/m2-home-reverse-link.md)与 [ADR 0010](decisions/0010-temporary-home-reverse-link.md)已准备：两组独立专用密钥/无 shell 账号、loopback 单端口、24 小时期限和强制断开 timer；目标 Ubuntu 上仅用临时文件通过 `sshd -t` 与两个模拟用户的生效策略检查，未修改活动配置。新增登录/转发权限已提交用户确认；当前没有安装账号、启动反向监听、复制 Worker 凭据到云端或延长原 admin 密钥。
+[反向接入方案](specs/m2-home-reverse-link.md)与 [ADR 0010](decisions/0010-temporary-home-reverse-link.md)已准备：两组独立专用密钥/无 shell 账号、loopback 单端口、24 小时期限和强制断开 timer；目标 Ubuntu 上仅用临时文件通过 `sshd -t` 与两个模拟用户的生效策略检查，未修改活动配置。以上为准备阶段事实；随后用户已批准并完成安装和云到家庭验收，见本页最新章节。原 admin 密钥未延长。
 
-## Worker 连接预检 · 2026-10-28
+## 上轮证据 · Worker 连接预检 · 2026-10-28
 
 新增 [M2 预检规格](specs/m2-worker-preflight.md)、`deermate ... doctor` 和无参数只读 MCP 工具 `check_worker_connection`。沿用本地 token 或 SSH 注册权限；成功只代表连接/鉴权/身份/协议在检查时通过。`execution_readiness` 与 `task_outcome` 均为 `not_checked`，不推断 Codex 登录、空闲容量、项目权限或既有任务停止。报告仅保留固定字段、UTC 时间和脱敏错误码，响应上限 32 KiB；请求期限 15 秒，SSH 清理另最多 2 秒。
 
@@ -219,23 +229,22 @@ Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skip
 
 | 范围 | 边界 |
 | --- | --- |
-| 真实双机/OpenSSH 账户 | 未部署验收；当前是同机真实 SSH 协议 fixture，未修改用户主机或账户 |
-| NAT、反向隧道、设备配对、自动密钥注册、中继 | 未实现；现有传输要求直接可达 SSH 端点 |
-| 秘书模型派单、通知和完整对话 | 未配置/未验证；空模型通知 run 无法完成。页面/登录已单独通过，但验收提交入口仍替代模型选工具 |
+| 真实双机/OpenSSH 账户 | 专用云端账号与 Mac 出站链路已验收；Mac 系统 sshd、其他设备及正式自动注册未验收 |
+| NAT、反向隧道、设备配对、自动密钥注册、中继 | 限时出站反向 SSH 已安装验收；通用配对/中继/自动注册、Mac 重启守护与实际到期观察待完成 |
+| 秘书模型派单、通知和完整对话 | 云端正式模型 run→家庭 Codex→独立测试→通知 delivered 已通过；浏览器输入/流式、完整秘书体验仍待验收 |
 | 表单/review/recovery 秘书入口 | 三个后台任务 MCP 工具及新增只读预检不自动回答、审批或恢复；现有 CLI 可在授权内处理 |
 | 多岗位路由、Claude/DSH/Qoder、GitHub 维护、调研/邮件/桌面 | 后续阶段 |
 | 硬崩溃/孤儿进程、历史库升级、生产隔离/脱敏/加密/总配额 | 尚无完整实现或验收，不由有序重启和 fixture 推断 |
 
 删除服务端公钥不会自动断开已认证会话；立即撤权还需终止对应会话。已接纳任务按 Worker 策略继续，需要停止时使用仍有效的本地权限。见 [SSH 撤权说明](ssh-worker.md)。
 
-当前源码已进入 `main`；公网 HTTPS 集成与有限验收记录已推送，提交 `a2c71df`。未发布正式 release；来源 CI 与新提交 CI 分开核对。
+源码交付以 Git 为准；上轮 `2e7fdac` 已在远端 main，本轮记录限时家庭链路与验收器增量。未发布正式 release；来源 CI 与新提交 CI 分开核对。
 
 ## 下一项工作
 
-1. 云端正常聊天和本地真实模型派单/通知已验收；按[反向接入方案](specs/m2-home-reverse-link.md)等待新增 SSH 账号/转发权限确认，再安装并验收云到家庭链路。
-2. 本地保持可运行；公网入口保留 Go 登录认证。云端模型目前仅验收单次低并发聊天，实际家庭任务负载另测；ACK 作为可选方案保留。
-3. 对明确注册的真实设备验收受限 OS/OpenSSH 策略、网络可达性、到期断开与服务重启；不扫描或登录未注册主机。
-4. 浏览器输入聊天、流式呈现及云端任务通知另验；保留任务身份、取消确认和外部输入权限边界。
-5. NAT/反向连接独立设计，再扩展专职 Agent 路由与工作台。
+1. 把已验证的手工限时链路整理成可复用设备接入：配置校验、状态展示、显式撤权/到期和 Mac 重启后恢复；不延长当前授权。
+2. 增加 Go 项目级执行授权与能力筛选，再接 Claude/其他专职 Agent；模型路由不能自行扩权。
+3. 验收浏览器输入、流式呈现和异常操作；目前浏览器已确认云端任务与独立测试结果。
+4. 后续观察实际到期与证书续期；已配置不等于已观测。保留本地可运行环境和 Go 登录边界，ACK 为可选方案。
 
 按 [AGENTS.md](../AGENTS.md) 接续；行为变化更新 spec，有意义结果追加 EVOLUTION，当前状态维护于此。

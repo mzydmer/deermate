@@ -233,3 +233,56 @@ def test_native_key_mapping_is_read_only_and_instance_bound(tmp_path, failure):
     else:
         assert live.native_reference(settings, value, "a" * 32) == "c" * 32
     assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    "case", ["valid", "wrong_host", "private_host", "wrong_instance", "blocked"]
+)
+async def test_public_route_evidence_requires_pinned_matching_local_instance(
+    tmp_path, monkeypatch, case
+):
+    from datetime import UTC, datetime, timedelta
+
+    from ssh_helpers import write_enrollment
+
+    import deermate.ssh
+
+    path = tmp_path / "controller.toml"
+    host = "127.0.0.1" if case == "private_host" else "8.8.8.8"
+    write_enrollment(
+        path,
+        {
+            "host": host,
+            "username": "reader",
+            "known_hosts": str(tmp_path / "trust"),
+            "client_key": str(tmp_path / "key"),
+            "token_file": str(tmp_path / "token"),
+            "expected_instance_id": "b" * 32 if case == "wrong_instance" else "a" * 32,
+            "expires_at": (datetime.now(UTC) + timedelta(hours=1)).isoformat(),
+        },
+    )
+    calls = []
+
+    class FakeBridge:
+        def __init__(self, *_):
+            calls.append("created")
+
+        async def check_connection(self):
+            return {
+                "status": "blocked" if case == "blocked" else "reachable",
+                "checked_at": "2026-10-29T00:00:00+00:00",
+                "capabilities": {"instance_id": "a" * 32},
+            }
+
+        async def close(self):
+            calls.append("closed")
+
+    monkeypatch.setattr(deermate.ssh, "RemoteTaskBridge", FakeBridge)
+    url = "https://1.1.1.1" if case == "wrong_host" else "https://" + host
+    if case == "valid":
+        result = await live.remote_route_check(path, "home", url, "a" * 32)
+        assert result["worker_instance_matches_local"] and result["ssh_host_key_pinned"]
+    else:
+        with pytest.raises(live.AcceptanceError):
+            await live.remote_route_check(path, "home", url, "a" * 32)
+    assert calls == (["created", "closed"] if case in {"valid", "blocked"} else [])

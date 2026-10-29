@@ -1,6 +1,6 @@
 # Architecture proposal
 
-Status: M1 Worker, M2.1 MCP and M2.2 enrolled direct SSH implemented; broader distributed routing remains a proposal. Updated: 2026-10-25. See [local](local-worker.md), [DeerFlow](deerflow.md) and [SSH](ssh-worker.md) guides for runnable scope and evidence.
+Status: M1 Worker, M2 MCP/enrolled SSH and an approved temporary cloud-to-home link implemented; broader distributed routing remains a proposal. Updated: 2026-10-28. See [local](local-worker.md), [DeerFlow](deerflow.md) and [SSH](ssh-worker.md) guides for runnable scope and evidence.
 
 ## Product boundary
 
@@ -8,7 +8,7 @@ DeerMate coordinates agents that already exist. DeerFlow supplies the conversati
 
 The main/control, management, user/login and frontend-facing API backend is maintained in Go, following the owner’s updated direction in [ADR 0007](decisions/0007-go-control-plane.md). The React UI uses the DeerMate overlay; DeerFlow remains the internal Python Agent runtime, while Worker/MCP/SSH remain Python. External agents retain their runtimes. Hermesh is optional.
 
-The MCP bridge forwards three task tools and a read-only connection check to the independent authenticated HTTP Worker, locally or through an enrolled SSH channel. It does not acquire a database lock or own native execution. The pinned Gateway/SQLite restart path and SSH run in the [combined fixture demonstration](demo.md). Later [real-model acceptance](secretary-acceptance.md) also verifies local model-selected submission, real Codex evidence and delivered notification; cloud-to-home and browser input/streaming acceptance remain separate work.
+The MCP bridge forwards three task tools and a read-only connection check to the independent authenticated HTTP Worker, locally or through an enrolled SSH channel. It does not acquire a database lock or own native execution. The pinned Gateway/SQLite restart path and SSH run in the [combined fixture demonstration](demo.md). Later [real-model acceptance](secretary-acceptance.md) verifies local and temporary cloud-to-home model-selected submission, real Codex evidence and delivered notification. Browser input/streaming acceptance remains separate work.
 
 ## Go API and identity boundary
 
@@ -36,7 +36,9 @@ For a cost-first personal trial, [ADR 0008](decisions/0008-single-host-budget.md
 
 [ADR 0009](decisions/0009-public-ip-https.md) adds a separately approved public IPv4 HTTPS edge for that bundle. A persistent, restricted Caddy container proxies to loopback nginx, with exact Go Origin/Host checks and Secure cookies. It preserves the private default and does not enroll a home Worker or transfer native credentials.
 
-The implemented AsyncSSH connector verifies explicit known_hosts and dedicated credentials, then forwards HTTP to the remote Worker loopback port. Enrollment pins a persistent application instance; remote handles bind that instance to the task. Grant checks, bounded connection age and explicit recovery are described in [ADR 0004](decisions/0004-ssh-loopback-transport.md). Operators provision credentials/accounts through a trusted channel. Reverse tunnels, relay discovery and NAT enrollment remain unimplemented.
+The implemented AsyncSSH connector verifies explicit known_hosts and dedicated credentials, then forwards HTTP to the remote Worker loopback port. Enrollment pins a persistent application instance; remote handles bind that instance to the task. Grant checks, bounded connection age and explicit recovery are described in [ADR 0004](decisions/0004-ssh-loopback-transport.md). Operators provision credentials/accounts through a trusted channel.
+
+[ADR 0010](decisions/0010-temporary-home-reverse-link.md) adds one approved temporary outbound path: Mac client → cloud reverse-only account/loopback listener ← cloud MCP's separate reader-only account. The existing bridge/task protocol is reused. Both SSH legs terminate on the trusted cloud host. A lease-bounded Mac connector restores transport without replaying task requests; a cloud timer removes keys/Worker credentials and kills the dedicated account sessions at the fixed deadline. Mac system sshd is untouched. Actual cloud model→home Codex evidence and restricted-account checks passed; expiry observation, generic enrollment, relay discovery and restart supervision remain separate.
 
 ## Task lifecycle
 
@@ -81,7 +83,7 @@ Desktop automation runs in a dedicated user/VM session, with exclusive control o
 
 ## Open questions
 
-- Validate a real two-machine deployment and limited OS account, beyond the protocol fixture.
+- Productize the verified temporary cloud/Mac topology; validate additional devices and actual expiry beyond the one approved deployment.
 - Add guided enrollment/NAT and incident recovery on top of the existing explicit key/expiry/revocation policy.
 - Verify how DeerFlow background tasks and native agent resumption interact across restarts.
 - Define budget enforcement from incomplete or delayed provider usage reporting.

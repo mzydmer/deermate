@@ -91,7 +91,7 @@ DeerFlow 使用 [deerflow.ssh.extensions.json](../examples/deerflow.ssh.extensio
 
 常见错误码：`configuration_invalid`、`not_enrolled`、`grant_disabled`、`grant_expired`、`enrollment_changed`、`credential_unavailable`、`credential_invalid`、`host_key_rejected`、`authentication_rejected`、`worker_identity_mismatch`、`unsupported_protocol`、`unsupported_adapter`、`invalid_response`、`timeout`、`unavailable`。修正原因后显式重查；变更 enrollment 字段需重启原 MCP 进程。
 
-两个结果始终保留 `execution_readiness: not_checked` 和 `task_outcome: not_checked`。本地连接只观察应用实例 ID，不宣称远端身份固定。连接成功是时间点上的观测，不代表 Codex 登录、容量、项目授权或下一次请求必定成功；受阻也不代表已接纳任务停止。真实跨主机/OpenSSH/NAT 与模型派单仍需另行验收。[规格与测试范围](specs/m2-worker-preflight.md)。
+两个结果始终保留 `execution_readiness: not_checked` 和 `task_outcome: not_checked`。本地连接只观察应用实例 ID，不宣称远端身份固定。连接成功是时间点上的观测，不代表 Codex 登录、容量、项目授权或下一次请求必定成功；受阻也不代表已接纳任务停止。实际云到家庭受限链路与模型派单已有单独验收；其他主机/网络仍需各自验证。[规格与测试范围](specs/m2-worker-preflight.md)。
 
 ## 断线、撤权和轮换
 
@@ -111,4 +111,10 @@ DEERMATE_DEERFLOW_CHECKOUT=/path/to/pinned/deer-flow python -m pytest -q tests/t
 
 SSH 测试使用真实 SSH/HTTP/MCP 协议，生成专用临时密钥，限定转发目的地并拒绝 session。覆盖正确路径、错误主机密钥/客户端密钥/token/实例、密钥轮换、加密私钥、文件权限、注册撤销/到期、空闲连接过期、断线重连、接纳后丢响应及实例绑定。固定上游驱动检查同时运行本地与 SSH 两种绑定。
 
-收据仅在所选测试会话通过后写入，记录有界测试结果、依赖版本和源码哈希，不含密钥、token、地址、私密路径或原始 trace。真实双机部署、OpenSSH 账户策略、NAT/反向连接、云端到家庭网络、硬崩溃、模型通知和 UI 仍需各自验收。规格见 [M2.2](specs/m2-ssh-worker.md)，取舍见 [ADR 0004](decisions/0004-ssh-loopback-transport.md)。
+收据仅在所选测试会话通过后写入，记录有界测试结果、依赖版本和源码哈希，不含密钥、token、地址、私密路径或原始 trace。上述协议收据不证明实际设备部署。后续[临时家庭链路收据](verification/home-link-2026-10-28.json)另行验证云端 OpenSSH 限制、Mac 出站连接、真实模型派单/通知及结果 UI；通用 NAT/配对、硬崩溃和实际到期观察仍待完成。规格见 [M2.2](specs/m2-ssh-worker.md)，取舍见 [ADR 0004](decisions/0004-ssh-loopback-transport.md)。
+
+## 可选临时出站接入
+
+当家庭 Worker 不可从云端直连时，可按 [ADR 0010](decisions/0010-temporary-home-reverse-link.md)单独配置出站链路：Mac → 云端 reverse-only 账号/loopback 18778 ← 云端 MCP reader-only 账号 → Mac Worker loopback 18777。两组独立密钥、固定主机/Worker 身份和最多 24 小时租期；无 shell/sudo/PTY/Agent/X11，Mac 系统 sshd 不变。服务器 timer 到期移除密钥/云端凭据并终止专用会话；已接纳任务仍按 Worker 策略执行。
+
+已批准的一个部署通过实际权限限制、连接恢复和真实模型/Codex/独立测试/通知验收。固定租期内的 connector 仅重建传输，认证/信任失败即停，不重放任务。脚本与凭据是操作员私人部署文件；目前没有通用一键配对或重启守护。两条 SSH 均在可信云主机终止，云端应用/管理员可读取内容。见[实际范围与剩余工作](specs/m2-home-reverse-link.md)。
