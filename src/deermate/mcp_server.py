@@ -23,6 +23,10 @@ class RemoteTaskLookup(BaseModel):
     task_id: str = Field(pattern=r"^[0-9a-f]{32}:[0-9a-f]{32}$")
 
 
+class ConnectionCheck(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
 def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server:
     remote = bridge is not None
     bridge = bridge if remote else TaskBridge(token_path, port)
@@ -59,6 +63,14 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
             "Unconfirmed cancellation is a tool error. A completion race can return "
             "completed or failed. Repeating cancellation is safe.",
         ),
+        "check_worker_connection": (
+            ConnectionCheck,
+            bridge.check_connection,
+            "Check the administrator-configured Worker connection, identity and protocol. "
+            "Read-only; accepts no target or credentials and never submits work. "
+            "Returns reachable or blocked with a reason. This does not check native-agent "
+            "login, capacity or project grants; existing task outcome is not checked.",
+        ),
     }
 
     @server.list_tools()
@@ -69,7 +81,8 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
                 description=description,
                 inputSchema=model.model_json_schema(),
                 annotations=ToolAnnotations(
-                    readOnlyHint=name == "get_task_status", idempotentHint=True
+                    readOnlyHint=name in {"get_task_status", "check_worker_connection"},
+                    idempotentHint=True,
                 ),
             )
             for name, (model, _, description) in tools.items()

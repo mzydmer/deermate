@@ -56,6 +56,7 @@ cp examples/local-worker.toml deermate.toml
 Edit `deermate.toml` to register a trusted repository and its validation command, then run `deermate serve`. In another terminal:
 
 ```bash
+deermate doctor
 deermate submit --project demo --key first-task --prompt 'Investigate and fix the bug.'
 deermate status TASK_ID
 deermate events TASK_ID
@@ -64,7 +65,9 @@ deermate diff TASK_ID
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
 
-To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The Worker runs independently of the MCP process. The actual Gateway/SQLite path also runs through SSH in the [combined demo](docs/demo.md); model/UI and real-device deployment remain separate work.
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. The actual Gateway/SQLite path also runs through SSH in the [combined demo](docs/demo.md); model dispatch and real-device deployment remain separate work.
+
+Run `deermate --config controller.toml --worker home doctor` before dispatching to an enrolled home Worker. It checks credentials, pinned identities and protocol, returns sanitized JSON and exits nonzero when blocked. A reachable API does not establish native-agent login, capacity or project authorization. See the [SSH setup and preflight guide](docs/ssh-worker.md).
 
 ## What we are building
 

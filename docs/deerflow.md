@@ -41,7 +41,9 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 2. 将 [deerflow.runtime.yaml](../examples/deerflow.runtime.yaml) 的设置合并到已有 `config.yaml`，开启 SQL 持久化和 `mcp_tasks`。现有 PostgreSQL 部署保留 PostgreSQL，不能为了复制示例切换数据库。
 3. 启动 Worker，然后重启 DeerFlow。任务工具配置、连接和超时变化需要重启。
 
-绑定使用三个**原始工具名**：`submit_task`、`get_task_status`、`cancel_task`。DeerFlow 可能向模型展示带 `deermate_` 前缀的名字，不能把该前缀写进 `task_toolsets`。开启后台任务后，上游只向模型暴露提交工具，查询和取消由其后台运行时处理。
+后台任务绑定使用三个**原始工具名**：`submit_task`、`get_task_status`、`cancel_task`。DeerFlow 可能向模型展示带 `deermate_` 前缀的名字，不能把该前缀写进 `task_toolsets`。开启后台任务后，查询和取消由其后台运行时处理；模型可见提交工具与新增的只读 `check_worker_connection`，后者不属于 task toolset。
+
+秘书可无参数调用 `check_worker_connection`，检查管理员预先指定的本地/SSH Worker，不接受临时主机或凭据。返回 `reachable` / `blocked` 及诊断，但不检查 Codex 登录、容量、项目授权或任务结果。CLI 等价入口为 `deermate ... doctor`；详见 [SSH 预检说明](ssh-worker.md#连接预检)。
 
 提交参数示例：
 
@@ -123,7 +125,7 @@ DEERMATE_GATEWAY_PYTHON=/path/to/deer-flow/backend/.venv/bin/python \
 python -m pytest -q tests/test_deerflow_gateway.py
 ```
 
-当前常规测试为 74 passed、4 skipped；显式上游驱动与实际 Gateway 检查均有 local/SSH 两种变体。本次两个实际 Gateway 用例为 2 passed（92.59 秒）。CI 独立运行驱动与两种 Gateway 模式，保存 Gateway JSON/HTML；常规平台还上传 SSH 协议测试收据。
+2026-10-28 预检更新后，常规测试为 148 passed、7 skipped；固定上游驱动与实际 Gateway 的 local/SSH 共 4 项通过（104.17 秒）。最终 SSH Gateway 另有 [26 项检查收据](verification/worker-preflight-gateway-2026-10-28.json)，包含新增只读预检；先前两 Gateway 用例的 92.59 秒记录属于历史版本。CI 配置独立运行驱动与两种 Gateway 模式并保存 Gateway JSON/HTML；配置存在不代表新提交 CI 已通过，实际结果见 STATUS。
 
 验收只覆盖新 SQLite 数据库和有序进程重启。由于没有配置聊天模型，上游通知 run 会在模型装配阶段失败；本次验证的是任务 HTTP/SQL 结果，不是模型生成通知、产品聊天 UI、历史数据库升级、硬崩溃或真实跨主机容错。历史本地范围见[原验收规格](specs/m2-gateway-verification.md)，新增 `--transport ssh --replay <file>` 见[M2.3 规格](specs/m2-gateway-ssh-demo.md)与[演示命令](demo.md)。
 

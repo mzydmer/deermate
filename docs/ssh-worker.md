@@ -68,6 +68,7 @@ restrict,port-forwarding,permitopen="127.0.0.1:18777",command="/usr/bin/false" s
 ## 使用 CLI 和 DeerFlow
 
 ```bash
+deermate --config controller.toml --worker home doctor
 deermate --config controller.toml --worker home capabilities
 deermate --config controller.toml --worker home submit --project demo --key fix-001 --prompt 'Fix the failing test.'
 deermate --config controller.toml --worker home status TASK_ID
@@ -78,13 +79,23 @@ deermate --config controller.toml --worker home cancel TASK_ID
 
 既有 `resume`、`answer` 也可通过已注册目标使用，恢复仍需显式确认。`--port` 仅用于本地 API；远程两个端口来自 controller 配置。capabilities 的 `remote: false` 描述 Worker 自身仍是 loopback API，CLI 附加 `connection.type: ssh` 描述这条连接。
 
-DeerFlow 使用 [deerflow.ssh.extensions.json](../examples/deerflow.ssh.extensions.json)，将条目合并到已有 `extensions_config.json`，替换控制端 Python/配置/cwd 路径；继续启用[SQL 与 mcp_tasks](deerflow.md)。三个 raw tool 名保持不变：`submit_task`、`get_task_status`、`cancel_task`。
+DeerFlow 使用 [deerflow.ssh.extensions.json](../examples/deerflow.ssh.extensions.json)，将条目合并到已有 `extensions_config.json`，替换控制端 Python/配置/cwd 路径；继续启用[SQL 与 mcp_tasks](deerflow.md)。三个后台任务 raw tool 名保持不变：`submit_task`、`get_task_status`、`cancel_task`。另有无参数的只读工具 `check_worker_connection`；升级控制端包并重启 MCP 发现后可用，不加入 `task_toolsets`。
 
 远程 MCP 返回 `instance_id:task_id` 绑定句柄，查询/取消必须原样使用；CLI 可以使用该句柄，或在显式 `--worker home` 下使用原生任务 ID。更换 Worker 数据库后，旧句柄不会被当作新实例的任务。上游固定驱动已验证这一格式。Worker HTTP API 和本地 MCP 的 32 字符 ID 保持不变。
 
+## 连接预检
+
+`doctor` 和 `check_worker_connection` 只读取经过鉴权的 `/capabilities`，不调用 Codex、不提交任务、不修改注册内容。检查请求期限 15 秒，随后 SSH 清理最多 2 秒；SSH 沿用专用密钥、固定 known_hosts 和 expected_instance_id，且每次操作前都验证协议。响应上限 32 KiB，仅返回已知字段；主机、用户名、凭据和配置路径不会进入报告。
+
+成功报告包含 `status: reachable`、UTC `checked_at`、`connection.type: ssh`、`identity.ssh_host_key: verified`、`identity.worker_instance: pinned` 和协议能力。失败报告为 `status: blocked` 及 `error.code` / 固定错误说明。CLI 对应退出码 0 / 1；MCP 的 blocked 是正常结构化检查结果，参数错误才是工具错误。
+
+常见错误码：`configuration_invalid`、`not_enrolled`、`grant_disabled`、`grant_expired`、`enrollment_changed`、`credential_unavailable`、`credential_invalid`、`host_key_rejected`、`authentication_rejected`、`worker_identity_mismatch`、`unsupported_protocol`、`unsupported_adapter`、`invalid_response`、`timeout`、`unavailable`。修正原因后显式重查；变更 enrollment 字段需重启原 MCP 进程。
+
+两个结果始终保留 `execution_readiness: not_checked` 和 `task_outcome: not_checked`。本地连接只观察应用实例 ID，不宣称远端身份固定。连接成功是时间点上的观测，不代表 Codex 登录、容量、项目授权或下一次请求必定成功；受阻也不代表已接纳任务停止。真实跨主机/OpenSSH/NAT 与模型派单仍需另行验收。[规格与测试范围](specs/m2-worker-preflight.md)。
+
 ## 断线、撤权和轮换
 
-- 每个 HTTP 操作前重新读取注册权限和凭据，调用 Worker capabilities 核对实例身份。禁用、删除或到期的注册拒绝新操作并关闭缓存隧道。配置字段变化需要新 CLI/MCP 进程；工具不能修改注册内容。
+- 每个 HTTP 操作前重新读取注册权限和凭据，调用 Worker capabilities 核对实例身份、协议和必要操作。不兼容时在修改请求前拒绝。禁用、删除或到期的注册拒绝新操作并关闭缓存隧道。配置字段变化需要新 CLI/MCP 进程；工具不能修改注册内容。
 - SSH 连接默认存活 60 秒，达到期限或注册到期会关闭；正在执行的受限 HTTP 操作先结束。凭据/known_hosts 内容变化会要求新认证。控制端重连只恢复传输，不重发 HTTP 修改请求。
 - 服务端删除 authorized key 不会主动断开已有认证连接；立即撤权还需终止对应 SSH 会话。可先禁用控制端注册，再撤销/轮换服务端公钥和 token，最后更新控制端私有文件并重新启用。token 轮换需配合 Worker 重启，因为其 API 在启动时加载 token。
 - 撤权不代表任务已停止：已接纳任务（包括排队任务）仍按 Worker 策略执行。要停止它们，使用仍有权限的本地管理员控制；权限过期后远程查询、取消也会被拒绝。

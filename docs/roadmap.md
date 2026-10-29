@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1–M2.3 implemented; M2.4 ACK packaging verified and M2.5 local Docker/login/real Codex verified; M4.1 first read-only workspace verified; actual cloud/devices/NAT remain pending. Updated: 2026-10-26. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight implemented; cloud model workload, home devices and NAT remain pending. Updated: 2026-10-28. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -39,6 +39,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 - [x] Prepare an optional [single-host budget bundle](single-host.md), preserving Go authentication and private access; validate fresh startup, bounded reads and restart persistence under container memory ceilings.
 - [x] Purchase and validate the selected minimum cloud host: actual headroom, bounded HTTP/browser access and controlled full-host reboot ([receipt](verification/single-host-cloud-2026-10-27.json)).
 - [x] Deploy the separately approved public IPv4 HTTPS profile, migrate the cloud owner, and verify trusted TLS, access boundaries and reboot persistence ([receipt](verification/single-host-public-ip-2026-10-27.json)); real certificate renewal/model/home Worker acceptance remain separate.
+- [x] Add read-only CLI/MCP Worker preflight with authenticated bounded capabilities, SSH grant/identity checks, protocol admission and sanitized failure reports ([spec](specs/m2-worker-preflight.md)); connectivity does not imply native execution readiness.
 - [ ] Validate the cloud model workload and separately authorized home Worker connectivity.
 - [ ] Validate the restricted OS account/OpenSSH template on actual separate machines.
 - [ ] Show offline, reconnecting, waiting-input, and cancellation states accurately.

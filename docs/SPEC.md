@@ -37,7 +37,7 @@
 | FR-008 | 支持可识别的原生表单问题与回答；不支持的能力明确拒绝，不自动代替用户授权 | M1 已实现处理路径；表单路径仅离线验证 |
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
 | FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
-| FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2–M3 规划 |
+| FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2 已实现只读连接/身份/协议预检；项目授权、容量及自动路由仍规划 |
 | FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；本地页面/登录通过，模型选工具和通知未验证 |
 | FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；M2.3 组合链路已验证 SSH 断线重连、撤权与取消；真实双机/OpenSSH 部署与 NAT 未验收 |
 | FR-014 | GitHub 事件验签、去重、issue 修复和独立 PR 审核；创建 PR、评论、合并、发布分别授权 | M3 规划 |
@@ -113,7 +113,9 @@
 
 上述文件是证据入口，不表示每项已覆盖所有边界。当前跑过哪些命令、对应哪个代码版本，以 [STATUS.md](STATUS.md) 为准。
 
-M2.1 的具体映射、取消确认预算、错误与结果边界见[功能规格](specs/m2-deerflow-task-bridge.md)；配置步骤见 [DeerFlow 接入指南](deerflow.md)。桥接仅暴露 `submit_task`、`get_task_status`、`cancel_task`，不直接读取数据库或持有执行进程。表单、review 和 recovery 映射为需要处理的状态，继续使用既有本地 CLI 完成决策。
+M2.1 的具体映射、取消确认预算、错误与结果边界见[功能规格](specs/m2-deerflow-task-bridge.md)；配置步骤见 [DeerFlow 接入指南](deerflow.md)。桥接暴露三个后台任务工具 `submit_task`、`get_task_status`、`cancel_task` 及只读 `check_worker_connection`，不直接读取数据库或持有执行进程。表单、review 和 recovery 映射为需要处理的状态，继续使用既有本地 CLI 完成决策。
+
+连接预检 `deermate ... doctor` / `check_worker_connection` 使用既有凭据和注册权限验证连接、身份与协议，不创建任务。时间点上的 `reachable` 不代表原生执行准备完成或授权派单；受阻不表示任务已停止。契约、错误码、期限和验收标准见 [M2 预检规格](specs/m2-worker-preflight.md)。
 
 M2.2 将同一 API 通过管理员注册的 SSH 连接使用；远程 MCP 句柄为 `instance_id:task_id`，本地 ID 不变。所有操作先检查注册权限与 Worker 身份，撤权不代表已接纳任务停止。配置、轮换和撤权窗口见 [SSH 指南](ssh-worker.md)与 [ADR 0004](decisions/0004-ssh-loopback-transport.md)。
 

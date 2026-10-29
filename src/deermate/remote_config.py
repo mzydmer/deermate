@@ -36,9 +36,14 @@ class SSHWorker(BaseModel):
 
     def admit(self):
         if not self.enabled:
-            raise BridgeError("SSH worker grant is disabled; work is not confirmed stopped.")
+            raise BridgeError(
+                "SSH worker grant is disabled; work is not confirmed stopped.",
+                code="grant_disabled",
+            )
         if self.expires_at <= datetime.now(UTC):
-            raise BridgeError("SSH worker grant expired; work is not confirmed stopped.")
+            raise BridgeError(
+                "SSH worker grant expired; work is not confirmed stopped.", code="grant_expired"
+            )
 
 
 class ControllerSettings(BaseModel):
@@ -60,7 +65,11 @@ def enrolled_worker(path: Path, worker_id: str) -> SSHWorker:
         with path.open("rb") as source:
             settings = ControllerSettings.model_validate(tomllib.load(source))
     except (OSError, ValueError, ValidationError) as error:
-        raise BridgeError("SSH controller configuration is unavailable or invalid.") from error
+        raise BridgeError(
+            "SSH controller configuration is unavailable or invalid.", code="configuration_invalid"
+        ) from error
     if worker_id not in settings.workers:
-        raise BridgeError("SSH worker is not registered or its grant was removed.")
+        raise BridgeError(
+            "SSH worker is not registered or its grant was removed.", code="not_enrolled"
+        )
     return settings.workers[worker_id]

@@ -60,8 +60,9 @@ def gateway_child(port: int):
         if thread is None:
             raise HTTPException(404, "Thread not found")
         tools = await get_mcp_tools()
-        names = [tool.name for tool in tools]
-        if names != ["deermate_submit_task"]:
+        by_name = {tool.name: tool for tool in tools}
+        names = sorted(by_name)
+        if names != ["deermate_check_worker_connection", "deermate_submit_task"]:
             raise HTTPException(500, "Unexpected discovered task tools")
         runtime = SimpleNamespace(
             context={
@@ -72,10 +73,12 @@ def gateway_child(port: int):
             config={},
             tool_call_id=body["key"],
         )
-        result = await tools[0].coroutine(
+        _, artifact = await by_name["deermate_check_worker_connection"].coroutine(runtime=runtime)
+        connection = artifact["structured_content"]
+        result = await by_name["deermate_submit_task"].coroutine(
             runtime=runtime, project_id="demo", prompt=body["prompt"], idempotency_key=body["key"]
         )
-        return {"tracking": result, "visible_tools": names}
+        return {"tracking": result, "visible_tools": names, "connection_check": connection}
 
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning", access_log=False)
 
@@ -502,9 +505,20 @@ def run(checkout, gateway_python, receipt_path, work, transport="local", replay_
             submitted.append(row["remote_task_id"])
             check(
                 "sql_submission_and_hidden_control_tools",
-                payload["visible_tools"] == ["deermate_submit_task"],
+                payload["visible_tools"]
+                == ["deermate_check_worker_connection", "deermate_submit_task"],
                 tracking_id=tid,
                 remote_task_id=row["remote_task_id"],
+            )
+            connection = payload["connection_check"]
+            check(
+                "read_only_worker_preflight_through_gateway",
+                connection["status"] == "reachable"
+                and connection["capabilities"]["instance_id"] == instance_id
+                and connection["execution_readiness"] == "not_checked"
+                and connection["task_outcome"] == "not_checked",
+                transport=connection["connection"]["type"],
+                identity=connection["identity"],
             )
             return thread, tid, row["remote_task_id"]
 

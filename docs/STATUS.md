@@ -1,6 +1,6 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-10-27。历史见 [EVOLUTION.md](EVOLUTION.md)。这是开发 Agent/维护者更新的版本化快照，不是自动监控服务。
+最后核对：2026-10-28。历史见 [EVOLUTION.md](EVOLUTION.md)。这是开发 Agent/维护者更新的版本化快照，不是自动监控服务。
 
 ## 当前交付
 
@@ -11,15 +11,26 @@
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | Go 迁移历史 27 项 API 检查；本轮 25 项浏览器检查（含主题/手机/管理弹窗），原任务仍可读，模型任务 0 |
+| 当前验收 | 本轮 Worker 预检专项 45 passed、全量 148 passed / 7 skipped；固定上游 driver/Gateway 4 passed，最终 SSH Gateway 26 项检查通过。Go 迁移 27 项 API 与 25 项浏览器检查为历史证据；本轮模型调用 0 |
+| Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
 | 低成本单机包 | 四镜像 Compose 包已实现；1472 MiB 容器限额下 14 项接口、5 项重启保留检查通过；实际 2 核/2 GiB 云主机已部署；18 项初始接口与 10 项整机重启后检查通过，浏览器登录/工作台/管理页已核验 |
 | 公网 IP HTTPS | 新加坡 2 核/2 GiB/40 GiB；首月实付 ¥0、购买时实例自动续费关闭；账号/配置已迁移，Caddy IP 证书签发、41 项 HTTPS/安全/重启检查与浏览器验收通过；证书自动续期已配置，尚未观察实际续期 |
-| 交付 | M1–M4.3 全部已有实现进入 main；来源 CI 40318918329 七个 job 全部 success；主线 CI 结果单独核对 |
+| 交付 | M1–M4.3 已有实现进入 main；本轮预检本地验证通过。历史来源 CI 40318918329 七个 job success 仅代表对应提交，新提交 CI 单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
 | 下一步 | 新加坡公网 IP HTTPS 已部署并通过 41 项接口与浏览器/整机重启检查，北京已完成退订和释放，最终备份保存在本机；模型与家庭 Worker 后续单独接入；项目级授权与专职 Agent 路由仍待开发 |
 
-运行代码、历史证据与本轮 Go 变更应分别核对；文档 HEAD 可以继续推进。
+运行代码、历史证据与本轮 Worker 预检应分别核对；文档 HEAD 可以继续推进。
+
+## Worker 连接预检 · 2026-10-28
+
+新增 [M2 预检规格](specs/m2-worker-preflight.md)、`deermate ... doctor` 和无参数只读 MCP 工具 `check_worker_connection`。沿用本地 token 或 SSH 注册权限；成功只代表连接/鉴权/身份/协议在检查时通过。`execution_readiness` 与 `task_outcome` 均为 `not_checked`，不推断 Codex 登录、空闲容量、项目权限或既有任务停止。报告仅保留固定字段、UTC 时间和脱敏错误码，响应上限 32 KiB；请求期限 15 秒，SSH 清理另最多 2 秒。
+
+SSH 每次操作前新增协议与必要操作校验，不兼容时在任务修改前拒绝；三个后台任务工具和 instance-bound 句柄保持。Go 主/管理/认证及前端接口没有改动。升级控制端包并重启 MCP 发现后，DeerFlow 可见提交和预检工具，后台查询/取消继续由原运行时处理。[配置与命令](ssh-worker.md#连接预检)。
+
+实际验证：45 项预检专项通过；全量 **148 passed / 7 skipped**（63.03 秒，一条已有 Starlette 弃用提示）；固定上游 local/SSH driver 和实际 Gateway **4 passed**（104.17 秒）。最终另跑 SSH Gateway，**26 项检查通过**，包含正常工具预检、SQL 任务身份/重启、断线、撤权、确认取消与无原生重放；[脱敏收据](verification/worker-preflight-gateway-2026-10-28.json)绑定当前源码/验收脚本哈希。Ruff、wheel、diff whitespace 检查通过。本机既有 Worker 的真实 HTTP `doctor` 返回 reachable，没有提交新任务。
+
+本轮未重新部署公网容器、注册真实家庭设备或调用模型。预检的 SSH/原生执行测试使用生成密钥及离线原生 fixture；真实跨主机 OpenSSH、家庭网络/NAT、模型派单及容量仍需另行验收。下一项工作是配置聊天模型与单独授权的家庭 Worker，再设计 Go 项目级执行授权和路由。
 
 ## 最低成本单机部署 · 2026-10-26
 
@@ -196,7 +207,7 @@ Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skip
 | 真实双机/OpenSSH 账户 | 未部署验收；当前是同机真实 SSH 协议 fixture，未修改用户主机或账户 |
 | NAT、反向隧道、设备配对、自动密钥注册、中继 | 未实现；现有传输要求直接可达 SSH 端点 |
 | 秘书模型派单、通知和完整对话 | 未配置/未验证；空模型通知 run 无法完成。页面/登录已单独通过，但验收提交入口仍替代模型选工具 |
-| 表单/review/recovery 秘书入口 | 三个 MCP 工具不自动回答、审批或恢复；现有 CLI 可在授权内处理 |
+| 表单/review/recovery 秘书入口 | 三个后台任务 MCP 工具及新增只读预检不自动回答、审批或恢复；现有 CLI 可在授权内处理 |
 | 多岗位路由、Claude/DSH/Qoder、GitHub 维护、调研/邮件/桌面 | 后续阶段 |
 | 硬崩溃/孤儿进程、历史库升级、生产隔离/脱敏/加密/总配额 | 尚无完整实现或验收，不由有序重启和 fixture 推断 |
 

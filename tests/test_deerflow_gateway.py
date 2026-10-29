@@ -58,6 +58,7 @@ async def test_real_gateway_sql_restart_and_reconnect(tmp_path, transport):
         "reconnect_requires_explicit_recovery",
         "no_replayed_sessions_or_turns",
         "pinned_upstream_unchanged",
+        "read_only_worker_preflight_through_gateway",
     } <= {check["name"] for check in data["checks"]}
     if transport == "ssh":
         assert {

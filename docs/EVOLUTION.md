@@ -237,3 +237,11 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 用户完成阿里云身份验证后，已重新核对北京旧节点：详情页显示“当前资源不存在”，北京列表为空；对应退订订单详情明确显示“退款成功（含券）”，全部退回代金券、现金为零、没有新增支付。最终结算较早预览略有变化，具体金额和云标识只留在私人记录。没有重复提交已完成的退订。
 
 新加坡公网工作台、管理页、owner 与两个 API 共 5 项正常 HTTPS 检查通过，保留实例继续运行。北京最终一致性数据库、完整 home/配置与校验记录保存在本机；旧 2027 隧道已关闭，专用北京 SSH 配置归档，新加坡运维配置保留。更新[下线收据](verification/beijing-retirement-2026-10-27.json)、当前 STATUS 和规格，原保留在线回退的安排已由用户退订要求取代。本轮仅运维/文档变更，模型调用为 0，没有重跑应用回归或新增云资源。
+
+## 2026-10-28 · 家庭 Worker 接入前的只读连接预检
+
+继续开发 M2 接入路径，新增 `deermate ... doctor` 和无参数 MCP 工具 `check_worker_connection`。它们复用已有 loopback/SSH 连接，检查凭据、授权期限、SSH 主机身份、Worker 实例及协议能力，输出有界脱敏 JSON 与明确退出码。成功仅表示 API 当时可达；原生登录、容量、项目授权和任务结果明确标记未检查。SSH 在每次转发前检查协议，不兼容响应在修改请求前被拒绝；撤权检查不将运行中任务误报为停止，恢复连接不创建新任务或原生会话。Go 主后端与管理/登录/前端 API 语言边界保持。
+
+预检专项 45 passed；最终全量 148 passed / 7 skipped（63.03 秒，一条已有 Starlette 弃用提示）；固定上游 local/SSH driver 与实际 Gateway 4 passed（104.17 秒）。最终 SSH Gateway 独立跑过 26 项检查，[收据](verification/worker-preflight-gateway-2026-10-28.json)保留源码/脚本哈希与有限结果。Ruff、wheel 和 diff whitespace 检查通过。本机运行中的 Worker 也通过新 doctor 命令的真实 HTTP 检查，未提交新原生任务。
+
+更新[规格](specs/m2-worker-preflight.md)、README、接入指南、SPEC、STATUS 和 roadmap。MCP 增量工具正常出现在 DeerFlow 工具发现中，原三个后台任务契约和 SQL 跟踪继续通过。公网容器未在本轮升级，真实家庭 OpenSSH/NAT、配置模型后的派单/通知与容量仍待单独接入验收；本轮模型调用为 0。

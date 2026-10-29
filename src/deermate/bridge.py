@@ -4,16 +4,43 @@ import asyncio
 import os
 import re
 import stat
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 from pydantic import ValidationError
 
 from .models import State, SubmitTask, Task
+from .protocol import CAPABILITIES_LIMIT, ProtocolError, parse_capabilities
+
+CONNECTION_CHECK_TIMEOUT = 15
+
+
+def connection_report(connection: dict, *, capabilities=None, error=None) -> dict:
+    report = {
+        "status": "blocked" if error else "reachable",
+        "checked_at": datetime.now(UTC).isoformat(),
+        "connection": connection,
+        "execution_readiness": "not_checked",
+        "task_outcome": "not_checked",
+    }
+    if error:
+        report["error"] = {"code": error.code, "message": str(error)}
+    else:
+        report["capabilities"] = capabilities.model_dump()
+        report["identity"] = {
+            "ssh_host_key": "verified" if connection["type"] == "ssh" else "not_applicable",
+            "worker_instance": "pinned" if connection["type"] == "ssh" else "observed",
+        }
+    return report
 
 
 class BridgeError(RuntimeError):
     """A tool call failed; the task's outcome is not established by this error."""
+
+    def __init__(self, message: str, *, code: str = "connection_rejected"):
+        super().__init__(message)
+        self.code = code
 
 
 class TaskMissing(BridgeError):
@@ -27,14 +54,17 @@ def read_token(path: Path) -> str:
         with os.fdopen(fd) as source:
             info = os.fstat(source.fileno())
             if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
-                raise BridgeError("Worker token must be a private regular file.")
+                raise BridgeError(
+                    "Worker token must be a private regular file.", code="credential_invalid"
+                )
             token = source.read(1024).strip()
     except (OSError, UnicodeError) as error:
         raise BridgeError(
-            "Worker token is unavailable; start the configured local Worker."
+            "Worker token is unavailable; start the configured local Worker.",
+            code="credential_unavailable",
         ) from error
     if not re.fullmatch(r"[A-Za-z0-9_-]{32,128}", token):
-        raise BridgeError("Worker token is invalid.")
+        raise BridgeError("Worker token is invalid.", code="credential_invalid")
     return token
 
 
@@ -118,6 +148,7 @@ class TaskBridge:
         if not 1 <= port <= 65535:
             raise ValueError("Worker port must be between 1 and 65535")
         self.token_path = token_path
+        self.connection_info = {"type": "loopback"}
         self.cancel_timeout = cancel_timeout
         self.client = httpx.AsyncClient(
             base_url=f"http://127.0.0.1:{port}",
@@ -129,6 +160,44 @@ class TaskBridge:
 
     async def close(self):
         await self.client.aclose()
+
+    async def check_connection(self) -> dict:
+        """Read authenticated capabilities without admitting work or running an agent."""
+        try:
+            async with asyncio.timeout(CONNECTION_CHECK_TIMEOUT):
+                token = await asyncio.to_thread(read_token, self.token_path)
+                async with self.client.stream(
+                    "GET", "/capabilities", headers={"Authorization": f"Bearer {token}"}
+                ) as response:
+                    if response.status_code in {401, 403}:
+                        raise BridgeError(
+                            "Worker authentication or local access check failed.",
+                            code="authentication_rejected",
+                        )
+                    if response.status_code != 200:
+                        raise BridgeError(
+                            "Worker capabilities endpoint was rejected.", code="endpoint_rejected"
+                        )
+                    chunks, size = [], 0
+                    async for chunk in response.aiter_bytes():
+                        size += len(chunk)
+                        if size > CAPABILITIES_LIMIT:
+                            raise BridgeError(
+                                "Worker capabilities exceeded the response limit.",
+                                code="invalid_response",
+                            )
+                        chunks.append(chunk)
+                    capabilities = parse_capabilities(b"".join(chunks))
+            return connection_report(self.connection_info, capabilities=capabilities)
+        except ProtocolError as error:
+            failure = BridgeError(str(error), code=error.code)
+        except BridgeError as error:
+            failure = error
+        except (TimeoutError, httpx.TimeoutException):
+            failure = BridgeError("Worker connection check timed out.", code="timeout")
+        except httpx.HTTPError:
+            failure = BridgeError("Worker connection is unavailable.", code="unavailable")
+        return connection_report(self.connection_info, error=failure)
 
     async def _request(self, method: str, path: str, body: dict | None = None) -> Task:
         try:

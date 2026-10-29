@@ -83,6 +83,7 @@ def main():
     sub.add_parser("serve", help="run one local-only worker; creates a private API token")
     sub.add_parser("mcp", help="serve stdio MCP tools backed by an independent worker")
     sub.add_parser("capabilities")
+    sub.add_parser("doctor", help="check configured Worker connection without executing a task")
     sub.add_parser("list")
     create = sub.add_parser("submit")
     create.add_argument("--project", required=True)
@@ -105,6 +106,12 @@ def main():
     if args.worker and (args.command == "serve" or args.port != 18777):
         parser.error("--worker selects an enrolled client target; serve/--port are local-only")
     try:
+        if args.command == "doctor":
+            from .preflight import check_worker
+
+            report = asyncio.run(check_worker(args.config, args.port, args.worker))
+            print(json.dumps(report, indent=2, ensure_ascii=False))
+            parser.exit(0 if report["status"] == "reachable" else 1)
         remote = None
         if args.worker:
             try:

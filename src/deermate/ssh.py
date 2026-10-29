@@ -13,6 +13,7 @@ import asyncssh
 import httpx
 
 from .bridge import BridgeError, TaskBridge, TaskMissing, read_token, task_path
+from .protocol import CAPABILITIES_LIMIT, ProtocolError, parse_capabilities
 from .remote_config import enrolled_worker
 
 
@@ -23,13 +24,20 @@ def _read_file(path: Path, *, private: bool) -> bytes:
             info = os.fstat(source.fileno())
             forbidden = 0o077 if private else 0o022
             if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & forbidden:
-                raise BridgeError("SSH credential/trust file has unsafe type or permissions.")
+                raise BridgeError(
+                    "SSH credential/trust file has unsafe type or permissions.",
+                    code="credential_invalid",
+                )
             data = source.read(64_001)
             if not data or len(data) > 64_000:
-                raise BridgeError("SSH credential/trust file is empty or oversized.")
+                raise BridgeError(
+                    "SSH credential/trust file is empty or oversized.", code="credential_invalid"
+                )
             return data
     except OSError as error:
-        raise BridgeError("SSH credential/trust file is unavailable.") from error
+        raise BridgeError(
+            "SSH credential/trust file is unavailable.", code="credential_unavailable"
+        ) from error
 
 
 class SSHTransport(httpx.AsyncBaseTransport):
@@ -52,7 +60,10 @@ class SSHTransport(httpx.AsyncBaseTransport):
         current = enrolled_worker(self.config, self.worker_id)
         current.admit()
         if current != self.settings:
-            raise BridgeError("SSH enrollment changed; restart this controller/MCP process.")
+            raise BridgeError(
+                "SSH enrollment changed; restart this controller/MCP process.",
+                code="enrollment_changed",
+            )
         private_key = _read_file(current.client_key, private=True)
         trust = _read_file(current.known_hosts, private=False)
         token = read_token(current.token_file)
@@ -60,7 +71,9 @@ class SSHTransport(httpx.AsyncBaseTransport):
         if current.passphrase_env:
             passphrase = os.environ.get(current.passphrase_env)
             if not passphrase:
-                raise BridgeError("Configured SSH key passphrase is unavailable.")
+                raise BridgeError(
+                    "Configured SSH key passphrase is unavailable.", code="credential_unavailable"
+                )
         fingerprint = hashlib.sha256(
             private_key
             + b"\0"
@@ -113,8 +126,13 @@ class SSHTransport(httpx.AsyncBaseTransport):
             return
         await self._drop()
         self.state = "connecting"
-        key = await asyncio.to_thread(asyncssh.import_private_key, private_key, passphrase)
-        known_hosts = asyncssh.import_known_hosts(trust.decode("utf-8"))
+        try:
+            key = await asyncio.to_thread(asyncssh.import_private_key, private_key, passphrase)
+            known_hosts = asyncssh.import_known_hosts(trust.decode("utf-8"))
+        except (ValueError, asyncssh.KeyImportError) as error:
+            raise BridgeError(
+                "SSH credential/trust material is invalid.", code="credential_invalid"
+            ) from error
         async with asyncio.timeout(worker.connect_timeout_seconds + 1):
             self.connection = await asyncssh.connect(
                 worker.host,
@@ -163,7 +181,7 @@ class SSHTransport(httpx.AsyncBaseTransport):
 
         self.expiry_task = asyncio.create_task(expire())
 
-    async def _exchange(self, request):
+    async def _exchange(self, request, *, response_limit=2_000_000):
         url = request.url.copy_with(host="127.0.0.1", port=self.listener.get_port())
         headers = httpx.Headers(request.headers)
         headers["Host"] = f"127.0.0.1:{self.listener.get_port()}"
@@ -179,8 +197,10 @@ class SSHTransport(httpx.AsyncBaseTransport):
             chunks, size = [], 0
             async for chunk in response.aiter_raw():
                 size += len(chunk)
-                if size > 2_000_000:
-                    raise BridgeError("SSH Worker response exceeded the transport limit.")
+                if size > response_limit:
+                    raise BridgeError(
+                        "SSH Worker response exceeded the transport limit.", code="invalid_response"
+                    )
                 chunks.append(chunk)
             return httpx.Response(
                 response.status_code,
@@ -207,18 +227,29 @@ class SSHTransport(httpx.AsyncBaseTransport):
                         "http://127.0.0.1/capabilities",
                         headers=headers,
                         extensions=request.extensions,
-                    )
+                    ),
+                    response_limit=CAPABILITIES_LIMIT,
                 )
                 await capabilities.aread()
                 if capabilities.status_code != 200:
-                    raise BridgeError("SSH Worker credential or local access check was rejected.")
-                payload = capabilities.json()
-                if (
-                    not isinstance(payload, dict)
-                    or payload.get("instance_id") != self.settings.expected_instance_id
-                ):
-                    raise BridgeError("SSH Worker instance identity did not match enrollment.")
+                    raise BridgeError(
+                        "SSH Worker credential or local access check was rejected.",
+                        code="authentication_rejected",
+                    )
+                try:
+                    payload = parse_capabilities(capabilities.content)
+                except ProtocolError as error:
+                    raise BridgeError(str(error), code=error.code) from error
+                if payload.instance_id != self.settings.expected_instance_id:
+                    raise BridgeError(
+                        "SSH Worker instance identity did not match enrollment.",
+                        code="worker_identity_mismatch",
+                    )
                 self.settings.admit()
+                # Reuse the authenticated identity response for the read-only probe.
+                if request.method == "GET" and request.url.path == "/capabilities":
+                    self.state = "ready"
+                    return capabilities
                 request.headers["Authorization"] = f"Bearer {token}"
                 result = await self._exchange(request)
                 self.state = "ready"
@@ -231,21 +262,31 @@ class SSHTransport(httpx.AsyncBaseTransport):
                 self.state = "host_key_rejected"
                 await self._drop()
                 raise BridgeError(
-                    "SSH host key was rejected; verify trusted host identity."
+                    "SSH host key was rejected; verify trusted host identity.",
+                    code="host_key_rejected",
                 ) from error
             except asyncssh.PermissionDenied as error:
                 self.state = "authentication_rejected"
                 await self._drop()
-                raise BridgeError("SSH dedicated client key was rejected.") from error
+                raise BridgeError(
+                    "SSH dedicated client key was rejected.", code="authentication_rejected"
+                ) from error
             except BridgeError:
                 self.state = "access_rejected"
                 await self._drop()
                 raise
-            except (OSError, TimeoutError, asyncssh.Error, httpx.HTTPError, ValueError) as error:
+            except (TimeoutError, httpx.TimeoutException) as error:
                 self.state = "offline"
                 await self._drop()
                 raise BridgeError(
-                    "SSH Worker unavailable; task outcome is unknown. No mutation was retried."
+                    "SSH Worker connection timed out; task outcome is unknown.", code="timeout"
+                ) from error
+            except (OSError, asyncssh.Error, httpx.HTTPError, ValueError) as error:
+                self.state = "offline"
+                await self._drop()
+                raise BridgeError(
+                    "SSH Worker unavailable; task outcome is unknown. No mutation was retried.",
+                    code="unavailable",
                 ) from error
 
 
@@ -255,6 +296,13 @@ class RemoteTaskBridge(TaskBridge):
         self.instance_id = self.transport.settings.expected_instance_id
         self.worker_id = worker_id
         super().__init__(self.transport.settings.token_file, transport=self.transport)
+        self.connection_info = {"type": "ssh", "worker_id": worker_id}
+
+    async def check_connection(self):
+        report = await super().check_connection()
+        if report["status"] == "blocked":
+            await self.transport.aclose()
+        return report
 
     async def _request(self, method, path, body=None):
         try:
