@@ -281,3 +281,24 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 源码 `f6e8b21` 已推送。家中 Worker 在无活动任务时一致性备份并升级，保留实例和 4 项既有任务/结果。云端从该公开归档核对 SHA，使用既有基底/依赖构建无网络 wheel 镜像层，更新原 Compose image 并仅替换 Gateway；账号、加密模型、home 卷、Go/前端和 SSH 账号/期限均保留。原到期 unit 哈希不变、timer active，未新增付费资源或公网端口。
 
 原对话的两次真实模型 follow-up 各 success（各 2 次 LLM 调用），通过 scoped provider 接入普通后台任务；累计三项 Worker/MCP 任务共用原生 session/workspace/base/policy，独立测试退出 0、通知 delivered、父证据保留。第三轮原文没有重新发送第二轮标记，Codex 仍准确回忆；两次问答没有改变原单文件补丁。相同 ledger 只读复查通过，总 Worker 任务仍为 6。浏览器核对完整对话与结果，截图留在忽略目录，未重验键入/流式交互。[真实有限收据](verification/codex-conversation-live-2026-10-29.json)保留源码/脚本绑定、部署与边界。另补本地 Gateway 20 项检查通过，SSH Gateway 28 项；不将 fixture 等同于真实模型证据。
+# 2026-10-29 · Public tools and connection diagnostics
+
+The minimal profile only configured Codex delegation, while the capability catalog
+showed guide entries for web tools. Added bundled public search and a screened Jina
+page reader to the common deployment configuration. Added an admin-only Tools &
+connections page through the pinned runtime's supported extension/assets API,
+retaining Go public authentication and its admin runtime gate. Existing MCP forms
+still own configuration and credentials; metadata checks snapshot one saved
+platform/current-owner connection, reuse upstream discovery, bound time/concurrency,
+and never call a business tool or return raw transport errors. Private connectors
+still require separately authorized services/accounts.
+
+Validation: full suite **213 passed / 7 skipped**, actual pinned deployment contracts
+**32 passed**, Ruff, wheel (including browser resources), JavaScript syntax and shared
+token checks passed. Pinned provider assembly, plugin assets, URL rejections, a real
+MCP metadata fixture without execution and public search/read smoke **8 checks
+passed**, zero model calls. Local fake-IP DNS correctly blocked domain reads; the
+public literal smoke used `https://1.1.1.1/` without weakening URL admission. Cloud
+deployment and real model/UI acceptance are pending at this source commit. See
+[spec](specs/m2-tools-and-connections.md) and [usage](tools-and-connections.md).
+

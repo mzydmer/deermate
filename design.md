@@ -27,6 +27,7 @@ DeerMate 是私人 Agent 工作台。用户首先要看清：工作是什么、�
 | React 页面样式 | [deermate.css](frontend/overlay/src/styles/deermate.css) 与现有基础组件 |
 | Go 管理页 | [admin.html](backend/internal/controlplane/admin.html)；嵌入相同 token |
 | Go 的 token 副本 | 由 [sync_design_tokens.py](scripts/sync_design_tokens.py) 从权威 CSS 生成，不单独修改 |
+| 工具检查扩展 | [tooling_ui/index.mjs](src/deermate/tooling_ui/index.mjs) 通过固定 DeerFlow BrowserAssets 挂载，复用相同 token、主题和字号；不引入第二套 UI 框架 |
 
 新增页面先复用已有组件和 token，再增加必要的页面样式。不得另建一套颜色主题或通过不断追加覆盖规则绕开规范。自托管环境不得依赖运行时 CDN、Google Fonts 或第三方动效地址。
 

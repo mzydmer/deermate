@@ -70,6 +70,8 @@ Run `deermate --config controller.toml --worker home doctor` before dispatching 
 
 **Follow up with the same Codex:** an optional chat tool and child-task API preserve the native session/workspace and each round’s evidence. Worker/MCP/SSH, pinned Gateway and a real cloud-to-home three-round conversation are verified, with independent validation and delivered notifications ([receipt](docs/verification/codex-conversation-live-2026-10-29.json)). [Setup and limits](docs/codex-conversation.md).
 
+**Public research tools:** minimal deployments now include public search and page reading. The **Tools & connections** page inspects loaded tools and tests saved MCP connections by discovering tool names without executing them. GitHub, Notion and SQL still require a service and authorization; catalog entries are not connected accounts. [Usage and limits](docs/tools-and-connections.md).
+
 ## What we are building
 
 For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; each additional device/account/network deployment needs its own enrollment and acceptance.

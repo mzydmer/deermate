@@ -23,6 +23,7 @@ from pathlib import Path
 import yaml
 
 from deermate.remote_config import SSHWorker
+from deermate.tooling import runtime_config
 
 ROOT = Path(__file__).resolve().parents[1]
 PIN = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
@@ -149,6 +150,7 @@ def controller(settings):
 
 
 def app_config(settings):
+    tooling = runtime_config()
     return {
         "config_version": 62,
         "models": [
@@ -167,7 +169,7 @@ def app_config(settings):
         },
         "stream_bridge": {"type": "memory"},
         "sandbox": {"use": "deerflow.sandbox.local:LocalSandboxProvider"},
-        "tools": [
+        "tools": tooling["tools"] + ([
             {
                 "name": "continue_codex",
                 "group": "deermate",
@@ -175,8 +177,11 @@ def app_config(settings):
             }
         ]
         if settings["worker"]["enabled"]
-        else [],
-        "tool_groups": [{"name": "deermate"}] if settings["worker"]["enabled"] else [],
+        else []),
+        "tool_groups": tooling["tool_groups"] + (
+            [{"name": "deermate"}] if settings["worker"]["enabled"] else []
+        ),
+        "plugins": tooling["plugins"],
         "memory": {"enabled": False},
         "scheduler": {"enabled": False},
         "title": {"enabled": False},
