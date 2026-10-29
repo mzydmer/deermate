@@ -301,4 +301,20 @@ passed**, zero model calls. Local fake-IP DNS correctly blocked domain reads; th
 public literal smoke used `https://1.1.1.1/` without weakening URL admission. Cloud
 deployment and real model/UI acceptance are pending at this source commit. See
 [spec](specs/m2-tools-and-connections.md) and [usage](tools-and-connections.md).
+## 2026-10-29 · Cloud tool execution verified
+
+Source `815d8d8` deployed to the existing cloud Gateway. The first packaging attempt
+stopped before activation on a resource-directory assertion; reconciled the saved
+checkpoint and unchanged original configuration, then completed packaging and the
+immutable image update. Existing account/model/Codex configuration and expiry units
+were retained; no extra cloud instance or SSH grant was created.
+
+HTTPS/admin login, plugin assets, native tool inventory, saved MCP discovery (three
+model-visible Codex tools), unknown-server refusal and anonymous denial passed.
+One admitted real chat selected both web tools and received search results/page
+content. An obsolete profile-name probe was rejected before run admission and its
+attempted intent preserved; no uncertain run was replayed. Browser navigation and
+connection test passed. A UI-only refinement removes the duplicate host title and
+updates the row label after a test; it does not change the verified tool behavior.
+See [sanitized receipt](verification/tools-and-connections-2026-10-29.json).
 

@@ -1,0 +1,48 @@
+{
+  "source_commit": "815d8d840b1f831a2a14da9c7a55012f17692a1a",
+  "admin_login": true,
+  "plugin_asset_served": true,
+  "native_tools_loaded": true,
+  "saved_mcp_discovery": true,
+  "discovered_tool_count": 3,
+  "unknown_connection_not_contacted": true,
+  "anonymous_rejected": true,
+  "private_connections_configured": false,
+  "real_model_run_success": true,
+  "model_selected_tools": [
+    "web_search",
+    "web_fetch"
+  ],
+  "public_search_results_received": true,
+  "public_page_received": true,
+  "native_tasks_submitted": 0,
+  "final_answer_present": true,
+  "date": "2026-10-29",
+  "scope": "single-owner existing cloud deployment",
+  "admitted_chat_runs": 1,
+  "pinned_runtime_checks": [
+    "plugin_assets_loaded",
+    "native_tools_assembled",
+    "private_urls_rejected",
+    "inventory_loaded",
+    "real_mcp_metadata_only",
+    "unknown_server_not_contacted",
+    "live_public_search",
+    "live_public_page_read"
+  ],
+  "python_suite": {
+    "passed": 213,
+    "skipped": 7
+  },
+  "pinned_deployment_contracts": {
+    "passed": 32
+  },
+  "browser_connection_test_passed": true,
+  "ui_refinement_deployment": "pending",
+  "limits": [
+    "Private GitHub/Notion/SQL connectors are not configured or verified.",
+    "MCP metadata discovery does not prove business-data permission or tool execution.",
+    "Search queries and public page URLs are sent to external providers.",
+    "Temporary home-link expiry is unchanged; actual expiry has not been observed."
+  ]
+}

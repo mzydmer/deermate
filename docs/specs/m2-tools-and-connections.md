@@ -1,6 +1,6 @@
 # Agent tools and connection diagnostics
 
-- Status: Implemented; offline and pinned runtime/public-provider checks passed; cloud acceptance in progress
+- Status: Deployed; offline, pinned runtime/public-provider, cloud model and browser connection checks passed
 - Updated: 2026-10-29
 - Requirements: FR-001, FR-011, FR-018, FR-021; NFR-001, NFR-003, NFR-005
 
@@ -49,3 +49,13 @@ are assembled on the next chat run; an already-running message is not mutated.
 - The deployed browser page shows actual loaded/configured states and a real test
   result. One bounded real chat proves model selection and tool responses; discovery
   alone does not establish chat execution or private data permissions.
+
+## Evidence
+
+The admitted cloud chat actually selected `web_search` and `web_fetch`, received
+nonempty search results and the requested public page, and completed successfully.
+The browser page showed three loaded native tools and discovered three exposed
+Codex MCP tools without submitting native work. See the sanitized
+[receipt](../verification/tools-and-connections-2026-10-29.json). A preceding probe
+using an obsolete model profile name was rejected before admission (HTTP 400,
+empty run list); its attempted intent remains preserved and was not replayed.

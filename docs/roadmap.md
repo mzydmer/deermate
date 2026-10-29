@@ -29,7 +29,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 
 ## M2 — Connect DeerFlow to a remote worker
 
-- [x] Enable minimal public research tools and inspect saved MCP connections without executing tools; pinned runtime and live public-provider smoke passed. Cloud chat/UI acceptance tracked in [tooling spec](specs/m2-tools-and-connections.md).
+- [x] Enable public research tools and inspect saved MCP connections without executing tools; pinned runtime, public-provider smoke, real cloud model calls and browser connection test passed. Private data accounts remain unconfigured; see [tooling spec](specs/m2-tools-and-connections.md).
 
 - [x] Pin and validate DeerFlow's ordinary-task driver contract (`a1b89d0`).
 - [x] Expose narrow Python MCP tools matching its durable background-task contract.

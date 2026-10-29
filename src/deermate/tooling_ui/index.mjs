@@ -21,8 +21,7 @@ export default {
       const page = element("div", undefined, "dm-tools-page");
       const style = element("style");
       style.textContent = `
-        .dm-tools-page{max-width:960px;margin:0 auto;padding:40px 24px;font-family:var(--dm-font-sans);color:var(--dm-foreground);font-size:14px;line-height:1.6}
-        .dm-tools-page h1{font-size:28px;letter-spacing:-.04em;font-weight:600;margin:0 0 8px}
+        .dm-tools-page{font-family:var(--dm-font-sans);color:var(--dm-foreground);font-size:14px;line-height:1.6}
         .dm-tools-page h2{font-size:16px;font-weight:600;margin:28px 0 12px}
         .dm-tools-page p{margin:6px 0 16px;color:var(--dm-muted)}
         .dm-tools-page button,.dm-tools-page a{border:1px solid var(--dm-border);background:var(--dm-background);color:var(--dm-foreground);border-radius:var(--dm-radius-sm);padding:7px 12px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
@@ -32,9 +31,8 @@ export default {
         .dm-tools-page .meta{font-size:12px;color:var(--dm-muted);overflow-wrap:anywhere}
         .dm-tools-page .result{flex-basis:100%;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--dm-font-mono);font-size:12px}
         .dm-tools-page .note{padding:16px;border:1px solid var(--dm-border);background:var(--dm-surface);border-radius:var(--dm-radius-md);margin-top:24px}
-        @media(max-width:640px){.dm-tools-page{padding:24px 16px}.dm-tools-page h1{font-size:24px}}
       `;
-      page.append(style, element("h1", text("工具与连接", "Tools & connections")), element("p", text(
+      page.append(style, element("p", text(
         "查看实际加载的工具，检查已保存的数据连接。仅管理员可使用此检查页。",
         "Inspect loaded tools and saved data connections. Administrator access is required."
       )));
@@ -90,6 +88,7 @@ export default {
               try {
                 const response = await context.callBackend("discover", {scope: connection.scope, name: connection.name});
                 if (!alive() || !row.isConnected) return;
+                label.querySelector(".meta").textContent = `${connection.scope === "personal" ? text("个人", "Personal") : text("平台", "Platform")} · ${response.status === "discovered" ? text("本次已发现工具", "Tools discovered this check") : text("本次检查未通过", "Check not confirmed")}`;
                 const messages = {
                   discovered: text(`连接成功 · ${response.total} 个工具`, `Connected · ${response.total} tools`),
                   disabled: text("连接已停用，请刷新。", "Connection disabled. Refresh status."),
