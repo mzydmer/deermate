@@ -59,6 +59,11 @@ async def client_command(args, token_path, *, transport=None, instance_id=None):
                         "confirm_recovery": args.confirm_recovery,
                     },
                 )
+            case "continue":
+                result = await client.post(
+                    f"/tasks/{args.task_id}/continue",
+                    json={"message": args.message, "idempotency_key": args.key},
+                )
             case "answer":
                 answers = json.loads(await asyncio.to_thread(args.file.read_text))
                 result = await client.post(
@@ -89,14 +94,15 @@ def main():
     create.add_argument("--project", required=True)
     create.add_argument("--prompt", required=True)
     create.add_argument("--key", required=True, help="stable idempotency key")
-    for name in ["status", "events", "diff", "cancel", "resume", "answer"]:
+    for name in ["status", "events", "diff", "cancel", "resume", "continue", "answer"]:
         command = sub.add_parser(name)
         command.add_argument("task_id")
         if name == "events":
             command.add_argument("--after", type=int, default=0)
-        if name == "resume":
+        if name in {"resume", "continue"}:
             command.add_argument("--message", required=True)
             command.add_argument("--key", required=True)
+        if name == "resume":
             command.add_argument("--confirm-recovery", action="store_true")
         if name == "answer":
             command.add_argument(

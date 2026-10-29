@@ -353,6 +353,11 @@ def ssh_worker(profile, token, instance):
     extensions["mcpServers"]["deermate"] = extensions["mcpServers"].pop("deermate-home")
     (config / "extensions_config.json").write_text(json.dumps(extensions))
     (config / "extensions_config.json").chmod(0o644)
+    app = yaml.safe_load((config / "config.yaml").read_text())
+    enabled = ack.app_config(settings)
+    app["tools"] = enabled["tools"]
+    app["tool_groups"] = enabled["tool_groups"]
+    (config / "config.yaml").write_text(yaml.safe_dump(app, sort_keys=False))
 
 
 def ready():

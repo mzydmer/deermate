@@ -65,6 +65,8 @@ stateDiagram-v2
 
 ## Durable records
 
+[ADR 0011](decisions/0011-codex-conversation-turns.md) models a follow-up as a new child task, preserving the terminal parent while inheriting native session/workspace and policy. A SQLite conversation-head table serializes admission and rejects stale parents. The supported optional `continue_codex` DeerFlow tool resolves a public tracking ID within the actual runtime user/chat/incarnation, then submits via the original ordinary task service/driver using the private enrolled handle. No new Go API, Python public route or scheduler is added. See [configuration and limits](codex-conversation.md).
+
 Persist task ID, parent task, idempotency key, project ID, selected machine and adapter, native session ID, admission policy snapshot, event cursor, attempt number, deadline, and acceptance evidence. Keep credentials out of prompts, ordinary task rows, and logs; retain secret references where needed.
 
 The worker must save the admitted task mapping before starting a subprocess. Duplicate deliveries return the existing task handle. A controller restart reconciles known worker tasks instead of blindly replaying commands. A detached process whose state cannot be verified becomes an explicit recovery problem.

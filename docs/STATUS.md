@@ -1,6 +1,6 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-10-28。历史见 [EVOLUTION.md](EVOLUTION.md)。这是开发 Agent/维护者更新的版本化快照，不是自动监控服务。
+最后核对：2026-10-29。历史见 [EVOLUTION.md](EVOLUTION.md)。这是开发 Agent/维护者更新的版本化快照，不是自动监控服务。
 
 ## 当前交付
 
@@ -11,7 +11,7 @@
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 本轮全量 175 passed / 7 skipped；云端模型→受限 OpenSSH 反向链路→家庭真实 Codex→独立测试→通知 delivered 已通过，9 项实际 SSH 策略检查通过。固定部署契约 29 passed 是上轮证据 |
+| 当前验收 | 当前全量 199 passed / 7 skipped，多轮 Gateway/SQL/SSH fixture 28 项通过；上轮云端模型→受限 OpenSSH 反向链路→家庭真实 Codex→独立测试→通知 delivered 已通过，9 项实际 SSH 策略检查通过。本轮固定部署契约 32 passed |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
 | 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地及云到家庭正常 run 均由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
@@ -19,9 +19,15 @@
 | 公网 IP HTTPS | 新加坡 2 核/2 GiB/40 GiB；首月实付 ¥0、购买时实例自动续费关闭；账号/配置已迁移，Caddy IP 证书签发、41 项 HTTPS/安全/重启检查与浏览器验收通过；证书自动续期已配置，尚未观察实际续期 |
 | 交付 | M1–M4.3 已有实现进入 main；本轮临时云到家庭接入与增量验收通过。历史来源 CI 40318918329 七个 job success 仅代表对应提交，新提交 CI 单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 已批准的临时云到家庭链路已安装验收；UTC 2026-10-30 02:29:56 到期关闭已配置，实际到期待观察。下一步整理可复用设备接入，再做 Go 项目授权与专职路由 |
+| 下一步 | 已批准的临时云到家庭链路已安装验收；UTC 2026-10-30 02:29:56 到期关闭已配置，实际到期待观察。当前先完成多轮会话公网升级与真实验收，再整理设备接入、Go 项目授权与专职路由 |
 
 运行代码、历史证据与本轮 Worker 预检应分别核对；文档 HEAD 可以继续推进。
+
+## 多轮 Codex 会话 · 2026-10-29
+
+新增 [多轮会话规格](specs/m2-codex-conversation.md)与 [ADR 0011](decisions/0011-codex-conversation-turns.md)。每次追问创建独立子任务，复用原生 session/workspace，保留父任务结果；SQLite head 在事务内拒绝旧父任务、并发分叉和不安全恢复。MCP/CLI/鉴权 Worker API 已接通，原句柄格式不变。可选 `continue_codex` 内部 provider 按实际 user/chat/incarnation 解析公开跟踪 ID，经原 ordinary driver 跟踪查询、取消和通知；Go 公开接口与前端源码保持。见[接入指南](codex-conversation.md)。
+
+全量 **199 passed / 7 skipped**（70.73 秒）；会话/固定部署专项 **53 passed**，其中实际 Chart/Compose/overlay/单机/HTTPS 契约 32 项。固定 ordinary driver local/SSH 两项通过；实际 Gateway/SQL/SSH [28 项检查通过](verification/codex-conversation-gateway-2026-10-29.json)，包括三轮一个原生会话/工作区、父结果保留、跨聊天拒绝与同调用只读核对。原生 fixture 不代表真实模型验收；公网升级与真实多轮尚在执行，原临时 SSH 期限不延长。
 
 ## 云到家庭真实派单 · 2026-10-28
 

@@ -68,6 +68,8 @@ To connect a trusted DeerFlow process on the same host, install `.[mcp]` and con
 
 Run `deermate --config controller.toml --worker home doctor` before dispatching to an enrolled home Worker. It checks credentials, pinned identities and protocol, returns sanitized JSON and exits nonzero when blocked. A reachable API does not establish native-agent login, capacity or project authorization. See the [SSH setup and preflight guide](docs/ssh-worker.md).
 
+**Follow up with the same Codex:** an optional chat tool and child-task API preserve the native session/workspace and each round’s evidence. Worker/MCP/SSH and pinned Gateway fixtures are verified; live rollout is tracked in [STATUS](docs/STATUS.md). [Setup and limits](docs/codex-conversation.md).
+
 ## What we are building
 
 For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; each additional device/account/network deployment needs its own enrollment and acceptance.
@@ -190,7 +192,7 @@ Historical M2.1 verification had 51 passing normal tests (two opt-in upstream ch
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **175 passed, 7 opt-in cases skipped**. Real cloud-model-to-home-Codex acceptance passed one bounded task, independent tests and delivered notification; nine actual cloud OpenSSH checks passed. The prior fixed deployment contract suite passed 29 cases and was not rerun for this verifier-only code change. Earlier fixture receipts retain their original scope; see [STATUS](docs/STATUS.md) and the [new receipt](docs/verification/home-link-2026-10-28.json).
+The current normal suite has **199 passed, 7 opt-in cases skipped**. Real cloud-model-to-home-Codex acceptance passed one bounded task, independent tests and delivered notification; nine actual cloud OpenSSH checks passed. The fixed deployment contracts passed 32 cases after adding the optional chat provider. Earlier fixture receipts retain their original scope; see [STATUS](docs/STATUS.md) and the [new receipt](docs/verification/home-link-2026-10-28.json).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

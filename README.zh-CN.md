@@ -59,6 +59,8 @@ deermate diff TASK_ID
 
 派单前可运行 `deermate doctor` 检查本地连接，或运行 `deermate --config controller.toml --worker home doctor` 检查已注册的家庭 Worker。命令检查凭据、SSH/Worker 身份与协议，输出脱敏 JSON；受阻时退出码为 1。API 可达不代表原生 Agent 已登录、有空闲容量或项目权限。见 [SSH 接入与预检指南](docs/ssh-worker.md)。
 
+**连续追问同一个 Codex：** 新增可选聊天工具与按轮子任务，保留原生会话/工作区和每轮证据。Worker/MCP/SSH 及固定 Gateway fixture 已通过，真实部署进展见 [STATUS](docs/STATUS.md)。[接入与边界](docs/codex-conversation.md)。
+
 ## 我们正在构建什么
 
 直接可达的 SSH Worker 可安装 `.[mcp,ssh]`，填写[注册配置](examples/ssh-controller.toml)，运行 `deermate --config controller.toml --worker home mcp` 或既有 CLI 命令。[SSH 指南](docs/ssh-worker.md)包含主机信任、凭据、期限和绑定句柄；每台新增设备/账户/网络仍需各自注册与验收。
@@ -177,7 +179,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
-当前常规测试为 **175 项通过、7 项 opt-in 用例跳过**。真实云端模型→家庭 Codex 已通过一个有界任务、独立测试与通知送达，9 项实际云端 OpenSSH 检查通过。上轮固定部署契约 29 项通过，本轮验收器代码变更未重复运行。历史 fixture 收据保留原范围，见 [STATUS](docs/STATUS.md)与[新收据](docs/verification/home-link-2026-10-28.json)。
+当前常规测试为 **199 项通过、7 项 opt-in 用例跳过**。真实云端模型→家庭 Codex 已通过一个有界任务、独立测试与通知送达，9 项实际云端 OpenSSH 检查通过。本轮增加可选会话工具后，固定部署契约 32 项通过。历史 fixture 收据保留原范围，见 [STATUS](docs/STATUS.md)与[新收据](docs/verification/home-link-2026-10-28.json)。
 
 首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
 

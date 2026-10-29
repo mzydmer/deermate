@@ -246,6 +246,12 @@ class SSHTransport(httpx.AsyncBaseTransport):
                         code="worker_identity_mismatch",
                     )
                 self.settings.admit()
+                if request.method == "POST" and request.url.path.endswith("/continue"):
+                    if payload.continuation != "child-tasks-v1":
+                        raise BridgeError(
+                            "SSH Worker does not support conversation continuation.",
+                            code="unsupported_protocol",
+                        )
                 # Reuse the authenticated identity response for the read-only probe.
                 if request.method == "GET" and request.url.path == "/capabilities":
                     self.state = "ready"
@@ -333,6 +339,9 @@ class RemoteTaskBridge(TaskBridge):
             )
         if "result" in result:
             result["result"]["diff_command"] = f"{command} diff {task_id}"
+            for field in ("conversation_id", "parent_task_id"):
+                if value := result["result"].get(field):
+                    result["result"][field] = f"{self.instance_id}:{value}"
         return result
 
     async def submit(self, project_id, prompt, idempotency_key):
@@ -340,6 +349,11 @@ class RemoteTaskBridge(TaskBridge):
 
     async def status(self, task_id):
         return self._bound(await super().status(self.native_id(task_id)))
+
+    async def continue_task(self, task_id, message, idempotency_key):
+        return self._bound(
+            await super().continue_task(self.native_id(task_id), message, idempotency_key)
+        )
 
     async def cancel(self, task_id):
         return self._bound(await super().cancel(self.native_id(task_id)))

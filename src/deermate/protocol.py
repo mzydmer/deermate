@@ -22,6 +22,7 @@ class WorkerCapabilities(BaseModel):
     operations: list[Literal["submit", "status", "events", "cancel", "resume", "input"]] = Field(
         min_length=3, max_length=6
     )
+    continuation: Literal["child-tasks-v1"] | None = None
     remote: Literal[False]
 
     @model_validator(mode="after")

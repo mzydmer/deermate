@@ -10,7 +10,7 @@ from pathlib import Path
 import httpx
 from pydantic import ValidationError
 
-from .models import State, SubmitTask, Task
+from .models import ContinueTask, State, SubmitTask, Task
 from .protocol import CAPABILITIES_LIMIT, ProtocolError, parse_capabilities
 
 CONNECTION_CHECK_TIMEOUT = 15
@@ -116,6 +116,9 @@ def snapshot(task: Task) -> dict:
             "worker_status": task.status.value,
             "session_id": task.session_id,
             "attempt": task.attempt,
+            "conversation_id": task.root_task_id or task.task_id,
+            "parent_task_id": task.parent_task_id,
+            "conversation_round": task.conversation_round,
             "summary": summary[:2000],
             "summary_truncated": len(summary) > 2000,
             "validation_status": result.get("validation_status"),
@@ -250,6 +253,21 @@ class TaskBridge:
         if task.task_id != task_id:
             raise BridgeError("Worker response did not match the requested task ID.")
         return snapshot(task)
+
+    async def continue_task(self, task_id: str, message: str, idempotency_key: str) -> dict:
+        path = task_path(task_id)
+        request = ContinueTask(message=message, idempotency_key=idempotency_key)
+        report = await self.check_connection()
+        if report["status"] != "reachable":
+            raise BridgeError("Worker connection is blocked; no continuation was submitted.")
+        if report["capabilities"].get("continuation") != "child-tasks-v1":
+            raise BridgeError(
+                "Worker does not support conversation continuation; upgrade it first."
+            )
+        task = await self._request("POST", path + "/continue", request.model_dump())
+        if task.parent_task_id != task_id or task.task_id == task_id:
+            raise BridgeError("Worker continuation identity did not match; outcome is unknown.")
+        return {"task_id": task.task_id, "status": "running", "worker_status": task.status.value}
 
     async def cancel(self, task_id: str) -> dict:
         path = task_path(task_id)

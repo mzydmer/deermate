@@ -5,9 +5,12 @@
       "type": "stdio",
       "command": "/absolute/path/to/deermate/.venv/bin/python",
       "args": [
-        "-m", "deermate.cli",
-        "--config", "/absolute/path/to/deermate/deermate.toml",
-        "--port", "18777",
+        "-m",
+        "deermate.cli",
+        "--config",
+        "/absolute/path/to/deermate/deermate.toml",
+        "--port",
+        "18777",
         "mcp"
       ],
       "cwd": "/absolute/path/to/deermate",
@@ -19,6 +22,12 @@
           "submit_tool": "submit_task",
           "status_tool": "get_task_status",
           "cancel_tool": "cancel_task"
+        },
+        {
+          "name": "coding-followup",
+          "submit_tool": "continue_task",
+          "status_tool": "get_continuation_status",
+          "cancel_tool": "cancel_continuation_task"
         }
       ]
     }

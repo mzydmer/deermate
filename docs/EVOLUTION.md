@@ -267,3 +267,11 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 验收器新增可选公网 IP SSH 路径交叉核对，必须与 HTTPS origin 同主机且与独立本机 Worker 身份一致，阻断时在模型 run 前退出。新增 5 项离线用例，验收器专项 27 passed；全量 **175 passed / 7 skipped**（63.83 秒，一条已有 Starlette 弃用提示），Ruff/wheel 通过。上轮固定部署契约 29 passed，本轮未改镜像模板、Go 或前端，未重复运行。更新[接入规格](specs/m2-home-reverse-link.md)、[Accepted ADR 0010](decisions/0010-temporary-home-reverse-link.md)、[验收指南](secretary-acceptance.md)及[独立脱敏收据](verification/home-link-2026-10-28.json)。
 
 本次证明一个手工配置的限时 alpha 链路；两条 SSH 都在可信云主机终止，云端可读内容。通用设备配对、Mac 重启守护、正式永久接入、项目级 Go 授权及专职路由仍需开发；没有新增付费云资源或公开 Worker 端口。
+
+## 2026-10-29 · Codex 多轮会话按轮保留证据
+
+用户希望网页能持续与远程 Codex 问答。采用 [ADR 0011](decisions/0011-codex-conversation-turns.md)：每轮创建子任务，继承原生会话/工作区和项目策略，父结果不变。SQLite head 原子接纳防止并发/旧父任务分叉；原 CLI resume 限于最新任务。新增 capability 标志、鉴权 continue API、CLI 与 MCP；旧基本操作列表保留，旧控制端可继续原操作。
+
+可选 `continue_codex` provider 按实际 user/chat/incarnation 查询已有跟踪行，把公开 task ID 私下映射到已注册 Worker handle，经原 ordinary driver 形成独立后台行。固定上游要求 task toolset 各角色名称不重复，因此子任务查询/取消使用独立 raw 别名。没有改写上游源码、Go 公开接口或前端，没有自动审批恢复或延长 SSH 授权。
+
+全量 199 passed / 7 skipped（70.73 秒，一条已有 Starlette 弃用提示）；会话/固定部署专项 53 passed；原 ordinary driver 两变体通过，实际 Gateway/SQL/SSH 28 项通过，含三轮/结果保留/跨聊天拒绝/同调用核对。真实公网升级和原生问答仍需单独验收，进度见 STATUS。新增可复用 opt-in 多轮验收脚本，先持久化完整 ledger，再发正式模型 run，未知结果只读核对。

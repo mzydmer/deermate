@@ -5,7 +5,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from .models import ACTIVE, Conflict, ResumeTask, State, SubmitTask, Task
+from .models import ACTIVE, Conflict, ContinueTask, ResumeTask, State, SubmitTask, Task
 
 
 def now() -> str:
@@ -41,6 +41,13 @@ class Store:
                 FOREIGN KEY(task_id) REFERENCES tasks(id)
             );
             CREATE INDEX IF NOT EXISTS task_events ON events(task_id, cursor);
+            CREATE TABLE IF NOT EXISTS conversation_heads (
+                root_id TEXT PRIMARY KEY REFERENCES tasks(id),
+                task_id TEXT NOT NULL UNIQUE REFERENCES tasks(id)
+            );
+            INSERT OR IGNORE INTO conversation_heads
+                SELECT COALESCE(json_extract(data, '$.root_task_id'), id), id
+                FROM tasks ORDER BY rowid DESC;
         """)
         self.db.execute(
             "INSERT OR IGNORE INTO metadata VALUES('instance_id', ?)", (uuid.uuid4().hex,)
@@ -92,6 +99,9 @@ class Store:
             self.db.execute(
                 "INSERT INTO requests VALUES(?,?,?)",
                 (request.idempotency_key, fingerprint, task.task_id),
+            )
+            self.db.execute(
+                "INSERT INTO conversation_heads VALUES(?,?)", (task.task_id, task.task_id)
             )
             self._event(task.task_id, "task.queued", {"attempt": 1})
             self.db.commit()
@@ -149,6 +159,7 @@ class Store:
                 self.db.commit()
                 return previous
             task = self.get(task_id)
+            self._require_head(task)
             if task.status in ACTIVE or task.status == State.QUEUED:
                 raise Conflict("task is already active; interrupt it or answer its pending input")
             if task.status == State.RECOVERY_REQUIRED and not request.confirm_recovery:
@@ -179,6 +190,73 @@ class Store:
             self._event(task_id, "task.resumed", {"attempt": task.attempt})
             self.db.commit()
             return task
+        except BaseException:
+            self.db.rollback()
+            raise
+
+    def _require_head(self, task: Task):
+        row = self.db.execute(
+            "SELECT task_id FROM conversation_heads WHERE root_id=?",
+            (task.root_task_id or task.task_id,),
+        ).fetchone()
+        if row is None or row[0] != task.task_id:
+            raise Conflict("continue the latest task in this Codex conversation")
+
+    def continue_task(
+        self, parent_id: str, request: ContinueTask, policy: dict
+    ) -> tuple[Task, bool]:
+        fingerprint = digest(
+            {"operation": "continue", "parent_task_id": parent_id, **request.model_dump()}
+        )
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            previous = self._existing(request.idempotency_key, fingerprint)
+            if previous:
+                self.db.commit()
+                return previous, False
+            parent = self.get(parent_id)
+            self._require_head(parent)
+            if parent.status not in {State.COMPLETED, State.FAILED, State.CANCELLED}:
+                raise Conflict("conversation is active or needs explicit input, review or recovery")
+            if not parent.session_id or not parent.workspace or not parent.base_commit:
+                raise Conflict("no saved native session/workspace; inspect the original task")
+            if parent.policy != policy:
+                raise Conflict("project or runtime policy changed; continuation was not admitted")
+            stamp = now()
+            task = Task(
+                task_id=uuid.uuid4().hex,
+                project_id=parent.project_id,
+                status=State.QUEUED,
+                prompt=request.message,
+                created_at=stamp,
+                updated_at=stamp,
+                root_task_id=parent.root_task_id or parent.task_id,
+                parent_task_id=parent.task_id,
+                conversation_round=parent.conversation_round + 1,
+                session_id=parent.session_id,
+                workspace=parent.workspace,
+                base_commit=parent.base_commit,
+                policy=parent.policy,
+            )
+            self.db.execute(
+                "INSERT INTO tasks VALUES(?,?,?,?)",
+                (task.task_id, task.project_id, task.status, task.model_dump_json()),
+            )
+            self.db.execute(
+                "INSERT INTO requests VALUES(?,?,?)",
+                (request.idempotency_key, fingerprint, task.task_id),
+            )
+            self.db.execute(
+                "UPDATE conversation_heads SET task_id=? WHERE root_id=?",
+                (task.task_id, task.root_task_id),
+            )
+            self._event(
+                task.task_id,
+                "task.continued",
+                {"parent_task_id": parent_id, "conversation_round": task.conversation_round},
+            )
+            self.db.commit()
+            return task, True
         except BaseException:
             self.db.rollback()
             raise

@@ -14,6 +14,9 @@ async def test_stdio_discovery_validation_and_tool_errors(local_server):
             "get_task_status",
             "cancel_task",
             "check_worker_connection",
+            "continue_task",
+            "get_continuation_status",
+            "cancel_continuation_task",
         }
         assert all(tool.inputSchema["additionalProperties"] is False for tool in tools.tools)
         for name, arguments in [

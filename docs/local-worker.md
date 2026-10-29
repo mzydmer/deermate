@@ -50,6 +50,8 @@ Codex runs with a read-only or workspace-write sandbox, network access disabled,
 
 ## Interrupt, continue, and recover
 
+For a follow-up with a separately retained result, use `deermate ... continue TASK_ID --key ROUND_KEY --message 'Next question'`. It returns a new child task, sharing the same native session/workspace. Use the new ID for subsequent questions and status; previous results remain readable. [Multi-round setup and chat integration](codex-conversation.md). The existing `resume` below updates the latest task in place for explicit recovery; stale parents with admitted children cannot resume.
+
 ```bash
 deermate --config deermate.toml cancel TASK_ID
 deermate --config deermate.toml resume TASK_ID \

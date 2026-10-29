@@ -255,5 +255,16 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
     config = yaml.safe_load(application["data"]["config.yaml"])
     assert config["database"]["backend"] == "sqlite"
     assert config["checkpointer"]["type"] == "sqlite"
-    assert config["tools"] == []
+    assert config["tools"] == (
+        [
+            {
+                "name": "continue_codex",
+                "group": "deermate",
+                "use": "deermate.deerflow_tools:continue_codex",
+            }
+        ]
+        if enabled
+        else []
+    )
+    assert config["tool_groups"] == ([{"name": "deermate"}] if enabled else [])
     assert config["models"][0]["api_key"] == "$DEERMATE_MODEL_API_KEY"

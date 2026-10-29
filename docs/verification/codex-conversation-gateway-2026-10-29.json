@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "deermate_source_sha256": "34820db2fb7d82e70c300c2901b7e419f09398128a576cae5b585d5b911662bb",
+  "verifier_sha256": "4774109e06a38bacd3ac8e504cf3f672bf809a4479775be85f0280d49c10b091",
+  "transport": "ssh",
+  "native_runtime": "offline Codex protocol fixture",
+  "configured_cloud_models": 0,
+  "limits": [
+    "Orderly process restart; no hard-crash or remote network test.",
+    "No configured chat model; notification-model runs are not expected to complete.",
+    "No product chat UI or real-model task; replay shows captured acceptance events.",
+    "All processes run on one host; SSH uses generated fixture credentials."
+  ],
+  "scope": "Actual pinned Gateway/SQL/ordinary MCP/SSH; three child-task conversation rounds with an offline native fixture",
+  "checks": [
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "elapsed_seconds": 17.605
+    },
+    {
+      "name": "read_only_worker_preflight_through_gateway",
+      "passed": true,
+      "elapsed_seconds": 17.605
+    },
+    {
+      "name": "ssh_instance_bound_path",
+      "passed": true,
+      "elapsed_seconds": 17.822
+    },
+    {
+      "name": "worker_survives_gateway_stop",
+      "passed": true,
+      "elapsed_seconds": 18.186
+    },
+    {
+      "name": "gateway_process_restart_preserves_identity",
+      "passed": true,
+      "elapsed_seconds": 32.334
+    },
+    {
+      "name": "http_cancel_confirmed_in_sql_and_worker",
+      "passed": true,
+      "elapsed_seconds": 33.461
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "elapsed_seconds": 35.662
+    },
+    {
+      "name": "read_only_worker_preflight_through_gateway",
+      "passed": true,
+      "elapsed_seconds": 35.662
+    },
+    {
+      "name": "background_validation_completed",
+      "passed": true,
+      "elapsed_seconds": 37.608
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "elapsed_seconds": 39.737
+    },
+    {
+      "name": "read_only_worker_preflight_through_gateway",
+      "passed": true,
+      "elapsed_seconds": 39.737
+    },
+    {
+      "name": "background_validation_failed",
+      "passed": true,
+      "elapsed_seconds": 41.906
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "elapsed_seconds": 44.011
+    },
+    {
+      "name": "read_only_worker_preflight_through_gateway",
+      "passed": true,
+      "elapsed_seconds": 44.011
+    },
+    {
+      "name": "ssh_outage_preserves_running_worker",
+      "passed": true,
+      "elapsed_seconds": 46.039
+    },
+    {
+      "name": "ssh_reconnect_preserves_identity",
+      "passed": true,
+      "elapsed_seconds": 47.119
+    },
+    {
+      "name": "ssh_revocation_does_not_claim_cancelled",
+      "passed": true,
+      "elapsed_seconds": 48.225
+    },
+    {
+      "name": "ssh_grant_restore_completes_requested_cancel",
+      "passed": true,
+      "elapsed_seconds": 49.533
+    },
+    {
+      "name": "sql_submission_and_hidden_control_tools",
+      "passed": true,
+      "elapsed_seconds": 51.658
+    },
+    {
+      "name": "read_only_worker_preflight_through_gateway",
+      "passed": true,
+      "elapsed_seconds": 51.658
+    },
+    {
+      "name": "outage_is_retryable_not_terminal",
+      "passed": true,
+      "elapsed_seconds": 53.709
+    },
+    {
+      "name": "reconnect_requires_explicit_recovery",
+      "passed": true,
+      "elapsed_seconds": 54.78
+    },
+    {
+      "name": "no_replayed_sessions_or_turns",
+      "passed": true,
+      "elapsed_seconds": 54.781
+    },
+    {
+      "name": "source_checkout_unchanged",
+      "passed": true,
+      "elapsed_seconds": 54.808
+    },
+    {
+      "name": "three_rounds_one_native_session_and_workspace",
+      "passed": true,
+      "elapsed_seconds": 58.968
+    },
+    {
+      "name": "continuation_reconcile_and_chat_scope",
+      "passed": true,
+      "elapsed_seconds": 58.968
+    },
+    {
+      "name": "pinned_upstream_unchanged",
+      "passed": true,
+      "elapsed_seconds": 59.448
+    },
+    {
+      "name": "ssh_fixture_enforced_forwarding",
+      "passed": true,
+      "elapsed_seconds": 59.449
+    }
+  ],
+  "check_count": 28,
+  "passed": true,
+  "offline_pytest": {
+    "passed": 199,
+    "skipped": 7,
+    "seconds": 70.73
+  },
+  "actual_deployment_contract_passed": 32
+}

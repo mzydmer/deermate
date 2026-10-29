@@ -59,6 +59,9 @@ User-requested ACK deployment uses the [quick deployment guide](ack-deployment.m
 
 The separate [SSH receipt](verification/ssh-transport-2026-10-25.json) covers 22 real generated-key SSH/HTTP/MCP tests, including lost acknowledgements, key rotation and revocation. Both local/SSH pinned-driver variants pass. This remains a same-host network fixture, not two-machine or NAT deployment evidence.
 
+- [x] Add child tasks for follow-up questions in the same Codex session/workspace, preserving parent evidence; scoped provider and actual Gateway/SSH fixture verified ([guide](codex-conversation.md)).
+- [ ] Verify real cloud model-selected multi-round context and result notifications after upgrading the existing deployment.
+
 ## M3 — Add specialists and repository maintenance
 
 - [ ] Add Claude Code design runs with structured results.

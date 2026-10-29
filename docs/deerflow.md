@@ -41,11 +41,11 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 2. 将 [deerflow.runtime.yaml](../examples/deerflow.runtime.yaml) 的设置合并到已有 `config.yaml`，开启 SQL 持久化和 `mcp_tasks`。现有 PostgreSQL 部署保留 PostgreSQL，不能为了复制示例切换数据库。
 3. 启动 Worker，然后重启 DeerFlow。任务工具配置、连接和超时变化需要重启。
 
-后台任务绑定使用三个**原始工具名**：`submit_task`、`get_task_status`、`cancel_task`。DeerFlow 可能向模型展示带 `deermate_` 前缀的名字，不能把该前缀写进 `task_toolsets`。开启后台任务后，查询和取消由其后台运行时处理；模型可见提交工具与新增的只读 `check_worker_connection`，后者不属于 task toolset。
+首轮后台任务绑定使用三个**原始工具名**：`submit_task`、`get_task_status`、`cancel_task`。DeerFlow 可能向模型展示带 `deermate_` 前缀的名字，不能把该前缀写进 `task_toolsets`。开启后台任务后，查询和取消由其后台运行时处理；模型可见首轮提交、追问提交与只读 `check_worker_connection`；后者不属于 task toolset，追问配置见下文指南。
 
 秘书可无参数调用 `check_worker_connection`，检查管理员预先指定的本地/SSH Worker，不接受临时主机或凭据。返回 `reachable` / `blocked` 及诊断，但不检查 Codex 登录、容量、项目授权或任务结果。CLI 等价入口为 `deermate ... doctor`；详见 [SSH 预检说明](ssh-worker.md#连接预检)。
 
-2026-10-28 已额外使用真实千问，经正式 run API 自行选择预检/提交工具，完成本机真实 Codex 修复、独立测试与通知 delivered；这与下文无模型 fixture 的旧验收不同。复现方法和计费/恢复边界见[真实模型指南](secretary-acceptance.md)，云端到家庭接入仍待授权部署。
+2026-10-28 已额外使用真实千问，经正式 run API 自行选择预检/提交工具，完成本机真实 Codex 修复、独立测试与通知 delivered；这与下文无模型 fixture 的旧验收不同。复现方法和计费/恢复边界见[真实模型指南](secretary-acceptance.md)，云端到家庭临时接入随后已获批并通过单轮真实验收，多轮升级状态见 STATUS。
 
 提交参数示例：
 
@@ -62,6 +62,8 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 上游提供当前 thread 的查询路由 `GET /api/threads/{thread_id}/mcp-tasks` 及 `GET /api/threads/{thread_id}/mcp-tasks/{task_id}`；这里的 `task_id` 是 DeerFlow 跟踪行 ID，DeerMate 返回的是其保存的 `remote_task_id`。下面的实际 Gateway 验收已证明 SQL 跟踪行跨有序进程重启仍能查询同一 Worker 任务。
 
 ## 状态与证据
+
+同一聊天的后续问题可通过可选 `continue_codex` 工具交回原 Codex 会话。它使用当前用户/chat/incarnation 解析公开跟踪 ID，每轮创建新的持久子任务，保留旧结果，复用原生 session/workspace。需升级 wheel、合并第二组 raw task toolset，并在 Gateway 配置中注册 provider；[完整接入方式](codex-conversation.md)。恢复/表单和权限审批不在该工具范围内。
 
 | Worker 状态 | DeerFlow 契约 | 含义 |
 | --- | --- | --- |

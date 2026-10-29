@@ -167,8 +167,16 @@ def app_config(settings):
         },
         "stream_bridge": {"type": "memory"},
         "sandbox": {"use": "deerflow.sandbox.local:LocalSandboxProvider"},
-        "tools": [],
-        "tool_groups": [],
+        "tools": [
+            {
+                "name": "continue_codex",
+                "group": "deermate",
+                "use": "deermate.deerflow_tools:continue_codex",
+            }
+        ]
+        if settings["worker"]["enabled"]
+        else [],
+        "tool_groups": [{"name": "deermate"}] if settings["worker"]["enabled"] else [],
         "memory": {"enabled": False},
         "scheduler": {"enabled": False},
         "title": {"enabled": False},

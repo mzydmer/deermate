@@ -62,7 +62,11 @@ def gateway_child(port: int):
         tools = await get_mcp_tools()
         by_name = {tool.name: tool for tool in tools}
         names = sorted(by_name)
-        if names != ["deermate_check_worker_connection", "deermate_submit_task"]:
+        if names != [
+            "deermate_check_worker_connection",
+            "deermate_continue_task",
+            "deermate_submit_task",
+        ]:
             raise HTTPException(500, "Unexpected discovered task tools")
         runtime = SimpleNamespace(
             context={
@@ -79,6 +83,33 @@ def gateway_child(port: int):
             runtime=runtime, project_id="demo", prompt=body["prompt"], idempotency_key=body["key"]
         )
         return {"tracking": result, "visible_tools": names, "connection_check": connection}
+
+    @app.post("/__deermate_verification/continue")
+    async def continue_round(request: Request):
+        expected = os.environ["DEERMATE_VERIFICATION_KEY"]
+        if not secrets.compare_digest(request.headers.get("X-DeerMate-Verification", ""), expected):
+            raise HTTPException(403, "Verification key required")
+        body = await request.json()
+        if set(body) != {"thread_id", "task", "message", "key"}:
+            raise HTTPException(422, "Only the fixed continuation is supported")
+        user_id = await get_current_user(request)
+        thread = await get_thread_store(request).get(body["thread_id"], user_id=user_id)
+        if thread is None:
+            raise HTTPException(404, "Thread not found")
+        from deermate.deerflow_tools import continue_codex
+
+        runtime = SimpleNamespace(
+            context={
+                "thread_id": body["thread_id"],
+                "thread_incarnation": thread.get("incarnation"),
+                "user_id": user_id,
+            },
+            config={},
+            tool_call_id=body["key"],
+        )
+        return await continue_codex.coroutine(
+            runtime=runtime, message=body["message"], task=body["task"]
+        )
 
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning", access_log=False)
 
@@ -187,6 +218,14 @@ def prepare(work, checkout, worker_port):
             {
                 "config_version": 62,
                 "models": [],
+                "tools": [
+                    {
+                        "name": "continue_codex",
+                        "group": "deermate",
+                        "use": "deermate.deerflow_tools:continue_codex",
+                    }
+                ],
+                "tool_groups": [{"name": "deermate"}],
                 "sandbox": {"use": "deerflow.sandbox.local:LocalSandboxProvider"},
                 "database": {"backend": "sqlite", "sqlite_dir": str(work / "sql")},
                 "memory": {"enabled": False},
@@ -231,7 +270,7 @@ def prepare(work, checkout, worker_port):
             "DEER_FLOW_CONFIG_PATH": str(work / "config.yaml"),
             "DEER_FLOW_ENV_FILE": str(work / "empty.env"),
             "DEER_FLOW_AUTH_DISABLED": "1",
-            "PYTHONPATH": str(checkout / "backend"),
+            "PYTHONPATH": os.pathsep.join([str(checkout / "backend"), str(ROOT / "src")]),
             "GATEWAY_HOST": "127.0.0.1",
             "DEERMATE_VERIFICATION_KEY": secrets.token_urlsafe(32),
             "TIKTOKEN_CACHE_DIR": str(work / "tiktoken"),
@@ -506,7 +545,11 @@ def run(checkout, gateway_python, receipt_path, work, transport="local", replay_
             check(
                 "sql_submission_and_hidden_control_tools",
                 payload["visible_tools"]
-                == ["deermate_check_worker_connection", "deermate_submit_task"],
+                == [
+                    "deermate_check_worker_connection",
+                    "deermate_continue_task",
+                    "deermate_submit_task",
+                ],
                 tracking_id=tid,
                 remote_task_id=row["remote_task_id"],
             )
@@ -576,6 +619,8 @@ def run(checkout, gateway_python, receipt_path, work, transport="local", replay_
                 lambda thread=thread, tid=tid: detail(thread, tid),
                 lambda t, expected=expected: t["status"] == expected,
             )
+            if expected == "completed":
+                conversation = (thread, tid, remote)
             check(
                 f"background_validation_{expected}",
                 data["result"]["validation"]["exit_code"] == (0 if expected == "completed" else 1)
@@ -680,6 +725,56 @@ def run(checkout, gateway_python, receipt_path, work, transport="local", replay_
             ).returncode
             == 0,
         )
+        # Each follow-up uses the supported scoped tool, original ordinary driver,
+        # SQL tracking and Worker; this verification endpoint replaces model choice only.
+        chat, parent_tid, parent_remote = conversation
+        original = worker_task(parent_remote)
+        current_tid = parent_tid
+        rounds = [original]
+        for number in (2, 3):
+            body = {
+                "thread_id": chat,
+                "task": current_tid,
+                "message": "explain",
+                "key": uuid.uuid4().hex,
+            }
+            created = request(gc, "POST", "/__deermate_verification/continue", body)
+            current_tid = created["task_id"]
+            done = wait_for(
+                lambda current_tid=current_tid: detail(chat, current_tid),
+                lambda t: t["status"] == "completed",
+            )
+            child_remote = sql_row(current_tid)["remote_task_id"]
+            child = worker_task(child_remote)
+            assert done["result"]["validation"]["exit_code"] == 0
+            assert (
+                child["conversation_round"] == number
+                and child["parent_task_id"] == rounds[-1]["task_id"]
+            )
+            rounds.append(child)
+            reconciled = request(gc, "POST", "/__deermate_verification/continue", body)
+            assert reconciled["task_id"] == current_tid and reconciled["reconciled"]
+        other_chat = uuid.uuid4().hex
+        request(gc, "POST", "/api/threads", {"thread_id": other_chat})
+        rejected = request(
+            gc,
+            "POST",
+            "/__deermate_verification/continue",
+            {
+                "thread_id": other_chat,
+                "task": current_tid,
+                "message": "explain",
+                "key": uuid.uuid4().hex,
+            },
+        )
+        check(
+            "three_rounds_one_native_session_and_workspace",
+            len({r["session_id"] for r in rounds}) == len({r["workspace"] for r in rounds}) == 1
+            and len({r["task_id"] for r in rounds}) == 3
+            and worker_task(parent_remote) == original,
+            conversation_rounds=3,
+        )
+        check("continuation_reconcile_and_chat_scope", rejected["status"] == "not_submitted")
         verify_checkout(checkout)
         check("pinned_upstream_unchanged", True)
         if transport == "ssh":

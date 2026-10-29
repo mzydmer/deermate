@@ -11,7 +11,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.datastructures import Headers
 
 from .config import Settings
-from .models import AnswerInput, Conflict, ResumeTask, SubmitTask
+from .models import AnswerInput, Conflict, ContinueTask, ResumeTask, SubmitTask
 from .worker import Worker
 
 
@@ -142,6 +142,7 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
             "instance_id": worker(request).store.instance_id,
             "adapter": "codex-app-server",
             "operations": ["submit", "status", "events", "cancel", "resume", "input"],
+            "continuation": "child-tasks-v1",
             "remote": False,
         }
 
@@ -185,6 +186,17 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
     @app.post("/tasks/{task_id}/resume", dependencies=auth)
     async def resume(task_id: str, body: ResumeTask, request: Request):
         return worker(request).store.resume(task_id, body)
+
+    @app.post("/tasks/{task_id}/continue", dependencies=auth)
+    async def continue_task(task_id: str, body: ContinueTask, request: Request, response: Response):
+        parent = worker(request).store.get(task_id)
+        if parent.project_id not in settings.projects:
+            raise HTTPException(404, "Project is not registered")
+        task, created = worker(request).store.continue_task(
+            task_id, body, settings.policy(parent.project_id)
+        )
+        response.status_code = 201 if created else 200
+        return task
 
     @app.post("/tasks/{task_id}/input", dependencies=auth)
     async def answer(task_id: str, body: AnswerInput, request: Request):

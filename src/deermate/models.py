@@ -38,6 +38,12 @@ class AnswerInput(BaseModel):
     answers: dict[str, list[str]]
 
 
+class ContinueTask(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    message: str = Field(min_length=1, max_length=32_000)
+    idempotency_key: str = Field(min_length=1, max_length=128)
+
+
 class Task(BaseModel):
     task_id: str
     project_id: str
@@ -46,6 +52,9 @@ class Task(BaseModel):
     created_at: str
     updated_at: str
     attempt: int = 1
+    root_task_id: str | None = None
+    parent_task_id: str | None = None
+    conversation_round: int = 1
     session_id: str | None = None
     turn_id: str | None = None
     workspace: str | None = None

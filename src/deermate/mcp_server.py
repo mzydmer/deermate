@@ -10,7 +10,7 @@ from mcp.types import CallToolResult, TextContent, Tool, ToolAnnotations
 from pydantic import BaseModel, ConfigDict, Field
 
 from .bridge import BridgeError, TaskBridge
-from .models import SubmitTask
+from .models import ContinueTask, SubmitTask
 
 
 class TaskLookup(BaseModel):
@@ -25,6 +25,14 @@ class RemoteTaskLookup(BaseModel):
 
 class ConnectionCheck(BaseModel):
     model_config = ConfigDict(extra="forbid")
+
+
+class Continuation(ContinueTask, TaskLookup):
+    pass
+
+
+class RemoteContinuation(ContinueTask, RemoteTaskLookup):
+    pass
 
 
 def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server:
@@ -56,6 +64,16 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
             "A tool error leaves task outcome unknown. input_required can mean "
             "native input, local review or explicit restart recovery; inspect its kind.",
         ),
+        "continue_task": (
+            RemoteContinuation if remote else Continuation,
+            bridge.continue_task,
+            "Continue the latest terminal task in the SAME Codex session and workspace. "
+            "Returns a NEW durable child task_id; keep the parent's result. Requires the "
+            "exact saved Worker handle and a stable per-round idempotency_key. "
+            "Rejects active, stale, input/review/recovery tasks; never approves recovery. "
+            "In DeerFlow chats use continue_codex with the public DeerFlow task ID; "
+            "public mcp-task IDs are not Worker handles. Never guess another handle.",
+        ),
         "cancel_task": (
             lookup,
             bridge.cancel,
@@ -72,6 +90,10 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
             "login, capacity or project grants; existing task outcome is not checked.",
         ),
     }
+    # Pinned DeerFlow requires every raw role name to be unique across toolsets.
+    # These aliases keep child rounds in its existing ordinary driver unchanged.
+    tools["get_continuation_status"] = tools["get_task_status"]
+    tools["cancel_continuation_task"] = tools["cancel_task"]
 
     @server.list_tools()
     async def list_tools():
@@ -81,7 +103,8 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
                 description=description,
                 inputSchema=model.model_json_schema(),
                 annotations=ToolAnnotations(
-                    readOnlyHint=name in {"get_task_status", "check_worker_connection"},
+                    readOnlyHint=name
+                    in {"get_task_status", "get_continuation_status", "check_worker_connection"},
                     idempotentHint=True,
                 ),
             )

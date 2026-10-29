@@ -42,6 +42,7 @@ async def submit(request: Request, body: Submission):
     if "deermate_submit_task" not in by_name or set(by_name) - {
         "deermate_submit_task",
         "deermate_check_worker_connection",
+        "deermate_continue_task",
     }:
         raise HTTPException(503, "Expected enrolled Worker tool is unavailable")
     runtime = SimpleNamespace(

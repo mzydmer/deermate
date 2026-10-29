@@ -49,6 +49,8 @@ An independent reviewer checks the patch and acceptance evidence; it is not assu
 
 ## Recovery, side effects, and cancellation
 
+The optional [Codex follow-up tool](codex-conversation.md) resolves only records returned by the current runtime user's chat/incarnation repository query; model input cannot supply another principal, server, path or native session. Raw MCP/Worker clients remain trusted single-owner lower-level interfaces. A continuation preserves the parent's admission policy and only advances its latest terminal head under a transaction. Busy, stale, changed-policy, input/review/recovery and missing-session cases are rejected; the tool cannot approve recovery, rotate credentials or extend an SSH lease. Same-call reconciliation returns an already tracked child; uncertain outcomes never trigger a replacement task.
+
 Persist a task/session mapping before launching. Reconcile after a timeout or reconnect rather than replaying blindly. Deduplicate event deliveries and write operations. Record uncertain outcomes explicitly. A cancellation request remains pending until the worker reports interruption; a disconnected machine may continue working and must not be falsely displayed as stopped.
 
 ## Go login and administration
