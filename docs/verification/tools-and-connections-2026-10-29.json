@@ -7,7 +7,6 @@
   "discovered_tool_count": 3,
   "unknown_connection_not_contacted": true,
   "anonymous_rejected": true,
-  "private_connections_configured": false,
   "real_model_run_success": true,
   "model_selected_tools": [
     "web_search",
@@ -38,11 +37,42 @@
     "passed": 32
   },
   "browser_connection_test_passed": true,
-  "ui_refinement_deployment": "pending",
+  "ui_refinement_deployment": "verified",
   "limits": [
     "Private GitHub/Notion/SQL connectors are not configured or verified.",
     "MCP metadata discovery does not prove business-data permission or tool execution.",
     "Search queries and public page URLs are sent to external providers.",
     "Temporary home-link expiry is unchanged; actual expiry has not been observed."
-  ]
+  ],
+  "private_business_data_connections_configured": false,
+  "deployed_commit": "e542b7a53e9901bc8202b1bcaa326eec0b5db2a3",
+  "cloud_deployment": {
+    "source_commit": "e542b7a53e9901bc8202b1bcaa326eec0b5db2a3",
+    "source_archive_sha256": "a419344d99b3d8bf7b8e6c28796c17d4e9841cf54f489074beed9b125d0a7ab8",
+    "offline_image_layer_built": true,
+    "gateway_base_image_preserved": true,
+    "gateway_image_updated": true,
+    "existing_home_volume_preserved": true,
+    "owner_model_and_account_backup_retained": true,
+    "native_web_tools_loaded": true,
+    "codex_and_model_config_preserved": true,
+    "offline_worker_doctor_passed": true,
+    "continuation_capability_verified": true,
+    "expiry_units_unchanged_and_timer_active": true,
+    "native_tasks_submitted": 0,
+    "local_https_ready": true,
+    "active_counts_before": {
+      "scheduled_task_runs": 0,
+      "runs": 0,
+      "mcp_tasks": 0
+    },
+    "gateway_oom_killed": false,
+    "gateway_image": "sha256:fb6a3c2f054a4e596fbb76744d7f4efd31885bad0688923b67a0e6d071023458",
+    "gateway_restart_count": 0,
+    "checkpoint_ready": true
+  },
+  "final_ui_asset_revision": "7e56aebd4f59030425c07ac1d8f20efd51734788d8bcf729e8932f8c120d6446",
+  "final_browser_title_and_connection_state_verified": true,
+  "retained_chat_reconciled_after_upgrade_without_new_run": true,
+  "verified_visual_scope": "desktop dark theme; shared token check passed"
 }

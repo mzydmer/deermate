@@ -7,12 +7,12 @@
 | 项目 | 当前事实 |
 | --- | --- |
 | 阶段 | M1–M2.5 执行链路、M4.1 前端已有证据；M4.2 Go 已验证；M4.3 统一设计规范和页面风格已实现，本地验收已通过 |
-| 分支 | `main`；多轮会话实现 `f6e8b21` 已推送并部署；早期完整开发栈集成点 `51d58b2` |
+| 分支 | `main`；工具实现 `815d8d8`、页面收尾 `e542b7a` 已推送并部署；多轮会话实现 `f6e8b21` 保留 |
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 工具与连接 | 公开搜索/网页读取及管理员检查页已部署；云端真实模型调用两种工具并收到数据，页面 MCP 检查发现 3 个工具。全量 213 passed / 7 skipped，固定部署契约 32 passed。私人数据连接仍需单独服务和授权，见[指南](tools-and-connections.md)与[收据](verification/tools-and-connections-2026-10-29.json) |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 全量 199 passed / 7 skipped、固定部署契约 32 passed；Gateway local/SSH 20/28 项通过；真实云到家庭三轮共用原生会话/工作区，独立测试与通知 delivered，通过同 intent 只读复查 |
+| 当前验收 | 全量 213 passed / 7 skipped、固定部署契约 32 passed；公开工具实际聊天及 MCP 页面测试通过。历史 Gateway local/SSH 20/28 项与真实云到家庭三轮证据保留，本轮未重复调用 Codex |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
 | 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地及云到家庭正常 run 均由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |

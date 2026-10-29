@@ -318,3 +318,17 @@ connection test passed. A UI-only refinement removes the duplicate host title an
 updates the row label after a test; it does not change the verified tool behavior.
 See [sanitized receipt](verification/tools-and-connections-2026-10-29.json).
 
+## 2026-10-29 · Tooling delivery complete
+
+UI refinement `e542b7a` is deployed in an immutable offline Gateway layer; final
+receipt confirms the existing home/model/account/Codex settings and expiry units
+were preserved, readiness passed, zero active work before replacement, no OOM and
+restart count zero at the observation point. The final browser page has one title,
+three loaded native tools and a successful three-tool MCP discovery with updated
+row status. Desktop dark theme screenshot retained privately. Shared tokens, JS
+syntax, wheel resource equality and pinned offline plugin/MCP checks passed after
+the UI refinement. Retained successful chat was reconciled read-only after upgrade;
+no second model run or native task was submitted. Final sanitized
+[receipt](verification/tools-and-connections-2026-10-29.json) separates the
+model-verified tool implementation from the later UI commit. Private business-data
+connectors and actual temporary-grant expiry remain outside this acceptance.
