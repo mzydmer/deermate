@@ -110,6 +110,18 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 - [x] Enforce token consistency in builds and CI; link guidance from AGENTS and contribution docs.
 - [x] Verify the refreshed login/workspace/admin pages on desktop, mobile, dark and reduced-motion modes.
 
+## M4.4 — Memory-backed personal secretary home（Proposed）
+
+用户要求先评审 [spec](specs/m4-personal-memory-briefing.md)；本轮仅文档，以下均未实现。
+
+- [ ] Personal display name/timezone, per-user memory controls and a verified local DeerFlow memory adapter.
+- [ ] Source/version-preserving attention topics, memory correction/forgetting and bounded history import.
+- [ ] Personal daily briefing with actual progress, freshness, clear recommendation reasons and useful empty/error states.
+- [ ] Read-only progress follow-up, explicitly scoped task continuation and previewed new-topic creation, preserving one chat/one executor session, existing permissions and idempotency.
+- [ ] Budgeted incremental generation, deletion/cache invalidation and real owner/UI/privacy acceptance.
+
+First release uses existing owned conversations/tasks. Authorized external-source tracking follows separately. Design rationale: [ADR 0013](decisions/0013-memory-backed-personal-briefing.md).
+
 ## M5 — Extend the ecosystem
 
 - [ ] Add an optional Hermesh CLI bridge; keep its separate upstream implementation optional.

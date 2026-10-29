@@ -374,3 +374,15 @@ contains no account credentials, live chat/native IDs or workspace paths. The
 separate [offline receipt](verification/chat-session-binding-offline-2026-10-29.json)
 covers failure/concurrency/restart cases. Claude execution and actual temporary
 access expiry remain unverified.
+## 2026-10-29 · 个人记忆与今日简报规格提案
+
+用户要求对私人助手记忆和首页做大迭代，并明确先出 spec、不写代码。本轮准备
+[M4.4 规格](specs/m4-personal-memory-briefing.md)及
+[ADR 0013 提案](decisions/0013-memory-backed-personal-briefing.md)，补充 FR-023–FR-028
+和未勾选路线图。首页方向为个人问候、可核对的今日关注、可解释的新话题及明确动作；
+区分长期记忆、关注主题和进展证据，约定来源时效、更正/遗忘、权限/预算与单会话关联。
+
+核对了当前首页/Go 用户模型和固定 DeerFlow 记忆接口的源码，确认最小部署记忆仍禁用，
+称呼/时区和新的简报能力均非现有功能。仅验证文档链接、需求引用和 diff 范围；没有
+改应用代码、启用记忆、导入私人历史、调用模型、创建调度或部署。所有新增验收标准待
+后续实施与评审，不能视为已通过。
