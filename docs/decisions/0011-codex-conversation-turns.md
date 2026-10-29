@@ -1,6 +1,6 @@
 # ADR 0011: Preserve each Codex conversation round as a child task
 
-Date: 2026-10-29. Status: Accepted; implemented; offline/pinned Gateway verified, live rollout tracked in STATUS.
+Date: 2026-10-29. Status: Accepted; implemented; offline/pinned Gateway and an approved temporary cloud-to-home three-round conversation verified.
 
 ## Context
 

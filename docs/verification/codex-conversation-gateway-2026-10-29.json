@@ -162,5 +162,11 @@
     "skipped": 7,
     "seconds": 70.73
   },
-  "actual_deployment_contract_passed": 32
+  "actual_deployment_contract_passed": 32,
+  "local_gateway": {
+    "passed": true,
+    "deermate_source_sha256": "34820db2fb7d82e70c300c2901b7e419f09398128a576cae5b585d5b911662bb",
+    "verifier_sha256": "4774109e06a38bacd3ac8e504cf3f672bf809a4479775be85f0280d49c10b091",
+    "check_count": 20
+  }
 }

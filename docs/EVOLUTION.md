@@ -275,3 +275,9 @@ React 和 Go 管理页共用 canonical CSS，Go 副本由 Python 标准库脚本
 可选 `continue_codex` provider 按实际 user/chat/incarnation 查询已有跟踪行，把公开 task ID 私下映射到已注册 Worker handle，经原 ordinary driver 形成独立后台行。固定上游要求 task toolset 各角色名称不重复，因此子任务查询/取消使用独立 raw 别名。没有改写上游源码、Go 公开接口或前端，没有自动审批恢复或延长 SSH 授权。
 
 全量 199 passed / 7 skipped（70.73 秒，一条已有 Starlette 弃用提示）；会话/固定部署专项 53 passed；原 ordinary driver 两变体通过，实际 Gateway/SQL/SSH 28 项通过，含三轮/结果保留/跨聊天拒绝/同调用核对。真实公网升级和原生问答仍需单独验收，进度见 STATUS。新增可复用 opt-in 多轮验收脚本，先持久化完整 ledger，再发正式模型 run，未知结果只读核对。
+
+### 同日追加 · 真实三轮已部署验收
+
+源码 `f6e8b21` 已推送。家中 Worker 在无活动任务时一致性备份并升级，保留实例和 4 项既有任务/结果。云端从该公开归档核对 SHA，使用既有基底/依赖构建无网络 wheel 镜像层，更新原 Compose image 并仅替换 Gateway；账号、加密模型、home 卷、Go/前端和 SSH 账号/期限均保留。原到期 unit 哈希不变、timer active，未新增付费资源或公网端口。
+
+原对话的两次真实模型 follow-up 各 success（各 2 次 LLM 调用），通过 scoped provider 接入普通后台任务；累计三项 Worker/MCP 任务共用原生 session/workspace/base/policy，独立测试退出 0、通知 delivered、父证据保留。第三轮原文没有重新发送第二轮标记，Codex 仍准确回忆；两次问答没有改变原单文件补丁。相同 ledger 只读复查通过，总 Worker 任务仍为 6。浏览器核对完整对话与结果，截图留在忽略目录，未重验键入/流式交互。[真实有限收据](verification/codex-conversation-live-2026-10-29.json)保留源码/脚本绑定、部署与边界。另补本地 Gateway 20 项检查通过，SSH Gateway 28 项；不将 fixture 等同于真实模型证据。

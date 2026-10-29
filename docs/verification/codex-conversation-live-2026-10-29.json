@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "scope": "Two real cloud-model-selected follow-ups to the earlier verified home Codex demo repair; three rounds total",
+  "source_commit": "f6e8b21287bef7c7c953baa6d6f0a17a39791382",
+  "worker_source_sha256": "34820db2fb7d82e70c300c2901b7e419f09398128a576cae5b585d5b911662bb",
+  "live_verifier_sha256": "d69f5d0c618efeb63c1249192e2d6641626334acdfd73709e6da774d8ca67271",
+  "gateway_verifier_sha256": "4774109e06a38bacd3ac8e504cf3f672bf809a4479775be85f0280d49c10b091",
+  "earlier_root_evidence": "home-link-2026-10-28.json",
+  "cloud_upgrade": {
+    "source_commit": "f6e8b21287bef7c7c953baa6d6f0a17a39791382",
+    "source_archive_sha256": "f5c67a359b89cd3dd02898f025637b490b0331f14a30ed4c1fdecb1702f5c10e",
+    "offline_image_layer_built": true,
+    "gateway_base_image_preserved": true,
+    "gateway_image_updated": true,
+    "existing_home_volume_preserved": true,
+    "owner_model_and_account_backup_retained": true,
+    "provider_schema_scoped": true,
+    "offline_worker_doctor_passed": true,
+    "continuation_capability_verified": true,
+    "expiry_units_unchanged_and_timer_active": true,
+    "native_tasks_submitted": 0,
+    "local_https_ready": true,
+    "active_counts_before": {
+      "scheduled_task_runs": 0,
+      "runs": 0,
+      "mcp_tasks": 0
+    },
+    "gateway_oom_killed": false,
+    "active_gateway_image_id": "sha256:c398b9fb763f903dfb60fddff57f286a1586a8bac3806bba91af890a34e94e66",
+    "gateway_running_at_recheck": true,
+    "expiry_timer_still_active": true
+  },
+  "home_worker_upgrade": {
+    "worker_instance_preserved": true,
+    "prior_tasks_and_evidence_preserved": true,
+    "prior_task_count": 4,
+    "continuation_capability_verified": true,
+    "registered_projects_unchanged": true,
+    "native_tasks_submitted": 0
+  },
+  "real_conversation": {
+    "schema_version": 1,
+    "checked_at": "2026-10-29T08:24:05.890562+00:00",
+    "verifier_sha256": "d69f5d0c618efeb63c1249192e2d6641626334acdfd73709e6da774d8ca67271",
+    "normal_run_api": true,
+    "submit_shim_used": false,
+    "cloud_to_home_verified": true,
+    "network_evidence": {
+      "kind": "public_control_to_local_worker",
+      "checked_at": "2026-10-29T08:23:58.801394+00:00",
+      "ssh_host_key_pinned": true,
+      "worker_instance_matches_local": true
+    },
+    "total_conversation_rounds": 3,
+    "new_native_tasks": 2,
+    "one_native_session_and_workspace": true,
+    "rounds": [
+      {
+        "round": 2,
+        "run_status": "success",
+        "llm_call_count": 2,
+        "native_attempt": 1,
+        "independent_validation_exit_code": 0,
+        "notification_status": "delivered",
+        "previous_evidence_preserved": true,
+        "exact_native_message_verified": true,
+        "previous_marker_recalled": true
+      },
+      {
+        "round": 3,
+        "run_status": "success",
+        "llm_call_count": 2,
+        "native_attempt": 1,
+        "independent_validation_exit_code": 0,
+        "notification_status": "delivered",
+        "previous_evidence_preserved": true,
+        "exact_native_message_verified": true,
+        "previous_marker_recalled": true
+      }
+    ],
+    "passed": true
+  },
+  "read_only_reconciliation": {
+    "same_saved_ledger_passed": true,
+    "new_model_runs": 0,
+    "new_native_tasks": 0,
+    "original_patch_preserved": true,
+    "same_session_workspace_base_and_policy": true
+  },
+  "browser": {
+    "public_original_chat_and_delivered_results_checked": true,
+    "third_round_memory_and_validation_visible": true,
+    "typing_or_streaming_reverified": false
+  },
+  "checks": {
+    "offline_pytest_passed": 199,
+    "offline_pytest_skipped": 7,
+    "offline_pytest_seconds": 70.73,
+    "actual_deployment_contract_passed": 32,
+    "pinned_ordinary_driver_modes_passed": 2,
+    "actual_gateway_local_checks": 20,
+    "actual_gateway_ssh_checks": 28,
+    "ruff": true,
+    "wheel": true
+  },
+  "access": {
+    "registered_project": "demo",
+    "lease_deadline_utc": "2026-10-30T02:29:56+00:00",
+    "lease_extended": false,
+    "actual_expiry_observed": false,
+    "go_public_api_changed": false,
+    "frontend_source_changed": false,
+    "new_public_ports_or_paid_cloud_resources": false
+  },
+  "limits": [
+    "Normal model tool choice was exercised through production HTTP run APIs; browser typing/streaming was not reverified.",
+    "Two follow-ups plus the earlier repair demonstrate bounded continuity, not unlimited memory or a hard cost quota.",
+    "Native form input/review/recovery still require their existing explicit handling.",
+    "Only the registered demo project and existing temporary SSH lease were used.",
+    "Both SSH legs terminate at the trusted cloud host; no cloud-operator privacy or multi-tenant isolation claim.",
+    "The installed expiry timer remains active; actual future expiry has not yet been observed."
+  ],
+  "passed": true
+}

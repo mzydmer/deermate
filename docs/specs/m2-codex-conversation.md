@@ -1,6 +1,6 @@
 # M2 continuous remote Codex conversation
 
-- **Status:** Implemented; offline and actual pinned Gateway/SSH verified, live upgrade pending
+- **Status:** Implemented; offline, pinned Gateway local/SSH and real temporary cloud-to-home three-round conversation verified
 - **Updated:** 2026-10-29
 - **Requirements:** FR-001, FR-003, FR-004, FR-006, FR-010, FR-012, FR-013; NFR-001, NFR-003, NFR-005
 - **Decision:** [ADR 0011](../decisions/0011-codex-conversation-turns.md)
@@ -35,3 +35,5 @@ Back up Worker SQLite and Gateway configuration before upgrade; retain existing 
 ## Verification so far
 
 Full suite: **199 passed / 7 skipped**, 70.73 seconds, one existing Starlette warning. Focused conversation/deployment checks: **53 passed**, including 32 actual pinned deployment contracts. Actual pinned ordinary driver local/SSH: 2 passed. Actual Gateway/SQL/SSH verifier: **28 checks passed**, including three rounds, parent evidence preservation, scoped rejection and same-call reconciliation. Ruff/wheel and live deployment are recorded in STATUS; generated fixtures do not establish real-model/UI/native acceptance.
+
+Real rollout at `f6e8b21`: upgraded the existing Gateway with an immutable offline wheel layer, preserving its base/dependencies, data, account/model configuration and SSH lease. Upgraded the home Worker after a consistent backup, retaining its instance and four prior tasks. Two normal cloud model-selected follow-ups to the existing repair shared one native session/workspace, preserved the original patch/results, passed independent tests and delivered notifications. The third native message recalled the second message’s marker without receiving it again. A same-ledger read-only recheck passed with no new task; browser results were inspected, typing/streaming not reverified. [Separate live receipt](../verification/codex-conversation-live-2026-10-29.json).

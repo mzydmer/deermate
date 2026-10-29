@@ -30,7 +30,7 @@
 | FR-001 | 单一私人秘书入口，保留偏好和任务上下文 | 正式 HTTP run 已验证云端真实模型选 MCP 工具、家庭原生执行与通知 delivered；浏览器输入和完整秘书体验待验收 |
 | FR-002 | 只接受管理员注册的项目；请求不能任意指定主机路径、执行命令或扩展权限 | M1 已实现本地接纳 |
 | FR-003 | 相同幂等键与相同请求返回已有任务；不同内容复用键返回冲突；继续操作也有独立幂等键 | M1 已实现 |
-| FR-004 | 保存任务、原生会话、轮次与事件游标；支持查询、中断和继续同一会话 | Worker 原生继续与按轮子任务已实现；秘书侧 scoped provider、MCP/SSH/Gateway 已验证，真实多轮状态见 [规格](specs/m2-codex-conversation.md) |
+| FR-004 | 保存任务、原生会话、轮次与事件游标；支持查询、中断和继续同一会话 | Worker 原生继续与按轮子任务已实现；秘书侧 scoped provider、MCP/SSH/Gateway 与实际云到家庭三轮已通过，见 [规格](specs/m2-codex-conversation.md) |
 | FR-005 | 从项目已提交 HEAD 创建独立 worktree；保留原工作区；收集 tracked 与普通 untracked 文件的补丁 | M1 已实现 |
 | FR-006 | Agent 原生轮次完成后独立运行管理员配置的验证命令，保存退出码与输出；缺少验证时不能宣称验证通过 | M1 已实现 |
 | FR-007 | 服务重启保留任务与会话身份；先前运行中的任务进入显式恢复状态，不能自动重放副作用 | M1 已实现本地恢复 |
@@ -111,6 +111,7 @@
 | AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 本地及 SSH 两种实际 Gateway 路径通过：SQL/进程重启、原始查询/取消、Worker 失联恢复；模型选工具由测试入口代替，见[M2.3](specs/m2-gateway-ssh-demo.md) |
 | AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | SSH 协议及完整 Gateway 链路的同机 fixture 范围通过；撤权后不假称已取消、恢复授权后确认先前取消，且无新原生会话/轮次；另有实际云端受限账号/家庭反向链路断线恢复与只读核对，见[家庭链路](specs/m2-home-reverse-link.md)；实际到期仍待观察。基础 fixture 见[M2.2](specs/m2-ssh-worker.md)与[M2.3](specs/m2-gateway-ssh-demo.md) |
 | AC-M2-03 | 本地容器服务可登录，经 SSH 调用真实 Codex 并返回独立验证；重启保留结果，重复请求不重复执行 | [M2.5 规格](specs/m2-local-docker.md)、[本地 Docker 指南](local-docker.md)、[真实验收收据](verification/local-docker-2026-10-26.json)；模型选工具由本地管理员/key 入口替代 |
+| AC-M2-04 | 同一聊天连续追问使用同一个原生 session/workspace，每轮独立跟踪与验证，保留父结果且不重放 | [多轮规格](specs/m2-codex-conversation.md)、[真实三轮收据](verification/codex-conversation-live-2026-10-29.json) |
 
 上述文件是证据入口，不表示每项已覆盖所有边界。当前跑过哪些命令、对应哪个代码版本，以 [STATUS.md](STATUS.md) 为准。
 

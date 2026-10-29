@@ -5,7 +5,7 @@
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Go 主后端</p>
 
-> **当前阶段：Go 控制端 + 云到家庭 Alpha，2026-10-28。** 真实云端秘书模型已通过单独授权的临时 SSH 链路调用家里的 Codex，返回补丁、独立测试及送达通知。Go 负责登录、管理和公网 API，DeerFlow/Worker 保留 Python。自动设备配对和多岗位路由仍规划中；视频仍是概念预览。[已验收范围与边界](docs/specs/m2-home-reverse-link.md)。
+> **当前阶段：Go 控制端 + 云到家庭 Alpha，2026-10-29。** 真实云端秘书模型已通过单独授权的临时 SSH 链路调用家里的 Codex，返回补丁、独立测试及送达通知。Go 负责登录、管理和公网 API，DeerFlow/Worker 保留 Python。自动设备配对和多岗位路由仍规划中；视频仍是概念预览。[已验收范围与边界](docs/specs/m2-home-reverse-link.md)。
 
 ## 你的私人 Agent 秘书
 
@@ -55,11 +55,11 @@ deermate diff TASK_ID
 
 `TASK_ID` 使用提交接口返回的值。服务只监听 `127.0.0.1`，并创建本地 bearer token。[完整安装、中断、继续与恢复说明](docs/local-worker.md)。
 
-同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入三个后台任务工具，另有只读 `check_worker_connection` 供秘书检查连接，不创建任务。Worker 独立于 MCP 进程运行；真实千问已通过正式 run API 自行选工具，经 SSH 开发服务完成本机真实 Codex 修复、独立测试与通知 delivered，见[真实模型验收](docs/secretary-acceptance.md)。另已按用户授权验收临时云到家庭链路：真实模型/Codex 派单、独立测试、通知和 9 项 OpenSSH 权限检查通过（[收据](docs/verification/home-link-2026-10-28.json)）；自动配对和实际到期观察仍待完成。
+同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入后台任务工具，另有只读 `check_worker_connection` 供秘书检查连接，不创建任务。Worker 独立于 MCP 进程运行；真实千问已通过正式 run API 自行选工具，经 SSH 开发服务完成本机真实 Codex 修复、独立测试与通知 delivered，见[真实模型验收](docs/secretary-acceptance.md)。另已按用户授权验收临时云到家庭链路：真实模型/Codex 派单、独立测试、通知和 9 项 OpenSSH 权限检查通过（[收据](docs/verification/home-link-2026-10-28.json)）；自动配对和实际到期观察仍待完成。
 
 派单前可运行 `deermate doctor` 检查本地连接，或运行 `deermate --config controller.toml --worker home doctor` 检查已注册的家庭 Worker。命令检查凭据、SSH/Worker 身份与协议，输出脱敏 JSON；受阻时退出码为 1。API 可达不代表原生 Agent 已登录、有空闲容量或项目权限。见 [SSH 接入与预检指南](docs/ssh-worker.md)。
 
-**连续追问同一个 Codex：** 新增可选聊天工具与按轮子任务，保留原生会话/工作区和每轮证据。Worker/MCP/SSH 及固定 Gateway fixture 已通过，真实部署进展见 [STATUS](docs/STATUS.md)。[接入与边界](docs/codex-conversation.md)。
+**连续追问同一个 Codex：** 新增可选聊天工具与按轮子任务，保留原生会话/工作区和每轮证据。Worker/MCP/SSH、固定 Gateway 与真实云到家庭三轮均已通过，独立测试与通知送达（[收据](docs/verification/codex-conversation-live-2026-10-29.json)）。[接入与边界](docs/codex-conversation.md)。
 
 ## 我们正在构建什么
 

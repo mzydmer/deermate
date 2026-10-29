@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Go control plane + cloud-to-home alpha · 2026-10-28.** A real cloud secretary model now delegates through a separately approved temporary SSH link to home Codex, returning an independently tested patch and delivered notification. Go owns login/management/public APIs; DeerFlow/Worker remain internal Python services. Device pairing and specialist routing remain planned; the video is simulated. [Verified scope and limits](docs/specs/m2-home-reverse-link.md).
+> **Go control plane + cloud-to-home alpha · 2026-10-29.** A real cloud secretary model now delegates through a separately approved temporary SSH link to home Codex, returning an independently tested patch and delivered notification. Go owns login/management/public APIs; DeerFlow/Worker remain internal Python services. Device pairing and specialist routing remain planned; the video is simulated. [Verified scope and limits](docs/specs/m2-home-reverse-link.md).
 
 ## Meet your personal agent secretary
 
@@ -64,11 +64,11 @@ deermate diff TASK_ID
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
 
-To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its three background tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. A real model has now selected MCP tools through the normal run API, completed a real local Codex repair and delivered its notification. See [live acceptance](docs/secretary-acceptance.md). A separately approved temporary cloud-to-home link has also passed real model/Codex dispatch, independent validation, notification and nine OpenSSH policy checks ([receipt](docs/verification/home-link-2026-10-28.json)); automatic pairing and actual lease expiry remain unverified.
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its background task tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. A real model has now selected MCP tools through the normal run API, completed a real local Codex repair and delivered its notification. See [live acceptance](docs/secretary-acceptance.md). A separately approved temporary cloud-to-home link has also passed real model/Codex dispatch, independent validation, notification and nine OpenSSH policy checks ([receipt](docs/verification/home-link-2026-10-28.json)); automatic pairing and actual lease expiry remain unverified.
 
 Run `deermate --config controller.toml --worker home doctor` before dispatching to an enrolled home Worker. It checks credentials, pinned identities and protocol, returns sanitized JSON and exits nonzero when blocked. A reachable API does not establish native-agent login, capacity or project authorization. See the [SSH setup and preflight guide](docs/ssh-worker.md).
 
-**Follow up with the same Codex:** an optional chat tool and child-task API preserve the native session/workspace and each round’s evidence. Worker/MCP/SSH and pinned Gateway fixtures are verified; live rollout is tracked in [STATUS](docs/STATUS.md). [Setup and limits](docs/codex-conversation.md).
+**Follow up with the same Codex:** an optional chat tool and child-task API preserve the native session/workspace and each round’s evidence. Worker/MCP/SSH, pinned Gateway and a real cloud-to-home three-round conversation are verified, with independent validation and delivered notifications ([receipt](docs/verification/codex-conversation-live-2026-10-29.json)). [Setup and limits](docs/codex-conversation.md).
 
 ## What we are building
 

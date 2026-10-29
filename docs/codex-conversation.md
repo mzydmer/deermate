@@ -47,4 +47,19 @@ deermate --config controller.toml --worker home continue WORKER_TASK_HANDLE \
 
 执行中的会话、旧轮次、缺失原生会话、已改变的项目策略，以及待输入/审核/恢复状态都会拒绝继续。取消某一轮不等于撤销整个会话或自动停止其他任务。SSH 到期/撤权规则照常适用，接入工具不会延长授权。每次追问仍是有时限、受项目策略约束的原生执行，也会重新运行注册的验证命令并可能消耗模型额度；不是无限期运行的进程。
 
-规格见 [M2 多轮会话](specs/m2-codex-conversation.md)。离线三轮 MCP/SSH 与实际固定 Gateway/SQL 已通过；真实部署验收状态见 [STATUS](STATUS.md)。
+规格见 [M2 多轮会话](specs/m2-codex-conversation.md)。离线三轮 MCP/SSH、实际固定 Gateway/SQL 及真实云端模型→家庭 Codex 三轮问答均已通过；两次追问的独立测试与通知通过，第三轮准确回忆上一轮标记，保留同一个原生会话/工作区与原补丁。见 [STATUS](STATUS.md)与[真实收据](verification/codex-conversation-live-2026-10-29.json)。
+
+## 复核真实验收
+
+以下命令会使用模型额度，要求同一 origin 上已有 `verify_secretary.py --mode dispatch` 的成功 demo 状态，及操作员本机独立 Worker/公网 SSH enrollment：
+
+```bash
+python scripts/verify_conversation.py --live \
+  --url https://YOUR_PUBLIC_IP --account-file PRIVATE_OWNER_JSON \
+  --parent-state PRIVATE_DISPATCH_STATE --worker-config PRIVATE_WORKER_TOML \
+  --ssh-controller-config PRIVATE_PUBLIC_READER_TOML --ssh-worker home \
+  --state-dir .deermate/conversation-acceptance \
+  --receipt .deermate/conversation-acceptance/receipt.json
+```
+
+脚本只对单一 demo 原对话增加两次追问。每次先把 attempted 保存到完整私密 ledger；响应丢失后重跑相同命令只核对原 run，不发送替代任务。它核对精确转发文本、原生 session/workspace、父证据、独立测试、通知及记忆标记，收据不输出对话 ID、账号、提示词、标记值、路径或密钥。不要把新建 state 目录当作超时重试方式。正常离线测试不运行该脚本。

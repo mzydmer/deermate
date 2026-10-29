@@ -7,11 +7,11 @@
 | 项目 | 当前事实 |
 | --- | --- |
 | 阶段 | M1–M2.5 执行链路、M4.1 前端已有证据；M4.2 Go 已验证；M4.3 统一设计规范和页面风格已实现，本地验收已通过 |
-| 分支 | `main`；完整开发栈已 fast-forward 合并，集成点 `51d58b2` |
+| 分支 | `main`；多轮会话实现 `f6e8b21` 已推送并部署；早期完整开发栈集成点 `51d58b2` |
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 当前全量 199 passed / 7 skipped，多轮 Gateway/SQL/SSH fixture 28 项通过；上轮云端模型→受限 OpenSSH 反向链路→家庭真实 Codex→独立测试→通知 delivered 已通过，9 项实际 SSH 策略检查通过。本轮固定部署契约 32 passed |
+| 当前验收 | 全量 199 passed / 7 skipped、固定部署契约 32 passed；Gateway local/SSH 20/28 项通过；真实云到家庭三轮共用原生会话/工作区，独立测试与通知 delivered，通过同 intent 只读复查 |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
 | 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地及云到家庭正常 run 均由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |
@@ -19,7 +19,7 @@
 | 公网 IP HTTPS | 新加坡 2 核/2 GiB/40 GiB；首月实付 ¥0、购买时实例自动续费关闭；账号/配置已迁移，Caddy IP 证书签发、41 项 HTTPS/安全/重启检查与浏览器验收通过；证书自动续期已配置，尚未观察实际续期 |
 | 交付 | M1–M4.3 已有实现进入 main；本轮临时云到家庭接入与增量验收通过。历史来源 CI 40318918329 七个 job success 仅代表对应提交，新提交 CI 单独核对 |
 | 发布 | 已合并 main 的源码 alpha；未发布正式 release |
-| 下一步 | 已批准的临时云到家庭链路已安装验收；UTC 2026-10-30 02:29:56 到期关闭已配置，实际到期待观察。当前先完成多轮会话公网升级与真实验收，再整理设备接入、Go 项目授权与专职路由 |
+| 下一步 | 多轮真实验收已完成；接着整理可复用设备接入与项目级 Go 执行授权，再扩展专职路由。原临时 SSH 于 UTC 2026-10-30 02:29:56 到期，不延长，实际到期待观察 |
 
 运行代码、历史证据与本轮 Worker 预检应分别核对；文档 HEAD 可以继续推进。
 
@@ -27,7 +27,13 @@
 
 新增 [多轮会话规格](specs/m2-codex-conversation.md)与 [ADR 0011](decisions/0011-codex-conversation-turns.md)。每次追问创建独立子任务，复用原生 session/workspace，保留父任务结果；SQLite head 在事务内拒绝旧父任务、并发分叉和不安全恢复。MCP/CLI/鉴权 Worker API 已接通，原句柄格式不变。可选 `continue_codex` 内部 provider 按实际 user/chat/incarnation 解析公开跟踪 ID，经原 ordinary driver 跟踪查询、取消和通知；Go 公开接口与前端源码保持。见[接入指南](codex-conversation.md)。
 
-全量 **199 passed / 7 skipped**（70.73 秒）；会话/固定部署专项 **53 passed**，其中实际 Chart/Compose/overlay/单机/HTTPS 契约 32 项。固定 ordinary driver local/SSH 两项通过；实际 Gateway/SQL/SSH [28 项检查通过](verification/codex-conversation-gateway-2026-10-29.json)，包括三轮一个原生会话/工作区、父结果保留、跨聊天拒绝与同调用只读核对。原生 fixture 不代表真实模型验收；公网升级与真实多轮尚在执行，原临时 SSH 期限不延长。
+全量 **199 passed / 7 skipped**（70.73 秒）；会话/固定部署专项 **53 passed**，其中实际 Chart/Compose/overlay/单机/HTTPS 契约 32 项。固定 ordinary driver local/SSH 两项通过；实际 Gateway/SQL/SSH [28 项检查通过](verification/codex-conversation-gateway-2026-10-29.json)，包括三轮一个原生会话/工作区、父结果保留、跨聊天拒绝与同调用只读核对。本地 Gateway 20 项与 SSH Gateway 28 项分别通过；Ruff/wheel 通过。另已完成以下真实部署验收，原临时 SSH 期限不延长。
+
+真实部署采用公开 `f6e8b21` 源码归档并核对 SHA；基于既有 Gateway 镜像构建无网络、无依赖升级的新 wheel 镜像层，持久化到原 Compose image 配置并只替换 Gateway。旧数据库一致性备份、配置/加密模型归档保留；家中 Worker 升级保留原实例、4 个既有任务及证据。两组 SSH 账号、授权期限、timer、Go 和前端均未修改。
+
+在原云端对话继续两次，正式模型 run 各 success（各 2 次 LLM 调用），均选择 scoped `continue_codex`。原修复加两次问答共三项后台任务，原生 session/workspace/base/policy 相同，原任务结果保留，测试 exit 0、通知 delivered。第三轮从 Codex 原生上下文回忆第二轮标记，转发的第三轮原文未包含该标记；两轮问答保留原单文件补丁。重复相同验收 ledger 仅只读核对，Worker 总任务仍为 6，没有追加模型/原生执行。浏览器已查看完整问答与送达结果，截图留在私人忽略目录，未重验浏览器键入/流式交互。
+
+[真实多轮收据](verification/codex-conversation-live-2026-10-29.json)绑定脚本/Worker 源码与部署版本。当前仅对已注册 demo 项目开放，通用设备接入、项目级权限、原生表单/审核/恢复入口仍待完善。
 
 ## 云到家庭真实派单 · 2026-10-28
 
@@ -244,7 +250,7 @@ Go 模块校验/vet、7 项竞态测试（8.666 秒）、Python 94 passed/6 skip
 
 删除服务端公钥不会自动断开已认证会话；立即撤权还需终止对应会话。已接纳任务按 Worker 策略继续，需要停止时使用仍有效的本地权限。见 [SSH 撤权说明](ssh-worker.md)。
 
-源码交付以 Git 为准；上轮 `2e7fdac` 已在远端 main，本轮记录限时家庭链路与验收器增量。未发布正式 release；来源 CI 与新提交 CI 分开核对。
+源码交付以 Git 为准；多轮实现 `f6e8b21` 已在远端 main，并已升级到当前临时部署。本轮追加真实三轮收据与文档。未发布正式 release；来源 CI 与新提交 CI 分开核对。
 
 ## 下一项工作
 

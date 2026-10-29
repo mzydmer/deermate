@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight and one real cloud-model-to-home-Codex task verified over an approved temporary reverse SSH link; general enrollment and actual expiry observation remain pending. Updated: 2026-10-28. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight and a real three-round cloud-model/home-Codex conversation verified over an approved temporary reverse SSH link; general enrollment and actual expiry observation remain pending. Updated: 2026-10-28. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -60,7 +60,7 @@ User-requested ACK deployment uses the [quick deployment guide](ack-deployment.m
 The separate [SSH receipt](verification/ssh-transport-2026-10-25.json) covers 22 real generated-key SSH/HTTP/MCP tests, including lost acknowledgements, key rotation and revocation. Both local/SSH pinned-driver variants pass. This remains a same-host network fixture, not two-machine or NAT deployment evidence.
 
 - [x] Add child tasks for follow-up questions in the same Codex session/workspace, preserving parent evidence; scoped provider and actual Gateway/SSH fixture verified ([guide](codex-conversation.md)).
-- [ ] Verify real cloud model-selected multi-round context and result notifications after upgrading the existing deployment.
+- [x] Verify real cloud model-selected three-round context and delivered notifications on the existing temporary deployment ([receipt](verification/codex-conversation-live-2026-10-29.json)); original lease remains unchanged.
 
 ## M3 — Add specialists and repository maintenance
 

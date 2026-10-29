@@ -4,6 +4,7 @@ These receipts describe known test fixtures, not private user work or a producti
 
 | Receipt | Scope |
 | --- | --- |
+| [codex-conversation-live-2026-10-29.json](codex-conversation-live-2026-10-29.json) | Real cloud model selects two scoped follow-ups to the earlier home Codex repair: one native session/workspace, marker recall, preserved parent/patch evidence, independent tests and delivered notifications; versioned Gateway image upgrade and unchanged lease. |
 | [codex-conversation-gateway-2026-10-29.json](codex-conversation-gateway-2026-10-29.json) | Actual pinned Gateway/SQL/SSH with three child-task rounds, one offline native session/workspace, preserved parent evidence and scoped reconciliation. Real-model deployment evidence is separate. |
 | [home-link-2026-10-28.json](home-link-2026-10-28.json) | Approved temporary cloud OpenSSH→Mac link: nine permission checks, real cloud model→home Codex→independent validation→delivered notification, transport reconnect and read-only task reconciliation. Expiry timer installed/active; actual expiry not yet observed. |
 | [secretary-live-2026-10-28.json](secretary-live-2026-10-28.json) | Earlier cloud chat and local model-selected dispatch/notification; its prepared-only reverse-link status is historical and superseded by the separate home-link receipt. |
