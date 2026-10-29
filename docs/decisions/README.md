@@ -15,7 +15,7 @@ Record significant choices and their consequences here. Current implementation a
 | [0009](0009-public-ip-https.md) | Accepted as optional public target | Exact public IPv4 HTTPS via a persistent Caddy edge | Private default retained; cloud account migration and external acceptance tracked separately |
 | [0010](0010-temporary-home-reverse-link.md) | Accepted | Two restricted SSH legs for a temporary outbound home Worker link | Approved cloud-to-Mac deployment, nine OpenSSH policy checks and real model/Codex result verified; actual expiry observation pending |
 | [0011](0011-codex-conversation-turns.md) | Accepted; chat cardinality superseded by 0012 | One child task per follow-up, sharing the native session/workspace | Worker head admission, scoped DeerFlow provider and ordinary tracking; live deployment tracked in STATUS |
-| [0012](0012-one-chat-one-coding-session.md) | Accepted | One chat incarnation binds one registered coding session; first-message names and editable titles | Durable admission journal and configured guard; offline graph/Gateway local/SSH verified, live rollout tracked in STATUS |
+| [0012](0012-one-chat-one-coding-session.md) | Accepted | One chat incarnation binds one registered coding session; first-message names and editable titles | Durable admission journal and configured guard; offline graph/Gateway and real cloud Codex/browser acceptance verified; Claude adapter pending |
 
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 

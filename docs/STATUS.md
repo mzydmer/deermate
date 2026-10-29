@@ -7,13 +7,13 @@
 | 项目 | 当前事实 |
 | --- | --- |
 | 阶段 | M1–M2.5 执行链路、M4.1 前端已有证据；M4.2 Go 已验证；M4.3 统一设计规范和页面风格已实现，本地验收已通过 |
-| 分支 | `main`；工具实现 `815d8d8`、页面收尾 `e542b7a` 已推送并部署；多轮会话实现 `f6e8b21` 保留 |
+| 分支 | `main`；单会话绑定/自动命名 `4e5c05d` 已推送并部署；工具 `815d8d8`/`e542b7a` 与多轮 `f6e8b21` 保留 |
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 工具与连接 | 公开搜索/网页读取及管理员检查页已部署；云端真实模型调用两种工具并收到数据，页面 MCP 检查发现 3 个工具。全量 213 passed / 7 skipped，固定部署契约 32 passed。私人数据连接仍需单独服务和授权，见[指南](tools-and-connections.md)与[收据](verification/tools-and-connections-2026-10-29.json) |
-| 单会话关联/命名 | 一个对话固定一个注册执行器会话、后续自动续接；首条消息生成名称，保留手动改名。244 passed / 7 skipped；固定运行时图 10 项、Gateway local/SSH 22/30 项通过。云端部署验收待完成；Claude 适配器未实现，见[指南](chat-sessions.md) |
+| 单会话关联/命名 | 已部署：一个对话固定一个注册执行器会话，后续自动续接；首条消息生成名称、保留页面改名。真实两次原始提交只有一个 Codex 原生会话/工作区，独立测试和通知通过；页面关联检查通过。Claude 适配器未实现，见[指南](chat-sessions.md)与[收据](verification/chat-session-binding-live-2026-10-29.json) |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
-| 当前验收 | 全量 213 passed / 7 skipped、固定部署契约 32 passed；公开工具实际聊天及 MCP 页面测试通过。历史 Gateway local/SSH 20/28 项与真实云到家庭三轮证据保留，本轮未重复调用 Codex |
+| 当前验收 | 全量 244 passed / 7 skipped、固定部署契约 32 passed；固定图 10 项、Gateway local/SSH 22/30 项通过；真实云到家庭两轮保持一个原生会话/工作区、自动命名与页面改名保留通过；历史三轮证据保留 |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |
 | 秘书模型 | 复用已有千问配置，云端 API 保存后加密落盘，流式工具探针与正式聊天通过；本地及云到家庭正常 run 均由真实模型先预检再提交一个后台任务，原生会话/补丁/测试及通知核对通过 |
 | ACK 包 | 五镜像构建/Go sidecar/私有 Service/loopback runtime 已接入；已检查登录后的阿里云控制台并准备创建草案，尚未创建集群/推送 ACR/实际安装 |

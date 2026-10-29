@@ -29,7 +29,7 @@ Exit criterion: a reproducible local walkthrough that runs on a clean machine wi
 
 ## M2 — Connect DeerFlow to a remote worker
 
-- [x] Enforce one registered coding session per chat incarnation, automatic first-message naming and rename preservation; offline graph and Gateway local/SSH verified. Cloud acceptance tracked in [spec](specs/m2-chat-session-binding.md).
+- [x] Enforce one registered coding session per chat incarnation, automatic first-message naming and rename preservation; offline graph, Gateway local/SSH, real cloud Codex continuation and browser naming/inspection verified. Claude remains a future adapter; see [spec](specs/m2-chat-session-binding.md).
 
 - [x] Enable public research tools and inspect saved MCP connections without executing tools; pinned runtime, public-provider smoke, real cloud model calls and browser connection test passed. Private data accounts remain unconfigured; see [tooling spec](specs/m2-tools-and-connections.md).
 

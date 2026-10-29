@@ -354,3 +354,23 @@ work in these receipts is fixture-only; cloud deployment and real Codex/UI check
 are pending at this source commit. See [spec](specs/m2-chat-session-binding.md),
 [ADR 0012](decisions/0012-one-chat-one-coding-session.md) and
 [offline receipt](verification/chat-session-binding-offline-2026-10-29.json).
+
+## 2026-10-29 · Single-session cloud and browser acceptance
+
+Implementation `4e5c05d` is deployed as an immutable offline Gateway layer. Ready
+checkpoint, original home/model/account/Codex configuration, unchanged expiry
+units, no OOM and restart count zero were verified in the saved deployment receipt.
+No Worker grant, new cloud resource or frontend image rebuild was required.
+
+Two normal user runs deliberately selected the raw `deermate_submit_task` tool.
+The server created exactly one root and one child: same binding, native Codex
+session, registered project and workspace. Both independent validations exited 0
+and completion notifications were delivered. The first message automatically
+named the chat; a real browser rename persisted through the second question. The
+conversation action displayed the canonical round-two native ID and completed
+state. Private screenshot and attempted intents are retained; no uncertain request
+was replayed. Public [live receipt](verification/chat-session-binding-live-2026-10-29.json)
+contains no account credentials, live chat/native IDs or workspace paths. The
+separate [offline receipt](verification/chat-session-binding-offline-2026-10-29.json)
+covers failure/concurrency/restart cases. Claude execution and actual temporary
+access expiry remain unverified.

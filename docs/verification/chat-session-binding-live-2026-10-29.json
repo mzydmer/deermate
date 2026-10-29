@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-29",
+  "implementation_commit": "4e5c05d47138e2c308f9f1a1114155c4a22b50bf",
+  "cloud_deployment": {
+    "source_commit": "4e5c05d47138e2c308f9f1a1114155c4a22b50bf",
+    "source_archive_sha256": "16d6b6cb3e95b37471bf103dd2b2216cfef0b3258c4c226ddf8d169938461f05",
+    "offline_image_layer_built": true,
+    "gateway_base_image_preserved": true,
+    "gateway_image_updated": true,
+    "existing_home_volume_preserved": true,
+    "owner_model_and_account_backup_retained": true,
+    "native_web_tools_loaded": true,
+    "chat_session_guard_configured": true,
+    "chat_naming_middleware_loaded": true,
+    "codex_and_model_config_preserved": true,
+    "offline_worker_doctor_passed": true,
+    "continuation_capability_verified": true,
+    "expiry_units_unchanged_and_timer_active": true,
+    "native_tasks_submitted": 0,
+    "local_https_ready": true,
+    "active_counts_before": {
+      "scheduled_task_runs": 0,
+      "runs": 0,
+      "mcp_tasks": 0
+    },
+    "gateway_oom_killed": false,
+    "gateway_image": "sha256:75e4fa8a40c0df2c263ab37334614991db69a1a30e3820af35104a28ab799991",
+    "gateway_restart_count": 0,
+    "checkpoint_ready": true
+  },
+  "acceptance": {
+    "status": "passed",
+    "phase": "second",
+    "user_runs_verified": 2,
+    "native_turns_verified": 2,
+    "native_roots": 1,
+    "single_binding": true,
+    "automatic_title_verified": true,
+    "manual_rename_preserved": true,
+    "independent_validation_exit_zero": true,
+    "notification_delivered": true,
+    "canonical_binding_inspection": true,
+    "claude_execution_verified": false
+  },
+  "model_selected_tools": [
+    "deermate_check_worker_connection",
+    "deermate_submit_task",
+    "deermate_submit_task"
+  ],
+  "repeated_submit_automatically_continued": true,
+  "browser_automatic_name_seen": true,
+  "browser_manual_rename_saved": true,
+  "browser_binding_inspection": "verified",
+  "limits": [
+    "Codex on the existing explicitly approved temporary home link; no grant renewal.",
+    "No real Claude adapter or Claude execution acceptance.",
+    "Registered coding connections only; trusted lower-level administration is outside the chat guard.",
+    "Policy/restart/unknown-outcome cases use the separate offline receipt."
+  ],
+  "retained_intent_reconciliation_without_new_model_run": true
+}

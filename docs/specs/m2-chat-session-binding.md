@@ -1,6 +1,6 @@
 # One chat, one coding session
 
-- Status: Implemented; offline graph/Gateway/local/SSH checks passed; cloud acceptance pending
+- Status: Deployed; offline graph/Gateway/local/SSH, real cloud/Codex and browser checks passed
 - Updated: 2026-10-29
 - Requirements: FR-001, FR-003, FR-012, FR-018, FR-022; NFR-001, NFR-003, NFR-005
 
@@ -53,3 +53,13 @@ Actual pinned Gateway/local and Gateway/SSH **22/30 checks passed**, including
 restart persistence, repeated raw submit routed to continuation, one native root
 and no extra native turn after reconciliation/project-switch refusal. These use
 an offline native fixture and do not establish real cloud/model/Claude acceptance.
+
+Real rollout: implementation `4e5c05d` deployed to the existing Gateway, preserving
+model/account/Codex configuration, home storage and the original temporary SSH
+expiry. Two normal user runs both selected `deermate_submit_task`; the guard
+created one root and one child, with one binding/native session/workspace and
+independent validation/notifications. The first message generated the visible
+name; the browser rename was saved and remained after round two. Browser
+**Session binding → View executor session** showed the canonical Codex round-two
+identity. See [live receipt](../verification/chat-session-binding-live-2026-10-29.json).
+Claude execution remains unimplemented.
