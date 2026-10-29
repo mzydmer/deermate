@@ -9,6 +9,25 @@ export default {
   apiVersion: 1,
   module: "deermate-tooling",
   icon: "file-text",
+  conversationActions(_t, locale) {
+    const zh = locale === "zh-CN";
+    return {
+      label: zh ? "会话关联" : "Session binding",
+      icon: "file-text",
+      actions: [{
+        id: "session-binding",
+        label: zh ? "查看执行器会话" : "View executor session",
+        icon: "file-text",
+        available: settings => settings.enabled === true,
+        async execute(context, services) {
+          const result = await services.callBackend("session_binding", {thread_id: context.thread.thread_id});
+          services.showMessage(result.bound
+            ? `${result.title ?? ""} · ${result.executor} · ${zh ? "第" : "Round "}${result.round}${zh ? "轮" : ""}\n${result.native_session ?? (zh ? "等待原生会话确认" : "Native session not yet confirmed")} · ${result.status}`
+            : (zh ? "此对话尚未绑定执行器会话。首次派单后建立关联。" : "No executor session is bound. The first coding request creates the association."));
+        }
+      }]
+    };
+  },
   surfaces: [{
     id: "tools",
     slot: "page",

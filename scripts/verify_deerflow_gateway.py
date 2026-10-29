@@ -111,6 +111,43 @@ def gateway_child(port: int):
             runtime=runtime, message=body["message"], task=body["task"]
         )
 
+    @app.post("/__deermate_verification/bound")
+    async def bound_round(request: Request):
+        expected = os.environ["DEERMATE_VERIFICATION_KEY"]
+        if not secrets.compare_digest(request.headers.get("X-DeerMate-Verification", ""), expected):
+            raise HTTPException(403, "Verification key required")
+        body = await request.json()
+        if set(body) != {"thread_id", "prompt", "project", "key"}:
+            raise HTTPException(422, "Only the fixed bound submission is supported")
+        user_id = await get_current_user(request)
+        thread = await get_thread_store(request).get(body["thread_id"], user_id=user_id)
+        if thread is None:
+            raise HTTPException(404, "Thread not found")
+        from langgraph.types import Command
+
+        from deermate.session_middleware import CodingSessionMiddleware
+
+        tools = {t.name: t for t in await get_mcp_tools()}
+        tool = tools["deermate_submit_task"]
+        runtime = SimpleNamespace(context={
+            "user_id": user_id, "thread_id": body["thread_id"],
+            "thread_incarnation": thread.get("incarnation"), "run_id": body["key"],
+        }, config={})
+
+        async def forbidden_handler(_):
+            raise AssertionError("The unguarded coding handler must not run")
+
+        result = await CodingSessionMiddleware().awrap_tool_call(SimpleNamespace(
+            tool=tool, runtime=runtime, tool_call={
+                "id": body["key"], "name": tool.name, "args": {
+                    "project_id": body["project"], "prompt": body["prompt"],
+                    "idempotency_key": body["key"],
+                },
+            },
+        ), forbidden_handler)
+        message = result.update["messages"][0] if isinstance(result, Command) else result
+        return json.loads(message.content)
+
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning", access_log=False)
 
 
@@ -226,6 +263,9 @@ def prepare(work, checkout, worker_port):
                     }
                 ],
                 "tool_groups": [{"name": "deermate"}],
+                "extensions": {"middlewares": [
+                    "deermate.session_middleware:CodingSessionMiddleware"
+                ]},
                 "sandbox": {"use": "deerflow.sandbox.local:LocalSandboxProvider"},
                 "database": {"backend": "sqlite", "sqlite_dir": str(work / "sql")},
                 "memory": {"enabled": False},
@@ -775,6 +815,45 @@ def run(checkout, gateway_python, receipt_path, work, transport="local", replay_
             conversation_rounds=3,
         )
         check("continuation_reconcile_and_chat_scope", rejected["status"] == "not_submitted")
+        # New chat: both questions deliberately select the original submit tool.
+        # The actual configured guard must create one root, then continue it.
+        before_trace = [json.loads(line) for line in
+                        (work / "native/trace.jsonl").read_text().splitlines()]
+        bound_chat = uuid.uuid4().hex
+        request(gc, "POST", "/api/threads", {"thread_id": bound_chat})
+        bound_body = {"thread_id": bound_chat, "prompt": "fix", "project": "demo",
+                      "key": uuid.uuid4().hex}
+        first_bound = request(gc, "POST", "/__deermate_verification/bound", bound_body)
+        wait_for(lambda: detail(bound_chat, first_bound["task_id"]),
+                 lambda t: t["status"] == "completed")
+        first_worker = worker_task(sql_row(first_bound["task_id"])["remote_task_id"])
+        gateway.stop()
+        gateway = start_gateway("bound-restart")
+        cleanup.callback(gateway.stop)
+        wait_for(lambda: gc.get("/health/ready"), lambda r: r.status_code == 200,
+                 timeout=180, process=gateway)
+        bound_body.update(prompt="explain", key=uuid.uuid4().hex)
+        second_bound = request(gc, "POST", "/__deermate_verification/bound", bound_body)
+        second_done = wait_for(lambda: detail(bound_chat, second_bound["task_id"]),
+                               lambda t: t["status"] == "completed")
+        second_worker = worker_task(sql_row(second_bound["task_id"])["remote_task_id"])
+        same_bound = request(gc, "POST", "/__deermate_verification/bound", bound_body)
+        denied_bound = request(gc, "POST", "/__deermate_verification/bound",
+                               bound_body | {"key": uuid.uuid4().hex, "project": "other"})
+        after_trace = [json.loads(line) for line in
+                       (work / "native/trace.jsonl").read_text().splitlines()]
+        delta = after_trace[len(before_trace):]
+        check("chat_binding_survives_restart_and_routes_submit_to_continue",
+              first_bound["binding_id"] == second_bound["binding_id"]
+              and first_worker["session_id"] == second_worker["session_id"]
+              and first_worker["workspace"] == second_worker["workspace"]
+              and second_worker["conversation_round"] == 2
+              and second_done["result"]["validation"]["exit_code"] == 0)
+        check("chat_binding_reconcile_and_project_switch_no_new_native_turn",
+              same_bound["task_id"] == second_bound["task_id"] and same_bound["reconciled"]
+              and denied_bound["status"] == "not_submitted"
+              and sum(r.get("method") == "thread/start" for r in delta) == 1
+              and sum(r.get("method") == "turn/start" for r in delta) == 2)
         verify_checkout(checkout)
         check("pinned_upstream_unchanged", True)
         if transport == "ssh":

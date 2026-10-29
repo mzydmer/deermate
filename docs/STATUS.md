@@ -11,6 +11,7 @@
 | 语言边界 | Go 控制端；内部 DeerFlow 和现有 Python Worker/MCP/SSH 保留。取代原控制端 Python-only 要求，见 ADR 0007 |
 | 用户/管理 | Go 兼容原 UUID/密码/偏好；会话、角色、停用、重置密码、最后管理员保护、CSRF、审计及 `/admin` 页面 |
 | 工具与连接 | 公开搜索/网页读取及管理员检查页已部署；云端真实模型调用两种工具并收到数据，页面 MCP 检查发现 3 个工具。全量 213 passed / 7 skipped，固定部署契约 32 passed。私人数据连接仍需单独服务和授权，见[指南](tools-and-connections.md)与[收据](verification/tools-and-connections-2026-10-29.json) |
+| 单会话关联/命名 | 一个对话固定一个注册执行器会话、后续自动续接；首条消息生成名称，保留手动改名。244 passed / 7 skipped；固定运行时图 10 项、Gateway local/SSH 22/30 项通过。云端部署验收待完成；Claude 适配器未实现，见[指南](chat-sessions.md) |
 | 本地运行 | Go/control、Gateway、前端、nginx 四个健康应用容器；入口 `http://localhost:2026`；独立 host Worker/SSH 保留 |
 | 当前验收 | 全量 213 passed / 7 skipped、固定部署契约 32 passed；公开工具实际聊天及 MCP 页面测试通过。历史 Gateway local/SSH 20/28 项与真实云到家庭三轮证据保留，本轮未重复调用 Codex |
 | Worker 预检 | `doctor` / 只读 MCP `check_worker_connection` 检查注册授权、凭据、主机/应用身份及协议；不创建任务。API 可达不等于原生执行就绪或项目授权 |

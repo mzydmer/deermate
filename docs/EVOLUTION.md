@@ -332,3 +332,25 @@ no second model run or native task was submitted. Final sanitized
 [receipt](verification/tools-and-connections-2026-10-29.json) separates the
 model-verified tool implementation from the later UI commit. Private business-data
 connectors and actual temporary-grant expiry remain outside this acceptance.
+
+## 2026-10-29 · One chat, one coding session and automatic names
+
+Added a durable chat admission journal and a fail-closed configured runtime
+middleware. Registered raw coding submissions bind executor/server/project once;
+later submissions use the existing child-task continuation, including after
+restart. Deterministic tracking IDs and run/tool-call identity reconcile duplicate
+calls without replay; pending/uncertain, active, changed-project/executor and
+ambiguous legacy requests cannot create a replacement session. Names derive from
+the first human message, using the existing title/rename state. Added an owned
+conversation action to inspect the canonical journal. Go public auth/API ownership
+and Worker/native grants are unchanged; Claude execution remains unimplemented.
+
+Full suite **244 passed / 7 skipped**, pinned deployment contracts **32 passed**,
+configured middleware/real LangChain graph **10 checks**, actual Gateway local/SSH
+**22/30 checks** passed. New Gateway cases prove repeated raw submit becomes one
+root plus continuation across restart; reconciliation/project refusal adds no
+native turn. Ruff, wheel, JS syntax and shared token checks passed. Native/model
+work in these receipts is fixture-only; cloud deployment and real Codex/UI checks
+are pending at this source commit. See [spec](specs/m2-chat-session-binding.md),
+[ADR 0012](decisions/0012-one-chat-one-coding-session.md) and
+[offline receipt](verification/chat-session-binding-offline-2026-10-29.json).

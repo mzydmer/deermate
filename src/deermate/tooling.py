@@ -5,6 +5,7 @@ existing runtime/configuration; they do not enroll servers or invoke MCP tools.
 """
 
 import asyncio
+import re
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -14,6 +15,9 @@ _discovering: set[str] = set()
 def runtime_config() -> dict:
     """Shared minimal deployment additions (no host shell or filesystem tools)."""
     return {
+        "extensions": {
+            "middlewares": ["deermate.session_middleware:CodingSessionMiddleware"]
+        },
         "tools": [
             {
                 "name": "web_search",
@@ -86,6 +90,40 @@ async def discover(payload: Mapping, context) -> dict:
         _discovering.discard(principal.user_id)
 
 
+async def session_binding(payload: Mapping, context) -> dict:
+    principal = _admin(context)
+    thread = payload.get("thread_id")
+    if not isinstance(thread, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", thread):
+        raise ValueError("Choose a conversation")
+    if context.agent_runs is None:
+        raise PermissionError("Authenticated thread access is unavailable")
+    # The host checks fresh thread ownership/permissions, including trash/forks.
+    state = await context.agent_runs.get_state(thread_id=thread)
+    key = (state.get("values", {}).get("deermate_coding_session") or {}).get("binding_id")
+    from .chat_sessions import ChatScope
+    from .session_middleware import journal
+
+    saved = journal()
+    binding = saved.owned_binding(key, principal.user_id, thread) if isinstance(key, str) else None
+    if not binding:
+        return {"bound": False, "title": state.get("values", {}).get("title")}
+    scope = ChatScope(binding["user_id"], binding["thread_id"], binding["incarnation"])
+    from deerflow.mcp.tasks.runtime import get_mcp_task_submitter
+
+    records = await get_mcp_task_submitter().list_tasks(
+        **scope.query(), limit=50, active_only=False
+    )
+    head = next((r for r in records if r["id"] == binding["head"]), None)
+    if head:
+        await asyncio.to_thread(saved.observe, scope, head)
+        binding = saved.binding(scope)
+    return {"bound": True, "executor": binding["executor"], "round": binding["round"],
+            "native_session": binding["native"], "task_id": binding["head"],
+            "status": "admission_unknown" if binding["pending"] else (
+                head["status"] if head else "unknown"
+            ), "title": state.get("values", {}).get("title")}
+
+
 async def _discover(payload, owner):
     scope, name = payload.get("scope"), payload.get("name")
     if scope not in {"platform", "personal"} or not isinstance(name, str) or not name:
@@ -133,7 +171,8 @@ def install(registry, config):
             frontend=BrowserAssets(
                 module="deermate-tooling", root=Path(__file__).parent / "tooling_ui"
             ),
-            backend=(BackendAction("inventory", inventory), BackendAction("discover", discover)),
+            backend=(BackendAction("inventory", inventory), BackendAction("discover", discover),
+                     BackendAction("session_binding", session_binding)),
         )
     )
     if not accepted:

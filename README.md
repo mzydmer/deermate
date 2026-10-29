@@ -72,6 +72,8 @@ Run `deermate --config controller.toml --worker home doctor` before dispatching 
 
 **Public research tools:** minimal deployments now include public search and page reading. The **Tools & connections** page inspects loaded tools and tests saved MCP connections by discovering tool names without executing them. GitHub, Notion and SQL still require a service and authorization; catalog entries are not connected accounts. [Usage and limits](docs/tools-and-connections.md).
 
+**One chat, one coding session:** registered Codex requests bind once and follow up in the same native session/workspace. Concurrent or uncertain submissions cannot create a replacement session. Conversations are named from their first message and remain editable. Claude execution is a future adapter. [Usage and rollout](docs/chat-sessions.md).
+
 ## What we are building
 
 For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](examples/ssh-controller.toml), and run `deermate --config controller.toml --worker home mcp` or existing CLI commands. The [SSH guide](docs/ssh-worker.md) covers host trust, credentials, expiry and bound handles; each additional device/account/network deployment needs its own enrollment and acceptance.

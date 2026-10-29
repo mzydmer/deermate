@@ -182,6 +182,7 @@ def app_config(settings):
             [{"name": "deermate"}] if settings["worker"]["enabled"] else []
         ),
         "plugins": tooling["plugins"],
+        "extensions": tooling["extensions"],
         "memory": {"enabled": False},
         "scheduler": {"enabled": False},
         "title": {"enabled": False},

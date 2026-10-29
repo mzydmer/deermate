@@ -357,6 +357,8 @@ def ssh_worker(profile, token, instance):
     enabled = ack.app_config(settings)
     app["tools"] = enabled["tools"]
     app["tool_groups"] = enabled["tool_groups"]
+    app["extensions"] = enabled["extensions"]
+    app["plugins"] = enabled["plugins"]
     (config / "config.yaml").write_text(yaml.safe_dump(app, sort_keys=False))
 
 

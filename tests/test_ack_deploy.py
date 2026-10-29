@@ -277,4 +277,7 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
     assert config["plugins"] == [{
         "name": "deermate-tooling", "use": "deermate.tooling:install", "required": True,
     }]
+    assert config["extensions"]["middlewares"] == [
+        "deermate.session_middleware:CodingSessionMiddleware"
+    ]
     assert config["models"][0]["api_key"] == "$DEERMATE_MODEL_API_KEY"

@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-29",
+  "scope": "offline configured graph and real pinned Gateway with native protocol fixture",
+  "python_suite": {
+    "passed": 244,
+    "skipped": 7
+  },
+  "deployment_contracts_passed": 32,
+  "graph": {
+    "status": "passed",
+    "model_calls": 0,
+    "native_calls": 0,
+    "checks": [
+      "configured_middleware_loaded",
+      "real_graph_tool_interception",
+      "repeat_provider_call_id_across_runs",
+      "one_root_then_continuation",
+      "automatic_first_message_title",
+      "manual_title_preserved",
+      "project_switch_rejected",
+      "binding_action_uses_host_ownership",
+      "canonical_binding_display",
+      "journal_failure_never_falls_through"
+    ]
+  },
+  "source_files": {
+    "src/deermate/chat_sessions.py": "85df9522ca5f6407c78838ad44c180e9fd3aba32f6d82b7a611db83a3365eabd",
+    "src/deermate/session_middleware.py": "195970367172fc59011ee0f613f07e29b0fe3d1030c2785c4f4aad1cc51a79c9",
+    "src/deermate/tooling.py": "9c36468935de9520ed53ce14d6b3de4121087cf3f37a6260540772263b7975e1",
+    "scripts/verify_chat_sessions.py": "89451aed29e198071c2eaaf15b68127657a1c9a33b7d3b0796599c1534beb926",
+    "scripts/verify_deerflow_gateway.py": "8186b1fa4dabda32b03bf303e165eab5b027ff360d0f5940fd764991cc891ce8"
+  },
+  "gateway": {
+    "local": {
+      "pinned_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "checks": [
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "worker_survives_gateway_stop",
+        "gateway_process_restart_preserves_identity",
+        "http_cancel_confirmed_in_sql_and_worker",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "background_validation_completed",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "background_validation_failed",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "outage_is_retryable_not_terminal",
+        "reconnect_requires_explicit_recovery",
+        "no_replayed_sessions_or_turns",
+        "source_checkout_unchanged",
+        "three_rounds_one_native_session_and_workspace",
+        "continuation_reconcile_and_chat_scope",
+        "chat_binding_survives_restart_and_routes_submit_to_continue",
+        "chat_binding_reconcile_and_project_switch_no_new_native_turn",
+        "pinned_upstream_unchanged"
+      ],
+      "passed": 22
+    },
+    "ssh": {
+      "pinned_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "checks": [
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "ssh_instance_bound_path",
+        "worker_survives_gateway_stop",
+        "gateway_process_restart_preserves_identity",
+        "http_cancel_confirmed_in_sql_and_worker",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "background_validation_completed",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "background_validation_failed",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "ssh_outage_preserves_running_worker",
+        "ssh_reconnect_preserves_identity",
+        "ssh_revocation_does_not_claim_cancelled",
+        "ssh_grant_restore_completes_requested_cancel",
+        "sql_submission_and_hidden_control_tools",
+        "read_only_worker_preflight_through_gateway",
+        "outage_is_retryable_not_terminal",
+        "reconnect_requires_explicit_recovery",
+        "no_replayed_sessions_or_turns",
+        "source_checkout_unchanged",
+        "three_rounds_one_native_session_and_workspace",
+        "continuation_reconcile_and_chat_scope",
+        "chat_binding_survives_restart_and_routes_submit_to_continue",
+        "chat_binding_reconcile_and_project_switch_no_new_native_turn",
+        "pinned_upstream_unchanged",
+        "ssh_fixture_enforced_forwarding"
+      ],
+      "passed": 30
+    }
+  },
+  "limits": [
+    "Generated native fixture, not a real Codex or Claude process.",
+    "No real model or cloud/UI acceptance in this receipt.",
+    "Registered coding connections only; trusted lower-level administration is outside the chat gate."
+  ]
+}

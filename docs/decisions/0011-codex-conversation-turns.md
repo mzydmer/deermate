@@ -2,6 +2,8 @@
 
 Date: 2026-10-29. Status: Accepted; implemented; offline/pinned Gateway and an approved temporary cloud-to-home three-round conversation verified.
 
+Chat-level cardinality and selection among ambiguous histories are superseded by [ADR 0012](0012-one-chat-one-coding-session.md). Worker child-task semantics remain accepted.
+
 ## Context
 
 Worker resume retains the native session/workspace but updates one task's prompt/result. DeerFlow owns each remote handle in one durable tracking row; reopening that row would lose prior evidence and misrepresent background notifications. Web users need follow-up questions in the same native conversation.
