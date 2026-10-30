@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    participant S as 对话 / 任务来源
+    participant G as Go 证据与任务队列
+    participant C as Python 简报整理器
+    participant D as Go 快照存储
+    actor U as 用户 / 首页
+    S->>G: 新来源版本 / 任务或验证事件
+    G->>G: 幂等更新证据，合并受影响主题
+    G->>C: 关注 + 有效记忆 + 证据版本 + 预算
+    alt 有预算且需要自然语言整理
+        C->>C: 模型生成文案和候选问题
+    else 无预算 / 模型不可用
+        C->>C: 确定性模板生成事实列表
+    end
+    C-->>G: 文案、来源引用、候选动作
+    G->>G: 校验归属、引用、状态与新鲜度
+    alt 构建期间数据 / 策略版本已变
+        G->>G: 丢弃过期结果，合并后续重建
+    else 版本一致
+        G->>D: 原子发布快照 + 服务端动作 intent
+    end
+    U->>G: GET /api/me/briefing
+    G->>D: 读取本人可用版本
+    D-->>G: 快照 / 无快照
+    G-->>U: 当地问候 + 有来源内容 / 模板回退
+    Note over G,U: GET 不启动模型、外部同步或 Native 任务

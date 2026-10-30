@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    actor U as 用户
+    participant G as Go 动作接纳
+    participant D as Intent 持久账本
+    participant R as 对话 / 执行运行时
+    U->>G: 点击预览过的动作 intent
+    G->>D: 原子认领，核对 owner / 版本 / 目标状态
+    alt 已提交 / 已有结果
+        D-->>G: 返回原 run / 对话引用
+        G-->>U: 查看原结果，不重复提交
+    else 忙碌 / 过期 / 需恢复 / 权限变化
+        G-->>U: 查看进行中任务 / 更新卡片 / 处理恢复
+    else 可接纳
+        G->>D: 先记录本次提交尝试与幂等键
+        alt 一键跟进：只读
+            G->>R: 原 thread / incarnation + 只读能力
+            R->>R: 接纳及工具调用时均拒绝写入 / Native
+        else 继续执行：具体下一步
+            G->>R: 原绑定 + 原权限 + 限一轮 continuation
+            R->>R: 复核 head / 项目 / 策略，拒绝换绑
+        else 开始这个话题
+            G->>R: 幂等新建对话并发送预览问题
+            R->>R: 自动命名、默认只读；不复制 Native 绑定
+        end
+        alt 返回确定回执
+            R-->>G: 原 run / 新对话 / 子任务 ID
+            G->>D: 保存回执
+            G-->>U: 打开对应对话与状态
+        else 超时 / 连接中断
+            G->>D: 标记结果待确认
+            G->>R: 按同一幂等键只读核对
+            Note over G,R: 未核实前不重发，不另建 Native 根会话
+        end
+    end

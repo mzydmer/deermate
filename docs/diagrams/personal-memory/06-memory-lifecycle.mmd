@@ -1,0 +1,23 @@
+stateDiagram-v2
+    direction LR
+    state "候选" as Candidate
+    state "生效" as Active
+    state "被替代" as Superseded
+    state "已抑制，待清理" as Suppressed
+    state "已清理" as Deleted
+    [*] --> Candidate: 合格来源提取
+    Candidate --> Active: 通过策略与来源校验
+    Candidate --> Suppressed: 旧版本 / 用户拒绝
+    Active --> Superseded: 明确更正，关联新事实
+    Active --> Suppressed: 遗忘 / 撤权 / 来源删除
+    Superseded --> Suppressed: 遗忘对应范围
+    Suppressed --> Deleted: provider 与派生数据清理完成
+    Deleted --> [*]
+    note right of Active
+        只有生效且当前获准的事实
+        才能用于检索、注入和简报
+    end note
+    note right of Deleted
+        删除屏障继续生效
+        旧任务和旧备份不能恢复内容
+    end note

@@ -114,6 +114,8 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 
 用户要求先评审 [spec](specs/m4-personal-memory-briefing.md)；本轮仅文档，以下均未实现。
 
+[技术原型与六张关键流程/状态图](specs/m4-memory-technical-design.md)已补充；复用本地 DeerMem，Go 持久作业、范围校验和删除屏障待实现。
+
 - [ ] Personal display name/timezone, per-user memory controls and a verified local DeerFlow memory adapter.
 - [ ] Source/version-preserving attention topics, memory correction/forgetting and bounded history import.
 - [ ] Personal daily briefing with actual progress, freshness, clear recommendation reasons and useful empty/error states.

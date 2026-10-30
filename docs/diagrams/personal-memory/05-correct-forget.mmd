@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    actor U as 用户
+    participant G as Go 策略与删除账本
+    participant A as Python 适配器
+    participant P as DeerMem
+    participant W as 旧后台提取任务
+    W->>W: 使用旧版本来源准备候选
+    U->>G: 纠正或忘记某条记忆
+    G->>G: 事务记录抑制规则，推进删除 / 策略版本
+    G->>G: 停用旧引用，失效卡片、intent 与缓存
+    Note over G,A: 后续读取立即受屏障约束；派生摘要无有效谱系时先停用
+    G->>A: 同用户协调下纠正 / 删除 provider 事实
+    A->>P: 核对 revision 后更新 / 删除
+    P-->>A: 已提交 revision / 冲突
+    A-->>G: 回执，更新投影或保留待清理状态
+    G-->>U: 已停止使用；显示清理状态
+    W->>G: 按旧删除版本申请提交
+    G-->>W: 拒绝旧来源，不得复活
+    G->>A: 重建获准来源的摘要 / 检索索引
+    A-->>G: 可用新版本
+    Note over G,P: 原聊天记录、备份、第三方模型保留分别管理

@@ -1,10 +1,12 @@
 # M4.4 · 有记忆的私人秘书与今日简报
 
 - **状态：Proposed，待产品评审；本轮仅规格设计，没有功能实现或部署。**
-- **版本：** 0.1
-- **更新：** 2026-10-29
+- **版本：** 0.2
+- **更新：** 2026-10-30
 - **需求：** FR-001、FR-015、FR-018、FR-022，以及新增 FR-023–FR-028；NFR-001、NFR-003、NFR-005、NFR-006
 - **关联：** [设计规范](../../design.md)、[会话关联](m2-chat-session-binding.md)、[架构提案 ADR 0013](../decisions/0013-memory-backed-personal-briefing.md)
+
+技术补充：[记忆技术原型与关键时序](m4-memory-technical-design.md)，包含五条时序图、事实状态图、固定 DeerMem 源码依据，以及可靠队列/项目隔离/删除屏障等待开发契约。主规格的产品与验收要求仍为基准。
 
 ## 1. 产品目标
 
@@ -226,6 +228,8 @@ DeerMate · 继续你的私人助手项目
 | MemoryReference | provider_fact_id、owner、scope、kind、source_refs、confidence、explicitness、revision、删除/替代状态；不另存一套竞争的事实正文 |
 | AttentionTopic | owner、项目/主题、goal、关注方式、status、priority、related_threads、source_refs、snoozed_until、last_seen_revision |
 | EvidenceRecord | owner、来源 ID/版本、发生/核对时间、访问策略、关联主题；执行状态以来源为准 |
+| MemoryJob / outbox | owner、来源/策略/删除版本、幂等键、租约和提交回执；可靠调度与未知结果核对 |
+| DeletionBarrier | owner、事实/来源 ID、范围与删除版本；阻止旧任务或旧备份复活内容，不保存已忘正文 |
 | BriefingSnapshot | owner、local_date、timezone、locale、memory/data/policy revisions、generated_at、items、suggestions、source_as_of |
 | ActionIntent | owner、snapshot/item、type、规范问题、目标 thread/incarnation 或新话题、范围、有效期、idempotency_key、提交/核对状态 |
 

@@ -1,0 +1,41 @@
+{
+  "theme": "base",
+  "securityLevel": "strict",
+  "deterministicIds": true,
+  "deterministicIDSeed": "deermate-m4-memory",
+  "fontFamily": "PingFang SC, Noto Sans CJK SC, system-ui, sans-serif",
+  "themeVariables": {
+    "fontFamily": "PingFang SC, Noto Sans CJK SC, system-ui, sans-serif",
+    "fontSize": "16px",
+    "primaryColor": "#f5f5f5",
+    "primaryTextColor": "#171717",
+    "primaryBorderColor": "#737373",
+    "lineColor": "#737373",
+    "secondaryColor": "#fafafa",
+    "tertiaryColor": "#ffffff",
+    "actorBkg": "#fafafa",
+    "actorBorder": "#737373",
+    "actorTextColor": "#171717",
+    "signalColor": "#404040",
+    "signalTextColor": "#171717",
+    "noteBkgColor": "#f5f5f5",
+    "noteBorderColor": "#a3a3a3",
+    "noteTextColor": "#404040",
+    "labelBoxBkgColor": "#fafafa",
+    "labelBoxBorderColor": "#a3a3a3",
+    "labelTextColor": "#171717",
+    "loopTextColor": "#171717"
+  },
+  "sequence": {
+    "useMaxWidth": false,
+    "wrap": true,
+    "actorMargin": 36,
+    "width": 150,
+    "messageMargin": 30,
+    "mirrorActors": false
+  },
+  "flowchart": {
+    "htmlLabels": false,
+    "useMaxWidth": false
+  }
+}

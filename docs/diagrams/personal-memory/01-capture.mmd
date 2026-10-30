@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    actor U as 用户
+    participant R as Go / 对话运行时
+    participant J as Go 持久任务与策略
+    participant A as Python 记忆适配器
+    participant P as DeerMem 本地存储
+    U->>R: 在普通对话表达偏好 / 关注
+    R-->>U: 正常回答，不等待记忆提取
+    R->>J: 来源事件：owner、消息 ID、版本
+    J->>J: 检查启用、来源资格、项目权限
+    alt 未启用 / 不合格来源
+        J->>J: 跳过，不形成记忆
+    else 可采集
+        J->>J: 幂等入队，按用户合并，预留预算
+        J->>A: 固定来源与策略版本的 job
+        A->>A: 复用提取器，模型提出候选事实
+        Note over A,P: 提交门禁是待开发能力；不持锁等待模型
+        A->>J: 申请同用户写入许可，重查来源与删除版本
+        alt 关闭 / 撤权 / 纠正 / 遗忘已改变版本
+            J-->>A: 拒绝旧候选，作废或重新计算
+        else 版本仍有效
+            J-->>A: 有界提交许可
+            A->>P: 校验事实版本并提交，携带 job 标识
+            P-->>A: 已持久化的 revision
+            A-->>J: 提交回执
+            J->>J: 更新事实引用，标记简报需重建
+        end
+    end
+    Note over J,P: 超时先核对回执；入队成功不代表事实已落盘

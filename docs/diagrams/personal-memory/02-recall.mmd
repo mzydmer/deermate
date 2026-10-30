@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    actor U as 用户
+    participant G as Go 鉴权与策略
+    participant A as DeerFlow / 记忆适配器
+    participant P as DeerMem / FTS5
+    participant L as 秘书模型
+    U->>G: 在新对话提出问题
+    G->>G: 固定 owner、项目、策略与删除版本
+    G->>A: 问题 + 获准事实 / 来源范围
+    alt 记忆关闭或范围校验失败
+        A->>A: 不使用个性化上下文
+    else 允许读取
+        A->>P: 在获准范围内检索候选事实
+        P-->>A: 相关事实、ID、revision
+        A->>A: 校验来源、抑制状态、去重与 token 预算
+        A->>G: 注入前复核当前策略版本
+        G-->>A: 有效 / 丢弃旧结果
+        A->>A: 组装最小记忆上下文与来源引用
+    end
+    A->>L: 当前问题 + 有效记忆 + 本轮工具能力
+    L-->>A: 使用偏好回答，必要时说明来源
+    A-->>G: 返回本轮回答
+    G-->>U: 展示回答
+    Note over G,L: 记忆提供上下文；执行权限仍由本轮服务端能力决定
+    Note over A,P: 原生 Codex / Claude 会话绑定保持原样
