@@ -110,13 +110,14 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 - [x] Enforce token consistency in builds and CI; link guidance from AGENTS and contribution docs.
 - [x] Verify the refreshed login/workspace/admin pages on desktop, mobile, dark and reduced-motion modes.
 
-## M4.4 — Memory-backed personal secretary home（Proposed）
+## M4.4 — Memory-backed personal secretary home（In progress）
 
-用户要求先评审 [spec](specs/m4-personal-memory-briefing.md)；本轮仅文档，以下均未实现。
+用户已同意开始实施 [spec](specs/m4-personal-memory-briefing.md)。第一阶段为[个人记忆基础](personal-memory.md)，完整首页闭环尚未交付。
 
-[技术原型与六张关键流程/状态图](specs/m4-memory-technical-design.md)已补充；复用本地 DeerMem，Go 持久作业、范围校验和删除屏障待实现。
+[技术原型与六张关键流程/状态图](specs/m4-memory-technical-design.md)保留完整目标；本阶段的 Go 持久投递、个人事实屏障与召回不代表自动提取队列已经接入。
 
-- [ ] Personal display name/timezone, per-user memory controls and a verified local DeerFlow memory adapter.
+- [x] M4.4a: personal display name/timezone, explicit personal facts, correction/forgetting, FTS5 recall and a locally verified DeerMem adapter. Personal scope only; cloud deployment and the complete briefing loop remain pending.
+- [ ] Source-qualified automatic extraction, project scopes and reliable model-job budgets.
 - [ ] Source/version-preserving attention topics, memory correction/forgetting and bounded history import.
 - [ ] Personal daily briefing with actual progress, freshness, clear recommendation reasons and useful empty/error states.
 - [ ] Read-only progress follow-up, explicitly scoped task continuation and previewed new-topic creation, preserving one chat/one executor session, existing permissions and idempotency.

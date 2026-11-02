@@ -16,7 +16,10 @@ def runtime_config() -> dict:
     """Shared minimal deployment additions (no host shell or filesystem tools)."""
     return {
         "extensions": {
-            "middlewares": ["deermate.session_middleware:CodingSessionMiddleware"]
+            "middlewares": [
+                "deermate.session_middleware:CodingSessionMiddleware",
+                "deermate.memory_middleware:PersonalMemoryMiddleware",
+            ]
         },
         "tools": [
             {
@@ -28,6 +31,11 @@ def runtime_config() -> dict:
         ],
         "tool_groups": [{"name": "web"}],
         "plugins": [
+            {
+                "name": "deermate-memory",
+                "use": "deermate.memory:install",
+                "required": True,
+            },
             {
                 "name": "deermate-tooling",
                 "use": "deermate.tooling:install",

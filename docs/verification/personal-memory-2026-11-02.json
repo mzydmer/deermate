@@ -1,0 +1,240 @@
+{
+  "date": "2026-11-02",
+  "stage": "M4.4a explicit personal memory foundations",
+  "passed": true,
+  "upstream_pin": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "scope": "Isolated local synthetic Go/Gateway/DeerMem and Docker browser acceptance; no cloud upgrade, automatic extraction or briefing acceptance",
+  "go_checks": {
+    "mod_verify": "passed",
+    "vet": "passed",
+    "test_race": "passed",
+    "cgo_disabled_build": "passed",
+    "toolchain": "go1.27.3",
+    "unavailable_owner_does_not_block_other_accounts": "passed in complete race suite"
+  },
+  "python_checks": {
+    "normal_pytest": {
+      "passed": 244,
+      "skipped": 8
+    },
+    "pinned_provider_and_langchain_graph": {
+      "passed": 15
+    },
+    "pinned_chart_compose_single_host_https": {
+      "passed": 24
+    },
+    "ruff": "passed",
+    "wheel": "passed"
+  },
+  "frontend_checks": {
+    "typescript": "passed",
+    "next_production_build": "passed",
+    "node_syntax": "passed",
+    "shared_design_tokens": "passed",
+    "complete_pinned_source_files_verified": 1301,
+    "build": "Full pinned frontend plus all hash-checked patches/overlay, existing installed dependencies with identical package.json and pnpm-lock.yaml"
+  },
+  "api": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "memory_default_off",
+        "passed": true
+      },
+      {
+        "name": "go_personal_profile",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-create",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-create",
+        "passed": true
+      },
+      {
+        "name": "duplicate_intent_one_fact",
+        "passed": true
+      },
+      {
+        "name": "chinese_fts5_canonical_read",
+        "passed": true
+      },
+      {
+        "name": "canonical_fact_present",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-correct",
+        "passed": true
+      },
+      {
+        "name": "correction_advances_revision",
+        "passed": true
+      },
+      {
+        "name": "restart_retains_session_profile_and_fact",
+        "passed": true
+      },
+      {
+        "name": "raw_runtime_memory_route_denied",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_login",
+        "passed": true
+      },
+      {
+        "name": "other_owner_has_no_facts",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_cannot_read_other_job_or_execute",
+        "passed": true
+      },
+      {
+        "name": "delivery_second-owner-create",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_memory_is_owner_scoped",
+        "passed": true
+      },
+      {
+        "name": "delivery_second-owner-forget",
+        "passed": true
+      },
+      {
+        "name": "off_retains_management_read",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-forget",
+        "passed": true
+      },
+      {
+        "name": "forgotten_fact_not_returned",
+        "passed": true
+      },
+      {
+        "name": "canonical_fact_removed",
+        "passed": true
+      }
+    ],
+    "configured_cloud_models": 0,
+    "native_tasks": 0,
+    "synthetic_data_only": true,
+    "pinned_provider_contracts_passed": true,
+    "scope": "Go login/API, actual pinned Gateway plugin and DeerMem; no browser or cloud acceptance",
+    "source_sha256": {
+      "src/deermate/memory.py": "038967f8bc7491afbb9399b2f329ad72d8e251c9f87d3b56838fba074a494783",
+      "src/deermate/memory_middleware.py": "36a05764dfc38e5a45ea21019657ea0d22b539ee48cd6d337baebaa386f3b78d",
+      "backend/internal/controlplane/memory_store.go": "bd49ab8ffb3dbf22dba26627e3f2a5fde6250da2c8b91a571141e63543fb5658",
+      "backend/internal/controlplane/memory.go": "82600adee061e9131c5258a8f971b1b3ccb8bfd43c34d7bde720f1a95956173f"
+    },
+    "control_binary_sha256": "dcb6bbf40d2714658a855aa5ad06af23f5acee3c9b7768694565a3b3d01a189d"
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "real_login_profile_and_personal_greeting",
+      "canonical_design_tokens_and_visible_form_boundaries",
+      "explicit_fact_saved_and_listed",
+      "chinese_search_uses_body_not_url",
+      "correction_replaces_visible_fact",
+      "disabled_memory_keeps_management_and_blocks_new_save",
+      "forget_works_while_off_and_removes_fact",
+      "desktop_390px_dark_and_reduced_motion_layout",
+      "account_switch_has_no_previous_name_or_fact"
+    ],
+    "page_errors": [],
+    "synthetic_data_only": true,
+    "browser_agent_run_requests": 0,
+    "configured_cloud_models": 0
+  },
+  "images": {
+    "control": {
+      "id": "sha256:ca76d6e94496632c35a700194acb71aa62354043b31cd624b61ae6dc7f50a0d9",
+      "architecture": "amd64",
+      "os": "linux"
+    },
+    "gateway": {
+      "id": "sha256:09a58794ee7d7dc1deded37ff2393255a4a3a91c5384e11fc350554e8f433ec7",
+      "architecture": "amd64",
+      "os": "linux"
+    },
+    "frontend": {
+      "id": "sha256:cf3445f711e1ed8b94093ed25414d1b4c1f80e8ae5216f573f90c5bd68801892",
+      "architecture": "amd64",
+      "os": "linux"
+    },
+    "nginx": {
+      "id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "architecture": "amd64",
+      "os": "linux"
+    }
+  },
+  "container_observation": [
+    {
+      "service": "control",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 134217728
+    },
+    {
+      "service": "gateway",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 1073741824
+    },
+    {
+      "service": "frontend",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 268435456
+    },
+    {
+      "service": "nginx",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 67108864
+    }
+  ],
+  "configured_cloud_models": 0,
+  "real_model_calls": 0,
+  "native_tasks": 0,
+  "cloud_mutations": 0,
+  "existing_local_instance_upgraded": false,
+  "existing_cloud_upgraded": false,
+  "source_sha256": {
+    ".github/workflows/ci.yml": "fc040c268410e3b4522d667ae6f3d94fab99badcddc9db8f85c4f31cd26ee4a6",
+    "backend/README.md": "7f467e8dd51ffb1849a936b063d5268c7f23af7dbd4c326ee20563b35f823b38",
+    "backend/cmd/deermate/main.go": "f58fd13f8917925491ca4cba84b5d292dc3d83032b543fc6d84cdd28feaf6193",
+    "backend/internal/controlplane/memory.go": "82600adee061e9131c5258a8f971b1b3ccb8bfd43c34d7bde720f1a95956173f",
+    "backend/internal/controlplane/memory_store.go": "bd49ab8ffb3dbf22dba26627e3f2a5fde6250da2c8b91a571141e63543fb5658",
+    "backend/internal/controlplane/memory_test.go": "57c006a8906ded18a34cdfbd860521c7f18e3b9d9c0ce9ac3719333d4c2fc44a",
+    "backend/internal/controlplane/server.go": "cdc3a32eca28cc092e5fe5acb87d7fea6403a8e5b8b64d352b757dafc9f6e2bd",
+    "backend/internal/controlplane/store.go": "eb7c810ca78595e8846762da1645c5c7f6d8dd8b4ef72e96892a4b801c420a60",
+    "frontend/overlay/src/components/deermate/desk.tsx": "26aa9d28b3604a4374012321db5f980bac0a6b88a824627d1a9b1e271f28951d",
+    "frontend/overlay/src/components/deermate/personal-memory.tsx": "d5caa062a134d51ef277106e59e5a18ab6bcbfaccc66815e90977a96d300f387",
+    "frontend/overlay/src/styles/deermate.css": "f9fba4cb461cfcbabec178acee959d1fd73c96895bc4ac36306d3840c5d675cc",
+    "scripts/verify_memory_frontend.cjs": "ef8004902a6342d019a59c2b0d99434cb188408ca81f3673eea1eda6c8d1fbf5",
+    "scripts/verify_personal_memory.py": "7867d4e3d9b74d404385007f1756d26f257ce831aafd8f5b21911d9d9ad5d28a",
+    "src/deermate/memory.py": "038967f8bc7491afbb9399b2f329ad72d8e251c9f87d3b56838fba074a494783",
+    "src/deermate/memory_middleware.py": "36a05764dfc38e5a45ea21019657ea0d22b539ee48cd6d337baebaa386f3b78d",
+    "src/deermate/tooling.py": "cf4ed5b6a4a3e264422c0923bfde61d3e6220c6e4cb1d7052b1211db414a0d02",
+    "tests/test_ack_deploy.py": "60da598f75566d3b95496effa3a9d81f7c58d60e64d8bdda75d7babc57ad8211",
+    "tests/test_personal_memory.py": "3eb9f8793342a573f57a1e7c248a321c7cd7ea30da70232bacce7bee0d525b77"
+  },
+  "not_accepted": [
+    "Automatic source-qualified extraction/model jobs",
+    "Project-scoped facts and attention topics",
+    "Daily briefing, action intents and one-click follow-up",
+    "Real configured-model personalization",
+    "Actual 2 GiB host load/latency targets",
+    "Cloud deployment/renewal of expired SSH grants"
+  ],
+  "control_image_binary_sha256": "039e551ed7d2957fcfab8a44e2410116b7cb141811bf24d27993f1828769c164",
+  "gateway_installed_source_verified": true
+}

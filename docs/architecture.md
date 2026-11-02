@@ -20,6 +20,8 @@ Ordinary accounts have a narrow read-only route allowlist plus the runtime's own
 
 ## Proposed components
 
+[M4.4a 个人记忆基础](personal-memory.md)增加 Go 资料/策略、显式单事实投递和遗忘屏障；内部窄适配器复用固定 DeerMem 的文件事务、FTS5 和上下文格式化。只读取本人且当前获准的个人事实，旧共享摘要和未支持的项目范围不参与召回。自动提取、任务证据简报和首页动作仍在后续阶段；主后端与 Agent 模型循环的语言边界不变。
+
 | Component | Owns | Does not own |
 | --- | --- | --- |
 | DeerFlow integration | Conversation tools and presentation of task results | Reimplementing DeerFlow memory or its model loop |

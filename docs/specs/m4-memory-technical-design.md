@@ -1,10 +1,12 @@
 # M4.4 · 记忆技术原型、关键时序与实现原理
 
-- **状态：Proposed；技术设计原型，未实现、未启用或部署。**
-- **版本：** 0.1 · 2026-10-30
+- **状态：In progress；M4.4a 已加入个人范围的显式事实存取与召回，完整目标流程仍待实现。**
+- **版本：** 0.2 · 2026-11-02
 - **产品契约：** [个人记忆与今日简报](m4-personal-memory-briefing.md)
 - **架构选择：** [ADR 0013](../decisions/0013-memory-backed-personal-briefing.md)
 - **需求：** FR-023–FR-028；验收沿用主规格 MEM-01–MEM-21，本文不将源码核对等同于功能验收。
+
+当前实现说明见[个人记忆基础指南](../personal-memory.md)。基础阶段复用固定 DeerMem 文件事务、FTS5 索引和格式化器；Go 持久投递仅处理显式单事实操作，按目标遗忘屏障复核，不会因另一事实的删除取消合法保存。项目级范围、自动提取、简报及动作时序仍是目标设计，不代表已经上线。
 
 ## 1. 技术原型的具体选择
 
@@ -12,11 +14,11 @@
 
 | 层 | 原型采用什么 | 责任与状态 |
 | --- | --- | --- |
-| 主后端 / 用户接口 | 既有 Go 控制端、现有 SQLite | 鉴权、资料、开关、关注、证据、整理任务、简报、动作账本；新增实体均待实现 |
-| 语义记忆 | 固定 DeerFlow 的 `DeerMem` 本地 provider | 复用事实提取、CRUD、文件事务、检索和上下文格式化；源码已有，DeerMate 集成待验收 |
+| 主后端 / 用户接口 | 既有 Go 控制端、现有 SQLite | 鉴权、资料、开关、引用和显式投递账本已实现；关注、证据、整理模型、简报和首页动作待实现 |
+| 语义记忆 | 固定 DeerFlow 的 `DeerMem` 本地 provider | 已本地验收显式事实 CRUD、文件事务、检索和注入；自动提取仍待接入 |
 | 事实主存储 | 按用户/agent 的 Markdown 事实文件；用户级 JSON 摘要 | provider 是正文主源；Go 保存身份、来源、状态和引用，不维护第二套长期事实正文 |
-| 候选检索 | provider 的 SQLite FTS5 / BM25 | 首期使用已有全文检索；中文分词需验证 `jieba` 可用性和实际召回效果 |
-| 记忆模型 | provider 已支持的记忆更新模型接口 | 可接入既有模型供应方；具体模型、预算和敏感字段处理待适配验收，不在本次文档工作中调用 |
+| 候选检索 | provider 的 SQLite FTS5 / BM25 | 个人范围 FTS5 与中文多字召回已本地验收；复用 tokenizer 的可选 jieba/双字兜底，语义召回不在本阶段 |
+| 记忆模型 | provider 已支持的记忆更新模型接口 | 可接入既有模型供应方；具体模型、预算和敏感字段处理待适配验收，本轮未调用真实模型 |
 | 首页内容 | Go 证据投影 + 缓存快照 + 可选模型整理 | 任务进展可用模板；模型负责表达和提议问题，不决定真实执行状态 |
 
 首期无需增加 Redis、独立向量数据库、外部记忆 SaaS 或新服务器。现有 2 GiB 主机能否满足目标，仍以 MEM-19 实机验收为准；不由组件数量推导容量结论。
@@ -70,7 +72,7 @@ provider 已有文件锁、manifest revision、逐事实 revision、恢复 journ
 
 `get_context()` 的默认事实选择以 confidence 和 token 预算为基础。另有可选 `retrieval_relevance_enabled`：使用确定性词法相关性、confidence 和可选多样性选择；开启后 `search()` 会绕过 FTS5。**不能宣称默认聊天注入已经使用 BM25，也不能宣称两种检索策略默认叠加。**
 
-本原型拟让受限适配器显式调用 FTS5 检索，在获准事实中选择、去重并格式化为不超过主规格建议的 1,500 tokens 的上下文。复用 provider 存储、搜索和格式化能力；“检索结果 → 过滤后的上下文”这一组合、项目范围过滤及提交门禁需要实现。词法相关性模式作为对照评测，依据中文召回结果再决定是否替换默认。
+M4.4a 的受限适配器已显式调用 FTS5，在本人获准事实中选择、去重，再复用格式化器按约 1,500 tokens 的离线估算预算注入。个人范围的组合召回与提交门禁已本地验收；项目范围和来源撤权仍待实现。词法相关性模式未另行启用，未来依据召回评测再决定是否调整。
 
 这提供的是全文/词法召回，不保证跨措辞、跨语言的语义召回。后续如果评测发现漏召回，再评估 embedding；当前设计不为尚未测到的问题增加向量服务。
 
@@ -84,7 +86,7 @@ provider 已有文件锁、manifest revision、逐事实 revision、恢复 journ
 
 ## 3. 最小数据原型与一致性
 
-以下是拟议契约，不代表当前已有数据库表或可调用接口。
+以下为完整目标契约。M4.4a 已实现资料、个人引用、显式投递与目标遗忘屏障的子集，实际表/API 见[基础指南](../personal-memory.md)；自动采集来源、项目范围及简报实体仍待实现。
 
 | 对象 | 核心信息 | 约束 |
 | --- | --- | --- |
@@ -182,7 +184,7 @@ intent 的“已提交”只表示提交成功，后续任务可能失败、取�
 
 ## 9. 后续如何把设计变成可运行原型
 
-下面是实施顺序，全部待开发；本轮不启动任何一步的运行时工作。
+下面保留完整实施顺序。M4.4a 已加入第一步的个人范围基础及第二步的显式事实召回，正在验收；自动来源、项目范围、模型作业和首页闭环仍待后续阶段，不能把局部实现视为整步完成。
 
 1. **契约与隔离骨架：** Go 资料/策略/来源/删除版本，Python 受限适配器，固定 provider 路径；用合成数据验证本人隔离、CRUD、事实重启保留、中文检索、修订冲突及无谱系摘要禁用。人工事实 CRUD 无需模型。
 2. **可靠提取与召回：** Go outbox/作业、稳定回执和提交门禁；把普通用户表达与助手/通知/验收来源区分。打通提取、去重、更正、跨对话召回、关闭/遗忘竞争；先离线 fixture，再做单独的有界真实模型验收。
@@ -205,4 +207,4 @@ intent 的“已提交”只表示提交成功，后续任务可能失败、取�
 | [middleware](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/packages/harness/deerflow/agents/middlewares/memory_middleware.py) / [提取器](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/packages/harness/deerflow/agents/memory/backends/deermem/deermem/core/updater.py) / [队列](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/packages/harness/deerflow/agents/memory/backends/deermem/deermem/core/queue.py) | 身份捕获、候选写回和进程内防抖队列 |
 | [DeerMate 部署生成器](../../scripts/ack_deploy.py) / [Go 存储](../../backend/internal/controlplane/store.go) | 当前最小 profile 显式关闭记忆；既有 Go SQLite 边界 |
 
-图中的 Go 新实体、权限/删除门禁、可靠作业与简报均为提案。图源及渲染方法见[图目录说明](../diagrams/personal-memory/README.md)。本轮验证范围为源码一致性、文档链接和 Mermaid 渲染；应用测试、模型、历史导入、云端部署及性能验收未运行。
+图源及渲染方法见[图目录说明](../diagrams/personal-memory/README.md)。2026-10-30 的设计工作只验证源码、文档和 Mermaid 渲染。2026-11-02 开始 M4.4a 实施，实际交付与验证以[基础指南](../personal-memory.md)和[STATUS](../STATUS.md)为准；自动提取、完整简报、历史导入、云端升级及性能验收不能由这些设计图推断已完成。

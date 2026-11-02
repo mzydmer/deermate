@@ -42,6 +42,7 @@ python scripts/verify_go_control.py --restart
 | --- | --- |
 | Auth | `/api/v1/auth`: `GET /setup-status`, `POST /initialize`, `POST /login/local` (form username/password/remember_me), `GET /me`, `POST /logout`, `POST /change-password` |
 | Account | `GET/PATCH /api/v1/auth/preferences`, `GET /api/v1/auth/sessions`, `DELETE /api/v1/auth/sessions/{id}` |
+| Personal memory | `GET/PATCH /api/me/personal-profile`, memory list/search/CRUD and operation status; [scope and protocol](../docs/personal-memory.md). Explicit personal facts only; automatic extraction and briefing pending |
 | Management | `GET/POST /api/v1/admin/users`, `PATCH /api/v1/admin/users/{id}`, `POST /api/v1/admin/users/{id}/password`, `GET /api/v1/admin/audit` |
 | Frontend | `GET /api/deermate/v1/info`, `GET /api/deermate/v1/workspace` (bounded summary of 20 threads) |
 | Admin UI | `GET /admin`, administrator session required |

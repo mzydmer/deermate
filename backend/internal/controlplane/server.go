@@ -24,12 +24,13 @@ type Config struct {
 	PasswordCost int
 }
 type Server struct {
-	Store   *Store
-	cfg     Config
-	mux     *http.ServeMux
-	engine  *runtimeAdapter
-	dummy   string
-	hashing chan struct{}
+	Store          *Store
+	cfg            Config
+	mux            *http.ServeMux
+	engine         *runtimeAdapter
+	dummy          string
+	hashing        chan struct{}
+	memoryDelivery chan struct{}
 }
 type sessionKey struct{}
 
@@ -56,7 +57,7 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{Store: store, cfg: cfg, mux: http.NewServeMux(), engine: engine, dummy: dummy, hashing: make(chan struct{}, 4)}
+	s := &Server{Store: store, cfg: cfg, mux: http.NewServeMux(), engine: engine, dummy: dummy, hashing: make(chan struct{}, 4), memoryDelivery: make(chan struct{}, 1)}
 	s.routes()
 	return s, nil
 }
@@ -178,6 +179,7 @@ func (s *Server) protected(admin bool, h http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) routes() {
+	s.memoryRoutes()
 	s.mux.HandleFunc("GET /health/live", func(w http.ResponseWriter, r *http.Request) {
 		respond(w, 200, map[string]string{"status": "ok", "backend": "go"})
 	})
@@ -514,6 +516,10 @@ func (s *Server) preferences(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.memory/") || r.URL.Path == "/api/memory" || strings.HasPrefix(r.URL.Path, "/api/memory/") {
+		fail(w, 403, "personal_api_required", "Use the personal memory API")
+		return
+	}
 	u := sessionOf(r).User
 	if u.NeedsSetup {
 		fail(w, 403, "setup_required", "Complete password setup first")

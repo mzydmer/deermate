@@ -42,6 +42,7 @@ import { WorkspaceSidebarTrigger } from "@/components/workspace/workspace-sideba
 
 import { BrandMotion } from "./brand";
 import { MotionTabs } from "./motion-tabs";
+import { PersonalGreeting, PersonalMemoryPanel } from "./personal-memory";
 import { TaskDetail, type DeskTask } from "./task-detail";
 
 const labels: Record<string, [string, string]> = {
@@ -196,11 +197,7 @@ export function DeerMateDesk() {
         <section className="dm-hero">
           <div className="dm-hero-copy">
             <p className="dm-eyebrow">A LITTLE HELP. A LOT MORE POSSIBILITY.</p>
-            <h1>
-              {text("把目标交给我，", "Your next idea,")}
-              <br />
-              <span>{text("把时间留给自己。", "in good hands.")}</span>
-            </h1>
+            <PersonalGreeting key={user?.id} userId={user?.id ?? ""} zh={zh} />
             <p>
               {text(
                 "这里是你的私人秘书工作台。从一个目标开始，随时查看工作的每一步。",
@@ -216,6 +213,9 @@ export function DeerMateDesk() {
             </small>
           </div>
         </section>
+        {user?.id && (
+          <PersonalMemoryPanel key={user.id} userId={user.id} zh={zh} />
+        )}
         <div className="dm-work-grid">
           <div className="dm-primary">
             <section

@@ -67,6 +67,7 @@ func run() error {
 	server := &http.Server{Addr: env("DEERMATE_LISTEN", ":8080"), Handler: handler, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 32 << 10}
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
+	go handler.RunMemoryQueue(ctx)
 	done := make(chan struct{})
 	go func() {
 		defer close(done)

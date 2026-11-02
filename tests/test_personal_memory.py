@@ -1,0 +1,319 @@
+"""Pinned DeerMem contract tests. Run with the frozen Gateway interpreter."""
+
+import hashlib
+import json
+import re
+import sqlite3
+import threading
+import time
+from pathlib import Path
+
+import pytest
+
+pytest.importorskip("deerflow.agents.memory.backends.deermem.deermem.core.storage")
+
+from deermate.memory import AGENT, PersonalMemory  # noqa: E402
+
+
+@pytest.fixture
+def memory(tmp_path):
+    database = tmp_path / "deerflow.db"
+    source = (
+        Path(__file__).parents[1] / "backend/internal/controlplane/memory_store.go"
+    ).read_text()
+    ddl = re.search(r"s.DB.Exec\(`(.*?)`\)", source, re.S).group(1)
+    with sqlite3.connect(database) as db:
+        db.execute("CREATE TABLE users(id TEXT PRIMARY KEY,disabled INTEGER,needs_setup INTEGER)")
+        db.executescript(ddl)
+        for owner in ["alice", "bob"]:
+            db.execute("INSERT INTO users VALUES(?,0,0)", (owner,))
+            db.execute(
+                "INSERT INTO deermate_personal_profiles"
+                "(owner,memory_enabled,revision,policy_revision) VALUES(?,1,1,1)",
+                (owner,),
+            )
+    return PersonalMemory(database, tmp_path / "memory")
+
+
+def admit(memory, key, content="控制端使用 Go，Worker 保留 Python", *, kind="create", fact=None):
+    fact = fact or "mem_" + key
+    with sqlite3.connect(memory.database) as db:
+        db.execute(
+            "INSERT OR IGNORE INTO deermate_memory_refs"
+            "(id,owner,category,source_id,status,content_hash,updated_at) "
+            "VALUES(?,'alice','context',?,'pending',?,1)",
+            (fact, key, hashlib.sha256(content.strip().encode()).hexdigest()),
+        )
+        ref = db.execute("SELECT revision FROM deermate_memory_refs WHERE id=?", (fact,)).fetchone()
+        payload = json.dumps(
+            {"content": content, "category": "context", "expected_revision": ref[0]}
+        )
+        db.execute(
+            "INSERT INTO deermate_memory_operations(id,owner,fact_id,kind,status,policy_revision,"
+            "deletion_revision,request_hash,payload,created_at,lease_until) "
+            "VALUES(?,'alice',?,?,'processing',1,0,'hash',?,1,?)",
+            (key, fact, kind, payload, int(time.time()) + 90),
+        )
+        if kind == "update":
+            db.execute("UPDATE deermate_memory_refs SET status='updating' WHERE id=?", (fact,))
+    return fact
+
+
+def finish(memory, key, result):
+    with sqlite3.connect(memory.database) as db:
+        payload = json.loads(
+            db.execute(
+                "SELECT payload FROM deermate_memory_operations WHERE id=?", (key,)
+            ).fetchone()[0]
+        )
+        db.execute(
+            "UPDATE deermate_memory_refs SET status='active',revision=?,content_hash=? "
+            "WHERE source_id=?",
+            (
+                result["revision"],
+                hashlib.sha256(payload["content"].strip().encode()).hexdigest(),
+                key,
+            ),
+        )
+        db.execute(
+            "UPDATE deermate_memory_operations SET status='completed',payload='' WHERE id=?", (key,)
+        )
+
+
+def test_canonical_markdown_cjk_search_and_restart(memory):
+    fact = admit(memory, "first")
+    result = memory.apply("alice", "first")
+    assert result["revision"] == 1
+    finish(memory, "first", result)
+    body = memory.read("alice", [fact], "控制端")
+    assert body["items"][0]["content"].startswith("控制端使用 Go")
+    assert list(
+        memory.storage._config.storage_path
+        and Path(memory.storage._config.storage_path).glob(
+            "users/alice/agents/deermate-personal/facts/*/*.md"
+        )
+    )
+    second = PersonalMemory(memory.database, Path(memory.storage._config.storage_path))
+    assert second.read("alice", [fact], "Worker")["items"][0]["id"] == fact
+    assert fact in second.context("alice", "控制端应该用什么")
+    assert second.read("alice", [fact], "unrelatedterm")["items"] == []
+
+
+def test_lost_ack_reconciles_same_fact_and_revision(memory):
+    fact = admit(memory, "lost-ack")
+    first = memory.apply("alice", "lost-ack")
+    again = memory.apply("alice", "lost-ack")
+    assert first == again and first["revision"] == 1
+    data = memory.storage.load(user_id="alice", agent_name=AGENT)
+    assert [f["id"] for f in data["facts"]] == [fact]
+
+
+def test_owner_isolation_and_allowlist_precedes_limit(memory):
+    for index in range(15):
+        key = "match" + str(index)
+        admit(memory, key, "控制端 Go " * (index + 1))
+        finish(memory, key, memory.apply("alice", key))
+    only = "mem_match0"
+    assert memory.read("bob", [only], "Go")["items"] == []
+    assert [m["id"] for m in memory.read("alice", [only], "Go")["items"]] == [only]
+    with pytest.raises(PermissionError):
+        memory.apply("bob", "match0")
+
+
+def test_forget_barrier_blocks_old_candidate_before_purge(memory):
+    fact = admit(memory, "old")
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_personal_profiles SET deletion_revision=1 WHERE owner='alice'")
+        db.execute("INSERT INTO deermate_memory_barriers VALUES('alice',?,1,1)", (fact,))
+    with pytest.raises(PermissionError):
+        memory.apply("alice", "old")
+    assert memory._fact("alice", fact) is None
+
+
+def test_off_disables_injection_but_keeps_management_and_no_shared_summary(memory):
+    fact = admit(memory, "saved")
+    finish(memory, "saved", memory.apply("alice", "saved"))
+    with sqlite3.connect(memory.database) as db:
+        db.execute(
+            "UPDATE deermate_personal_profiles SET memory_enabled=0,revision=2 WHERE owner='alice'"
+        )
+    assert memory.context("alice", "Go") == ""
+    assert memory.read("alice", [fact])["items"][0]["id"] == fact
+    summaries = memory.storage.load(user_id="alice", agent_name=AGENT)["user"]
+    assert all(not entry["summary"] for entry in summaries.values())
+
+
+def test_correction_never_exposes_old_text_while_pending(memory):
+    fact = admit(memory, "saved", "控制端使用 Python")
+    finish(memory, "saved", memory.apply("alice", "saved"))
+    admit(memory, "corrected", "控制端使用 Go", kind="update", fact=fact)
+    assert memory.read("alice", [fact])["items"] == []
+    result = memory.apply("alice", "corrected")
+    assert result["revision"] == 2
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_memory_refs SET source_id='corrected' WHERE id=?", (fact,))
+    finish(memory, "corrected", result)
+    assert memory.read("alice", [fact], "控制端")["items"][0]["content"] == "控制端使用 Go"
+
+
+def test_commit_fence_serializes_a_concurrent_forget(memory, monkeypatch):
+    admit(memory, "inflight")
+    entered, release = threading.Event(), threading.Event()
+    original = memory.storage.apply_changes
+
+    def paused(*args, **kwargs):
+        entered.set()
+        assert release.wait(5)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(memory.storage, "apply_changes", paused)
+    failures = []
+
+    def worker():
+        try:
+            memory.apply("alice", "inflight")
+        except Exception as error:
+            failures.append(error)
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    try:
+        assert entered.wait(5)
+        with sqlite3.connect(memory.database, timeout=0.05) as db:
+            with pytest.raises(sqlite3.OperationalError, match="locked"):
+                db.execute("BEGIN IMMEDIATE")
+    finally:
+        release.set()
+        thread.join(5)
+    assert not thread.is_alive() and not failures
+    with sqlite3.connect(memory.database) as db:
+        db.execute("INSERT INTO deermate_memory_barriers VALUES('alice','mem_inflight',1,1)")
+        db.execute("UPDATE deermate_memory_refs SET status='suppressed'")
+    assert memory.read("alice", ["mem_inflight"])["items"] == []
+
+
+@pytest.mark.parametrize(
+    "question", ["控制端应该用什么？", [{"type": "text", "text": "控制端应该用什么？"}]]
+)
+def test_real_agent_assembly_recalls_only_current_owner_enabled_memory(
+    memory, monkeypatch, question
+):
+    from langchain.agents import create_agent
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    from deermate import memory as module
+    from deermate.memory_middleware import PersonalMemoryMiddleware
+    from deermate.session_middleware import CodingSessionMiddleware
+
+    fact = admit(memory, "model-fact", "控制端使用 Go，Worker 保留 Python")
+    finish(memory, "model-fact", memory.apply("alice", "model-fact"))
+    monkeypatch.setattr(module, "runtime_memory", lambda: memory)
+    seen = []
+
+    class InspectMiddleware(PersonalMemoryMiddleware):
+        def wrap_model_call(self, request, handler):
+            updated = self._inject(request, self._context(request))
+            seen.append(updated.system_message.content)
+            return handler(updated)
+
+    graph = create_agent(
+        FakeListChatModel(responses=["fixture response"]),
+        tools=[],
+        middleware=[CodingSessionMiddleware(), InspectMiddleware()],
+        system_prompt="Secretary",
+    )
+    graph.invoke(
+        {"messages": [{"role": "user", "content": question}]},
+        context={"user_id": "alice", "thread_id": "new-chat"},
+    )
+    assert "控制端使用 Go" in seen[-1] and fact in seen[-1]
+    graph.invoke(
+        {"messages": [{"role": "user", "content": "控制端应该用什么？"}]},
+        context={"user_id": "bob", "thread_id": "other-chat"},
+    )
+    assert "控制端使用 Go" not in seen[-1]
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_personal_profiles SET memory_enabled=0 WHERE owner='alice'")
+    graph.invoke(
+        {"messages": [{"role": "user", "content": "控制端应该用什么？"}]},
+        context={"user_id": "alice", "thread_id": "another-chat"},
+    )
+    assert "控制端使用 Go" not in seen[-1]
+
+
+def test_stable_preference_is_injected_for_an_unrelated_question(memory):
+    fact = admit(memory, "language", "回复请使用中文，先给结论")
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_memory_refs SET category='preference' WHERE id=?", (fact,))
+        payload = json.dumps(
+            {
+                "content": "回复请使用中文，先给结论",
+                "category": "preference",
+                "expected_revision": 0,
+            }
+        )
+        db.execute(
+            "UPDATE deermate_memory_operations SET payload=? WHERE id='language'", (payload,)
+        )
+    finish(memory, "language", memory.apply("alice", "language"))
+    assert "回复请使用中文" in memory.context("alice", "How does database replication work?")
+
+
+def test_out_of_band_body_edit_fails_provenance_check(memory):
+    from deermate.memory import MemoryUnavailable
+
+    fact = admit(memory, "saved", "原本明确保存的背景")
+    finish(memory, "saved", memory.apply("alice", "saved"))
+    path = next(
+        Path(memory.storage._config.storage_path).glob(
+            f"users/alice/agents/{AGENT}/facts/*/{fact}.md"
+        )
+    )
+    path.write_text(path.read_text().replace("原本明确保存的背景", "未经接纳的另一段背景"))
+    with pytest.raises(MemoryUnavailable, match="provenance"):
+        memory.read("alice", [fact])
+
+
+def test_unknown_project_scope_cannot_fall_back_to_personal_memory(memory):
+    fact = admit(memory, "project")
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_memory_refs SET scope='project:other' WHERE id=?", (fact,))
+    with pytest.raises(PermissionError, match="scope"):
+        memory.apply("alice", "project")
+    assert memory.read("alice", [fact])["items"] == []
+    assert memory.context("alice", "Go") == ""
+
+
+def test_shared_summary_without_source_lineage_is_never_injected(memory):
+    admit(memory, "source", "明确保存的项目约束")
+    finish(memory, "source", memory.apply("alice", "source"))
+    data = memory.storage.load(user_id="alice", agent_name=AGENT)
+    data["user"]["personalContext"]["summary"] = "UNSCOPED_PRIVATE_SUMMARY"
+    memory.storage.apply_changes(
+        {"summaries": {"user": data["user"], "history": data["history"]}},
+        user_id="alice",
+        agent_name=AGENT,
+    )
+    context = memory.context("alice", "项目约束")
+    assert "明确保存的项目约束" in context and "UNSCOPED_PRIVATE_SUMMARY" not in context
+
+
+def test_failed_index_rebuild_does_not_scan_all_markdown_files(memory, monkeypatch):
+    from deermate.memory import MemoryUnavailable
+
+    fact = admit(memory, "index", "项目约束")
+    finish(memory, "index", memory.apply("alice", "index"))
+    memory.storage._retrieval_dirty_scopes.add(("alice", AGENT))
+    monkeypatch.setattr(memory.storage, "rebuild_index", lambda *a, **k: {"failed": ["fixture"]})
+    with pytest.raises(MemoryUnavailable, match="no full-file scan"):
+        memory.read("alice", [fact], "项目")
+
+
+def test_unrelated_deletion_does_not_cancel_an_explicit_single_fact_delivery(memory):
+    fact = admit(memory, "independent")
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_personal_profiles SET deletion_revision=1 WHERE owner='alice'")
+        db.execute("INSERT INTO deermate_memory_barriers VALUES('alice','another-fact',1,1)")
+    result = memory.apply("alice", "independent")
+    finish(memory, "independent", result)
+    assert memory.read("alice", [fact])["items"][0]["id"] == fact

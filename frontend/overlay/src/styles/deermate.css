@@ -1006,7 +1006,9 @@ body,
 .t-tab[aria-selected="true"] {
   color: var(--tabs-text-active);
 }
-.t-tab[aria-selected="true"] { font-weight: 600; }
+.t-tab[aria-selected="true"] {
+  font-weight: 600;
+}
 
 /* The pill: width + transform are written inline by JS so
    the transition tweens between the previous and next
@@ -1113,5 +1115,92 @@ body,
   .dm-auth-story {
     border-right: 0;
     border-bottom: 1px solid var(--border);
+  }
+}
+
+/* Personal settings and memory share the desk's typography and form tokens. */
+.dm-memory {
+  margin: 0 0 32px;
+  padding: 16px 0;
+  border-top: 1px solid var(--dm-border);
+  border-bottom: 1px solid var(--dm-border);
+}
+.dm-memory > summary {
+  cursor: pointer;
+  font-weight: 500;
+  min-height: 36px;
+  display: list-item;
+}
+.dm-memory p {
+  line-height: 1.6;
+}
+.dm-memory-form {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 24px;
+  max-width: 720px;
+  align-items: start;
+}
+.dm-memory label {
+  display: grid;
+  gap: 8px;
+}
+.dm-memory :is(input:not([type="checkbox"]), select, textarea) {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid var(--dm-border-strong);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-background);
+  color: var(--dm-foreground);
+  font: inherit;
+}
+.dm-memory textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+.dm-memory .dm-memory-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+}
+.dm-memory .dm-memory-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--dm-primary);
+}
+.dm-memory-form > .dm-button {
+  justify-self: start;
+}
+.dm-memory-list {
+  padding: 0;
+  margin: 16px 0;
+  list-style: none;
+}
+.dm-memory-list > li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--dm-border);
+}
+.dm-memory-list p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0 0 8px;
+}
+.dm-memory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+@media (max-width: 600px) {
+  .dm-memory :is(input:not([type="checkbox"]), select, textarea) {
+    font-size: 16px;
+    min-height: 44px;
+  }
+  .dm-memory .dm-button,
+  .dm-memory .dm-memory-check,
+  .dm-memory > summary {
+    min-height: 44px;
   }
 }

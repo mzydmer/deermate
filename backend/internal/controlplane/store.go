@@ -136,7 +136,10 @@ func (s *Store) initialize() error {
  CREATE INDEX IF NOT EXISTS deermate_sessions_user ON deermate_sessions(user_id);
  CREATE TABLE IF NOT EXISTS deermate_audit (id INTEGER PRIMARY KEY AUTOINCREMENT,actor_id TEXT NOT NULL,action TEXT NOT NULL,target_id TEXT NOT NULL,created_at INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS deermate_login_attempts (key TEXT PRIMARY KEY,failures INTEGER NOT NULL,window_start INTEGER NOT NULL);`)
-	return err
+	if err != nil {
+		return err
+	}
+	return s.initializeMemory()
 }
 
 const userColumns = "id,email,coalesce(password_hash,''),system_role,disabled,needs_setup,token_version,oauth_provider"

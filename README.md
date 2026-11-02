@@ -179,7 +179,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current stage: **M4.3 Go backend and shared frontend design**, on the locally verified Docker/Worker stack.
+We track delivered work separately from planned functionality. Current work: **M4.4a opt-in personal memory foundations**, implemented and locally verified on the Go backend and shared design system. See the [personal memory guide](docs/personal-memory.md) for scope and acceptance status. Automatic extraction and proactive daily briefings remain planned.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -188,6 +188,7 @@ We track delivered work separately from planned functionality. Current stage: **
 | M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH and temporary cloud-to-home task verified; automatic enrollment and expiry observation pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
+| M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified; existing cloud deployment unchanged |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
@@ -196,7 +197,7 @@ Historical M2.1 verification had 51 passing normal tests (two opt-in upstream ch
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **199 passed, 7 opt-in cases skipped**. Real cloud-model-to-home-Codex acceptance passed one bounded task, independent tests and delivered notification; nine actual cloud OpenSSH checks passed. The fixed deployment contracts passed 32 cases after adding the optional chat provider. Earlier fixture receipts retain their original scope; see [STATUS](docs/STATUS.md) and the [new receipt](docs/verification/home-link-2026-10-28.json).
+The current normal suite has **244 passed, 8 opt-in cases skipped**. Personal memory also passed 15 pinned provider/graph contracts, 21 actual Go/Gateway API checks and 9 browser checks; the current pinned Chart/Compose/single-host/HTTPS subset passed 24 cases. This round uses synthetic data, with no real model/native calls or cloud upgrade. Historical cloud-to-home Codex evidence retains its original scope; see [STATUS](docs/STATUS.md) and the [memory receipt](docs/verification/personal-memory-2026-11-02.json).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 
