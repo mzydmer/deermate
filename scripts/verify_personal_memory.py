@@ -22,8 +22,20 @@ def gateway_child(port):
                 raise RuntimeError("Memory acceptance permits only loopback connections")
 
     sys.addaudithook(loopback_only)
-    import uvicorn
+    import types
 
+    import uvicorn
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    class CaptureModel(FakeListChatModel):
+        responses: list[str] = ["Synthetic memory acceptance response."]
+
+        def bind_tools(self, tools, **kwargs):
+            return self
+
+    fixture = types.ModuleType("deermate_memory_fixture")
+    fixture.CaptureModel = CaptureModel
+    sys.modules[fixture.__name__] = fixture
     uvicorn.run("app.gateway.app:app", host="127.0.0.1", port=port, log_level="warning")
 
 
@@ -44,7 +56,13 @@ def run(args):
     origin = f"http://127.0.0.1:{control_port}"
     config = {
         "config_version": 62,
-        "models": [],
+        "models": [
+            {
+                "name": "memory-fixture",
+                "use": "deermate_memory_fixture:CaptureModel",
+                "model": "offline-fixture",
+            }
+        ],
         "tools": [],
         "tool_groups": [],
         "plugins": [
@@ -309,6 +327,94 @@ def run(args):
             "canonical_fact_removed",
             not list((work / "home").glob("personal-memory/users/*/agents/*/facts/*/*.md")),
         )
+        # Actual run admission with an in-process Fake chat model. No provider
+        # or native tools are available; only the run/model selection is fake.
+        profile = request("GET", "/api/me/personal-profile")
+        check("capture_defaults_off", not profile["auto_capture_enabled"])
+        request(
+            "PATCH",
+            "/api/me/personal-profile",
+            {
+                "memory_enabled": True,
+                "auto_capture_enabled": True,
+                "expected_revision": profile["revision"],
+            },
+            owner=owner,
+        )
+        thread = request("POST", "/api/threads", {"thread_id": "memory-capture-fixture"})
+        thread_id = thread["thread_id"]
+
+        def submit_capture(message_id, text, **extras):
+            body = {
+                "input": {
+                    "messages": [
+                        {
+                            "type": "human",
+                            "id": message_id,
+                            "content": [{"type": "text", "text": text}],
+                        }
+                    ]
+                },
+                "config": {"recursion_limit": 128},
+            } | extras
+            response = client.post(
+                "/api/threads/" + thread_id + "/runs",
+                json=body,
+                headers={"X-CSRF-Token": client.cookies.get("csrf_token", "")},
+            )
+            if response.status_code != 200:
+                raise RuntimeError("Synthetic run admission failed; inspect private logs")
+            run = response.json()
+            deadline = time.monotonic() + 45
+            while time.monotonic() < deadline:
+                state = request("GET", "/api/threads/" + thread_id + "/runs/" + run["run_id"])
+                if state["status"] not in {"pending", "running"}:
+                    break
+                time.sleep(0.1)
+            check("synthetic_run_" + message_id, state["status"] == "success")
+            return response
+
+        response = submit_capture("capture-personal", "请记住：我偏好简洁的中文回答。")
+        check(
+            "accepted_interactive_run_captures_explicit_request",
+            response.headers.get("X-Deermate-Memory-Status") == "queued",
+        )
+        deadline = time.monotonic() + 15
+        captured = []
+        while time.monotonic() < deadline:
+            captured = request("GET", "/api/me/memories")["items"]
+            if captured:
+                break
+            time.sleep(0.1)
+        check(
+            "captured_fact_has_owned_source",
+            len(captured) == 1 and captured[0]["source"]["thread_id"] == thread_id,
+        )
+        check("captured_fact_searches_in_chinese", len(search_memory("简洁")) == 1)
+        response = submit_capture("ordinary-question", "帮我查一次开源助手")
+        check("one_off_question_not_captured", not response.headers.get("X-Deermate-Memory-Status"))
+        response = submit_capture(
+            "suggested-question",
+            "请记住：我喜欢英文回答。",
+            metadata={"source": "briefing-suggestion"},
+        )
+        check(
+            "marked_suggestion_not_captured", not response.headers.get("X-Deermate-Memory-Status")
+        )
+        check("only_one_explicit_fact", len(request("GET", "/api/me/memories")["items"]) == 1)
+        with __import__("sqlite3").connect(work / "sql/deerflow.db") as db:
+            db.execute("DELETE FROM runs WHERE run_id=?", (captured[0]["source"]["run_id"],))
+        missing = request("GET", "/api/me/memories")
+        check(
+            "removed_source_hidden_and_cleanup_available",
+            missing["items"] == [] and missing["references"][0]["status"] == "source_unavailable",
+        )
+        delivery(
+            "DELETE",
+            "/api/me/memories/" + captured[0]["id"],
+            {"operation_id": "forget-captured", "expected_revision": captured[0]["revision"]},
+            owner,
+        )
         receipt = {
             "passed": True,
             "checks": checks,
@@ -327,6 +433,8 @@ def run(args):
                     "src/deermate/memory_middleware.py",
                     "backend/internal/controlplane/memory_store.go",
                     "backend/internal/controlplane/memory.go",
+                    "backend/internal/controlplane/memory_capture.go",
+                    "backend/internal/controlplane/runtime.go",
                 ]
             },
             "control_binary_sha256": hashlib.sha256(args.control_binary.read_bytes()).hexdigest(),

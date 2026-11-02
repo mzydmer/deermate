@@ -23,6 +23,7 @@ type runtimeAdapter struct {
 	proxy        *httputil.ReverseProxy
 	client       *http.Client
 	publicScheme string
+	onResponse   func(*http.Response)
 }
 
 func newRuntime(address, secret string) (*runtimeAdapter, error) {
@@ -38,6 +39,9 @@ func newRuntime(address, secret string) (*runtimeAdapter, error) {
 		p.Out.Host = p.In.Host
 		a.identity(p.Out, sessionOf(p.In).User, p.In)
 	}, ModifyResponse: func(r *http.Response) error {
+		if a.onResponse != nil {
+			a.onResponse(r)
+		}
 		r.Header.Del("Set-Cookie")
 		r.Header.Set("Cache-Control", "no-store")
 		return nil

@@ -317,3 +317,134 @@ def test_unrelated_deletion_does_not_cancel_an_explicit_single_fact_delivery(mem
     result = memory.apply("alice", "independent")
     finish(memory, "independent", result)
     assert memory.read("alice", [fact])["items"][0]["id"] == fact
+
+
+def captured_source(memory, key="captured"):
+    """Use the pinned ORM schema, not a separately invented runtime schema."""
+    from deerflow.persistence.run.model import RunRow
+    from deerflow.persistence.thread_meta.model import ThreadMetaRow
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+
+    engine = create_engine("sqlite:///" + str(memory.database))
+    ThreadMetaRow.__table__.create(engine, checkfirst=True)
+    RunRow.__table__.create(engine, checkfirst=True)
+    text = "请记住：我偏好简洁的中文回答。"
+    fact = admit(memory, key, "我偏好简洁的中文回答。")
+    with Session(engine) as session:
+        session.add(
+            ThreadMetaRow(thread_id="source-thread", user_id="alice", incarnation="gen-one")
+        )
+        session.add(
+            RunRow(
+                run_id="source-run",
+                thread_id="source-thread",
+                user_id="alice",
+                status="success",
+                operation_kind="run",
+                evidence_origin="interactive",
+                kwargs_json={
+                    "input": {
+                        "messages": [{"type": "human", "id": "source-message", "content": text}]
+                    }
+                },
+            )
+        )
+        session.commit()
+    engine.dispose()
+    with sqlite3.connect(memory.database) as db:
+        db.execute(
+            "UPDATE deermate_personal_profiles SET auto_capture_enabled=1 WHERE owner='alice'"
+        )
+        db.execute(
+            "INSERT INTO deermate_memory_sources VALUES(?,'alice','source-thread',"
+            "'source-run','source-message',?,'gen-one',1,0,?,?,0)",
+            (key, hashlib.sha256(text.encode()).hexdigest(), int(time.time()), int(time.time())),
+        )
+    return fact
+
+
+def test_captured_source_roundtrip_and_reference(memory):
+    fact = captured_source(memory)
+    finish(memory, "captured", memory.apply("alice", "captured"))
+    item = memory.read("alice", [fact], "简洁")["items"][0]
+    assert item["source"]["thread_id"] == "source-thread"
+    assert item["source"]["message_id"] == "source-message"
+    assert "简洁" in memory.context("alice", "简洁")
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "DELETE FROM runs",
+        "UPDATE runs SET origin_kind='mcp_notification'",
+        "UPDATE runs SET user_id='bob'",
+        "UPDATE threads_meta SET incarnation='new-generation'",
+        "UPDATE threads_meta SET project_id='new-project'",
+        "UPDATE runs SET kwargs_json='{}'",
+    ],
+)
+def test_captured_source_revocation_precedes_ranking_and_injection(memory, change, monkeypatch):
+    fact = captured_source(memory)
+    finish(memory, "captured", memory.apply("alice", "captured"))
+    with sqlite3.connect(memory.database) as db:
+        db.execute(change)
+
+    def no_fact_read(*args, **kwargs):
+        raise AssertionError("An unauthorized source reached canonical storage")
+
+    monkeypatch.setattr(memory, "_fact", no_fact_read)
+    assert memory.read("alice", [fact], "简洁")["items"] == []
+    assert memory.context("alice", "简洁") == ""
+
+
+def test_capture_generation_and_permission_checked_before_commit(memory):
+    fact = captured_source(memory)
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_personal_profiles SET deletion_revision=1 WHERE owner='alice'")
+    with pytest.raises(PermissionError):
+        memory.apply("alice", "captured")
+    assert memory._fact("alice", fact) is None
+
+
+def test_manual_correction_detaches_old_chat_source(memory):
+    fact = captured_source(memory)
+    finish(memory, "captured", memory.apply("alice", "captured"))
+    admit(memory, "manual-correction", "我偏好详细回答。", kind="update", fact=fact)
+    result = memory.apply("alice", "manual-correction")
+    with sqlite3.connect(memory.database) as db:
+        db.execute(
+            "UPDATE deermate_memory_refs SET source_id='manual-correction' WHERE id=?", (fact,)
+        )
+        db.execute("DELETE FROM runs")
+    finish(memory, "manual-correction", result)
+    item = memory.read("alice", [fact])["items"][0]
+    assert item["content"] == "我偏好详细回答。"
+    assert item["source"] is None
+
+
+def test_edited_source_is_permanently_revoked_after_observation(memory):
+    from deerflow.persistence.run.model import RunRow
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+
+    fact = captured_source(memory)
+    finish(memory, "captured", memory.apply("alice", "captured"))
+    engine = create_engine("sqlite:///" + str(memory.database))
+    with Session(engine) as session:
+        session.add(
+            RunRow(
+                run_id="edited-run",
+                thread_id="source-thread",
+                user_id="alice",
+                status="success",
+                metadata_json={"replay_kind": "edit", "regenerate_from_run_id": "source-run"},
+            )
+        )
+        session.commit()
+    engine.dispose()
+    assert memory.read("alice", [fact], "简洁")["items"] == []
+    with sqlite3.connect(memory.database) as db:
+        assert db.execute("SELECT invalidated_at FROM deermate_memory_sources").fetchone()[0] > 0
+        db.execute("DELETE FROM runs WHERE run_id='edited-run'")
+    assert memory.context("alice", "简洁") == ""

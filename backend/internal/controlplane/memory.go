@@ -74,11 +74,12 @@ func (s *Server) personalProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == "PATCH" {
 		var body struct {
-			DisplayName      *string `json:"display_name"`
-			Timezone         *string `json:"timezone"`
-			MemoryEnabled    *bool   `json:"memory_enabled"`
-			ProactiveEnabled *bool   `json:"proactive_enabled"`
-			ExpectedRevision int64   `json:"expected_revision"`
+			DisplayName        *string `json:"display_name"`
+			Timezone           *string `json:"timezone"`
+			MemoryEnabled      *bool   `json:"memory_enabled"`
+			AutoCaptureEnabled *bool   `json:"auto_capture_enabled"`
+			ProactiveEnabled   *bool   `json:"proactive_enabled"`
+			ExpectedRevision   int64   `json:"expected_revision"`
 		}
 		if !decode(w, r, &body) {
 			return
@@ -95,6 +96,9 @@ func (s *Server) personalProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		if body.MemoryEnabled != nil {
 			p.MemoryEnabled = *body.MemoryEnabled
+		}
+		if body.AutoCaptureEnabled != nil {
+			p.AutoCaptureEnabled = *body.AutoCaptureEnabled
 		}
 		if body.ProactiveEnabled != nil {
 			p.ProactiveEnabled = *body.ProactiveEnabled

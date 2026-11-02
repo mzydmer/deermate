@@ -14,14 +14,15 @@ import (
 // Memory bodies live in DeerMem. An operation payload is a temporary delivery
 // envelope, erased on completion/invalidation; references are not a second fact store.
 type PersonalProfile struct {
-	Owner            string `json:"owner"`
-	DisplayName      string `json:"display_name"`
-	Timezone         string `json:"timezone"`
-	MemoryEnabled    bool   `json:"memory_enabled"`
-	ProactiveEnabled bool   `json:"proactive_enabled"`
-	Revision         int64  `json:"revision"`
-	PolicyRevision   int64  `json:"policy_revision"`
-	DeletionRevision int64  `json:"deletion_revision"`
+	Owner              string `json:"owner"`
+	DisplayName        string `json:"display_name"`
+	Timezone           string `json:"timezone"`
+	MemoryEnabled      bool   `json:"memory_enabled"`
+	AutoCaptureEnabled bool   `json:"auto_capture_enabled"`
+	ProactiveEnabled   bool   `json:"proactive_enabled"`
+	Revision           int64  `json:"revision"`
+	PolicyRevision     int64  `json:"policy_revision"`
+	DeletionRevision   int64  `json:"deletion_revision"`
 }
 
 type MemoryReference struct {
@@ -50,7 +51,7 @@ func (s *Store) initializeMemory() error {
 	_, err := s.DB.Exec(`
 CREATE TABLE IF NOT EXISTS deermate_personal_profiles (
  owner TEXT PRIMARY KEY REFERENCES users(id), display_name TEXT NOT NULL DEFAULT '', timezone TEXT NOT NULL DEFAULT 'UTC',
- memory_enabled INTEGER NOT NULL DEFAULT 0, proactive_enabled INTEGER NOT NULL DEFAULT 0,
+ memory_enabled INTEGER NOT NULL DEFAULT 0, auto_capture_enabled INTEGER NOT NULL DEFAULT 0, proactive_enabled INTEGER NOT NULL DEFAULT 0,
  revision INTEGER NOT NULL DEFAULT 0, policy_revision INTEGER NOT NULL DEFAULT 0, deletion_revision INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS deermate_memory_refs (
  id TEXT PRIMARY KEY, owner TEXT NOT NULL REFERENCES users(id), category TEXT NOT NULL, scope TEXT NOT NULL DEFAULT 'personal',
@@ -64,7 +65,41 @@ CREATE TABLE IF NOT EXISTS deermate_memory_operations (
 CREATE INDEX IF NOT EXISTS deermate_memory_queue ON deermate_memory_operations(status,lease_until,created_at);
 CREATE TABLE IF NOT EXISTS deermate_memory_barriers (
  owner TEXT NOT NULL REFERENCES users(id), fact_id TEXT NOT NULL, deletion_revision INTEGER NOT NULL,
- created_at INTEGER NOT NULL, PRIMARY KEY(owner,fact_id));`)
+ created_at INTEGER NOT NULL, PRIMARY KEY(owner,fact_id));
+CREATE TABLE IF NOT EXISTS deermate_memory_sources (
+ operation_id TEXT PRIMARY KEY REFERENCES deermate_memory_operations(id), owner TEXT NOT NULL REFERENCES users(id),
+ thread_id TEXT NOT NULL, run_id TEXT NOT NULL, message_id TEXT NOT NULL, message_hash TEXT NOT NULL, incarnation TEXT NOT NULL,
+ policy_revision INTEGER NOT NULL, deletion_revision INTEGER NOT NULL, observed_at INTEGER NOT NULL, admitted_at INTEGER NOT NULL, invalidated_at INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX IF NOT EXISTS deermate_memory_source_owner ON deermate_memory_sources(owner,observed_at);
+CREATE INDEX IF NOT EXISTS deermate_memory_source_budget ON deermate_memory_sources(admitted_at,owner);`)
+	if err != nil {
+		return err
+	}
+	rows, err := s.DB.Query("PRAGMA table_info(deermate_personal_profiles)")
+	if err != nil {
+		return err
+	}
+	found := false
+	for rows.Next() {
+		var cid, notnull, pk int
+		var name, kind string
+		var defaultValue any
+		if err = rows.Scan(&cid, &name, &kind, &notnull, &defaultValue, &pk); err != nil {
+			rows.Close()
+			return err
+		}
+		if name == "auto_capture_enabled" {
+			found = true
+		}
+	}
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return err
+	}
+	if !found {
+		_, err = s.DB.Exec("ALTER TABLE deermate_personal_profiles ADD COLUMN auto_capture_enabled INTEGER NOT NULL DEFAULT 0")
+	}
 	return err
 }
 
@@ -72,8 +107,8 @@ type memoryReader interface{ QueryRow(string, ...any) *sql.Row }
 
 func readProfile(q memoryReader, owner string) (PersonalProfile, error) {
 	p := PersonalProfile{Owner: owner, Timezone: "UTC"}
-	err := q.QueryRow(`SELECT display_name,timezone,memory_enabled,proactive_enabled,revision,policy_revision,deletion_revision
-FROM deermate_personal_profiles WHERE owner=?`, owner).Scan(&p.DisplayName, &p.Timezone, &p.MemoryEnabled, &p.ProactiveEnabled, &p.Revision, &p.PolicyRevision, &p.DeletionRevision)
+	err := q.QueryRow(`SELECT display_name,timezone,memory_enabled,auto_capture_enabled,proactive_enabled,revision,policy_revision,deletion_revision
+FROM deermate_personal_profiles WHERE owner=?`, owner).Scan(&p.DisplayName, &p.Timezone, &p.MemoryEnabled, &p.AutoCaptureEnabled, &p.ProactiveEnabled, &p.Revision, &p.PolicyRevision, &p.DeletionRevision)
 	if errors.Is(err, sql.ErrNoRows) {
 		err = nil
 	}
@@ -127,11 +162,11 @@ func (s *Store) UpdatePersonalProfile(ctx context.Context, p PersonalProfile, ex
 	p.Revision = current.Revision + 1
 	p.DeletionRevision = current.DeletionRevision
 	p.PolicyRevision = current.PolicyRevision
-	policyChanged := current.MemoryEnabled != p.MemoryEnabled || current.ProactiveEnabled != p.ProactiveEnabled
+	policyChanged := current.MemoryEnabled != p.MemoryEnabled || current.AutoCaptureEnabled != p.AutoCaptureEnabled || current.ProactiveEnabled != p.ProactiveEnabled
 	if policyChanged {
 		p.PolicyRevision++
 	}
-	_, err = tx.Exec(`UPDATE deermate_personal_profiles SET display_name=?,timezone=?,memory_enabled=?,proactive_enabled=?,revision=?,policy_revision=? WHERE owner=?`, strings.TrimSpace(p.DisplayName), p.Timezone, p.MemoryEnabled, p.ProactiveEnabled, p.Revision, p.PolicyRevision, p.Owner)
+	_, err = tx.Exec(`UPDATE deermate_personal_profiles SET display_name=?,timezone=?,memory_enabled=?,auto_capture_enabled=?,proactive_enabled=?,revision=?,policy_revision=? WHERE owner=?`, strings.TrimSpace(p.DisplayName), p.Timezone, p.MemoryEnabled, p.AutoCaptureEnabled, p.ProactiveEnabled, p.Revision, p.PolicyRevision, p.Owner)
 	if err != nil {
 		return p, err
 	}
@@ -173,7 +208,26 @@ func (s *Store) MemoryReferences(owner string) ([]MemoryReference, error) {
 		}
 		out = append(out, m)
 	}
-	return out, rows.Err()
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	rows.Close()
+	// Derive source-unavailable presentation without exposing its old body.
+	for i := range out {
+		if out[i].Status != "active" {
+			continue
+		}
+		source, e := captureSource(s.DB, out[i].Source)
+		if e == nil && (source.Owner != owner || !verifyCapture(s.DB, source)) {
+			if _, err = s.DB.Exec("UPDATE deermate_memory_sources SET invalidated_at=max(invalidated_at,?) WHERE operation_id=? AND owner=?", time.Now().Unix(), out[i].Source, owner); err != nil {
+				return nil, err
+			}
+			out[i].Status = "source_unavailable"
+		} else if e != nil && !errors.Is(e, sql.ErrNoRows) {
+			return nil, e
+		}
+	}
+	return out, nil
 }
 
 type memoryMutation struct {
@@ -198,6 +252,10 @@ func (s *Store) MemoryOperation(owner, id string) (MemoryOperation, error) {
 }
 
 func (s *Store) AdmitMemory(ctx context.Context, owner, kind, id string, body memoryMutation) (MemoryOperation, error) {
+	return s.admitMemory(ctx, owner, kind, id, body, nil)
+}
+
+func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body memoryMutation, source *memoryCapture) (MemoryOperation, error) {
 	var empty MemoryOperation
 	if !resourceID.MatchString(body.OperationID) {
 		return empty, ErrCredentials
@@ -231,6 +289,19 @@ func (s *Store) AdmitMemory(ctx context.Context, owner, kind, id string, body me
 	p, err := readProfile(tx, owner)
 	if err != nil {
 		return empty, err
+	}
+	if source != nil {
+		if !p.MemoryEnabled || !p.AutoCaptureEnabled || p.PolicyRevision != source.Policy || p.DeletionRevision != source.Deleted || !verifyCapture(tx, source) {
+			return empty, ErrConflict
+		}
+		var daily, instance int
+		midnight := time.Now().UTC().Truncate(24 * time.Hour).Unix()
+		if err = tx.QueryRow("SELECT count(*),coalesce(sum(CASE WHEN owner=? THEN 1 ELSE 0 END),0) FROM deermate_memory_sources WHERE admitted_at>=?", owner, midnight).Scan(&instance, &daily); err != nil {
+			return empty, err
+		}
+		if daily >= 50 || instance >= 500 {
+			return empty, ErrConflict
+		}
 	}
 	if kind == "create" {
 		if !p.MemoryEnabled {
@@ -283,6 +354,10 @@ func (s *Store) AdmitMemory(ctx context.Context, owner, kind, id string, body me
 				_, err = tx.Exec("UPDATE deermate_memory_operations SET status='invalidated',payload='' WHERE owner=? AND fact_id=? AND status IN ('pending','processing','uncertain')", owner, id)
 			}
 		} else {
+			p.DeletionRevision++
+			if _, err = tx.Exec("UPDATE deermate_personal_profiles SET deletion_revision=? WHERE owner=?", p.DeletionRevision, owner); err != nil {
+				return empty, err
+			}
 			// Stop using an old fact immediately while its correction is delivered.
 			_, err = tx.Exec("UPDATE deermate_memory_refs SET status='updating',updated_at=? WHERE id=?", time.Now().Unix(), id)
 		}
@@ -294,6 +369,17 @@ func (s *Store) AdmitMemory(ctx context.Context, owner, kind, id string, body me
 	_, err = tx.Exec(`INSERT INTO deermate_memory_operations(id,owner,fact_id,kind,status,policy_revision,deletion_revision,request_hash,payload,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)`, op.ID, owner, id, kind, op.Status, p.PolicyRevision, p.DeletionRevision, hash, op.Payload, time.Now().Unix())
 	if err != nil {
 		return empty, err
+	}
+	if source != nil {
+		_, err = tx.Exec(`INSERT INTO deermate_memory_sources(operation_id,owner,thread_id,run_id,message_id,message_hash,incarnation,policy_revision,deletion_revision,observed_at,admitted_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)`, op.ID, owner, source.Thread, source.Run, source.Message, source.Hash, source.Incarnation, source.Policy, source.Deleted, source.Observed, time.Now().Unix())
+		if err != nil {
+			return empty, err
+		}
+	}
+	if kind == "update" || kind == "delete" {
+		if err = invalidateCaptured(tx, owner, p.DeletionRevision); err != nil {
+			return empty, err
+		}
 	}
 	return op, tx.Commit()
 }
@@ -333,7 +419,26 @@ func (s *Store) finishMemory(ctx context.Context, op MemoryOperation, revision i
 	if status != "processing" {
 		return nil
 	}
-	if callErr != nil {
+	stale := false
+	source, sourceErr := captureSource(tx, op.ID)
+	if sourceErr == nil {
+		profile, e := readProfile(tx, op.Owner)
+		if e != nil {
+			return e
+		}
+		stale = profile.PolicyRevision != source.Policy || profile.DeletionRevision != source.Deleted || !verifyCapture(tx, source)
+	} else if !errors.Is(sourceErr, sql.ErrNoRows) {
+		return sourceErr
+	}
+	if stale {
+		if _, err = tx.Exec("UPDATE deermate_memory_sources SET invalidated_at=max(invalidated_at,?) WHERE operation_id=?", time.Now().Unix(), op.ID); err != nil {
+			return err
+		}
+		_, err = tx.Exec("UPDATE deermate_memory_operations SET status='invalidated',payload='' WHERE id=?", op.ID)
+		if err == nil {
+			_, err = tx.Exec("UPDATE deermate_memory_refs SET status='interrupted' WHERE id=? AND status IN ('pending','updating')", op.FactID)
+		}
+	} else if callErr != nil {
 		_, err = tx.Exec("UPDATE deermate_memory_operations SET status='uncertain',lease_until=? WHERE id=?", time.Now().Add(time.Minute).Unix(), op.ID)
 	} else {
 		p, e := readProfile(tx, op.Owner)
@@ -365,4 +470,17 @@ func (s *Store) finishMemory(ctx context.Context, op MemoryOperation, revision i
 		return err
 	}
 	return tx.Commit()
+}
+
+func invalidateCaptured(tx *sql.Tx, owner string, deleted int64) error {
+	_, err := tx.Exec(`UPDATE deermate_memory_refs SET status='interrupted' WHERE id IN
+ (SELECT o.fact_id FROM deermate_memory_operations o JOIN deermate_memory_sources s ON s.operation_id=o.id
+ WHERE s.owner=? AND s.deletion_revision!=? AND o.status IN ('pending','processing','uncertain'))`, owner, deleted)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(`UPDATE deermate_memory_operations SET status='invalidated',payload='' WHERE id IN
+ (SELECT operation_id FROM deermate_memory_sources WHERE owner=? AND deletion_revision!=?)
+ AND status IN ('pending','processing','uncertain')`, owner, deleted)
+	return err
 }

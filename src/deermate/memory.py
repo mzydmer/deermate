@@ -62,6 +62,9 @@ class PersonalMemory:
             if profile is None:
                 raise PermissionError("Personal memory has not been configured")
             yield db, profile
+            # Persist only monotonic source-revocation markers produced below.
+            # The reservation still spans the complete canonical read/write.
+            db.commit()
         finally:
             db.rollback()
             db.close()
@@ -101,6 +104,18 @@ class PersonalMemory:
             ).fetchone()
             if barrier and not deleting:
                 raise PermissionError("This fact was forgotten")
+            source = db.execute(
+                "SELECT * FROM deermate_memory_sources WHERE operation_id=? AND owner=?",
+                (operation_id, owner),
+            ).fetchone()
+            if source is not None and not deleting:
+                if (
+                    profile["policy_revision"] != source["policy_revision"]
+                    or profile["deletion_revision"] != source["deletion_revision"]
+                    or not profile["auto_capture_enabled"]
+                    or not self._sources(db, owner, [operation_id]).get(operation_id)
+                ):
+                    raise PermissionError("The captured source or personal policy changed")
             existing = self._fact(owner, ref["id"])
             if deleting:
                 if ref["status"] != "suppressed" or not barrier:
@@ -169,7 +184,8 @@ class PersonalMemory:
                 "ORDER BY updated_at DESC,id LIMIT 2000",
                 (owner, json.dumps(ids)),
             ).fetchall()
-            by_id = {r["id"]: r for r in refs}
+            sources = self._sources(db, owner, [r["source_id"] for r in refs])
+            by_id = {r["id"]: r for r in refs if sources.get(r["source_id"], True)}
             chosen = list(by_id)[:50]
             if query and by_id:
                 # Warm/recover through the provider's existing index lifecycle.
@@ -201,9 +217,82 @@ class PersonalMemory:
                         "source_id": by_id[key]["source_id"],
                         "scope": by_id[key]["scope"],
                         "updated_at": by_id[key]["updated_at"],
+                        "source": sources.get(by_id[key]["source_id"]),
                     }
                 )
             return {"items": items, "revision": profile["revision"]}
+
+    @staticmethod
+    def _sources(db, owner, operations):
+        """Current source authorization before ranking and again before injection.
+
+        A manual correction has a new operation ID and is independent of the old
+        chat. Stream rows to avoid retaining every run's serialized input in RAM.
+        The schema is pinned and shared with Go; never fall back to history scans.
+        """
+        admitted = db.execute(
+            "SELECT * FROM deermate_memory_sources WHERE owner=? "
+            "AND operation_id IN (SELECT value FROM json_each(?))",
+            (owner, json.dumps(operations)),
+        ).fetchall()
+        if not admitted:
+            return {}
+        result = {row["operation_id"]: False for row in admitted}
+        rows = db.execute(
+            "SELECT s.*,r.kwargs_json,t.incarnation AS current_incarnation "
+            "FROM deermate_memory_sources s "
+            "JOIN runs r ON r.run_id=s.run_id AND r.thread_id=s.thread_id AND r.user_id=s.owner "
+            "JOIN threads_meta t ON t.thread_id=s.thread_id AND t.user_id=s.owner "
+            "WHERE s.owner=? AND s.operation_id IN (SELECT value FROM json_each(?)) "
+            "AND r.evidence_origin='interactive' AND r.origin_kind IS NULL "
+            "AND r.operation_kind='run' AND t.project_id IS NULL "
+            "AND coalesce(t.incarnation,'')=s.incarnation AND s.invalidated_at=0 "
+            "AND NOT EXISTS (SELECT 1 FROM runs e WHERE e.thread_id=r.thread_id "
+            "AND e.user_id=r.user_id AND json_extract(e.metadata_json,'$.replay_kind')='edit' "
+            "AND json_extract(e.metadata_json,'$.regenerate_from_run_id')=r.run_id)",
+            (owner, json.dumps(list(result))),
+        )
+        for row in rows:
+            try:
+                messages = json.loads(row["kwargs_json"])["input"]["messages"]
+                if len(messages) != 1:
+                    continue
+                message = messages[0]
+                if (
+                    message.get("id") != row["message_id"]
+                    or (message.get("type") != "human" and message.get("role") != "user")
+                    or message.get("type") not in {None, "human"}
+                    or message.get("role") not in {None, "user"}
+                    or message.get("additional_kwargs")
+                ):
+                    continue
+                content = message["content"]
+                if isinstance(content, list):
+                    if len(content) != 1 or content[0].get("type") != "text":
+                        continue
+                    content = content[0].get("text")
+                if (
+                    not isinstance(content, str)
+                    or hashlib.sha256(content.encode()).hexdigest() != row["message_hash"]
+                ):
+                    continue
+                result[row["operation_id"]] = {
+                    "kind": "chat",
+                    "thread_id": row["thread_id"],
+                    "run_id": row["run_id"],
+                    "message_id": row["message_id"],
+                    "observed_at": row["observed_at"],
+                }
+            except (ValueError, KeyError, TypeError, AttributeError):
+                continue
+        invalid = [key for key, value in result.items() if not value]
+        if invalid:
+            db.execute(
+                "UPDATE deermate_memory_sources SET invalidated_at=max(invalidated_at,?) "
+                "WHERE owner=? AND operation_id IN (SELECT value FROM json_each(?))",
+                (int(time.time()), owner, json.dumps(invalid)),
+            )
+        return result
 
     def context(self, owner: str, query: str) -> str:
         with self.gate(owner) as (db, profile):
@@ -244,8 +333,11 @@ class PersonalMemory:
                     (owner, json.dumps(list(selected))),
                 )
             }
+            sources = self._sources(db, owner, [item["source_id"] for item in selected.values()])
             selected = {
-                key: item for key, item in selected.items() if (key, item["revision"]) in current
+                key: item
+                for key, item in selected.items()
+                if (key, item["revision"]) in current and sources.get(item["source_id"], True)
             }
         from deerflow.agents.memory.backends.deermem.deermem.core.prompt import (
             format_memory_for_injection,

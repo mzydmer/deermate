@@ -179,7 +179,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current work: **M4.4a opt-in personal memory foundations**, implemented and locally verified on the Go backend and shared design system. See the [personal memory guide](docs/personal-memory.md) for scope and acceptance status. Automatic extraction and proactive daily briefings remain planned.
+We track delivered work separately from planned functionality. Current work: **M4.4b explicit memory requests from chats**, implemented and locally verified on the Go backend and shared design system. See the [personal memory guide](docs/personal-memory.md) for scope and acceptance status. Semantic extraction, automatic merging and proactive daily briefings remain planned.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -189,6 +189,7 @@ We track delivered work separately from planned functionality. Current work: **M
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
 | M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified; existing cloud deployment unchanged |
+| M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified; no extra extraction-model calls |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
@@ -197,7 +198,7 @@ Historical M2.1 verification had 51 passing normal tests (two opt-in upstream ch
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **244 passed, 8 opt-in cases skipped**. Personal memory also passed 15 pinned provider/graph contracts, 21 actual Go/Gateway API checks and 9 browser checks; the current pinned Chart/Compose/single-host/HTTPS subset passed 24 cases. This round uses synthetic data, with no real model/native calls or cloud upgrade. Historical cloud-to-home Codex evidence retains its original scope; see [STATUS](docs/STATUS.md) and the [memory receipt](docs/verification/personal-memory-2026-11-02.json).
+The current normal suite has **244 passed, 8 opt-in cases skipped**. Personal memory now passes 25 pinned provider/graph/source contracts, 33 actual Go/Gateway API checks and 14 browser checks; the current pinned Chart/Compose/single-host/HTTPS subset passed 24 cases. This round uses synthetic data and an offline Fake conversation model, with no real provider/native calls or cloud upgrade. Historical cloud-to-home Codex evidence retains its original scope; see [STATUS](docs/STATUS.md) and the [capture receipt](docs/verification/explicit-memory-capture-2026-11-02.json).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

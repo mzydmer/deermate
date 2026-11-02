@@ -76,3 +76,6 @@ Hermesh is independently maintained. Its CLI connection is designed for encrypte
 Source: [Hermesh README](https://github.com/hermeshai/hermesh#security) and [MCP gateway design](https://github.com/hermeshai/hermesh/blob/main/docs/mcp-gateway.md).
 
 See [SECURITY.md](../SECURITY.md) for reporting guidance.
+
+
+明确指令采集必须单独开启。Go 不信任客户端声明的记忆来源，只接受新提交、实际被运行时接纳的单条个人陈述，核对真实 owner、interactive origin、原消息哈希、incarnation 和无项目范围；采集失败不重放聊天。内部适配器复核规范来源并在发现撤销/编辑后持久化单向失效标记；待写候选另检查采集时的策略和遗忘版本。后台采集不调用模型、不扩大工具/Worker 权限，语义推断和自动更正尚未启用。

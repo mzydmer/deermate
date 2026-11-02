@@ -117,7 +117,8 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 [技术原型与六张关键流程/状态图](specs/m4-memory-technical-design.md)保留完整目标；本阶段的 Go 持久投递、个人事实屏障与召回不代表自动提取队列已经接入。
 
 - [x] M4.4a: personal display name/timezone, explicit personal facts, correction/forgetting, FTS5 recall and a locally verified DeerMem adapter. Personal scope only; cloud deployment and the complete briefing loop remain pending.
-- [ ] Source-qualified automatic extraction, project scopes and reliable model-job budgets.
+- [x] M4.4b: opt-in explicit personal memory requests from newly admitted chats, source identity/recency, daily limits and source invalidation. No extraction-model calls.
+- [ ] Semantic automatic extraction/merging, project scopes and reliable model-job budgets.
 - [ ] Source/version-preserving attention topics, memory correction/forgetting and bounded history import.
 - [ ] Personal daily briefing with actual progress, freshness, clear recommendation reasons and useful empty/error states.
 - [ ] Read-only progress follow-up, explicitly scoped task continuation and previewed new-topic creation, preserving one chat/one executor session, existing permissions and idempotency.

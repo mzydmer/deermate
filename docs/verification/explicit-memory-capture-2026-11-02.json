@@ -1,0 +1,328 @@
+{
+  "date": "2026-11-02",
+  "stage": "M4.4b explicit personal memory requests from newly admitted chats",
+  "passed": true,
+  "upstream_pin": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "scope": "Local synthetic capture, canonical run/source checks, lifecycle, UI and packaging; no semantic extractor, real provider, native execution or cloud acceptance",
+  "checks": {
+    "go_mod_verify": "passed",
+    "go_vet": "passed",
+    "go_race": "passed",
+    "go_cgo_disabled_build": "passed",
+    "python_normal_suite": {
+      "passed": 244,
+      "skipped": 8
+    },
+    "pinned_provider_and_graph": {
+      "passed": 25
+    },
+    "pinned_deployment_subset": {
+      "passed": 24
+    },
+    "ruff": "passed",
+    "wheel": "passed",
+    "typescript_and_next_build": "passed",
+    "shared_tokens": "passed",
+    "node_syntax": "passed"
+  },
+  "go_toolchain": "go1.27.3",
+  "api": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "memory_default_off",
+        "passed": true
+      },
+      {
+        "name": "go_personal_profile",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-create",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-create",
+        "passed": true
+      },
+      {
+        "name": "duplicate_intent_one_fact",
+        "passed": true
+      },
+      {
+        "name": "chinese_fts5_canonical_read",
+        "passed": true
+      },
+      {
+        "name": "canonical_fact_present",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-correct",
+        "passed": true
+      },
+      {
+        "name": "correction_advances_revision",
+        "passed": true
+      },
+      {
+        "name": "restart_retains_session_profile_and_fact",
+        "passed": true
+      },
+      {
+        "name": "raw_runtime_memory_route_denied",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_login",
+        "passed": true
+      },
+      {
+        "name": "other_owner_has_no_facts",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_cannot_read_other_job_or_execute",
+        "passed": true
+      },
+      {
+        "name": "delivery_second-owner-create",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_memory_is_owner_scoped",
+        "passed": true
+      },
+      {
+        "name": "delivery_second-owner-forget",
+        "passed": true
+      },
+      {
+        "name": "off_retains_management_read",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-forget",
+        "passed": true
+      },
+      {
+        "name": "forgotten_fact_not_returned",
+        "passed": true
+      },
+      {
+        "name": "canonical_fact_removed",
+        "passed": true
+      },
+      {
+        "name": "capture_defaults_off",
+        "passed": true
+      },
+      {
+        "name": "synthetic_run_capture-personal",
+        "passed": true
+      },
+      {
+        "name": "accepted_interactive_run_captures_explicit_request",
+        "passed": true
+      },
+      {
+        "name": "captured_fact_has_owned_source",
+        "passed": true
+      },
+      {
+        "name": "captured_fact_searches_in_chinese",
+        "passed": true
+      },
+      {
+        "name": "synthetic_run_ordinary-question",
+        "passed": true
+      },
+      {
+        "name": "one_off_question_not_captured",
+        "passed": true
+      },
+      {
+        "name": "synthetic_run_suggested-question",
+        "passed": true
+      },
+      {
+        "name": "marked_suggestion_not_captured",
+        "passed": true
+      },
+      {
+        "name": "only_one_explicit_fact",
+        "passed": true
+      },
+      {
+        "name": "removed_source_hidden_and_cleanup_available",
+        "passed": true
+      },
+      {
+        "name": "delivery_forget-captured",
+        "passed": true
+      }
+    ],
+    "configured_cloud_models": 0,
+    "native_tasks": 0,
+    "synthetic_data_only": true,
+    "pinned_provider_contracts_passed": true,
+    "scope": "Go login/API, actual pinned Gateway plugin and DeerMem; no browser or cloud acceptance",
+    "source_sha256": {
+      "src/deermate/memory.py": "631efa1b1eabe750e00c693243fb53a8a5c06ea30df4619fcd4282b8e1d61fb7",
+      "src/deermate/memory_middleware.py": "36a05764dfc38e5a45ea21019657ea0d22b539ee48cd6d337baebaa386f3b78d",
+      "backend/internal/controlplane/memory_store.go": "c29bc6e55c11f396ddc9f762480c95671fef214a5d270e91e9d55f7ce442d490",
+      "backend/internal/controlplane/memory.go": "4b89404bd60db1bfd9329ac116f57d0f06cbee76454e979f80fc33733aaf0c72",
+      "backend/internal/controlplane/memory_capture.go": "426ab6ae5295f9fd0f31dc187fcd7f3417e0d26f9d9388fc393189463f7a377e",
+      "backend/internal/controlplane/runtime.go": "93c76fd44f8350d550c96985db04f21b1ef223ada2eb97a7f7fd0661601dce9c"
+    },
+    "control_binary_sha256": "56fd9adfc3e3e8051d4edb1edcb20c3f2467ce544674e0ea167cea0156ab87c8"
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "chat_capture_defaults_off",
+      "real_login_profile_and_personal_greeting",
+      "canonical_design_tokens_and_visible_form_boundaries",
+      "explicit_fact_saved_and_listed",
+      "chinese_search_uses_body_not_url",
+      "correction_replaces_visible_fact",
+      "disabled_memory_keeps_management_and_blocks_new_save",
+      "forget_works_while_off_and_removes_fact",
+      "chat_capture_setting_persists",
+      "actual_chat_capture_has_working_source_link",
+      "deleted_chat_hides_source_body_and_offers_cleanup",
+      "deleted_source_can_be_forgotten",
+      "desktop_390px_dark_and_reduced_motion_layout",
+      "account_switch_has_no_previous_name_or_fact"
+    ],
+    "page_errors": [],
+    "synthetic_data_only": true,
+    "browser_agent_run_requests": 0,
+    "synthetic_run_admissions": 1,
+    "configured_cloud_models": 0
+  },
+  "images": {
+    "control": {
+      "id": "sha256:c81a15a6ee1821b03d1bacf06d55cb8c1253d6208059ab39ea15f61160dc41d7",
+      "os": "linux",
+      "architecture": "amd64"
+    },
+    "gateway": {
+      "id": "sha256:d6a653bdbe6151e231abfae64c3dfb4bb30b91fc01fb60221c42ed51e5fed779",
+      "os": "linux",
+      "architecture": "amd64"
+    },
+    "frontend": {
+      "id": "sha256:9c4036e2311907078901f22e05c288fbfe41f36f1fafdf94e72703fbf6da6590",
+      "os": "linux",
+      "architecture": "amd64"
+    },
+    "nginx": {
+      "id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "os": "linux",
+      "architecture": "amd64"
+    }
+  },
+  "container_observation": [
+    {
+      "service": "control",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 134217728
+    },
+    {
+      "service": "gateway",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 1073741824
+    },
+    {
+      "service": "frontend",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 268435456
+    },
+    {
+      "service": "nginx",
+      "health": "healthy",
+      "oom_killed": false,
+      "memory_limit_bytes": 67108864
+    }
+  ],
+  "frontend_source_check": {
+    "files": 1301,
+    "mismatches": []
+  },
+  "control_image_binary_sha256": "934d6a44d1bbaf01c41d19c222bfdec187305024a2e0166a089210f29b4175c0",
+  "gateway_installed_source_verified": true,
+  "source_sha256": {
+    "backend/internal/controlplane/memory.go": "4b89404bd60db1bfd9329ac116f57d0f06cbee76454e979f80fc33733aaf0c72",
+    "backend/internal/controlplane/memory_capture.go": "426ab6ae5295f9fd0f31dc187fcd7f3417e0d26f9d9388fc393189463f7a377e",
+    "backend/internal/controlplane/memory_capture_test.go": "687204db669a1769678fbc9b821d351c5bb5e379882e230a98979362571f44bc",
+    "backend/internal/controlplane/memory_store.go": "c29bc6e55c11f396ddc9f762480c95671fef214a5d270e91e9d55f7ce442d490",
+    "backend/internal/controlplane/runtime.go": "93c76fd44f8350d550c96985db04f21b1ef223ada2eb97a7f7fd0661601dce9c",
+    "backend/internal/controlplane/server.go": "9770472a9ab608ea27e94324ea687cea6c9fd22d038fe372223ab5c29747e8d9",
+    "frontend/README.md": "a255305cf12b35b50e5ade15161d34f0a0de83c71aab456db843c0e80cede523",
+    "frontend/overlay/src/components/deermate/personal-memory.tsx": "d61aa002369111a834bac1c82e424ca087870f7e23923c358f083e0117cc55a8",
+    "scripts/verify_memory_frontend.cjs": "ef17a11505ffc8b6d4b032ed351566c71eda0bb3a36dd5573a225d7c4fba642a",
+    "scripts/verify_memory_sdk.cjs": "86365d67d1f6f2cbf3c49edee97d2941b2c0010d2e0c41b1aa1c0c6e1ca7250e",
+    "scripts/verify_personal_memory.py": "ec18859cb37a01f6500bf9e7be55c4f48df8944e6b3113d19798492c4c2da4fb",
+    "src/deermate/memory.py": "631efa1b1eabe750e00c693243fb53a8a5c06ea30df4619fcd4282b8e1d61fb7",
+    "tests/test_personal_memory.py": "633bfdb431135826df6961b646283d70786fc6fff61164d053b5c7020336d744"
+  },
+  "real_provider_calls": 0,
+  "extraction_model_calls": 0,
+  "native_tasks": 0,
+  "cloud_mutations": 0,
+  "fake_model_scope": "API admission and source-link browser fixtures use an in-process Fake chat model; no real model quality or billing claim",
+  "existing_local_or_cloud_upgraded": false,
+  "not_accepted": [
+    "Semantic extraction/automatic conflict merging and model-job budgets",
+    "Project-scoped memory",
+    "Attention/evidence projections, daily briefing and home action intents",
+    "Real model personalization and actual 2 GiB host load",
+    "Cloud deployment or renewed SSH authorization"
+  ],
+  "browser_sdk": {
+    "passed": true,
+    "turns": [
+      {
+        "status": 200,
+        "terminal_status": "success",
+        "capture": null,
+        "request_fields": [
+          "assistant_id",
+          "config",
+          "context",
+          "input",
+          "on_disconnect",
+          "stream_mode"
+        ]
+      },
+      {
+        "status": 200,
+        "terminal_status": "success",
+        "capture": "queued",
+        "request_fields": [
+          "assistant_id",
+          "config",
+          "context",
+          "input",
+          "on_disconnect",
+          "stream_mode"
+        ]
+      }
+    ],
+    "checks": [
+      "actual_composer_and_sdk_two_turns_succeed",
+      "ordinary_question_not_captured",
+      "second_turn_explicit_request_captured",
+      "canonical_fact_has_current_chat_source",
+      "synthetic_thread_and_fact_cleanup_admitted"
+    ],
+    "page_errors": [],
+    "synthetic_data_only": true,
+    "configured_cloud_models": 0,
+    "native_tasks": 0
+  }
+}

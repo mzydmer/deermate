@@ -58,6 +58,7 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 		return nil, err
 	}
 	s := &Server{Store: store, cfg: cfg, mux: http.NewServeMux(), engine: engine, dummy: dummy, hashing: make(chan struct{}, 4), memoryDelivery: make(chan struct{}, 1)}
+	engine.onResponse = s.captureMemoryResponse
 	s.routes()
 	return s, nil
 }
@@ -550,7 +551,7 @@ func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}()
-	s.engine.proxy.ServeHTTP(w, r.WithContext(ctx))
+	s.engine.proxy.ServeHTTP(w, s.prepareMemoryCapture(r.WithContext(ctx)))
 }
 func regularRead(r *http.Request) bool {
 	p := r.URL.Path

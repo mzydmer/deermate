@@ -24,6 +24,7 @@ async function main() {
     const context = await browser.newContext({ viewport: { width: 1440, height: 1080 }, locale: "zh-CN" });
     const page = await context.newPage();
     let agentRunRequests = 0;
+    let syntheticRunAdmissions = 0;
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("request", (request) => {
       if (request.method() === "POST" && /\/runs(?:\/|$)/.test(new URL(request.url()).pathname)) agentRunRequests++;
@@ -65,7 +66,10 @@ async function main() {
     await page.getByLabel(/^(时区|Timezone)$/).fill("Asia/Shanghai");
     const toggle = page.getByLabel(/^(开启个人记忆|Enable personal memory)$/);
     await toggle.check();
+    const autoCapture = page.getByLabel(/^(从对话保存明确记忆|Save explicit memory requests from chats)$/);
+    assert.equal(await autoCapture.isChecked(), false);
     await saveProfile();
+    checks.push("chat_capture_defaults_off");
     await page.getByRole("heading", { level: 1, name: /记忆验收/ }).waitFor();
     checks.push("real_login_profile_and_personal_greeting");
     const formStyle = await page.locator("#dm-memory-content").evaluate((element) => {
@@ -119,6 +123,58 @@ async function main() {
     await page.locator("#dm-memory-content").fill(privateMarker);
     await saveFact();
     await page.locator(".dm-memory-list p", { hasText: privateMarker }).waitFor();
+    if (process.env.DEERMATE_CAPTURE_FIXTURE === "1") {
+      const catalog = await (await page.request.get(base + "/api/models")).json();
+      assert(catalog.models.some((model) => model.name === "capture-fixture"));
+      await autoCapture.check();
+      await saveProfile();
+      assert.equal((await (await page.request.get(base + "/api/me/personal-profile")).json()).auto_capture_enabled, true);
+      checks.push("chat_capture_setting_persists");
+      const headers = { "X-CSRF-Token": await csrf() };
+      const thread = "memory-ui-source";
+      assert.equal((await page.request.post(base + "/api/threads", { data: { thread_id: thread }, headers })).status(), 200);
+      const directive = "请记住：我偏好使用要点回答。";
+      const admitted = await page.request.post(base + `/api/threads/${thread}/runs`, {
+        headers, data: { input: { messages: [{ type: "human", id: "ui-capture-message", content: directive }] }, config: { recursion_limit: 128 } },
+      });
+      assert.equal(admitted.status(), 200);
+      assert.equal(admitted.headers()["x-deermate-memory-status"], "queued");
+      syntheticRunAdmissions++;
+      const run = await admitted.json();
+      const deadline = Date.now() + 45000;
+      let status;
+      do {
+        status = (await (await page.request.get(base + `/api/threads/${thread}/runs/${run.run_id}`)).json()).status;
+        if (["success", "error", "interrupted", "timeout"].includes(status)) break;
+        await page.waitForTimeout(200);
+      } while (Date.now() < deadline);
+      assert.equal(status, "success");
+      const memoryDeadline = Date.now() + 15000;
+      do {
+        const facts = (await (await page.request.get(base + "/api/me/memories")).json()).items;
+        if (facts.some((fact) => fact.source?.thread_id === thread)) break;
+        await page.waitForTimeout(200);
+      } while (Date.now() < memoryDeadline);
+      await page.getByRole("button", { name: /^(刷新|Refresh)$/ }).click();
+      const source = page.getByRole("link", { name: /来自你的明确记忆指令|From your memory request/ });
+      await source.waitFor();
+      assert.equal(await source.getAttribute("href"), `/workspace/chats/${thread}`);
+      await page.locator(".dm-memory-list").screenshot({ path: path.join(output, "memory-source.png") });
+      await source.click();
+      await page.waitForURL((u) => u.pathname === `/workspace/chats/${thread}`);
+      await page.getByText(directive, { exact: false }).first().waitFor();
+      checks.push("actual_chat_capture_has_working_source_link");
+      await page.goto(base + "/workspace");
+      await page.locator(".dm-memory > summary").click();
+      assert.equal((await page.request.delete(base + `/api/threads/${thread}`, { headers })).status(), 200);
+      await page.getByRole("button", { name: /^(刷新|Refresh)$/ }).click();
+      await page.getByText(/来源已不可用，已停止使用这条记忆|Source unavailable; this memory is no longer used/).waitFor();
+      assert.equal(await page.locator(".dm-memory-list p", { hasText: "我偏好使用要点回答。" }).count(), 0);
+      checks.push("deleted_chat_hides_source_body_and_offers_cleanup");
+      await page.getByRole("button", { name: /^(忘记并清理|Forget and clean up)$/ }).click();
+      await page.getByText(/来源已不可用，已停止使用这条记忆|Source unavailable; this memory is no longer used/).waitFor({ state: "detached" });
+      checks.push("deleted_source_can_be_forgotten");
+    }
     await page.locator(".dm-desk").evaluate((element) => { element.scrollTop = 0; });
     await page.screenshot({ path: path.join(output, "memory-desktop.png"), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
@@ -144,7 +200,7 @@ async function main() {
     checks.push("account_switch_has_no_previous_name_or_fact");
     assert.deepEqual(errors, []);
     assert.equal(agentRunRequests, 0);
-    fs.writeFileSync(path.join(output, "receipt.json"), JSON.stringify({ passed: true, checks, page_errors: errors, synthetic_data_only: true, browser_agent_run_requests: agentRunRequests, configured_cloud_models: 0 }, null, 2) + "\n");
+    fs.writeFileSync(path.join(output, "receipt.json"), JSON.stringify({ passed: true, checks, page_errors: errors, synthetic_data_only: true, browser_agent_run_requests: agentRunRequests, synthetic_run_admissions: syntheticRunAdmissions, configured_cloud_models: 0 }, null, 2) + "\n");
     console.log(JSON.stringify({ passed: true, checks: checks.length }));
   } finally { await browser.close(); }
 }

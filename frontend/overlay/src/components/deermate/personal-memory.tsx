@@ -11,6 +11,7 @@ type Profile = {
   display_name: string;
   timezone: string;
   memory_enabled: boolean;
+  auto_capture_enabled: boolean;
   proactive_enabled: boolean;
   revision: number;
 };
@@ -22,6 +23,13 @@ type Fact = {
   source_id: string;
   scope: string;
   updated_at: number;
+  source?: {
+    kind: "chat";
+    thread_id: string;
+    run_id: string;
+    message_id: string;
+    observed_at: number;
+  } | null;
 };
 type Reference = { id: string; status: string; revision: number };
 type Operation = { id: string; status: string; fact_id: string };
@@ -301,8 +309,8 @@ export function PersonalMemoryPanel({
           </div>
           <p className="dm-muted">
             {t(
-              "保存你希望在其他对话中继续使用的偏好、目标或背景。当前仅使用你主动保存的内容。",
-              "Save preferences, goals or context for other conversations. Only explicitly saved facts are used here.",
+              "保存你希望在其他对话中继续使用的偏好、目标或背景。这里只使用你主动保存或明确要求记住的内容。",
+              "Save preferences, goals or context for other conversations. Only facts you save or explicitly ask to remember are used.",
             )}
           </p>
           <form
@@ -346,8 +354,19 @@ export function PersonalMemoryPanel({
               <li key={fact.id}>
                 <p>{fact.content}</p>
                 <span className="dm-small dm-muted">
-                  {t("你主动保存", "Saved by you")} · {t("版本", "Version")}{" "}
-                  {fact.revision}
+                  {fact.source ? (
+                    <a
+                      href={`/workspace/chats/${encodeURIComponent(fact.source.thread_id)}`}
+                    >
+                      {t(
+                        "来自你的明确记忆指令 · 查看原对话",
+                        "From your memory request · Open conversation",
+                      )}
+                    </a>
+                  ) : (
+                    t("你主动保存", "Saved by you")
+                  )}{" "}
+                  · {t("版本", "Version")} {fact.revision}
                 </span>
                 <div className="dm-memory-actions">
                   <button
@@ -382,10 +401,15 @@ export function PersonalMemoryPanel({
                           "已停止使用，等待清理",
                           "No longer used; cleanup pending",
                         )
-                      : t(
-                          "这条记忆的更新尚未完成",
-                          "This memory update is not complete",
-                        )}
+                      : ref.status === "source_unavailable"
+                        ? t(
+                            "来源已不可用，已停止使用这条记忆",
+                            "Source unavailable; this memory is no longer used",
+                          )
+                        : t(
+                            "这条记忆的更新尚未完成",
+                            "This memory update is not complete",
+                          )}
                   </p>
                   <button
                     className="dm-button"
@@ -515,6 +539,7 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
   const [name, setName] = useState(profile.display_name);
   const [zone, setZone] = useState(profile.timezone);
   const [enabled, setEnabled] = useState(profile.memory_enabled);
+  const [capture, setCapture] = useState(profile.auto_capture_enabled);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   async function save(event: FormEvent) {
@@ -528,6 +553,7 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
           display_name: name.trim(),
           timezone: zone.trim(),
           memory_enabled: enabled,
+          auto_capture_enabled: capture,
           expected_revision: profile.revision,
         }),
       });
@@ -592,6 +618,21 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
         {t(
           "开启后，在新对话中使用你保存的记忆。关闭后停止使用，已有记忆仍可纠正或忘记。不会自动导入历史聊天。",
           "Use saved facts in new conversations. Turning this off stops personalization; existing facts remain manageable. No history is imported automatically.",
+        )}
+      </p>
+      <label className="dm-memory-check">
+        <input
+          type="checkbox"
+          checked={capture}
+          disabled={busy || !enabled}
+          onChange={(e) => setCapture(e.target.checked)}
+        />
+        {t("从对话保存明确记忆", "Save explicit memory requests from chats")}
+      </label>
+      <p className="dm-muted">
+        {t(
+          "例如「请记住：我偏好简洁的中文回答。」。只处理新发出的明确个人记忆指令，保留原对话入口；不扫描历史、不推断兴趣、不额外调用模型。",
+          'For example: "Remember: I prefer concise answers." Only new, explicit personal memory requests are saved with a source link. No history scan, inferred interests or extra model calls.',
         )}
       </p>
       <button className="dm-button" disabled={busy}>

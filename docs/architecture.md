@@ -94,3 +94,6 @@ Desktop automation runs in a dedicated user/VM session, with exclusive control o
 - Extend the first bounded task desk toward live devices and controls; [ADR 0006](decisions/0006-frontend-overlay.md) defines the implemented source-overlay integration without a deep DeerFlow fork.
 
 See [integration contracts](integrations.md), [security](security.md), and [roadmap](roadmap.md).
+
+
+M4.4b 的[明确记忆指令采集](specs/m4-explicit-memory-capture.md)由 Go 公开入口接纳，不依赖模型判断来源。规范 run/用户消息核对、个人开关、每日配额、来源版本和投递引用使用共享 SQLite 事务。内部受限 DeerMem 适配器在排名前及最终注入前重检来源，并仅追加单向来源失效标记；事实正文仍只在 provider。没有新增服务、第三方记忆库或自动提取模型调用。

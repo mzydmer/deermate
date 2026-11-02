@@ -31,3 +31,9 @@ The [2026-10-26 receipt](../docs/verification/frontend-workspace-2026-10-26.json
 ## Vercel-inspired baseline
 
 The current visual direction is defined in [design.md](../design.md): neutral light/dark surfaces, sans-serif UI, meaningful status colors, 1px boundaries and readable control sizes. Login, workspace and Go management share tokens; upstream pages are migrated within the scope of future changes. This does not install or redistribute Vercel's internal UI library. The existing motion behavior remains; theme-only changes do not require reauthoring Lottie.
+
+
+Personal-memory UI acceptance uses [`verify_memory_frontend.cjs`](../scripts/verify_memory_frontend.cjs) in a fresh local synthetic bundle. `DEERMATE_CAPTURE_FIXTURE=1` additionally checks an explicit chat request, its source link, source removal and cleanup; this mode requires an isolated offline model named `capture-fixture` and never belongs in a production configuration. The script checks that model before admitting one synthetic run. Existing instances, credentials and cloud models are not fixtures. The [capture receipt](../docs/verification/explicit-memory-capture-2026-11-02.json) separates Fake conversation admission from real-provider/native verification.
+
+
+[`verify_memory_sdk.cjs`](../scripts/verify_memory_sdk.cjs) uses the same local fixture variables and an already initialized synthetic account with capture enabled. It types two messages into the actual chat composer, verifies the SDK streaming path, excludes the ordinary question and captures the second explicit request, then admits cleanup. It requires one offline `capture-fixture` model and records no message bodies or account secrets in its receipt. The two-turn check passed separately from the 14 management/source UI checks.
