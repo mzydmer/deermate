@@ -102,9 +102,8 @@ export function PersonalGreeting({
   let greeting = zh ? "你好" : "Hello";
   let date = "";
   if (now) {
-    let timezone = profile.data?.revision
-      ? profile.data.timezone
-      : Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Match the server briefing calendar, including an unsaved UTC profile.
+    let timezone = profile.data?.timezone ?? "UTC";
     let fallback = false;
     try {
       new Intl.DateTimeFormat("en", { timeZone: timezone });

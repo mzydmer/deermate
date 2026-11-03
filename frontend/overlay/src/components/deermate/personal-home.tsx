@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { fetch as authFetch } from "@/core/api/fetcher";
 import { getBackendBaseURL } from "@/core/config";
+import type { AgentThread } from "@/core/threads/types";
+import { titleOfThread } from "@/core/threads/utils";
 
 type Topic = {
   id: string;
@@ -97,7 +99,7 @@ export function PersonalHome({
   userId: string;
   zh: boolean;
   canRun: boolean;
-  threads: { thread_id: string; metadata?: Record<string, unknown> | null }[];
+  threads: AgentThread[];
   onTask: (thread: string, id: string, status: string) => void;
 }) {
   const t = (cn: string, en: string) => (zh ? cn : en);
@@ -675,7 +677,7 @@ export function PersonalHome({
               </option>
               {threads.map((entry) => (
                 <option key={entry.thread_id} value={entry.thread_id}>
-                  {String(entry.metadata?.title ?? entry.thread_id)}
+                  {titleOfThread(entry, t("未命名对话", "Untitled conversation"))}
                 </option>
               ))}
             </select>
