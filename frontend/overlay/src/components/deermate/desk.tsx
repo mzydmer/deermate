@@ -42,6 +42,7 @@ import { WorkspaceSidebarTrigger } from "@/components/workspace/workspace-sideba
 
 import { BrandMotion } from "./brand";
 import { MotionTabs } from "./motion-tabs";
+import { PersonalHome } from "./personal-home";
 import { PersonalGreeting, PersonalMemoryPanel } from "./personal-memory";
 import { TaskDetail, type DeskTask } from "./task-detail";
 
@@ -213,6 +214,27 @@ export function DeerMateDesk() {
             </small>
           </div>
         </section>
+        {user?.id && (
+          <PersonalHome
+            key={user.id}
+            userId={user.id}
+            zh={zh}
+            canRun={user.system_role === "admin"}
+            threads={threads.data ?? []}
+            onTask={(threadId, task_id, status) =>
+              setSelected({
+                threadId,
+                task_id,
+                status,
+                task_name: "",
+                cancel_requested: false,
+                updated_at: "",
+                tracking_degraded: false,
+                error: null,
+              })
+            }
+          />
+        )}
         {user?.id && (
           <PersonalMemoryPanel key={user.id} userId={user.id} zh={zh} />
         )}

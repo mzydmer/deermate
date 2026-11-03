@@ -17,6 +17,7 @@ def runtime_config() -> dict:
     return {
         "extensions": {
             "middlewares": [
+                "deermate.briefing_middleware:BriefingActionMiddleware",
                 "deermate.session_middleware:CodingSessionMiddleware",
                 "deermate.memory_middleware:PersonalMemoryMiddleware",
             ]
@@ -31,6 +32,7 @@ def runtime_config() -> dict:
         ],
         "tool_groups": [{"name": "web"}],
         "plugins": [
+            {"name": "deermate-briefing", "use": "deermate.briefing:install", "required": True},
             {
                 "name": "deermate-memory",
                 "use": "deermate.memory:install",
@@ -40,7 +42,7 @@ def runtime_config() -> dict:
                 "name": "deermate-tooling",
                 "use": "deermate.tooling:install",
                 "required": True,
-            }
+            },
         ],
     }
 
@@ -125,11 +127,17 @@ async def session_binding(payload: Mapping, context) -> dict:
     if head:
         await asyncio.to_thread(saved.observe, scope, head)
         binding = saved.binding(scope)
-    return {"bound": True, "executor": binding["executor"], "round": binding["round"],
-            "native_session": binding["native"], "task_id": binding["head"],
-            "status": "admission_unknown" if binding["pending"] else (
-                head["status"] if head else "unknown"
-            ), "title": state.get("values", {}).get("title")}
+    return {
+        "bound": True,
+        "executor": binding["executor"],
+        "round": binding["round"],
+        "native_session": binding["native"],
+        "task_id": binding["head"],
+        "status": "admission_unknown"
+        if binding["pending"]
+        else (head["status"] if head else "unknown"),
+        "title": state.get("values", {}).get("title"),
+    }
 
 
 async def _discover(payload, owner):
@@ -179,8 +187,11 @@ def install(registry, config):
             frontend=BrowserAssets(
                 module="deermate-tooling", root=Path(__file__).parent / "tooling_ui"
             ),
-            backend=(BackendAction("inventory", inventory), BackendAction("discover", discover),
-                     BackendAction("session_binding", session_binding)),
+            backend=(
+                BackendAction("inventory", inventory),
+                BackendAction("discover", discover),
+                BackendAction("session_binding", session_binding),
+            ),
         )
     )
     if not accepted:

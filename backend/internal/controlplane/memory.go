@@ -84,10 +84,6 @@ func (s *Server) personalProfile(w http.ResponseWriter, r *http.Request) {
 		if !decode(w, r, &body) {
 			return
 		}
-		if body.ProactiveEnabled != nil && *body.ProactiveEnabled {
-			fail(w, 501, "briefing_unavailable", "Proactive briefing is not available in this implementation stage")
-			return
-		}
 		if body.DisplayName != nil {
 			p.DisplayName = *body.DisplayName
 		}

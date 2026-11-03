@@ -44,7 +44,7 @@ func TestPersonalProfileOptimisticUpdateAndIdentity(t *testing.T) {
 	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", body, nil), 409)
 	headers := map[string]string{"X-Expected-User-Id": u.ID}
 	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", body, headers), 200)
-	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", `{"proactive_enabled":true,"expected_revision":1}`, headers), 501)
+	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", `{"proactive_enabled":true,"expected_revision":1}`, headers), 200)
 	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", body, headers), 409)
 	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", `{"timezone":"Local","expected_revision":1}`, headers), 422)
 	requireStatus(t, request(server, b, "POST", "/api/plugins/deermate.memory/actions/apply", `{}`, headers), 403)

@@ -1,0 +1,343 @@
+{
+  "date": "2026-11-02",
+  "stage": "M4.4c-e personal attention, deterministic focus and admitted home actions",
+  "passed": true,
+  "parent_revision": "0c85b1c597f8283cfd7b994a912fcc9490e618dc",
+  "upstream_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "scope": "Local synthetic Go/Gateway/DeerMem and browser loop. Native continuation uses a pinned Submitter fixture. No real provider, Native execution, cloud deployment or full MEM-01–MEM-21 acceptance.",
+  "checks": {
+    "go_mod_verify": "passed",
+    "go_vet": "passed",
+    "go_race": "passed",
+    "go_cgo_disabled_build": "passed",
+    "python_normal_suite": {
+      "passed": 244,
+      "skipped": 9
+    },
+    "pinned_provider_graph_source_and_home": {
+      "passed": 41
+    },
+    "pinned_deployment_and_overlay_subset": {
+      "passed": 27
+    },
+    "ruff": "passed",
+    "wheel": "passed",
+    "typescript_and_next_build": "passed",
+    "shared_tokens": "passed",
+    "node_syntax": "passed",
+    "desktop_and_dark_mobile_captures_inspected": true
+  },
+  "go_toolchain": "go1.27.3",
+  "api": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "memory_default_off",
+        "passed": true
+      },
+      {
+        "name": "go_personal_profile",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-create",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-create",
+        "passed": true
+      },
+      {
+        "name": "duplicate_intent_one_fact",
+        "passed": true
+      },
+      {
+        "name": "chinese_fts5_canonical_read",
+        "passed": true
+      },
+      {
+        "name": "canonical_fact_present",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-correct",
+        "passed": true
+      },
+      {
+        "name": "correction_advances_revision",
+        "passed": true
+      },
+      {
+        "name": "restart_retains_session_profile_and_fact",
+        "passed": true
+      },
+      {
+        "name": "raw_runtime_memory_route_denied",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_login",
+        "passed": true
+      },
+      {
+        "name": "other_owner_has_no_facts",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_cannot_read_other_job_or_execute",
+        "passed": true
+      },
+      {
+        "name": "delivery_second-owner-create",
+        "passed": true
+      },
+      {
+        "name": "ordinary_user_memory_is_owner_scoped",
+        "passed": true
+      },
+      {
+        "name": "delivery_second-owner-forget",
+        "passed": true
+      },
+      {
+        "name": "off_retains_management_read",
+        "passed": true
+      },
+      {
+        "name": "delivery_synthetic-forget",
+        "passed": true
+      },
+      {
+        "name": "forgotten_fact_not_returned",
+        "passed": true
+      },
+      {
+        "name": "canonical_fact_removed",
+        "passed": true
+      },
+      {
+        "name": "capture_defaults_off",
+        "passed": true
+      },
+      {
+        "name": "synthetic_run_capture-personal",
+        "passed": true
+      },
+      {
+        "name": "accepted_interactive_run_captures_explicit_request",
+        "passed": true
+      },
+      {
+        "name": "captured_fact_has_owned_source",
+        "passed": true
+      },
+      {
+        "name": "captured_fact_searches_in_chinese",
+        "passed": true
+      },
+      {
+        "name": "synthetic_run_ordinary-question",
+        "passed": true
+      },
+      {
+        "name": "one_off_question_not_captured",
+        "passed": true
+      },
+      {
+        "name": "synthetic_run_suggested-question",
+        "passed": true
+      },
+      {
+        "name": "marked_suggestion_not_captured",
+        "passed": true
+      },
+      {
+        "name": "only_one_explicit_fact",
+        "passed": true
+      },
+      {
+        "name": "removed_source_hidden_and_cleanup_available",
+        "passed": true
+      },
+      {
+        "name": "delivery_forget-captured",
+        "passed": true
+      },
+      {
+        "name": "followed_topic_has_live_owned_evidence",
+        "passed": true
+      },
+      {
+        "name": "real_home_readonly_run_completes",
+        "passed": true
+      },
+      {
+        "name": "double_click_reuses_original_home_run",
+        "passed": true
+      },
+      {
+        "name": "delivery_home-goal",
+        "passed": true
+      },
+      {
+        "name": "suggestion_explains_explicit_saved_goal",
+        "passed": true
+      },
+      {
+        "name": "suggested_topic_starts_new_owned_readonly_chat",
+        "passed": true
+      },
+      {
+        "name": "suggestion_does_not_create_inferred_memory",
+        "passed": true
+      },
+      {
+        "name": "paused_topic_leaves_daily_focus",
+        "passed": true
+      },
+      {
+        "name": "restart_preserves_intent_without_new_run",
+        "passed": true
+      },
+      {
+        "name": "restart_preserves_topic_pause_and_suggestions",
+        "passed": true
+      }
+    ],
+    "configured_cloud_models": 0,
+    "native_tasks": 0,
+    "synthetic_data_only": true,
+    "pinned_provider_contracts_passed": true,
+    "scope": "Go login/API, actual pinned Gateway plugin and DeerMem; no browser or cloud acceptance",
+    "source_sha256": {
+      "src/deermate/briefing.py": "00d591bdcbbd754bd0fb5183709c87c0094c72bd46db8e6c4f8f588949cfd0f4",
+      "src/deermate/briefing_middleware.py": "6b201707019780b16434b99c38d8b201f08e0eac2edba38d136847d597900ccb",
+      "src/deermate/tooling.py": "fb6c06bd5d45d4eb536721c53d1256b2d3135c8ef6379729be71b6a270dd453b",
+      "backend/internal/controlplane/briefing.go": "d6ed78f02d0bc46e4f786d0b3917089bcc88550ff6f2adf1d24cc2bb4402deb0",
+      "backend/internal/controlplane/briefing_actions.go": "c7df373fb6b7f2e6fd586abf5e0e41930db4dcb59bcd80be679eb57a6bfd9cf5",
+      "backend/internal/controlplane/briefing_suggestions.go": "5fb6d3b4a65be6229baaa5b21314f8a3d55b73c717a35a02e9f42b71dee7e1a2",
+      "src/deermate/memory.py": "631efa1b1eabe750e00c693243fb53a8a5c06ea30df4619fcd4282b8e1d61fb7",
+      "src/deermate/memory_middleware.py": "36a05764dfc38e5a45ea21019657ea0d22b539ee48cd6d337baebaa386f3b78d",
+      "backend/internal/controlplane/memory_store.go": "c29bc6e55c11f396ddc9f762480c95671fef214a5d270e91e9d55f7ce442d490",
+      "backend/internal/controlplane/memory.go": "135f26c45dbe223f912c9bea3dfb106dd1c7b289598c6b43407ba5640f29761f",
+      "backend/internal/controlplane/memory_capture.go": "426ab6ae5295f9fd0f31dc187fcd7f3417e0d26f9d9388fc393189463f7a377e",
+      "backend/internal/controlplane/runtime.go": "93c76fd44f8350d550c96985db04f21b1ef223ada2eb97a7f7fd0661601dce9c"
+    },
+    "control_binary_sha256": "5fc621aaa78a59442b63da61df59fa9eee239244e48b5a3d009fdf0e1df90dda"
+  },
+  "browser": {
+    "passed": true,
+    "checks": [
+      "real_login_empty_home",
+      "follow_existing_chat_from_link_with_goal",
+      "read_only_followup_and_repeated_click_one_real_fake_run",
+      "followup_result_visible_in_original_chat",
+      "explicit_goal_opt_in_creates_explained_suggestion",
+      "suggestion_creates_one_separate_owned_chat_without_inferred_memory",
+      "turning_suggestions_off_removes_cached_goal",
+      "pause_resume_today_hide_and_saved_timezone",
+      "mark_read_uses_current_evidence_revision",
+      "desktop_laptop_mobile_dark_reduce_motion_no_overflow",
+      "failed_refresh_hides_stale_focus_and_has_recovery",
+      "deleted_source_hides_old_content_and_can_be_unfollowed",
+      "keyboard_refresh_keeps_focus",
+      "account_switch_has_no_prior_name_action_or_goal"
+    ],
+    "synthetic_data_only": true,
+    "configured_cloud_models": 0,
+    "native_tasks": 0,
+    "actual_fake_model_runs": 2,
+    "source_sha256": "77aa1377a3ff913dc0f679b8e24c05fac4bde17ac1c7fb52d0fb23cb837084b8"
+  },
+  "images_and_correspondence": {
+    "frontend": {
+      "checked": 1302,
+      "mismatches": []
+    },
+    "gateway_source_files": 28,
+    "control_linux_sha256": "9b18fc4d6d9dfc8aa82954d66c5fed874514ca8e7974bfdd2ce7de2f33c16e4e",
+    "services": {
+      "gateway": {
+        "image_id": "sha256:912b7a7932a80bb2c603f4ae60c54109ea6e53f601b580b0ccd099a3cfc1ea55",
+        "health": "healthy",
+        "oom_killed": false,
+        "memory_bytes": 1073741824
+      },
+      "control": {
+        "image_id": "sha256:59f1a76be277c173f01b40dd41d516fbdbf01da422bc2c5d19dea83bb7bfbc29",
+        "health": "healthy",
+        "oom_killed": false,
+        "memory_bytes": 134217728
+      },
+      "frontend": {
+        "image_id": "sha256:10d21ff7f88dc65aacc2df838a7703cd0d4d95675dd9bdcf453a1b00d527fc0d",
+        "health": "healthy",
+        "oom_killed": false,
+        "memory_bytes": 268435456
+      },
+      "nginx": {
+        "image_id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+        "health": "healthy",
+        "oom_killed": false,
+        "memory_bytes": 67108864
+      }
+    },
+    "container_limits_are_not_real_2gib_host_load": true
+  },
+  "source_sha256": {
+    "backend/internal/controlplane/briefing.go": "d6ed78f02d0bc46e4f786d0b3917089bcc88550ff6f2adf1d24cc2bb4402deb0",
+    "backend/internal/controlplane/briefing_actions.go": "c7df373fb6b7f2e6fd586abf5e0e41930db4dcb59bcd80be679eb57a6bfd9cf5",
+    "backend/internal/controlplane/briefing_actions_test.go": "8f3880e42deb7dc6c7126d12b06218b177c23ae5c30df2cbe6efb44b7029b8d1",
+    "backend/internal/controlplane/briefing_suggestions.go": "5fb6d3b4a65be6229baaa5b21314f8a3d55b73c717a35a02e9f42b71dee7e1a2",
+    "backend/internal/controlplane/briefing_test.go": "2f88af317926fbb07d1e54896014c8e30f10b4b994b5beca50efd0fa3892690f",
+    "backend/internal/controlplane/memory.go": "135f26c45dbe223f912c9bea3dfb106dd1c7b289598c6b43407ba5640f29761f",
+    "backend/internal/controlplane/memory_capture.go": "426ab6ae5295f9fd0f31dc187fcd7f3417e0d26f9d9388fc393189463f7a377e",
+    "backend/internal/controlplane/memory_store.go": "c29bc6e55c11f396ddc9f762480c95671fef214a5d270e91e9d55f7ce442d490",
+    "backend/internal/controlplane/runtime.go": "93c76fd44f8350d550c96985db04f21b1ef223ada2eb97a7f7fd0661601dce9c",
+    "backend/internal/controlplane/server.go": "c39e4a7af190e57693c9b65c076414eb201475c95d1b58875610b5d5b7796ebd",
+    "backend/internal/controlplane/store.go": "fe9b9f36039cf8bc0821d8e4eed40b386fa933967608059f55131c2cf04510f5",
+    "frontend/overlay/src/components/deermate/desk.tsx": "4ca88ac54597561b650ee07be34a1c3e060355c40880ad2681d0e67d722d6e29",
+    "frontend/overlay/src/components/deermate/personal-home.tsx": "98e37841e0e802a4ed279c85a3ac2e18b63c6687dd46abea588c64c41f6f49db",
+    "frontend/overlay/src/components/deermate/personal-memory.tsx": "cbac2dfb42892fa86e9e6ea1de76561ef16066dd68f636fff20b1736fde19316",
+    "frontend/overlay/src/styles/deermate.css": "1515c268536908e4059df875a317f4199c4b46ecdf7486087d97bf1c575b8ff0",
+    "scripts/verify_personal_home.cjs": "77aa1377a3ff913dc0f679b8e24c05fac4bde17ac1c7fb52d0fb23cb837084b8",
+    "scripts/verify_personal_memory.py": "1aa1999c25a14925898f2facc3fc12642433e3fd3bc2400fabede434dfb83e53",
+    "src/deermate/__init__.py": "066ceff24061421990b42cf10bff8b923f134124313ee6cc88b7bb4e5be93853",
+    "src/deermate/api.py": "6458111e40e1257b76138e5f59a77085f486d604500db3d093652d5becede9d3",
+    "src/deermate/bridge.py": "30295275d820b19e86465e9f1d03aa2ec291f04fedc4ce6a995cf8165565d181",
+    "src/deermate/briefing.py": "00d591bdcbbd754bd0fb5183709c87c0094c72bd46db8e6c4f8f588949cfd0f4",
+    "src/deermate/briefing_middleware.py": "6b201707019780b16434b99c38d8b201f08e0eac2edba38d136847d597900ccb",
+    "src/deermate/chat_sessions.py": "85df9522ca5f6407c78838ad44c180e9fd3aba32f6d82b7a611db83a3365eabd",
+    "src/deermate/cli.py": "79611e36ee2c588cb18743598973d7400729b9e68e745c803881a692f0c64f14",
+    "src/deermate/codex.py": "e979f389f718f715371810af307251484e3082a69f4f097d0e068e632228af8c",
+    "src/deermate/config.py": "a1d8bcea983e13c91dfc1bcdd2051275c143028bb78d698e5b89c2c5a08933f7",
+    "src/deermate/conversation.py": "9d5abae3ef9e85a7a959f506e51a8fd12f00cb3aaff36fbcd8e0871909f188b3",
+    "src/deermate/deerflow_tools.py": "71dd684c3bafc60b6d4188fd997bf462a9f56d597fe5d0de29e8db0ee638fe31",
+    "src/deermate/mcp_server.py": "377d38d7a55d84ca968daeff8d4f2460b7f3d0a79c76574bf1d5285fa36e55a0",
+    "src/deermate/memory.py": "631efa1b1eabe750e00c693243fb53a8a5c06ea30df4619fcd4282b8e1d61fb7",
+    "src/deermate/memory_middleware.py": "36a05764dfc38e5a45ea21019657ea0d22b539ee48cd6d337baebaa386f3b78d",
+    "src/deermate/models.py": "a3095fc04d421fcd5e86df0ddedc14ec28357613d5ca80d6865c500806f109dd",
+    "src/deermate/preflight.py": "96b386301a71927c3d875d17a8837b3e8e855f28730997289032d769920e13a8",
+    "src/deermate/protocol.py": "9634667db45a4dd6dd8df6e4df6582ed8f593a758991f91557710d1d73c58bfc",
+    "src/deermate/remote_config.py": "628137cb75ad464b997484e28ce5acdd01621995716c715fdbc5e4204276435a",
+    "src/deermate/rpc.py": "3a3b9a57f742658e4dbc3370d97acb4b8bbc522b4f67e163453b67bf0b4d84e9",
+    "src/deermate/session_middleware.py": "195970367172fc59011ee0f613f07e29b0fe3d1030c2785c4f4aad1cc51a79c9",
+    "src/deermate/ssh.py": "9601c80df9ed36c568187a3a2cb020083b746cb449e36119de9ef992cd6d4f33",
+    "src/deermate/store.py": "21321ff1259e7c82d6c85526170660e3ec7573ec19fcefd3438906c8913db879",
+    "src/deermate/tooling.py": "fb6c06bd5d45d4eb536721c53d1256b2d3135c8ef6379729be71b6a270dd453b",
+    "src/deermate/web_tools.py": "6922742c5cec6432fdf072242eedababcd3acc67d3b22cec6dcce0f1ef74d0ec",
+    "src/deermate/worker.py": "3a5256eb693f2252d612fa1b6ba65a34497360a69908a2643c3a8e8ee4ec798d",
+    "src/deermate/workspace.py": "db426c842f44733de8ed155e40cd9d51c86a1b27744f091f967dccc3e714cc17",
+    "tests/test_ack_deploy.py": "95ac05f49d399426bd512cf8c3b62c68c0ccb75fa796b2882bf45f50d7c7f666",
+    "tests/test_personal_home.py": "5080ca21e3bb1f5ec6765016eb4b5470b5590047b1f1430db9913f0de6c5f609"
+  },
+  "limitations": [
+    "Deterministic focus only; semantic automatic extraction/merging and model-job budgets remain pending.",
+    "Personal unprojected threads only; shared-project authorization and history import remain pending.",
+    "Two pinned Submitter continuation cases verify the session/journal path, including lost acknowledgment; they do not execute a real Worker or Codex.",
+    "Browser pass starts two Fake-model runs; configured real provider models and actual Native tasks are zero.",
+    "Cloud and original local deployment were not upgraded; no SSH grants were extended.",
+    "Container memory ceilings and no observed OOM do not establish real 2 GiB host capacity.",
+    "Private raw test state, screenshots and logs remain ignored; only completed final acceptance is summarized here."
+  ]
+}

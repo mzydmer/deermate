@@ -181,6 +181,8 @@ func (s *Server) protected(admin bool, h http.HandlerFunc) http.HandlerFunc {
 
 func (s *Server) routes() {
 	s.memoryRoutes()
+	s.briefingRoutes()
+	s.briefingActionRoutes()
 	s.mux.HandleFunc("GET /health/live", func(w http.ResponseWriter, r *http.Request) {
 		respond(w, 200, map[string]string{"status": "ok", "backend": "go"})
 	})
@@ -517,7 +519,7 @@ func (s *Server) preferences(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
-	if strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.memory/") || r.URL.Path == "/api/memory" || strings.HasPrefix(r.URL.Path, "/api/memory/") {
+	if strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.briefing/") || strings.HasPrefix(strings.TrimSpace(r.Header.Get("Idempotency-Key")), "extension:deermate.briefing:") || strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.memory/") || r.URL.Path == "/api/memory" || strings.HasPrefix(r.URL.Path, "/api/memory/") {
 		fail(w, 403, "personal_api_required", "Use the personal memory API")
 		return
 	}

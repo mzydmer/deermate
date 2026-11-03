@@ -1,7 +1,7 @@
 # ADR 0013 · 有记忆的私人首页：复用语义记忆，Go 提供关注与简报产品层
 
 - Date: 2026-10-29
-- Status: **Accepted（2026-11-02 用户同意开始实施）；M4.4a 基础阶段已本地验收，完整首页未交付。**
+- Status: **Accepted（2026-11-02 用户同意开始实施）；M4.4a/b 已本地验收，M4.4c–e 的个人范围确定性首页已接入；完整目标仍在进行。**
 - Spec: [有记忆的私人秘书与今日简报](../specs/m4-personal-memory-briefing.md)
 - Technical design: [本地 DeerMem 原型、关键时序与状态](../specs/m4-memory-technical-design.md)
 - First implementation: [个人记忆基础](../personal-memory.md)
@@ -44,3 +44,11 @@ M4.4a 先使用独立的 provider 私有根 `personal-memory`，默认关闭，�
 ## M4.4b 实施细化 · 2026-11-02
 
 先接通不调用模型的明确个人记忆指令，采用独立默认关闭的开关。Go 在正常 run 被接纳后从固定 SQLite 的规范记录核对 owner/origin/原消息/incarnation，原子保存来源引用与现有投递；受用户/实例每日上限、策略及遗忘版本约束。Python 在持久化、排名和最终注入前重检当前来源，来源失效标记单向保存。手动更正转为用户直接维护的事实；普通对话、项目指令、引用/通知/回放不形成自动事实。这是可靠采集的有限子集，复用原文件事务/FTS5/队列，不建立第二套语义记忆引擎；上游模型提取器和语义合并仍待后续带预算接入。详见[明确指令规格](../specs/m4-explicit-memory-capture.md)。
+
+## M4.4c–e 实施细化 · 2026-11-02
+
+首页首版采用有界确定性读模型，不建立后台整理模型队列；读取/刷新只核对本人现有记录，整理模型调用数为零。Go 持久化显式关注、语义版本、已读/静音、快照和动作 intent，个人目标正文继续由 DeerMem 提供。共享项目、语义归并及模型作业预算另行实施，不能以本次确定性方案冒充完成。
+
+只读跟进和目标新话题经 host-bound `agent_runs` 进入固定运行时。配置的 middleware 在每次模型/工具入口读取规范 run/intent，核对 owner、nonce、保留幂等键和当前来源；工具集为空且工具调用强制拒绝。策略只属于这次 run，不永久限制同会话的后续普通输入。Codex 续接则直接复用 existing session journal/ordinary task driver，显式比较原项目/执行器/head 指纹，只提交一个原会话子任务。结果未知不重新发送。原始插件和保留键从 Go 公共代理封锁。
+
+该实现继续维持 Go 公开控制面/Python 内部适配边界，没有新服务、外部库、Native 权限或网络授权。详情和剩余边界见[实施规格](../specs/m4-personal-home-implementation.md)。

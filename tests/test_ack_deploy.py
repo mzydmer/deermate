@@ -256,8 +256,11 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
     assert config["database"]["backend"] == "sqlite"
     assert config["checkpointer"]["type"] == "sqlite"
     assert config["tools"][:2] == [
-        {"name": "web_search", "group": "web",
-         "use": "deerflow.community.ddg_search.tools:web_search_tool"},
+        {
+            "name": "web_search",
+            "group": "web",
+            "use": "deerflow.community.ddg_search.tools:web_search_tool",
+        },
         {"name": "web_fetch", "group": "web", "use": "deermate.web_tools:web_fetch"},
     ]
     assert config["tools"][2:] == (
@@ -271,15 +274,24 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         if enabled
         else []
     )
-    assert config["tool_groups"] == ([{"name": "web"}] + (
-        [{"name": "deermate"}] if enabled else []
-    ))
-    assert config["plugins"] == [{
-        "name": "deermate-memory", "use": "deermate.memory:install", "required": True,
-    }, {
-        "name": "deermate-tooling", "use": "deermate.tooling:install", "required": True,
-    }]
+    assert config["tool_groups"] == (
+        [{"name": "web"}] + ([{"name": "deermate"}] if enabled else [])
+    )
+    assert config["plugins"] == [
+        {"name": "deermate-briefing", "use": "deermate.briefing:install", "required": True},
+        {
+            "name": "deermate-memory",
+            "use": "deermate.memory:install",
+            "required": True,
+        },
+        {
+            "name": "deermate-tooling",
+            "use": "deermate.tooling:install",
+            "required": True,
+        },
+    ]
     assert config["extensions"]["middlewares"] == [
+        "deermate.briefing_middleware:BriefingActionMiddleware",
         "deermate.session_middleware:CodingSessionMiddleware",
         "deermate.memory_middleware:PersonalMemoryMiddleware",
     ]

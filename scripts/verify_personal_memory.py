@@ -66,9 +66,16 @@ def run(args):
         "tools": [],
         "tool_groups": [],
         "plugins": [
-            {"name": "deermate-memory", "use": "deermate.memory:install", "required": True}
+            {"name": "deermate-memory", "use": "deermate.memory:install", "required": True},
+            {"name": "deermate-briefing", "use": "deermate.briefing:install", "required": True},
         ],
-        "extensions": {"middlewares": ["deermate.memory_middleware:PersonalMemoryMiddleware"]},
+        "extensions": {
+            "middlewares": [
+                "deermate.briefing_middleware:BriefingActionMiddleware",
+                "deermate.session_middleware:CodingSessionMiddleware",
+                "deermate.memory_middleware:PersonalMemoryMiddleware",
+            ]
+        },
         "sandbox": {"use": "deerflow.sandbox.local:LocalSandboxProvider"},
         "database": {"backend": "sqlite", "sqlite_dir": str(work / "sql")},
         "memory": {"enabled": False},
@@ -158,7 +165,7 @@ def run(args):
 
     test_code = (
         "import sys; sys.path.append(sys.argv[1]); import pytest; "
-        "sys.exit(pytest.main(['tests/test_personal_memory.py','-q',"
+        "sys.exit(pytest.main(['tests/test_personal_memory.py','tests/test_personal_home.py','-q',"
         "'-p','pytest_asyncio.plugin']))"
     )
     subprocess.run(
@@ -415,6 +422,131 @@ def run(args):
             {"operation_id": "forget-captured", "expected_revision": captured[0]["revision"]},
             owner,
         )
+        profile = request("GET", "/api/me/personal-profile")
+        request(
+            "PATCH",
+            "/api/me/personal-profile",
+            {
+                "memory_enabled": True,
+                "proactive_enabled": True,
+                "expected_revision": profile["revision"],
+            },
+            owner=owner,
+        )
+        home_thread = request("POST", "/api/threads", {"thread_id": "home-source-fixture"})[
+            "thread_id"
+        ]
+        topic = request(
+            "POST",
+            "/api/me/attention-topics",
+            {
+                "operation_id": "home-follow",
+                "thread_id": home_thread,
+                "goal": "验证秘书首页",
+                "priority": 1,
+            },
+            owner=owner,
+        )
+        daily = request("GET", "/api/me/briefing")
+        check(
+            "followed_topic_has_live_owned_evidence",
+            len(daily["items"]) == 1 and daily["items"][0]["topic"]["id"] == topic["id"],
+        )
+        item = daily["items"][0]
+        intent = request(
+            "POST",
+            "/api/me/briefing/actions",
+            {
+                "kind": "followup",
+                "topic_id": topic["id"],
+                "evidence_revision": item["evidence"]["version"],
+            },
+            owner=owner,
+        )
+        admitted = request(
+            "POST", "/api/me/briefing/actions/" + intent["id"], {}, status=202, owner=owner
+        )
+        deadline = time.monotonic() + 45
+        while (
+            admitted["status"] not in {"completed", "failed", "blocked"}
+            and time.monotonic() < deadline
+        ):
+            time.sleep(0.2)
+            admitted = request("GET", "/api/me/briefing/actions/" + intent["id"])
+        check("real_home_readonly_run_completes", admitted["status"] == "completed")
+        duplicate = request(
+            "POST", "/api/me/briefing/actions/" + intent["id"], {}, status=202, owner=owner
+        )
+        check("double_click_reuses_original_home_run", duplicate["run_id"] == admitted["run_id"])
+        delivery(
+            "POST",
+            "/api/me/memories",
+            {
+                "operation_id": "home-goal",
+                "content": "我的长期目标是学习日语。",
+                "category": "goal",
+                "expected_revision": 0,
+            },
+            owner,
+        )
+        suggested = request("GET", "/api/me/briefing")["suggestions"]
+        check(
+            "suggestion_explains_explicit_saved_goal",
+            len(suggested) == 1 and suggested[0]["reason"] == "explicit_saved_goal",
+        )
+        proposal = suggested[0]
+        new_intent = request(
+            "POST",
+            "/api/me/briefing/actions",
+            {
+                "kind": "new_topic",
+                "fact_id": proposal["fact_id"],
+                "fact_revision": proposal["fact_revision"],
+            },
+            owner=owner,
+        )
+        new_run = request(
+            "POST", "/api/me/briefing/actions/" + new_intent["id"], {}, status=202, owner=owner
+        )
+        deadline = time.monotonic() + 45
+        while (
+            new_run["status"] not in {"completed", "failed", "blocked"}
+            and time.monotonic() < deadline
+        ):
+            time.sleep(0.2)
+            new_run = request("GET", "/api/me/briefing/actions/" + new_intent["id"])
+        check(
+            "suggested_topic_starts_new_owned_readonly_chat",
+            new_run["status"] == "completed" and new_run["thread_id"] != home_thread,
+        )
+        check(
+            "suggestion_does_not_create_inferred_memory",
+            len(request("GET", "/api/me/memories")["items"]) == 1,
+        )
+        request(
+            "PATCH",
+            "/api/me/attention-topics/" + topic["id"],
+            {"action": "pause", "expected_revision": topic["revision"]},
+            owner=owner,
+        )
+        check("paused_topic_leaves_daily_focus", request("GET", "/api/me/briefing")["items"] == [])
+        for process in reversed(processes):
+            process.stop()
+        processes.clear()
+        start(3)
+        restored = request(
+            "POST", "/api/me/briefing/actions/" + intent["id"], {}, status=202, owner=owner
+        )
+        check(
+            "restart_preserves_intent_without_new_run",
+            restored["run_id"] == admitted["run_id"]
+            and len(request("GET", f"/api/threads/{home_thread}/runs")) == 1,
+        )
+        check(
+            "restart_preserves_topic_pause_and_suggestions",
+            request("GET", "/api/me/attention-topics")["items"][0]["status"] == "paused"
+            and request("GET", "/api/me/briefing")["suggestions"] == suggested,
+        )
         receipt = {
             "passed": True,
             "checks": checks,
@@ -429,6 +561,12 @@ def run(args):
             "source_sha256": {
                 name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
                 for name in [
+                    "src/deermate/briefing.py",
+                    "src/deermate/briefing_middleware.py",
+                    "src/deermate/tooling.py",
+                    "backend/internal/controlplane/briefing.go",
+                    "backend/internal/controlplane/briefing_actions.go",
+                    "backend/internal/controlplane/briefing_suggestions.go",
                     "src/deermate/memory.py",
                     "src/deermate/memory_middleware.py",
                     "backend/internal/controlplane/memory_store.go",

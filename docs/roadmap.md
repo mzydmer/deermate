@@ -112,17 +112,20 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 
 ## M4.4 — Memory-backed personal secretary home（In progress）
 
-用户已同意开始实施 [spec](specs/m4-personal-memory-briefing.md)。第一阶段为[个人记忆基础](personal-memory.md)，完整首页闭环尚未交付。
+用户已同意开始实施 [spec](specs/m4-personal-memory-briefing.md)。[个人记忆基础](personal-memory.md)与[个人范围的确定性首页闭环](personal-home.md)已本地验收；完整语义采集/模型作业仍待实施。
 
 [技术原型与六张关键流程/状态图](specs/m4-memory-technical-design.md)保留完整目标；本阶段的 Go 持久投递、个人事实屏障与召回不代表自动提取队列已经接入。
 
-- [x] M4.4a: personal display name/timezone, explicit personal facts, correction/forgetting, FTS5 recall and a locally verified DeerMem adapter. Personal scope only; cloud deployment and the complete briefing loop remain pending.
+- [x] M4.4a: personal display name/timezone, explicit personal facts, correction/forgetting, FTS5 recall and a locally verified DeerMem adapter. Personal scope only; later home work is tracked below, cloud upgrade remains pending.
 - [x] M4.4b: opt-in explicit personal memory requests from newly admitted chats, source identity/recency, daily limits and source invalidation. No extraction-model calls.
 - [ ] Semantic automatic extraction/merging, project scopes and reliable model-job budgets.
-- [ ] Source/version-preserving attention topics, memory correction/forgetting and bounded history import.
-- [ ] Personal daily briefing with actual progress, freshness, clear recommendation reasons and useful empty/error states.
-- [ ] Read-only progress follow-up, explicitly scoped task continuation and previewed new-topic creation, preserving one chat/one executor session, existing permissions and idempotency.
-- [ ] Budgeted incremental generation, deletion/cache invalidation and real owner/UI/privacy acceptance.
+- [x] Explicit personal attention topics with source/incarnation versions, pause/read/snooze controls and no recent-20 cutoff.
+- [ ] Bounded history import and cross-topic semantic merging.
+- [x] Deterministic personal focus with actual task evidence/freshness, goal-based explained suggestions and empty/error states.
+- [x] Admitted read-only follow-up and previewed new-topic creation over the real local API/UI; one-round existing Codex continuation and lost-ack fencing covered with a pinned Submitter fixture.
+- [ ] Verify the new home continuation entry through a real Go→Gateway→Worker/native run.
+- [x] Source/goal cache invalidation, persisted intent restart reconciliation, zero summarization calls on reads and synthetic owner/UI isolation acceptance.
+- [ ] Budgeted model-job generation, real-provider quality and 2 GiB host load acceptance.
 
 First release uses existing owned conversations/tasks. Authorized external-source tracking follows separately. Design rationale: [ADR 0013](decisions/0013-memory-backed-personal-briefing.md).
 

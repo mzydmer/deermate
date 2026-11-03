@@ -1204,3 +1204,22 @@ body,
     min-height: 44px;
   }
 }
+
+
+/* Personal focus uses the existing desk form and list tokens. */
+.dm-personal-home { margin: 0 0 var(--dm-space-8); }
+.dm-focus-list { list-style: none; padding: 0; margin: 0; }
+.dm-focus-list > li { padding: var(--dm-space-6) 0; border-bottom: 1px solid var(--dm-border); }
+.dm-focus-list h3, .dm-focus-list p { margin: 0 0 var(--dm-space-3); overflow-wrap: anywhere; }
+.dm-focus-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--dm-space-4); }
+.dm-personal-home a { color: var(--dm-info); text-decoration: underline; text-underline-offset: 3px; }
+.dm-personal-home summary, .dm-personal-home .dm-text-button, .dm-personal-home .dm-focus-actions a { min-height: var(--dm-control-height); }
+.dm-personal-home summary { cursor: pointer; }
+.dm-personal-home .dm-focus-followup, .dm-attention-management, .dm-suggestions, .dm-home-action { margin-top: var(--dm-space-6); }
+.dm-personal-home .dm-memory-form :is(input,textarea,select) { width: 100%; min-height: var(--dm-control-height); padding: var(--dm-space-2) var(--dm-space-3); border: 1px solid var(--dm-border-strong); border-radius: var(--dm-radius-sm); background: var(--dm-background); color: var(--dm-foreground); font: inherit; }
+.dm-personal-home textarea { min-height: 96px; }
+.dm-home-action { padding: var(--dm-space-4); border: 1px solid var(--dm-border); }
+@media (max-width: 600px) {
+ .dm-personal-home .dm-text-button, .dm-personal-home .dm-focus-actions a, .dm-personal-home :is(button,summary,a,input,textarea,select) { min-height: 44px; }
+ .dm-personal-home :is(input,textarea,select) { font-size: 16px; }
+}

@@ -39,6 +39,17 @@ type MemoryPage = {
   total_active: number;
 };
 
+function invalidateHome(
+  cache: ReturnType<typeof useQueryClient>,
+  user: string,
+) {
+  cache.setQueryData(
+    ["deermate", "briefing", user],
+    (old: object | undefined) => (old ? { ...old, suggestions: [] } : old),
+  );
+  void cache.invalidateQueries({ queryKey: ["deermate", "briefing", user] });
+}
+
 async function personalAPI<T>(
   path: string,
   userId: string,
@@ -203,6 +214,7 @@ export function PersonalMemoryPanel({
       status.data?.status === "invalidated"
     ) {
       setOperation(status.data);
+      invalidateHome(cache, userId);
       void cache.invalidateQueries({
         queryKey: ["deermate", "personal-memory", userId],
       });
@@ -230,6 +242,7 @@ export function PersonalMemoryPanel({
         body: request.body,
       });
       pending.current = null;
+      invalidateHome(cache, userId);
       setOperation(result);
       setContent("");
       setEditing(null);
@@ -540,6 +553,7 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
   const [zone, setZone] = useState(profile.timezone);
   const [enabled, setEnabled] = useState(profile.memory_enabled);
   const [capture, setCapture] = useState(profile.auto_capture_enabled);
+  const [suggest, setSuggest] = useState(profile.proactive_enabled);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   async function save(event: FormEvent) {
@@ -554,9 +568,11 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
           timezone: zone.trim(),
           memory_enabled: enabled,
           auto_capture_enabled: capture,
+          proactive_enabled: suggest,
           expected_revision: profile.revision,
         }),
       });
+      invalidateHome(cache, profile.owner);
       await cache.invalidateQueries({
         queryKey: ["deermate", "personal-profile", profile.owner],
       });
@@ -633,6 +649,21 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
         {t(
           "例如「请记住：我偏好简洁的中文回答。」。只处理新发出的明确个人记忆指令，保留原对话入口；不扫描历史、不推断兴趣、不额外调用模型。",
           'For example: "Remember: I prefer concise answers." Only new, explicit personal memory requests are saved with a source link. No history scan, inferred interests or extra model calls.',
+        )}
+      </p>
+      <label className="dm-memory-check">
+        <input
+          type="checkbox"
+          checked={suggest}
+          disabled={busy || !enabled}
+          onChange={(event) => setSuggest(event.target.checked)}
+        />
+        {t("根据长期目标推荐新话题", "Suggest topics from saved goals")}
+      </label>
+      <p className="dm-muted">
+        {t(
+          "仅依据你保存的有效目标推荐问题，点击后才开始对话。不会自动执行任务或调用整理模型。",
+          "Suggests questions from your valid saved goals. A chat starts only when you click; no automatic task or summarization-model calls.",
         )}
       </p>
       <button className="dm-button" disabled={busy}>

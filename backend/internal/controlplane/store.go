@@ -139,7 +139,13 @@ func (s *Store) initialize() error {
 	if err != nil {
 		return err
 	}
-	return s.initializeMemory()
+	if err = s.initializeMemory(); err != nil {
+		return err
+	}
+	if err = s.initializeBriefing(); err != nil {
+		return err
+	}
+	return s.initializeBriefingActions()
 }
 
 const userColumns = "id,email,coalesce(password_hash,''),system_role,disabled,needs_setup,token_version,oauth_provider"

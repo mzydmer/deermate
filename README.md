@@ -179,7 +179,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current work: **M4.4b explicit memory requests from chats**, implemented and locally verified on the Go backend and shared design system. See the [personal memory guide](docs/personal-memory.md) for scope and acceptance status. Semantic extraction, automatic merging and proactive daily briefings remain planned.
+We track delivered work separately from planned functionality. Current work: **M4.4c–e personal focus and home actions**, implemented and locally verified on the Go backend and shared design system. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -190,6 +190,7 @@ We track delivered work separately from planned functionality. Current work: **M
 | M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
 | M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified; existing cloud deployment unchanged |
 | M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified; no extra extraction-model calls |
+| M4.4c–e | Persistent personal focus, task evidence, goal suggestions and admitted home actions | Locally verified with synthetic models; new home Native entry still needs live acceptance |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).

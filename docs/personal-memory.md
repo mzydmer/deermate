@@ -1,6 +1,6 @@
 # 个人记忆 · M4.4a / M4.4b
 
-状态：基础阶段已本地验收；明确记忆指令采集已实现并本地验收，2026-11-02。尚未升级既有本地实例或云端。完整目标见 [M4.4 spec](specs/m4-personal-memory-briefing.md)；本页描述个人事实存取、明确指令采集与召回，不代表语义提取、关注主题或今日简报已经完成。
+状态：基础阶段已本地验收；明确记忆指令采集已实现并本地验收，2026-11-02。尚未升级既有本地实例或云端。完整目标见 [M4.4 spec](specs/m4-personal-memory-briefing.md)；本页描述个人事实存取、明确指令采集与召回；已接通的关注/简报和动作见[首页指南](personal-home.md)，语义提取仍待开发。
 
 ## 使用流程
 
@@ -65,7 +65,7 @@
 
 | 接口 | 功能 |
 | --- | --- |
-| `GET/PATCH /api/me/personal-profile` | 称呼、时区、`memory_enabled` / `auto_capture_enabled`；PATCH 携带 `expected_revision` |
+| `GET/PATCH /api/me/personal-profile` | 称呼、时区、`memory_enabled` / `auto_capture_enabled` / `proactive_enabled`；PATCH 携带 `expected_revision` |
 | `GET /api/me/memories?offset=0` | 本人列表、引用及总数 |
 | `POST /api/me/memories/search` | 请求体 `{query, offset}`，不把搜索正文放到 URL |
 | `POST /api/me/memories` | `{operation_id, content, category, expected_revision: 0}` |
@@ -75,7 +75,7 @@
 
 `operation_id` 由客户端生成并在网络重试时复用；不能复用同一 ID 发送另一份正文。写入返回 HTTP 202 和原操作引用，是否完成以状态为准。类别为 `preference`、`goal`、`context`；API 正文上限 4,000 UTF-8 字节，界面限制为 1,000 个输入字符。已知认证材料格式被拒绝，不保证识别任意文本中的秘密。
 
-`proactive_enabled` 尚无生成器，尝试开启会返回 501；不会保存一个看似已经开始工作的开关。旧 `/api/memory` 及原始插件动作不能绕过 Go 的个人入口。本阶段不增加执行能力，普通账号仍不能调用原有 Native 执行接口。
+`proactive_enabled` 现在独立控制基于有效个人目标的确定性新话题建议，默认关闭；见[首页指南](personal-home.md)。旧 `/api/memory` 及原始插件动作不能绕过 Go 的个人入口。本阶段不增加执行能力，普通账号仍不能调用原有 Native 执行接口。
 
 ## 验证方式
 
@@ -106,4 +106,4 @@ M4.4b 的[采集收据](verification/explicit-memory-capture-2026-11-02.json)记
 
 ## 尚待实施
 
-语义提取与合并、项目级来源/权限、可选历史导入、关注主题、任务证据投影、今日简报、首页动作 intent/只读跟进/原任务续接，以及真实模型和 2 GiB 性能验收仍遵循完整 spec。本阶段不能标记 MEM-01–MEM-21 的全量验收完成。
+[首页关注/任务证据/动作闭环](personal-home.md)已接入。语义提取与合并、项目级来源/权限、可选历史导入、模型整理作业预算，以及真实模型和 2 GiB 性能验收仍遵循完整 spec。本阶段不能标记 MEM-01–MEM-21 的全量验收完成。
