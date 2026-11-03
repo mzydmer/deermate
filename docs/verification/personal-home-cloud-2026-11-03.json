@@ -1,0 +1,278 @@
+{
+  "date_utc": "2026-11-03",
+  "stage": "M4.4a-e existing Singapore single-host upgrade",
+  "passed": true,
+  "runtime_source_revision": "701a30912c99ea12d44a1101043a9676f8c5822b",
+  "frontend_source_revision": "ad3758894b4642ecd479b9aae604ea8f8ba52e12",
+  "backend_and_python_sources_unchanged_in_frontend_fix": true,
+  "scope": "Real existing account, public trusted HTTPS, data preservation and home UI/API. No model/native task, home-link renewal, new cloud resource or load acceptance.",
+  "artifacts": {
+    "main_archive_sha256": "97491713e7f12d4100e39e38f24780b52216af7aefd70dbf6c319f31ae9cc48a",
+    "frontend_fix_archive_sha256": "1eeabaaa8211b0fc7ca248baa233ed110f7943f23df10fd43100d80ad958e37d",
+    "verified_frontend_source_and_compiled_files": 5619,
+    "gateway_installed_source_files": 28,
+    "go_binary_sha256_verified": true,
+    "live_images": {
+      "gateway": "sha256:7d4a87bb45c543645ac79df2aaef58a2aa68099f83e39e36253da278cb5ec754",
+      "control": "sha256:850e4640ef213ce1cc3a23dff133c6514df64a5ac25e2f2a732e223c89d30b7e",
+      "frontend": "sha256:56205d5378060a851700a1b07e1f2c17fa8c0761e6922add88b0dfc859264486",
+      "nginx": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "edge": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8"
+    }
+  },
+  "upgrade": {
+    "checkpoint": "ready",
+    "consistent_database_backup_quick_check": "ok",
+    "application_backup_bytes": 25726997,
+    "backup_and_old_images_retained": true,
+    "historical_rows_preserved": true,
+    "historical_counts": {
+      "users": 1,
+      "threads_meta": 9,
+      "runs": 19,
+      "mcp_tasks": 5
+    },
+    "managed_model_file_bytes_preserved": true,
+    "runtime_config_and_source_seed_synchronized": true,
+    "first_attempt_failed_control_binary_execute_permission": true,
+    "first_attempt_automatic_rollback_without_database_restore": true,
+    "failed_attempt_evidence_retained": true,
+    "staged_control_binary_mode_repaired_to_0755": true,
+    "second_rollout_ready": true,
+    "initial_read_only_node_argument_error_fixed_before_apply": true,
+    "frontend_only_followup_rollback_prepared": true,
+    "no_host_reboot": true
+  },
+  "public_api": {
+    "checked_at_utc": "2026-11-03T07:24:04.779104+00:00",
+    "passed": 25,
+    "checks": [
+      {
+        "name": "public_trusted_https_ready",
+        "passed": true
+      },
+      {
+        "name": "old_session_and_owner_preserved",
+        "passed": true
+      },
+      {
+        "name": "existing_admin_role_preserved",
+        "passed": true
+      },
+      {
+        "name": "owned_historical_thread_ids_preserved",
+        "passed": true
+      },
+      {
+        "name": "historical_chat_state_accessible",
+        "passed": true
+      },
+      {
+        "name": "historical_message_payload_preserved",
+        "passed": true
+      },
+      {
+        "name": "existing_model_catalog_preserved",
+        "passed": true
+      },
+      {
+        "name": "new_go_personal_profile_available",
+        "passed": true
+      },
+      {
+        "name": "memory_and_capture_still_opt_in",
+        "passed": true
+      },
+      {
+        "name": "new_attention_api_no_automatic_history_import",
+        "passed": true
+      },
+      {
+        "name": "new_briefing_api_ready",
+        "passed": true
+      },
+      {
+        "name": "empty_focus_has_truthful_defaults",
+        "passed": true
+      },
+      {
+        "name": "repeated_reads_reuse_semantic_version",
+        "passed": true
+      },
+      {
+        "name": "memory_management_available_without_fixture_data",
+        "passed": true
+      },
+      {
+        "name": "expected_owner_mismatch_rejected",
+        "passed": true
+      },
+      {
+        "name": "csrf_missing_rejected_without_mutation",
+        "passed": true
+      },
+      {
+        "name": "raw_deermate.briefing_plugin_blocked",
+        "passed": true
+      },
+      {
+        "name": "raw_deermate.memory_plugin_blocked",
+        "passed": true
+      },
+      {
+        "name": "anonymous_/api/v1/auth/me_rejected",
+        "passed": true
+      },
+      {
+        "name": "anonymous_/api/me/briefing_rejected",
+        "passed": true
+      },
+      {
+        "name": "unexpected_public_host_rejected",
+        "passed": true
+      },
+      {
+        "name": "existing_password_still_signs_in",
+        "passed": true
+      },
+      {
+        "name": "login_cookies_secure_and_httponly",
+        "passed": true
+      },
+      {
+        "name": "session_csrf_cookie_present",
+        "passed": true
+      },
+      {
+        "name": "new_login_can_read_home_briefing",
+        "passed": true
+      }
+    ],
+    "certificate_validation_bypassed": false,
+    "actual_certificate_renewal_observed": false,
+    "model_catalog_entries_preserved": 1
+  },
+  "browser": {
+    "checked_at_utc": "2026-11-03T07:25:00.946Z",
+    "passed": 8,
+    "checks": [
+      {
+        "name": "existing_session_opens_workspace",
+        "passed": true
+      },
+      {
+        "name": "utc_greeting_matches_briefing_date",
+        "passed": true
+      },
+      {
+        "name": "truthful_empty_attention",
+        "passed": true
+      },
+      {
+        "name": "follow_selector_has_historical_title",
+        "passed": true
+      },
+      {
+        "name": "untitled_conversations_have_readable_fallback",
+        "passed": true
+      },
+      {
+        "name": "memory_defaults_off_and_dependents_disabled",
+        "passed": true
+      },
+      {
+        "name": "existing_five_completed_tasks_displayed",
+        "passed": true
+      },
+      {
+        "name": "personal_memory_empty_without_test_facts",
+        "passed": true
+      }
+    ],
+    "final_desktop_dark_screenshot_inspected": true,
+    "screenshots_and_raw_traces": "Retained privately in ignored operator workspace; no chat titles, IDs, credentials or raw traces published."
+  },
+  "services": {
+    "gateway": {
+      "image_id": "sha256:7d4a87bb45c543645ac79df2aaef58a2aa68099f83e39e36253da278cb5ec754",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "control": {
+      "image_id": "sha256:850e4640ef213ce1cc3a23dff133c6514df64a5ac25e2f2a732e223c89d30b7e",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "frontend": {
+      "image_id": "sha256:56205d5378060a851700a1b07e1f2c17fa8c0761e6922add88b0dfc859264486",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "nginx": {
+      "image_id": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "edge": {
+      "image_id": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0
+    }
+  },
+  "host_memory_observation": {
+    "MemTotal": "1651808 kB",
+    "MemAvailable": "662244 kB",
+    "SwapTotal": "0 kB",
+    "SwapFree": "0 kB"
+  },
+  "capacity_limit": "A single observation on the existing nominal 2 GiB instance; not a load/concurrency or full MEM performance result.",
+  "temporary_operator_access": {
+    "explicitly_approved": true,
+    "duration_hours": 1,
+    "admin_sudo": true,
+    "port_forwarding_pty_agent_x11_disabled": true,
+    "host_key_rechecked_against_console": true,
+    "key_removed": true,
+    "new_connection_rejected_before_expiry": true,
+    "confirmed_at_utc": "2026-11-03T07:25:40Z",
+    "local_private_key_deleted": true,
+    "unrelated_keys_untouched": true
+  },
+  "existing_home_agent_grant": {
+    "configuration_bytes_preserved": true,
+    "permissions_expanded": false,
+    "renewed": false,
+    "original_expiry_utc": "2026-10-30T02:29:56Z",
+    "actual_expiry_cleanup_reverified": false
+  },
+  "local_frontend_fix_checks": {
+    "typescript_and_production_build": "passed",
+    "shared_design_tokens": "passed",
+    "backend_python_source_diff_from_runtime_revision": "empty"
+  },
+  "model_calls_started": 0,
+  "native_tasks_started": 0,
+  "production_test_facts_created": 0,
+  "production_test_topics_created": 0,
+  "prior_local_acceptance": {
+    "receipt": "personal-home-2026-11-02.json",
+    "rerun_during_cloud_upgrade": false
+  },
+  "remaining": [
+    "Semantic extraction/merging and durable model-job budgets",
+    "Shared project scopes, bounded history import and external subscriptions",
+    "Real Go to Gateway to Worker/native acceptance of the new home continuation entry",
+    "Actual 2 GiB load/performance and certificate-renewal observation"
+  ],
+  "existing_local_instance_upgraded": false
+}

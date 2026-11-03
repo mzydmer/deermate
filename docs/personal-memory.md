@@ -1,6 +1,6 @@
 # 个人记忆 · M4.4a / M4.4b
 
-状态：基础阶段已本地验收；明确记忆指令采集已实现并本地验收，2026-11-02。尚未升级既有本地实例或云端。完整目标见 [M4.4 spec](specs/m4-personal-memory-briefing.md)；本页描述个人事实存取、明确指令采集与召回；已接通的关注/简报和动作见[首页指南](personal-home.md)，语义提取仍待开发。
+状态：基础阶段与明确记忆指令采集已于 2026-11-02 本地验收；2026-11-03 UTC 已部署既有新加坡单机，见[云端升级收据](verification/personal-home-cloud-2026-11-03.json)。原本地实例未升级。云端全部记忆/采集/目标建议开关保持默认关闭，不自动导入历史。完整目标见 [M4.4 spec](specs/m4-personal-memory-briefing.md)；本页描述个人事实存取、明确指令采集与召回；已接通的关注/简报和动作见[首页指南](personal-home.md)，语义提取仍待开发。
 
 ## 使用流程
 
@@ -102,7 +102,7 @@ M4.4a 历史[基础收据](verification/personal-memory-2026-11-02.json)记录�
 
 M4.4b 的[采集收据](verification/explicit-memory-capture-2026-11-02.json)记录 **25 项固定存储/图/来源契约、33 项实际 Go→Gateway API、14 项真实浏览器检查通过**；普通 Python 244 passed / 8 skipped，Go mod/vet/race/无 CGO 构建、Ruff/wheel、TypeScript/生产构建与 24 项固定部署子集通过。新增验收覆盖旧 schema 升级、用户/实例配额、来源编辑/删除/换代、单向失效、手动纠正脱离旧来源、开关和原对话跳转。
 
-完整浏览器复现需独立的合成 Fake 模型环境，并设置 `DEERMATE_CAPTURE_FIXTURE=1`；脚本先检查其模型名，不向真实供应方发送测试请求。另有 [`verify_memory_sdk.cjs`](../scripts/verify_memory_sdk.cjs)，沿用同样环境变量、要求既有合成账号开启明确采集，实际从输入框发送两轮消息；检查普通问答不入库、第二轮明确指令入库、流式成功与合成来源清理接纳。本轮两轮均通过。生产镜像没有加入 Fake 模型。容器限额检查与真实 2 GiB 主机压测仍分别记录，云端未升级。
+完整浏览器复现需独立的合成 Fake 模型环境，并设置 `DEERMATE_CAPTURE_FIXTURE=1`；脚本先检查其模型名，不向真实供应方发送测试请求。另有 [`verify_memory_sdk.cjs`](../scripts/verify_memory_sdk.cjs)，沿用同样环境变量、要求既有合成账号开启明确采集，实际从输入框发送两轮消息；检查普通问答不入库、第二轮明确指令入库、流式成功与合成来源清理接纳。上述本地阶段两轮均通过，云端升级没有重跑模型对话。生产镜像没有加入 Fake 模型。容器限额检查与真实 2 GiB 主机压测仍分别记录；云端已升级但本次只验收既有账号/数据、首页与 API，不代表真实记忆模型效果或负载验收。
 
 ## 尚待实施
 

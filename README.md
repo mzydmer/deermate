@@ -179,7 +179,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current work: **M4.4c–e personal focus and home actions**, implemented and locally verified on the Go backend and shared design system. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
+We track delivered work separately from planned functionality. Current work: **M4.4c–e personal focus and home actions**, implemented on the Go backend and shared design system, locally verified and deployed to the existing Singapore single-host installation. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -188,9 +188,9 @@ We track delivered work separately from planned functionality. Current work: **M
 | M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH and temporary cloud-to-home task verified; automatic enrollment and expiry observation pending |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
 | M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
-| M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified; existing cloud deployment unchanged |
-| M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified; no extra extraction-model calls |
-| M4.4c–e | Persistent personal focus, task evidence, goal suggestions and admitted home actions | Locally verified with synthetic models; new home Native entry still needs live acceptance |
+| M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified and cloud-deployed; memory defaults off |
+| M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified and cloud-deployed; no extra extraction-model calls |
+| M4.4c–e | Persistent personal focus, task evidence, goal suggestions and admitted home actions | Cloud home/API verified; action tests use local synthetic models; new home Native entry still needs live acceptance |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
@@ -199,7 +199,7 @@ Historical M2.1 verification had 51 passing normal tests (two opt-in upstream ch
 
 No release dates or production-readiness claims are promised. [Detailed roadmap and acceptance criteria →](docs/roadmap.md)
 
-The current normal suite has **244 passed, 8 opt-in cases skipped**. Personal memory now passes 25 pinned provider/graph/source contracts, 33 actual Go/Gateway API checks and 14 browser checks; the current pinned Chart/Compose/single-host/HTTPS subset passed 24 cases. This round uses synthetic data and an offline Fake conversation model, with no real provider/native calls or cloud upgrade. Historical cloud-to-home Codex evidence retains its original scope; see [STATUS](docs/STATUS.md) and the [capture receipt](docs/verification/explicit-memory-capture-2026-11-02.json).
+The implementation acceptance at `701a309` recorded **244 passed, 9 opt-in cases skipped**, 41 pinned provider/graph/source/home checks, 43 actual Go/Gateway API checks, 14 browser checks and 27 deployment/overlay checks using synthetic data and an offline Fake conversation model. That suite was not rerun for the cloud rollout. The [cloud upgrade receipt](docs/verification/personal-home-cloud-2026-11-03.json) records **25 public HTTPS/API checks and 8 browser checks**, preserved existing accounts/history/model files, and healthy running services. Temporary deployment SSH was revoked and a new connection denied; the expired home-agent grant was not renewed. No real model/native tasks or load test were started during this upgrade. Historical cloud-to-home Codex evidence retains its original scope; see [STATUS](docs/STATUS.md) and the [local home receipt](docs/verification/personal-home-2026-11-02.json).
 
 Track the first implementation milestone: [Python worker + Codex session lifecycle · #1](https://github.com/mzydmer/deermate/issues/1).
 

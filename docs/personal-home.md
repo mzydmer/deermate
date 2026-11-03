@@ -40,7 +40,9 @@ M4.4c–e：基于本人显式关注、真实任务记录和长期目标的首�
 | `POST /api/me/briefing/actions/{id}` | 至多一次提交；后续只核对 |
 | `GET /api/me/briefing/actions/{id}` | 核对原操作，不重放 |
 
-原始插件入口和保留的 extension 幂等键不能从公开代理绕过接纳。必须同步更新 Go、Gateway wheel/配置和完整 frontend overlay；旧组件混跑不受支持。现有本地与云部署需按部署指南另行升级；本次本地合成验收不表示已部署到公网。
+原始插件入口和保留的 extension 幂等键不能从公开代理绕过接纳。必须同步更新 Go、Gateway wheel/配置和完整 frontend overlay；旧组件混跑不受支持。既有新加坡单机已于 2026-11-03 UTC 升级：Go/Gateway 为 `701a309`，前端为 `ad37588`（后端/Python 源码与前者相同）。原本地实例未升级，其他安装仍需按部署指南更新。
+
+[云端收据](verification/personal-home-cloud-2026-11-03.json)记录 25 项公网 HTTPS/API 与 8 项实际页面检查；历史账号、对话、任务和模型配置保留。记忆、明确采集和目标建议均默认关闭，需本人开启；关注列表从本人选择历史对话开始。家庭 Agent 原授权已过期且未恢复，新增首页的真实 Codex 续接不在这次验收范围内。
 
 ## 验证与边界
 

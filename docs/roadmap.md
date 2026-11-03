@@ -112,11 +112,11 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 
 ## M4.4 — Memory-backed personal secretary home（In progress）
 
-用户已同意开始实施 [spec](specs/m4-personal-memory-briefing.md)。[个人记忆基础](personal-memory.md)与[个人范围的确定性首页闭环](personal-home.md)已本地验收；完整语义采集/模型作业仍待实施。
+用户已同意开始实施 [spec](specs/m4-personal-memory-briefing.md)。[个人记忆基础](personal-memory.md)与[个人范围的确定性首页闭环](personal-home.md)已本地验收，并于 2026-11-03 UTC 升级既有新加坡单机；[云端收据](verification/personal-home-cloud-2026-11-03.json)包含 25 项 HTTPS/API 与 8 项页面检查。完整语义采集/模型作业仍待实施。
 
 [技术原型与六张关键流程/状态图](specs/m4-memory-technical-design.md)保留完整目标；本阶段的 Go 持久投递、个人事实屏障与召回不代表自动提取队列已经接入。
 
-- [x] M4.4a: personal display name/timezone, explicit personal facts, correction/forgetting, FTS5 recall and a locally verified DeerMem adapter. Personal scope only; later home work is tracked below, cloud upgrade remains pending.
+- [x] M4.4a: personal display name/timezone, explicit personal facts, correction/forgetting, FTS5 recall and a locally verified DeerMem adapter. Personal scope only; deployed to the existing cloud host with memory features still opt-in.
 - [x] M4.4b: opt-in explicit personal memory requests from newly admitted chats, source identity/recency, daily limits and source invalidation. No extraction-model calls.
 - [ ] Semantic automatic extraction/merging, project scopes and reliable model-job budgets.
 - [x] Explicit personal attention topics with source/incarnation versions, pause/read/snooze controls and no recent-20 cutoff.
