@@ -140,6 +140,9 @@ def snapshot(task: Task) -> dict:
 
 
 class TaskBridge:
+    def _read_token(self):
+        return read_token(self.token_path)
+
     def __init__(
         self,
         token_path: Path,
@@ -168,7 +171,7 @@ class TaskBridge:
         """Read authenticated capabilities without admitting work or running an agent."""
         try:
             async with asyncio.timeout(CONNECTION_CHECK_TIMEOUT):
-                token = await asyncio.to_thread(read_token, self.token_path)
+                token = await asyncio.to_thread(self._read_token)
                 async with self.client.stream(
                     "GET", "/capabilities", headers={"Authorization": f"Bearer {token}"}
                 ) as response:
@@ -208,7 +211,7 @@ class TaskBridge:
                 method,
                 path,
                 json=body,
-                headers={"Authorization": f"Bearer {read_token(self.token_path)}"},
+                headers={"Authorization": f"Bearer {self._read_token()}"},
             ) as response:
                 if response.status_code == 404:
                     if method == "POST" and path == "/tasks":

@@ -103,6 +103,14 @@ class CodingSessionMiddleware(AgentMiddleware[CodingSessionState]):
             config = get_app_config().extensions.mcp_servers.get(server)
             if config is None or not config.enabled:
                 raise ConversationError("The bound coding connection is disabled or unavailable.")
+            if "--relay-config" in getattr(config, "args", []):
+                from deerflow.config.paths import get_paths
+
+                from .authorization import private_json
+
+                snapshot = private_json(get_paths().base_dir / "agent-authorizations/bridge.json")
+                if snapshot.get("owner_id") != scope.user_id:
+                    raise ConversationError("This device authorization belongs to another owner.")
             starts = [
                 t
                 for t in config.task_toolsets

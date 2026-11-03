@@ -17,11 +17,12 @@ import (
 )
 
 type Config struct {
-	RuntimeURL   string
-	Origin       string
-	AllowedHosts []string
-	JWTSecret    string
-	PasswordCost int
+	RuntimeURL        string
+	Origin            string
+	AllowedHosts      []string
+	JWTSecret         string
+	PasswordCost      int
+	AuthorizationHome string
 }
 type Server struct {
 	Store          *Store
@@ -58,6 +59,9 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 		return nil, err
 	}
 	s := &Server{Store: store, cfg: cfg, mux: http.NewServeMux(), engine: engine, dummy: dummy, hashing: make(chan struct{}, 4), memoryDelivery: make(chan struct{}, 1)}
+	if err := s.initAuthorizations(); err != nil {
+		return nil, err
+	}
 	engine.onResponse = s.captureMemoryResponse
 	s.routes()
 	return s, nil
@@ -180,6 +184,7 @@ func (s *Server) protected(admin bool, h http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) routes() {
+	s.authorizationRoutes()
 	s.memoryRoutes()
 	s.briefingRoutes()
 	s.briefingActionRoutes()
@@ -530,6 +535,12 @@ func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
 	}
 	if u.Role != "admin" && !regularRead(r) {
 		fail(w, 403, "permission_denied", "This account has read-only runtime access; execution/configuration requires an administrator")
+		return
+	}
+	// A platform MCP connector must not become ambient authority for another admin.
+	var deviceOwner string
+	if err := s.Store.DB.QueryRow("SELECT value FROM deermate_control_meta WHERE key='agent-owner'").Scan(&deviceOwner); err == nil && deviceOwner != u.ID && !regularRead(r) {
+		fail(w,403,"device_owner_required","This single-owner installation's execution/configuration belongs to another device owner")
 		return
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, 64<<20)

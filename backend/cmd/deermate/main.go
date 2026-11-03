@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -55,12 +56,13 @@ func run() error {
 		}
 		time.Sleep(time.Second)
 	}
-	store, err := controlplane.OpenStore(env("DEERMATE_DATABASE_PATH", "./data/deerflow.db"))
+	databasePath := env("DEERMATE_DATABASE_PATH", "./data/deerflow.db")
+	store, err := controlplane.OpenStore(databasePath)
 	if err != nil {
 		return err
 	}
 	defer store.DB.Close()
-	handler, err := controlplane.NewServer(store, controlplane.Config{RuntimeURL: runtimeURL, Origin: env("DEERMATE_ORIGIN", "http://localhost:2026"), AllowedHosts: strings.Split(env("DEERMATE_ALLOWED_HOSTS", "localhost:2026,127.0.0.1:2026,127.0.0.1:8080,control:8080"), ","), JWTSecret: os.Getenv("AUTH_JWT_SECRET")})
+	handler, err := controlplane.NewServer(store, controlplane.Config{RuntimeURL: runtimeURL, Origin: env("DEERMATE_ORIGIN", "http://localhost:2026"), AllowedHosts: strings.Split(env("DEERMATE_ALLOWED_HOSTS", "localhost:2026,127.0.0.1:2026,127.0.0.1:8080,control:8080"), ","), JWTSecret: os.Getenv("AUTH_JWT_SECRET"), AuthorizationHome: env("DEERMATE_AUTHORIZATION_HOME", filepath.Join(filepath.Dir(filepath.Dir(databasePath)), "agent-authorizations"))})
 	if err != nil {
 		return err
 	}

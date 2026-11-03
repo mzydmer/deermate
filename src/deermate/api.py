@@ -10,6 +10,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.datastructures import Headers
 
+from .authorization import admit_remote
 from .config import Settings
 from .models import AnswerInput, Conflict, ContinueTask, ResumeTask, SubmitTask
 from .worker import Worker
@@ -117,6 +118,15 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
     def worker(request: Request) -> Worker:
         return request.app.state.worker
 
+    def remote(request: Request, operation: str, *, project=None, task=None):
+        grant_id = request.headers.get("x-deermate-authorization")
+        if not grant_id:
+            return None
+        admit_remote(settings, grant_id, operation, project)
+        if task is not None and task.policy.get("authorization") != grant_id:
+            raise Conflict("task belongs to another authorization")
+        return grant_id
+
     app.add_middleware(LocalBoundary)
 
     @app.exception_handler(KeyError)
@@ -137,6 +147,7 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
 
     @app.get("/capabilities", dependencies=auth)
     async def capabilities(request: Request):
+        remote(request, "check")
         return {
             "protocol_version": 1,
             "instance_id": worker(request).store.instance_id,
@@ -150,17 +161,27 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
     async def submit(body: SubmitTask, request: Request, response: Response):
         if body.project_id not in settings.projects:
             raise HTTPException(404, "Project is not registered")
-        task, created = worker(request).store.submit(body, settings.policy(body.project_id))
+        grant_id = remote(request, "submit", project=body.project_id)
+        policy = settings.policy(body.project_id)
+        if grant_id:
+            policy["authorization"] = grant_id
+        task, created = worker(request).store.submit(body, policy)
+        if grant_id and task.policy.get("authorization") != grant_id:
+            raise Conflict("submission key belongs to another authorization")
         response.status_code = 201 if created else 200
         return task
 
     @app.get("/tasks", dependencies=auth)
     async def tasks(request: Request, limit: int = Query(default=100, ge=1, le=100)):
+        if request.headers.get("x-deermate-authorization"):
+            raise HTTPException(403, "Remote task enumeration is not authorized")
         return {"tasks": worker(request).store.list_tasks(limit)}
 
     @app.get("/tasks/{task_id}", dependencies=auth)
     async def status(task_id: str, request: Request):
-        return worker(request).store.get(task_id)
+        task = worker(request).store.get(task_id)
+        remote(request, "status", project=task.project_id, task=task)
+        return task
 
     @app.get("/tasks/{task_id}/events", dependencies=auth)
     async def events(
@@ -169,37 +190,48 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
         after: int = Query(default=0, ge=0),
         limit: int = Query(default=100, ge=1, le=100),
     ):
+        task = worker(request).store.get(task_id)
+        remote(request, "status", project=task.project_id, task=task)
         rows = worker(request).store.events(task_id, after, limit)
         return {"events": rows, "next_cursor": rows[-1]["cursor"] if rows else after}
 
     @app.get("/tasks/{task_id}/diff", dependencies=auth)
     async def diff(task_id: str, request: Request):
         task = worker(request).store.get(task_id)
+        remote(request, "status", project=task.project_id, task=task)
         if not task.result:
             raise HTTPException(409, "Task has no collected evidence yet")
         return Response(task.result.get("diff", ""), media_type="text/plain")
 
     @app.post("/tasks/{task_id}/cancel", dependencies=auth)
     async def cancel(task_id: str, request: Request):
+        task = worker(request).store.get(task_id)
+        remote(request, "cancel", project=task.project_id, task=task)
         return await worker(request).cancel(task_id)
 
     @app.post("/tasks/{task_id}/resume", dependencies=auth)
     async def resume(task_id: str, body: ResumeTask, request: Request):
+        if request.headers.get("x-deermate-authorization"):
+            raise HTTPException(403, "Recovery requires local administrative confirmation")
         return worker(request).store.resume(task_id, body)
 
     @app.post("/tasks/{task_id}/continue", dependencies=auth)
     async def continue_task(task_id: str, body: ContinueTask, request: Request, response: Response):
         parent = worker(request).store.get(task_id)
+        grant_id = remote(request, "continue", project=parent.project_id, task=parent)
         if parent.project_id not in settings.projects:
             raise HTTPException(404, "Project is not registered")
-        task, created = worker(request).store.continue_task(
-            task_id, body, settings.policy(parent.project_id)
-        )
+        policy = settings.policy(parent.project_id)
+        if grant_id:
+            policy["authorization"] = grant_id
+        task, created = worker(request).store.continue_task(task_id, body, policy)
         response.status_code = 201 if created else 200
         return task
 
     @app.post("/tasks/{task_id}/input", dependencies=auth)
     async def answer(task_id: str, body: AnswerInput, request: Request):
+        if request.headers.get("x-deermate-authorization"):
+            raise HTTPException(403, "Native input requires local administrative confirmation")
         try:
             return await worker(request).answer(task_id, body.answers)
         except ValueError as error:

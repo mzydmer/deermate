@@ -270,6 +270,12 @@ def control_nginx(config):
             proxy_http_version 1.1;
         }
 
+        location = /admin/agents {
+            proxy_pass http://gateway_upstream;
+            proxy_set_header Host $http_host;
+            proxy_http_version 1.1;
+        }
+
 """
         + marker,
     )

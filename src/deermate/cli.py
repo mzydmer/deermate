@@ -84,6 +84,11 @@ def main():
     parser.add_argument("--config", type=Path, default=Path("deermate.toml"))
     parser.add_argument("--port", type=int, default=18777, help="local API port")
     parser.add_argument("--worker", help="enrolled SSH worker ID in a controller config")
+    parser.add_argument(
+        "--relay-config",
+        type=Path,
+        help="private Go-managed authorization directory snapshot (MCP only)",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("serve", help="run one local-only worker; creates a private API token")
     sub.add_parser("mcp", help="serve stdio MCP tools backed by an independent worker")
@@ -109,6 +114,16 @@ def main():
                 "--file", type=Path, required=True, help='JSON object: {"question-id": ["answer"]}'
             )
     args = parser.parse_args()
+    if args.relay_config:
+        if args.command != "mcp" or args.worker:
+            parser.error("--relay-config is only supported by MCP without --worker")
+        from .mcp_server import run_server
+        from .relay import RelayDirectoryBridge
+
+        asyncio.run(
+            run_server(args.relay_config, args.port, bridge=RelayDirectoryBridge(args.relay_config))
+        )
+        return
     if args.worker and (args.command == "serve" or args.port != 18777):
         parser.error("--worker selects an enrolled client target; serve/--port are local-only")
     try:

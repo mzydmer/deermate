@@ -4,6 +4,7 @@ import fcntl
 import os
 from pathlib import Path
 
+from .authorization import admit_remote, local_grant
 from .codex import CodexAdapter
 from .config import Settings
 from .models import ACTIVE, Conflict, State
@@ -36,8 +37,41 @@ class Worker:
 
     async def _dispatch(self):
         while not self.stopping:
+            for task_id in list(self.running):
+                task = self.store.get(task_id)
+                grant_id = task.policy.get("authorization")
+                if grant_id and task.status != State.CANCELLING:
+                    try:
+                        admit_remote(
+                            self.settings,
+                            grant_id,
+                            "continue" if task.parent_task_id else "submit",
+                            task.project_id,
+                        )
+                    except Conflict:
+                        try:
+                            grant = local_grant(
+                                self.settings.state_dir, grant_id, require_active=False
+                            )
+                            stop = grant["policy"]["expiry_policy"] == "stop"
+                        except Conflict:
+                            stop = True
+                        if stop or task.status == State.INPUT_REQUIRED:
+                            await self.cancel(task_id)
             busy = {self.store.get(tid).project_id for tid in self.running}
             for task in self.store.queued():
+                grant_id = task.policy.get("authorization")
+                if grant_id:
+                    try:
+                        admit_remote(
+                            self.settings,
+                            grant_id,
+                            "continue" if task.parent_task_id else "submit",
+                            task.project_id,
+                        )
+                    except Conflict as error:
+                        self.store.update(task.task_id, status=State.CANCELLED, error=str(error))
+                        continue
                 if len(self.running) >= self.settings.max_concurrent_tasks:
                     break
                 if task.project_id in busy:
@@ -65,9 +99,18 @@ class Worker:
         adapter = None
         try:
             task = self.store.get(task_id)
-            if task.policy != self.settings.policy(task.project_id):
+            if {
+                k: v for k, v in task.policy.items() if k != "authorization"
+            } != self.settings.policy(task.project_id):
                 raise Conflict(
                     "project or runtime policy changed since admission; submit a new task"
+                )
+            if task.policy.get("authorization"):
+                admit_remote(
+                    self.settings,
+                    task.policy["authorization"],
+                    "continue" if task.parent_task_id else "submit",
+                    task.project_id,
                 )
             project = self.settings.projects[task.project_id]
             if not task.workspace:
