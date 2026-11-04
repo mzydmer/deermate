@@ -51,7 +51,15 @@ def finish(turn_id, prompt, path, sid):
         while not inputs[1000].wait(0.02):
             if stop.is_set():
                 break
-    delay = 120 if "slow-gateway" in prompt else 15 if "slow" in prompt else 0.08
+    delay = (
+        120
+        if "slow-gateway" in prompt
+        else 30
+        if "slow-continuous" in prompt
+        else 15
+        if "slow" in prompt
+        else 0.08
+    )
     end = time.monotonic() + delay
     while time.monotonic() < end and not stop.is_set():
         time.sleep(0.01)

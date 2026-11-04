@@ -30,7 +30,7 @@ def load(owner, payload, *, writing=False):
         op = record(db, owner, "operation", payload.get("operation_id"))
         data = op["data"]
         if (
-            data.get("_user_version") != user["token_version"]
+            (writing and data.get("_user_version") != user["token_version"])
             or not isinstance(payload.get("nonce"), str)
             or not hmac.compare_digest(payload["nonce"], data.get("_nonce", ""))
             or op["state"] not in {"dispatching", "acknowledged", "uncertain", "settled"}
@@ -48,6 +48,21 @@ def load(owner, payload, *, writing=False):
                 event = record(db, owner, "event", data["event_id"])
                 rule = record(db, owner, "rule", data["rule_id"])
                 source = record(db, owner, "source", event["data"]["source_id"])
+                for ref in data.get("event_batch") or []:
+                    item = record(db, owner, "event", ref["id"])
+                    latest = db.execute(
+                        "SELECT record FROM deermate_work_keys WHERE owner=? "
+                        "AND kind='github_object' AND key=?",
+                        (owner, item["data"].get("object_key", "")),
+                    ).fetchone()
+                    if (
+                        item["revision"] != ref["revision"]
+                        or not latest
+                        or latest[0] != item["id"]
+                        or item["data"]["source_generation"] != data["source_generation"]
+                        or item["data"]["thread_key"] != event["data"]["thread_key"]
+                    ):
+                        raise PermissionError("The assessment batch changed")
                 if (
                     event["revision"] != data["event_revision"]
                     or rule["revision"] != data["rule_revision"]
@@ -131,6 +146,20 @@ async def perform(payload, context):
     from .memory import _owner
 
     owner = _owner(context)
+    canonical = await asyncio.to_thread(load, owner, payload)
+    saved = await asyncio.to_thread(rejected_receipt, owner, canonical["id"])
+    if saved is not None:
+        return saved
+    result = await _perform(payload, context)
+    if result.get("status") == "rejected":
+        await asyncio.to_thread(save_rejection, owner, canonical["id"], result)
+    return result
+
+
+async def _perform(payload, context):
+    from .memory import _owner
+
+    owner = _owner(context)
     try:
         op = await asyncio.to_thread(load, owner, payload, writing=True)
     except PermissionError:
@@ -153,7 +182,15 @@ async def perform(payload, context):
     )
     await runs.create_thread(thread_id=data["thread_id"], metadata={"title": title})
     # Check canonical authority again after creating a thread and before effects.
-    op = await asyncio.to_thread(load, owner, payload, writing=True)
+    try:
+        op = await asyncio.to_thread(load, owner, payload, writing=True)
+    except PermissionError:
+        return {
+            "known": True,
+            "accepted": False,
+            "status": "rejected",
+            "preview": "Authority changed before run/native admission",
+        }
     if data["kind"] in {"router", "assessor"}:
         run = await runs.start(
             thread_id=data["thread_id"],
@@ -191,11 +228,39 @@ async def perform(payload, context):
     from .chat_sessions import ask_in_chat
     from .session_middleware import DEFAULT_PROFILES, journal
 
-    scope = await asyncio.to_thread(thread_scope, owner, op)
     saved = journal()
-    binding = await asyncio.to_thread(saved.binding, scope)
-    if data["kind"] != "cancel" and (binding or {}).get("head", "") != data["expected_head"]:
-        raise PermissionError("The coding head changed; inspect the original work")
+    try:
+        scope = await asyncio.to_thread(thread_scope, owner, op)
+        root_task_name = await asyncio.to_thread(native_profile, owner, data["server"])
+        binding = await asyncio.to_thread(saved.binding, scope)
+        if data["kind"] != "cancel" and (binding or {}).get("head", "") != data["expected_head"]:
+            if (
+                binding
+                and not binding["pending"]
+                and binding["server"] == data["server"]
+                and binding["project"] == data["project"]
+                and binding["executor"] == "codex"
+            ):
+                return {
+                    "known": True,
+                    "accepted": False,
+                    "status": "rejected",
+                    "current_head": binding["head"],
+                    "thread_id": scope.thread_id,
+                    "incarnation": scope.incarnation,
+                    "preview": (
+                        "Another round changed this chat's head. The same binding was "
+                        "reconciled; send an explicit follow-up again."
+                    ),
+                }
+            raise PermissionError("The coding head changed")
+    except PermissionError:
+        return {
+            "known": True,
+            "accepted": False,
+            "status": "rejected",
+            "preview": "The execution conversation, head or coding connection changed",
+        }
     if data["kind"] == "cancel":
         tracking = await asyncio.to_thread(cancel_tracking, saved, scope, op)
         if not tracking:
@@ -219,9 +284,20 @@ async def perform(payload, context):
         call_id=op["id"],
         run_id="continuous:" + op["id"],
         server=data["server"],
-        message=work_prompt(op["parent"], op["id"], data["project"], data["message"]),
+        message=work_prompt(
+            op["parent"],
+            op["id"],
+            data["project"],
+            data["message"],
+            {
+                "grant_id": data["grant_id"],
+                "version": data["grant_version"],
+                "instance_id": data["instance_id"],
+            },
+        ),
         project=data["project"],
         explicit_task=data["expected_head"] or None,
+        root_task_name=root_task_name,
     )
     return await query(payload, context)
 
@@ -237,6 +313,9 @@ async def query(payload, context):
 
     owner = _owner(context)
     op = await asyncio.to_thread(load, owner, payload)
+    rejected = await asyncio.to_thread(rejected_receipt, owner, op["id"])
+    if rejected is not None:
+        return rejected
     data = op["data"]
     if data["kind"] in {"router", "assessor"}:
         with gate(owner) as (db, _):
@@ -271,8 +350,17 @@ async def query(payload, context):
                             except (ValueError, TypeError, KeyError):
                                 preview = "已收到工作操作的回执。"
                         break
+        host_model_revision = None
+        try:
+            evidence = await context.agent_runs.configuration_evidence(
+                thread_id=data["thread_id"], run_id=run.run_id
+            )
+            host_model_revision = evidence.get("model_version")
+        except Exception:
+            pass  # Optional evidence is unavailable, never represented as zero usage.
         return {
             "known": True,
+            "host_model_revision": host_model_revision,
             "run_id": run.run_id,
             "thread_id": data["thread_id"],
             "status": status,
@@ -337,6 +425,26 @@ async def query(payload, context):
     }
 
 
+async def capabilities(payload, context):
+    from .continuous_middleware import bounded_model
+    from .memory import _owner
+
+    owner = _owner(context)
+    with gate(owner):
+        pass
+    try:
+        bounded_model(payload.get("model"))
+    except Exception:
+        return {"contract_version": 1, "bounded": False}
+    return {
+        "contract_version": 1,
+        "bounded": True,
+        "output_tokens": 1024,
+        "max_retries": 0,
+        "model_calls_per_operation": 1,
+    }
+
+
 def install(registry, config):
     from deerflow_extension_api import BackendAction, PluginContribution
 
@@ -345,7 +453,11 @@ def install(registry, config):
             namespace=NAMESPACE,
             title="Continuous secretary",
             enabled=True,
-            backend=(BackendAction("perform", perform), BackendAction("query", query)),
+            backend=(
+                BackendAction("perform", perform),
+                BackendAction("query", query),
+                BackendAction("capabilities", capabilities),
+            ),
         )
     ):
         raise RuntimeError("Pinned operation and AgentRuns contracts are required")
@@ -360,3 +472,63 @@ def cancel_tracking(saved, scope, op):
         turn = saved.turn(scope, call)
         return (turn or {}).get("tracking_id")
     return op["data"].get("expected_head")
+
+
+def native_profile(owner, server):
+    from deerflow.config import get_app_config
+
+    config = get_app_config().extensions.mcp_servers.get(server)
+    if config is None or not config.enabled:
+        raise PermissionError("The existing coding connection is disabled")
+    starts = [
+        item
+        for item in config.task_toolsets
+        if (item.submit_tool, item.status_tool, item.cancel_tool)
+        == ("submit_task", "get_task_status", "cancel_task")
+    ]
+    follows = [
+        item
+        for item in config.task_toolsets
+        if (item.submit_tool, item.status_tool, item.cancel_tool)
+        == ("continue_task", "get_continuation_status", "cancel_continuation_task")
+    ]
+    if len(starts) != 1 or len(follows) != 1:
+        raise PermissionError("Both existing ordinary task lifecycle contracts are required")
+    if "--relay-config" in getattr(config, "args", []):
+        from deerflow.config.paths import get_paths
+
+        from .authorization import private_json
+
+        snapshot = private_json(get_paths().base_dir / "agent-authorizations/bridge.json")
+        if snapshot.get("owner_id") != owner:
+            raise PermissionError("The configured connector belongs to another owner")
+    return starts[0].name
+
+
+def rejected_receipt(owner, identifier):
+    import sqlite3
+
+    with gate(owner) as (db, _):
+        try:
+            row = db.execute(
+                "SELECT response FROM deermate_continuous_receipts WHERE owner=? AND operation=?",
+                (owner, identifier),
+            ).fetchone()
+        except sqlite3.OperationalError as error:
+            if "no such table" not in str(error):
+                raise
+            return None
+        return json.loads(row[0]) if row else None
+
+
+def save_rejection(owner, identifier, response):
+    with gate(owner) as (db, _):
+        db.execute(
+            "CREATE TABLE IF NOT EXISTS deermate_continuous_receipts("
+            "owner TEXT NOT NULL,operation TEXT NOT NULL,response TEXT NOT NULL,"
+            "PRIMARY KEY(owner,operation))"
+        )
+        db.execute(
+            "INSERT OR IGNORE INTO deermate_continuous_receipts VALUES(?,?,?)",
+            (owner, identifier, json.dumps(response)),
+        )

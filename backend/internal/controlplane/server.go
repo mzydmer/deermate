@@ -68,6 +68,9 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 	if err := s.initAuthorizations(); err != nil {
 		return nil, err
 	}
+	if err := s.syncWorkSources(); err != nil {
+		return nil, err
+	}
 	engine.onResponse = s.captureMemoryResponse
 	s.continuousLanes = map[string]chan struct{}{"router": make(chan struct{}, 1), "assessor": make(chan struct{}, 1), "native": make(chan struct{}, 1), "source": make(chan struct{}, 1)}
 	s.routes()

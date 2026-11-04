@@ -200,3 +200,36 @@ async def test_deadline_does_not_report_success(settings):
         assert "deadline exceeded" in failed.error
     finally:
         await worker.close()
+
+
+async def test_continuous_assignment_is_exclusive_even_with_parallel_workers(settings, monkeypatch):
+    from deermate.work_reports import work_prompt
+
+    settings.max_concurrent_tasks = 3
+    settings.projects["second"] = settings.projects["demo"].model_copy()
+    worker = Worker(settings)
+    started, release = [], asyncio.Event()
+
+    async def execute(identifier):
+        started.append(identifier)
+        worker.store.update(identifier, status=State.RUNNING)
+        await release.wait()
+        worker.store.update(identifier, status=State.COMPLETED)
+
+    monkeypatch.setattr(worker, "_execute", execute)
+    await worker.start()
+    try:
+        work = submit(worker, work_prompt("work", "operation", "demo", "bounded"))
+        await wait_for(worker, work.task_id, {State.RUNNING})
+        ordinary = worker.store.submit(
+            SubmitTask(project_id="second", prompt="ordinary", idempotency_key="ordinary"),
+            settings.policy("second"),
+        )[0]
+        await asyncio.sleep(0.12)
+        assert started == [work.task_id]
+        assert worker.store.get(ordinary.task_id).status == State.QUEUED
+        release.set()
+        await wait_for(worker, ordinary.task_id, {State.COMPLETED})
+        assert started == [work.task_id, ordinary.task_id]
+    finally:
+        await worker.close()

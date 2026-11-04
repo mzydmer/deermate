@@ -90,7 +90,7 @@ class RelayDirectoryBridge:
         self.config = config
         self.origin = origin
 
-    def target(self, *, project=None, handle=None):
+    def target(self, *, project=None, handle=None, authorization=None):
         try:
             grants = private_json(self.config)["grants"]
         except (OSError, ValueError, KeyError) as error:
@@ -103,6 +103,16 @@ class RelayDirectoryBridge:
             if (g.get("expires_at") is None or g["expires_at"] > time.time())
             and (project is None or project in g["projects"])
         ]
+        if authorization is not None:
+            if not isinstance(authorization, dict):
+                raise BridgeError("Invalid frozen work authorization")
+            candidates = [
+                g
+                for g in candidates
+                if g["id"] == authorization.get("grant_id")
+                and g["version"] == authorization.get("version")
+                and g["instance_id"] == authorization.get("instance_id")
+            ]
         native = None
         if handle is not None:
             instance, sep, native = handle.partition(":")
@@ -132,7 +142,11 @@ class RelayDirectoryBridge:
             return connection_report({"type": "https-relay"}, error=error)
 
     async def operation(self, name, *, handle=None, project=None, **arguments):
-        grant, native = self.target(project=project, handle=handle)
+        from .work_reports import assignment_header
+
+        header = assignment_header(arguments.get("prompt", arguments.get("message", "")))
+        authorization = header.get("authorization") if header else None
+        grant, native = self.target(project=project, handle=handle, authorization=authorization)
         bridge = BoundRelayBridge(self.origin, grant)
         try:
             # Native namespace is checked before every mutation, not just in a model preflight.

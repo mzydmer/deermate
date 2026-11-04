@@ -133,6 +133,10 @@ func (s *Server) continuousConfig(w http.ResponseWriter, r *http.Request) {
 			workError(w, ErrCredentials)
 			return
 		}
+		if *b.Enabled && !s.boundedWorkModel(r, b.Model) {
+			fail(w, 422, "bounded_model_required", "Select a configured model with verified output and retry limits")
+			return
+		}
 		err = s.Store.workTransaction(r.Context(), func(tx *sql.Tx) error {
 			current, e := workGet(tx, owner, "settings", "settings")
 			if e == nil {
@@ -167,7 +171,25 @@ func (s *Server) continuousConfig(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	respond(w, 200, map[string]any{"config": workPublic(v), "module_available": s.cfg.ContinuousEnabled, "contract_version": continuousVersion, "github_configured": workRepository.MatchString(s.cfg.GitHubRepository)})
+	reserved := map[string]int{"model": 0, "native": 0}
+	day := time.Now().UTC().Format("2006-01-02")
+	rows, err := s.Store.DB.Query("SELECT kind,used FROM deermate_work_budget WHERE owner=? AND day=? AND kind IN ('model','native')", owner, day)
+	if err != nil {
+		workError(w, err)
+		return
+	}
+	for rows.Next() {
+		var kind string
+		var used int
+		if err = rows.Scan(&kind, &used); err != nil {
+			rows.Close()
+			workError(w, err)
+			return
+		}
+		reserved[kind] = used
+	}
+	rows.Close()
+	respond(w, 200, map[string]any{"config": workPublic(v), "module_available": s.cfg.ContinuousEnabled, "contract_version": continuousVersion, "github_configured": (workRepository.MatchString(s.cfg.GitHubRepository) && s.cfg.GitHubSecretHome != ""), "reserved": reserved, "budget_day": day})
 }
 func (s *Server) workOrders(w http.ResponseWriter, r *http.Request) {
 	if !s.workAccess(w, r) {
@@ -504,7 +526,7 @@ func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, me
 			return workRecord{}, ErrConflict
 		}
 	}
-	contextRows, e := tx.Query("SELECT "+workColumns+" FROM deermate_work_records WHERE owner=? AND kind='event' AND parent=? AND state='context' ORDER BY created,id LIMIT 10", u.ID, v.ID)
+	contextRows, e := tx.Query("SELECT "+workColumns+" FROM deermate_work_records WHERE owner=? AND kind='event' AND parent=? AND state='context' AND ?!='cancel' ORDER BY created,id LIMIT 10", u.ID, v.ID, kind)
 	if e != nil {
 		return workRecord{}, e
 	}
@@ -526,11 +548,11 @@ func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, me
 			break
 		}
 		message += "\nUntrusted subscribed context (scope is unchanged):\n" + workString(event, "title") + "\n" + workString(event, "preview")
-		refs = append(refs, map[string]any{"kind": "event", "id": event.ID, "revision": event.Revision})
 		event.State = "attached"
 		if err = workPut(tx, &event); err != nil {
 			return workRecord{}, err
 		}
+		refs = append(refs, map[string]any{"kind": "event", "id": event.ID, "revision": event.Revision})
 	}
 	op := newWork(u.ID, "operation", "prepared", v.ID, map[string]any{"target_operation": workString(v, "active_operation"), "context_refs": refs, "kind": kind, "message": message, "thread_id": workString(v, "thread_id"), "incarnation": workString(v, "incarnation"), "project": workString(v, "project"), "server": "deermate", "grant_id": grant.ID, "grant_version": grant.Version, "instance_id": grant.Instance, "expected_head": workString(v, "head"), "automatic": automatic, "_user_version": u.Version, "_nonce": opaque(), "_request_hash": workHash([]any{v.ID, kind, originalMessage})})
 	if err = workPut(tx, &op); err != nil {
@@ -542,6 +564,8 @@ func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, me
 	if kind != "cancel" {
 		v.Data["active_operation"] = op.ID
 		v.Data["stage"] = "queued"
+		v.Data["verified"] = false
+		delete(v.Data, "preview")
 	} else {
 		v.Data["stage"] = "cancelling"
 	}
@@ -556,7 +580,7 @@ func (s *Server) workGrant(q memoryReader, owner, id, project, kind string) (age
 	if e := q.QueryRow("SELECT data FROM deermate_agent_grants WHERE id=? AND owner=?", id, owner).Scan(&data); e != nil {
 		return g, ErrConflict
 	}
-	if json.Unmarshal([]byte(data), &g) != nil || grantState(g, time.Now().Unix()) != "active" || g.Active == nil {
+	if json.Unmarshal([]byte(data), &g) != nil || !slicesWorkState(grantState(g, time.Now().Unix()), "active", "expiring") || g.Active == nil {
 		return g, ErrConflict
 	}
 	allowed := func(items []string, x string) bool {
@@ -582,4 +606,22 @@ func (s *Server) workGrant(q memoryReader, owner, id, project, kind string) (age
 		return g, fmt.Errorf("%w: device_unavailable", ErrConflict)
 	}
 	return g, nil
+}
+
+func (s *Server) boundedWorkModel(r *http.Request, model string) bool {
+	if strings.TrimSpace(model) == "" {
+		return false
+	}
+	body, _ := json.Marshal(map[string]any{"model": model})
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+	raw, e := s.engine.query(ctx, r, "POST", "/api/plugins/deermate.continuous/actions/capabilities", body)
+	if e != nil {
+		return false
+	}
+	var capability struct {
+		Version int  `json:"contract_version"`
+		Bounded bool `json:"bounded"`
+	}
+	return json.Unmarshal(raw, &capability) == nil && capability.Version == continuousVersion && capability.Bounded
 }

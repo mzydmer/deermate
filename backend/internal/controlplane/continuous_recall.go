@@ -1,10 +1,14 @@
 package controlplane
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -31,7 +35,9 @@ func (s *Server) workSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	// Trigram MATCH handles three or more characters. Short terms use a bounded
 	// owner's latest 200 cards, never an unbounded scan of chat/native histories.
-	query := "SELECT id,kind FROM " + table + " WHERE " + table + " MATCH ? ORDER BY rank LIMIT 20"
+	// FTS5 can stop after the newest 20 indexed matches. Scoring every matching
+	// historical event exceeded the small-host latency target for common terms.
+	query := "SELECT id,kind FROM " + table + " WHERE " + table + " MATCH ? ORDER BY rowid DESC LIMIT 20"
 	args := []any{"\"" + strings.ReplaceAll(q, "\"", "\"\"") + "\""}
 	if len([]rune(q)) < 3 {
 		query = "SELECT id,kind FROM (SELECT id,kind,data FROM deermate_work_records WHERE owner=? AND kind IN ('work','event') ORDER BY updated DESC LIMIT 200) WHERE instr(json_extract(data,'$.title'),?)>0 OR instr(coalesce(json_extract(data,'$.preview'),json_extract(data,'$.goal'),''),?)>0 LIMIT 20"
@@ -104,7 +110,25 @@ func (s *Server) workContext(w http.ResponseWriter, r *http.Request) {
 		workError(w, e)
 		return
 	}
-	items := []any{workPublic(v)}
+	pageSize := 10
+	if raw := r.URL.Query().Get("limit"); raw != "" {
+		n, err := strconv.Atoi(raw)
+		if err != nil || n < 1 || n > 20 {
+			workError(w, ErrCredentials)
+			return
+		}
+		pageSize = n
+	}
+	offset := 0
+	if token := r.URL.Query().Get("cursor"); token != "" {
+		var err error
+		offset, err = s.readWorkCursor(token, owner, v.ID, v.Revision)
+		if err != nil {
+			workError(w, err)
+			return
+		}
+	}
+	items := []any{contextWork(v)}
 	used, _ := json.Marshal(items)
 	seen := map[string]bool{"work:" + v.ID: true}
 	truncated := false
@@ -133,14 +157,17 @@ func (s *Server) workContext(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 				linked, err := s.visibleWork(owner, kind, id)
+				if revision, ok := ref["revision"].(float64); ok && revision > 0 && linked.Revision != int64(revision) {
+					err = ErrConflict
+				}
 				var item any
 				if err != nil {
 					item = map[string]any{"id": id, "kind": kind, "state": "unavailable"}
 				} else {
-					item = workPublic(linked)
+					item = contextWork(linked)
 				}
 				encoded, _ := json.Marshal(item)
-				if len(used)+len(encoded) > 32768 {
+				if len(used)+len(encoded)+1 > 30720 {
 					truncated = true
 					break
 				}
@@ -153,7 +180,16 @@ func (s *Server) workContext(w http.ResponseWriter, r *http.Request) {
 		}
 		frontier = next
 	}
-	respond(w, 200, map[string]any{"items": items, "truncated": truncated, "limits": map[string]int{"hops": 3, "objects": 20, "bytes": 32768}, "execution_thread_id": workString(v, "thread_id")})
+	if offset > len(items) {
+		workError(w, ErrConflict)
+		return
+	}
+	end := min(len(items), offset+pageSize)
+	nextCursor := ""
+	if end < len(items) {
+		nextCursor = s.workCursor(owner, v.ID, v.Revision, end)
+	}
+	respond(w, 200, map[string]any{"items": items[offset:end], "next_cursor": nextCursor, "truncated": truncated, "limits": map[string]int{"hops": 3, "objects": 20, "bytes": 32768}, "execution_thread_id": workString(v, "thread_id")})
 }
 
 func (s *Server) routerView(w http.ResponseWriter, r *http.Request) {
@@ -275,8 +311,16 @@ func (s *Server) workView(v workRecord) workRecord {
 	}
 	if workString(checked, "source_id") != "" {
 		if _, e := s.visibleWork(checked.Owner, checked.Kind, checked.ID); e != nil {
-			v.State = "source_unavailable"
-			v.Data = map[string]any{"title": "Source unavailable", "source_id": workString(checked, "source_id"), "thread_id": workString(checked, "thread_id"), "project": workString(checked, "project"), "work_id": checked.ID}
+			data := map[string]any{"title": "Source unavailable", "source_state": "unavailable", "source_id": workString(checked, "source_id"), "thread_id": workString(checked, "thread_id"), "project": workString(checked, "project"), "work_id": checked.ID}
+			if v.Kind == "work" {
+				data["stage"] = workString(v, "stage")
+				data["can_cancel"] = v.Data["can_cancel"]
+				data["can_execute"] = false
+				data["active_operation"] = workString(v, "active_operation")
+			} else {
+				v.State = "source_unavailable"
+			}
+			v.Data = data
 			return workPublic(v)
 		}
 	}
@@ -287,4 +331,50 @@ func (s *Server) workViews(items []workRecord) []workRecord {
 		items[i] = s.workView(v)
 	}
 	return items
+}
+
+func contextWork(v workRecord) workRecord {
+	v = workPublic(v)
+	if v.Kind == "operation" {
+		delete(v.Data, "message")
+	}
+	return v
+}
+func (s *Server) workCursor(owner, root string, revision int64, offset int) string {
+	payload, _ := json.Marshal([]any{owner, root, revision, offset})
+	mac := hmac.New(sha256.New, []byte(s.cfg.JWTSecret))
+	mac.Write(payload)
+	return base64.RawURLEncoding.EncodeToString(payload) + "." + base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
+}
+func (s *Server) readWorkCursor(token, owner, root string, revision int64) (int, error) {
+	if len(token) > 512 {
+		return 0, ErrCredentials
+	}
+	left, right, ok := strings.Cut(token, ".")
+	if !ok {
+		return 0, ErrCredentials
+	}
+	payload, e := base64.RawURLEncoding.DecodeString(left)
+	if e != nil {
+		return 0, ErrCredentials
+	}
+	signature, e := base64.RawURLEncoding.DecodeString(right)
+	if e != nil {
+		return 0, ErrCredentials
+	}
+	mac := hmac.New(sha256.New, []byte(s.cfg.JWTSecret))
+	mac.Write(payload)
+	if !hmac.Equal(mac.Sum(nil), signature) {
+		return 0, ErrCredentials
+	}
+	var values []any
+	if json.Unmarshal(payload, &values) != nil || len(values) != 4 {
+		return 0, ErrCredentials
+	}
+	rev, ok := values[2].(float64)
+	offset, good := values[3].(float64)
+	if !ok || !good || values[0] != owner || values[1] != root || rev != float64(revision) || offset < 0 || offset > 20 || offset != float64(int(offset)) {
+		return 0, ErrConflict
+	}
+	return int(offset), nil
 }

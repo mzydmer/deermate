@@ -82,8 +82,9 @@ def test_revoked_version_and_disabled_cannot_admit_but_disabled_can_query(ledger
         continuous.load("alice", payload, writing=True)
     with sqlite3.connect(path) as db:
         db.execute("UPDATE users SET token_version=2")
+    assert continuous.load("alice", payload)["id"] == "operation"
     with pytest.raises(PermissionError):
-        continuous.load("alice", payload)
+        continuous.load("alice", payload, writing=True)
 
 
 def test_native_grant_rechecks_exact_version_project_and_instance(ledger):
@@ -226,6 +227,7 @@ async def test_native_two_rounds_and_lost_ack_query_never_replays(ledger, monkey
     submitter = Submitter()
     monkeypatch.setattr(session_middleware, "journal", lambda: journal)
     monkeypatch.setattr(runtime, "get_mcp_task_submitter", lambda: submitter)
+    monkeypatch.setattr(continuous, "native_profile", lambda owner, server: "coding")
     put("work", "work", {"thread_id": "execution", "project": "demo"}, "active")
     with sqlite3.connect(path) as db:
         db.execute(
@@ -276,3 +278,71 @@ async def test_native_two_rounds_and_lost_ack_query_never_replays(ledger, monkey
     assert result["known"] and len(submitter.submissions) == 2
     assert len({r["result"]["session_id"] for r in submitter.records}) == 1
     assert submitter.submissions[1].driver_data["submit_tool"] == "continue_task"
+
+
+async def test_bounded_provider_payload_and_no_sdk_retry(monkeypatch):
+    import httpx
+    from deerflow.models import factory
+    from langchain_openai import ChatOpenAI
+    from openai import RateLimitError
+
+    requests = []
+
+    def transport(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            429,
+            json={"error": {"message": "fixture rate limit", "type": "rate_limit_error"}},
+            headers={"retry-after": "0"},
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(transport)) as client:
+        model = ChatOpenAI(
+            model="fixture",
+            api_key="synthetic-only",
+            max_tokens=1024,
+            max_retries=0,
+            use_responses_api=False,
+            http_async_client=client,
+        )
+        monkeypatch.setattr(factory, "create_chat_model", lambda *args, **kwargs: model)
+        bounded = middleware.bounded_model("fixture")
+        with pytest.raises(RateLimitError):
+            await bounded.ainvoke("bounded synthetic request")
+    assert len(requests) == 1
+    assert requests[0].get("max_completion_tokens", requests[0].get("max_tokens")) == 1024
+
+
+@pytest.mark.parametrize(
+    "extra", [{"max_tokens": 99999}, {"max_completion_tokens": None}, {"max_output_tokens": 0}]
+)
+def test_provider_body_cannot_override_output_ceiling(monkeypatch, extra):
+    from deerflow.models import factory
+    from langchain_openai import ChatOpenAI
+
+    model = ChatOpenAI(
+        model="fixture",
+        api_key="synthetic-only",
+        max_tokens=1024,
+        max_retries=0,
+        use_responses_api=False,
+        extra_body=extra,
+    )
+    monkeypatch.setattr(factory, "create_chat_model", lambda *args, **kwargs: model)
+    with pytest.raises(PermissionError):
+        middleware.bounded_model("fixture")
+
+
+async def test_rejected_before_send_has_a_durable_read_only_receipt(ledger):
+    _, put = ledger
+    operation(put)
+    put("settings", "settings", {"enabled": False})
+    payload = {"operation_id": "operation", "nonce": "opaque"}
+    ctx = context()
+    ctx.agent_runs = None
+    first = await continuous.perform(payload, ctx)
+    assert first["known"] and first["status"] == "rejected"
+    # Re-enabling cannot replay a rejected operation with the same identity.
+    put("settings", "settings", {"enabled": True})
+    assert await continuous.query(payload, ctx) == first
+    assert await continuous.perform(payload, ctx) == first

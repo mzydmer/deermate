@@ -12,17 +12,19 @@ import (
 )
 
 type workRuntimeResult struct {
-	Accepted    bool   `json:"accepted"`
-	Known       bool   `json:"known"`
-	Run         string `json:"run_id"`
-	Task        string `json:"tracking_id"`
-	Thread      string `json:"thread_id"`
-	Incarnation string `json:"incarnation"`
-	Status      string `json:"status"`
-	Native      string `json:"native_session"`
-	Verified    bool   `json:"verified"`
-	Preview     string `json:"preview"`
-	Handoff     bool   `json:"handoff"`
+	CurrentHead       string `json:"current_head"`
+	Accepted          bool   `json:"accepted"`
+	HostModelRevision string `json:"host_model_revision"`
+	Known             bool   `json:"known"`
+	Run               string `json:"run_id"`
+	Task              string `json:"tracking_id"`
+	Thread            string `json:"thread_id"`
+	Incarnation       string `json:"incarnation"`
+	Status            string `json:"status"`
+	Native            string `json:"native_session"`
+	Verified          bool   `json:"verified"`
+	Preview           string `json:"preview"`
+	Handoff           bool   `json:"handoff"`
 }
 
 func (s *Server) RunContinuousQueue(ctx context.Context) {
@@ -143,7 +145,7 @@ func (s *Server) pumpRouter(ctx context.Context) {
 		if e != nil {
 			return e
 		}
-		op := newWork(inbox.Owner, "operation", "prepared", inbox.ID, map[string]any{"kind": "router", "thread_id": workString(router, "thread_id"), "message": workString(current, "text"), "inbox_id": current.ID, "origin": workString(current, "origin"), "work_id": workString(current, "work_id"), "event_id": workString(current, "event_id"), "event_revision": workInt(current, "event_revision"), "rule_id": workString(current, "rule_id"), "rule_revision": workInt(current, "rule_revision"), "_nonce": opaque(), "_user_version": workInt(current, "_user_version")})
+		op := newWork(inbox.Owner, "operation", "prepared", inbox.ID, map[string]any{"kind": "router", "thread_id": workString(router, "thread_id"), "message": workString(current, "text"), "inbox_id": current.ID, "origin": workString(current, "origin"), "work_id": workString(current, "work_id"), "event_batch": current.Data["event_batch"], "event_id": workString(current, "event_id"), "event_revision": workInt(current, "event_revision"), "rule_id": workString(current, "rule_id"), "rule_revision": workInt(current, "rule_revision"), "_nonce": opaque(), "_user_version": workInt(current, "_user_version")})
 		if e = workPut(tx, &op); e != nil {
 			return e
 		}
@@ -154,7 +156,7 @@ func (s *Server) pumpRouter(ctx context.Context) {
 }
 func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 	u, e := s.Store.User(snapshot.Owner)
-	if e != nil || u.Disabled || u.NeedsSetup || u.Role != "admin" || int64(u.Version) != workInt(snapshot, "_user_version") {
+	if e != nil || u.Disabled || u.NeedsSetup || u.Role != "admin" {
 		return
 	}
 	op := snapshot
@@ -169,6 +171,9 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 			if op.State != "prepared" {
 				return ErrConflict
 			}
+			if int64(u.Version) != workInt(op, "_user_version") {
+				return s.holdWork(tx, &op, "waiting_authorization")
+			}
 			if !s.cfg.ContinuousEnabled || !workEnabled(tx, u.ID) {
 				return ErrDisabled
 			}
@@ -176,18 +181,38 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 			if kind == "router" || kind == "assessor" {
 				if kind == "assessor" || workString(op, "origin") == "event" {
 					event, rule, err := assessmentInputs(tx, u.ID, workString(op, "event_id"), workString(op, "rule_id"))
-					if err != nil || event.Revision != workInt(op, "event_revision") || rule.Revision != workInt(op, "rule_revision") {
+					_, batchErr := assessmentBatch(tx, u.ID, event, rule, op.Data["event_batch"])
+					if batchErr != nil || err != nil || event.Revision != workInt(op, "event_revision") || rule.Revision != workInt(op, "rule_revision") {
 						op.State = "settled"
 						op.Data["status"] = "stale"
+						if kind == "router" {
+							inbox, e := workGet(tx, u.ID, "inbox", op.Parent)
+							if e != nil {
+								return e
+							}
+							inbox.State = "stale"
+							if e = workPut(tx, &inbox); e != nil {
+								return e
+							}
+						}
 						return workPut(tx, &op)
 					}
 				}
 				cfg, e := workGet(tx, u.ID, "settings", "settings")
 				if e != nil || workString(cfg, "model") == "" {
-					return ErrConflict
+					return s.holdWork(tx, &op, "waiting_model")
+				}
+				if kind == "assessor" {
+					var active int
+					if e = tx.QueryRow("SELECT count(*) FROM deermate_work_records WHERE kind='operation' AND state IN ('dispatching','acknowledged','uncertain') AND json_extract(data,'$.kind')='assessor' AND id!=?", op.ID).Scan(&active); e != nil {
+						return e
+					}
+					if active > 0 {
+						return s.holdWork(tx, &op, "waiting_assessor")
+					}
 				}
 				if e = workReserve(tx, u.ID, "model", 20, time.Now()); e != nil {
-					return e
+					return s.holdWork(tx, &op, "waiting_budget")
 				}
 				op.Data["model"] = workString(cfg, "model")
 				op.Data["prompt_version"] = "continuous-v1"
@@ -199,11 +224,23 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 				if kind != "cancel" && v.State != "active" {
 					return ErrConflict
 				}
+				if workBool(op, "automatic") {
+					decision, e := workGet(tx, u.ID, "decision", workString(v, "decision_id"))
+					if e != nil {
+						return e
+					}
+					event, rule, e := assessmentInputs(tx, u.ID, workString(decision, "event_id"), workString(decision, "rule_id"))
+					settings, se := workGet(tx, u.ID, "settings", "settings")
+					if e != nil || se != nil || rule.State != "auto" || event.Revision != workInt(decision, "event_revision") || rule.Revision != workInt(decision, "rule_revision") || workInt(settings, "native_budget") == 0 {
+						return s.holdWork(tx, &op, "waiting_policy")
+					}
+				}
 				g, e := s.workGrant(tx, u.ID, workString(op, "grant_id"), workString(op, "project"), kind)
 				if e != nil || g.Version != int(workInt(op, "grant_version")) || g.Instance != workString(op, "instance_id") {
-					return ErrConflict
+					return s.holdWork(tx, &op, "waiting_authorization")
 				}
 			}
+			delete(op.Data, "hold_reason")
 			op.State = "dispatching"
 			op.Data["sent_at"] = time.Now().Unix()
 			return workPut(tx, &op)
@@ -244,12 +281,33 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 			current.State = "uncertain"
 			current.Data["reason"] = "receipt_unconfirmed"
 			current.Data["next_action"] = "reconcile_original_operation"
+			if workString(current, "kind") == "router" {
+				inbox, e := workGet(tx, u.ID, "inbox", current.Parent)
+				if e == nil {
+					inbox.State = "uncertain"
+					if e = workPut(tx, &inbox); e != nil {
+						return e
+					}
+				}
+			} else if workString(current, "kind") != "assessor" {
+				target, e := workGet(tx, u.ID, "work", current.Parent)
+				if e == nil {
+					target.Data["stage"] = "uncertain"
+					target.Data["attention"] = "receipt_unconfirmed"
+					if e = workPut(tx, &target); e != nil {
+						return e
+					}
+				}
+			}
 			return workPut(tx, &current)
 		}
+		delete(current.Data, "reason")
+		delete(current.Data, "next_action")
 		current.State = "acknowledged"
 		current.Data["run_id"] = result.Run
 		current.Data["tracking_id"] = result.Task
 		current.Data["status"] = result.Status
+		current.Data["host_model_revision"] = result.HostModelRevision
 		kind := workString(current, "kind")
 		terminal := false
 		switch result.Status {
@@ -312,7 +370,12 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 			return workPut(tx, &target)
 		}
 		target.Data["stage"] = result.Status
-		target.Data["head"] = result.Task
+		delete(target.Data, "attention")
+		if result.Task != "" {
+			target.Data["head"] = result.Task
+		} else if result.Status == "rejected" && result.CurrentHead != "" {
+			target.Data["head"] = result.CurrentHead
+		}
 		if !terminal && result.Status == "input_required" && workString(current, "attention_notified") != "input_required" {
 			current.Data["attention_notified"] = "input_required"
 			if e = workPut(tx, &current); e != nil {
@@ -500,7 +563,11 @@ func (s *Server) workInternal(w http.ResponseWriter, r *http.Request) {
 				result = workPublic(v)
 				return err
 			}
-			v := newWork(owner, "operation", "prepared", event.ID, map[string]any{"kind": "assessor", "thread_id": "assessor-" + strings.ReplaceAll(uuid(), "-", ""), "event_id": event.ID, "event_revision": event.Revision, "rule_id": rule.ID, "rule_revision": rule.Revision, "source_generation": workInt(event, "source_generation"), "message": assessmentPrompt(event, rule), "_nonce": opaque(), "_user_version": u.Version})
+			batch, err := assessmentBatch(tx, owner, event, rule, op.Data["event_batch"])
+			if err != nil {
+				return err
+			}
+			v := newWork(owner, "operation", "prepared", event.ID, map[string]any{"kind": "assessor", "thread_id": "assessor-" + strings.ReplaceAll(uuid(), "-", ""), "event_id": event.ID, "event_revision": event.Revision, "rule_id": rule.ID, "rule_revision": rule.Revision, "source_generation": workInt(event, "source_generation"), "event_batch": op.Data["event_batch"], "message": batch, "_nonce": opaque(), "_user_version": u.Version})
 			if err = workPut(tx, &v); err != nil {
 				return err
 			}
@@ -543,4 +610,33 @@ func slicesWorkState(s string, states ...string) bool {
 		}
 	}
 	return false
+}
+
+// An unsent hold is distinct from an uncertain sent effect. Persist each reason
+// once, without invoking a model or repeatedly updating the same attention.
+func (s *Server) holdWork(tx *sql.Tx, op *workRecord, reason string) error {
+	if workString(*op, "hold_reason") == reason {
+		return nil
+	}
+	op.Data["hold_reason"] = reason
+	if err := workPut(tx, op); err != nil {
+		return err
+	}
+	if workString(*op, "kind") == "router" {
+		inbox, e := workGet(tx, op.Owner, "inbox", op.Parent)
+		if e != nil {
+			return e
+		}
+		inbox.State = reason
+		return workPut(tx, &inbox)
+	}
+	if workString(*op, "kind") == "assessor" {
+		return nil
+	}
+	target, e := workGet(tx, op.Owner, "work", op.Parent)
+	if e != nil {
+		return e
+	}
+	target.Data["stage"] = reason
+	return workPut(tx, &target)
 }

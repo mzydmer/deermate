@@ -1,0 +1,9 @@
+# Test-only: embeds a toy Worker in an isolated Gateway to verify the full path.
+# Production Workers run on user devices and do not need Git in the Gateway.
+ARG DEERMATE_GATEWAY_IMAGE
+FROM ${DEERMATE_GATEWAY_IMAGE}
+USER 0:0
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+USER 1000:1000

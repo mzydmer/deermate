@@ -164,6 +164,16 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
         if body.project_id not in settings.projects:
             raise HTTPException(404, "Project is not registered")
         grant_id = remote(request, "submit", project=body.project_id)
+        from .work_reports import authorize_work
+
+        authorize_work(
+            settings,
+            body.prompt,
+            body.project_id,
+            grant_id,
+            worker(request).store.instance_id,
+            "submit",
+        )
         policy = settings.policy(body.project_id)
         if grant_id:
             policy["authorization"] = grant_id
@@ -221,6 +231,16 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
     async def continue_task(task_id: str, body: ContinueTask, request: Request, response: Response):
         parent = worker(request).store.get(task_id)
         grant_id = remote(request, "continue", project=parent.project_id, task=parent)
+        from .work_reports import authorize_work
+
+        authorize_work(
+            settings,
+            body.message,
+            parent.project_id,
+            grant_id,
+            worker(request).store.instance_id,
+            "continue",
+        )
         if parent.project_id not in settings.projects:
             raise HTTPException(404, "Project is not registered")
         policy = settings.policy(parent.project_id)

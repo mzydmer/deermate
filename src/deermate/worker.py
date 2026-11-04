@@ -10,7 +10,7 @@ from .config import Settings
 from .models import ACTIVE, Conflict, State
 from .rpc import RpcError
 from .store import Store
-from .work_reports import is_work_prompt
+from .work_reports import authorize_work, is_work_prompt
 from .workspace import collect, prepare
 
 
@@ -74,6 +74,14 @@ class Worker:
                             grant_id,
                             "continue" if task.parent_task_id else "submit",
                             task.project_id,
+                        )
+                        authorize_work(
+                            self.settings,
+                            task.prompt,
+                            task.project_id,
+                            grant_id,
+                            self.store.instance_id,
+                            "continue" if task.parent_task_id else "submit",
                         )
                     except Conflict as error:
                         self.store.update(task.task_id, status=State.CANCELLED, error=str(error))
@@ -139,6 +147,14 @@ class Worker:
                 else self.settings.task_timeout_seconds
             )
             async with asyncio.timeout(timeout):
+                authorize_work(
+                    self.settings,
+                    task.prompt,
+                    task.project_id,
+                    task.policy.get("authorization"),
+                    self.store.instance_id,
+                    "continue" if task.parent_task_id else "submit",
+                )
                 await adapter.start()
                 if self.store.get(task_id).status == State.CANCELLING:
                     await adapter.interrupt()

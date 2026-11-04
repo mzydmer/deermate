@@ -83,7 +83,9 @@ def profile(runtime):
     )
     if op["data"].get("kind") not in {"router", "assessor"} or op["data"]["thread_id"] != thread:
         raise PermissionError("The role or conversation changed")
-    with gate(owner) as (db, _):
+    with gate(owner) as (db, user):
+        if op["data"]["_user_version"] != user["token_version"]:
+            raise PermissionError("The model admission authorization changed")
         settings = db.execute(
             "SELECT data FROM deermate_work_records "
             "WHERE owner=? AND kind='settings' AND id='settings'",
@@ -128,6 +130,25 @@ def bounded_model(name):
     # Some specialized clients drop the token bound or use a different protocol.
     if model.use_responses_api or model.__class__.__module__.startswith("deerflow.models.codex"):
         raise PermissionError("This provider needs a separately verified bounded adapter")
+
+    def unsafe_override(value):
+        if not isinstance(value, dict):
+            return False
+        for key, item in value.items():
+            if key in {"max_tokens", "max_completion_tokens", "max_output_tokens"}:
+                if type(item) is not int or not 1 <= item <= 1024:
+                    return True
+            if key == "max_retries" and item != 0:
+                return True
+            if isinstance(item, dict) and unsafe_override(item):
+                return True
+        return False
+
+    if unsafe_override(model.model_kwargs) or unsafe_override(model.extra_body):
+        raise PermissionError("The model profile overrides the output/retry ceiling")
+    for client in (model.root_client, model.root_async_client):
+        if client is not None and client.max_retries != 0:
+            raise PermissionError("The provider SDK retry policy is not bounded")
     return model
 
 

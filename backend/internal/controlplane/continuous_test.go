@@ -7,6 +7,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -17,7 +19,13 @@ func continuousFixture(t *testing.T, runtime http.HandlerFunc) (*Server, User, b
 	t.Helper()
 	db := testStore(t)
 	u := account(t, db, "secretary@example.com", "admin")
-	s := testServer(t, db, runtime)
+	s := testServer(t, db, func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/capabilities") {
+			respond(w, 200, map[string]any{"contract_version": 1, "bounded": true})
+			return
+		}
+		runtime(w, r)
+	})
 	if _, err := db.DB.Exec("CREATE TABLE IF NOT EXISTS mcp_tasks(id TEXT PRIMARY KEY,user_id TEXT,thread_id TEXT,thread_incarnation TEXT,status TEXT,created_at TEXT)"); err != nil {
 		t.Fatal(err)
 	}
@@ -197,6 +205,29 @@ func TestContinuousOwnerFTSAndReferenceBounds(t *testing.T) {
 		t.Fatal("reference privacy", w.Body.String())
 	}
 }
+
+func TestContinuousFollowupRequiresFreshValidation(t *testing.T) {
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {})
+	v := fixtureWork(t, s, u, "completed")
+	err := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		v.Data["head"] = "previous-tracking"
+		v.Data["stage"] = "completed"
+		v.Data["verified"] = true
+		v.Data["preview"] = "Previous successful round"
+		if err := workPut(tx, &v); err != nil {
+			return err
+		}
+		_, err := s.prepareWorkOperation(tx, u, v, "followup", "next step", "next", false)
+		return err
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	current, err := workGet(s.Store.DB, u.ID, "work", v.ID)
+	if err != nil || workBool(current, "verified") || workString(current, "preview") != "" || workString(current, "head") != "previous-tracking" {
+		t.Fatal("new round reused old validation or lost its original head", current, err)
+	}
+}
 func TestContinuousBaselineObserveAndThreadBypass(t *testing.T) {
 	var calls atomic.Int32
 	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { calls.Add(1) })
@@ -254,12 +285,73 @@ func TestContinuousBaselineObserveAndThreadBypass(t *testing.T) {
 	}
 }
 
+func TestContinuousRevokedSourceCannotReindexLateResult(t *testing.T) {
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {})
+	err := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		src := newWork(u.ID, "source", "enabled", "", map[string]any{"generation": 1})
+		if err := workPut(tx, &src); err != nil {
+			return err
+		}
+		v := newWork(u.ID, "work", "active", "", map[string]any{"source_id": src.ID, "source_generation": 1, "title": "private source"})
+		if err := workPut(tx, &v); err != nil {
+			return err
+		}
+		table := "deermate_work_fts_" + digest(u.ID)[:24]
+		count := func(want int) error {
+			var n int
+			if err := tx.QueryRow("SELECT count(*) FROM " + table).Scan(&n); err != nil {
+				return err
+			}
+			if n != want {
+				t.Errorf("indexed records = %d; want %d", n, want)
+			}
+			return nil
+		}
+		if err := count(1); err != nil {
+			return err
+		}
+		src.Data["error"] = "unreadable"
+		if err := workPut(tx, &src); err != nil {
+			return err
+		}
+		v.Data["stage"] = "completed"
+		if err := workPut(tx, &v); err != nil {
+			return err
+		}
+		if err := count(0); err != nil {
+			return err
+		}
+		src.Data["error"] = ""
+		if err := workPut(tx, &src); err != nil {
+			return err
+		}
+		if err := count(1); err != nil {
+			return err
+		}
+		src.State = "disabled"
+		if err := workPut(tx, &src); err != nil {
+			return err
+		}
+		if err := workPut(tx, &v); err != nil {
+			return err
+		}
+		return count(0)
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 type continuousHTTP func(*http.Request) (*http.Response, error)
 
 func (f continuousHTTP) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
 func TestContinuousGitHubHTTPBoundsAndCursorFailure(t *testing.T) {
 	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { t.Error("poll called model") })
-	src := workRecord{ID: "github", Kind: "source", Owner: u.ID, State: "enabled", Data: map[string]any{"generation": 1, "baseline": true, "cursor": "2026-11-04T01:00:00Z"}}
+	s.cfg.GitHubSecretHome = t.TempDir()
+	if e := os.WriteFile(filepath.Join(s.cfg.GitHubSecretHome, "github-read-token"), []byte("synthetic-read-token"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	src := workRecord{ID: "github", Kind: "source", Owner: u.ID, State: "enabled", Data: map[string]any{"repository": "fixture/project", "generation": 1, "baseline": true, "cursor": "2026-11-04T01:00:00Z"}}
 	if e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error { return workPut(tx, &src) }); e != nil {
 		t.Fatal(e)
 	}
@@ -342,5 +434,327 @@ func TestContinuousRuleChangeInvalidatesQueuedEventAndSourcePreview(t *testing.T
 	requireStatus(t, w, 200)
 	if strings.Contains(w.Body.String(), "OLD_SOURCE_PREVIEW") {
 		t.Fatal("disabled source remained searchable")
+	}
+}
+
+func TestContinuousBatchCoalescesSameThreadAndKeepsScope(t *testing.T) {
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { t.Error("ingestion invoked a model") })
+	src := workRecord{ID: "github", Kind: "source", Owner: u.ID, State: "enabled", Data: map[string]any{"generation": 1, "baseline": true}}
+	rule := newWork(u.ID, "rule", "observe", "", map[string]any{"source_id": "github", "instruction": "Watch changes"})
+	if e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		if e := workPut(tx, &src); e != nil {
+			return e
+		}
+		return workPut(tx, &rule)
+	}); e != nil {
+		t.Fatal(e)
+	}
+	objects := []struct {
+		obj  githubObject
+		kind string
+	}{}
+	for i := 1; i <= 3; i++ {
+		objects = append(objects, struct {
+			obj  githubObject
+			kind string
+		}{githubObject{ID: int64(i), URL: "https://api.github.com/repos/fixture/project/issues/7", Body: "bounded reference", Updated: "2026-11-04T01:00:00Z"}, "comment"})
+	}
+	if e := s.ingestGitHub(context.Background(), src, objects, "", "2026-11-04T01:01:00Z"); e != nil {
+		t.Fatal(e)
+	}
+	inbox, _ := s.Store.workList(u.ID, "inbox", "router", 0, 20)
+	if len(inbox) != 1 {
+		t.Fatal("same Thread was fanned out", len(inbox))
+	}
+	refs, _ := inbox[0].Data["event_batch"].([]any)
+	if len(refs) != 3 {
+		t.Fatal("batch lost events", refs)
+	}
+	s.pumpRouter(context.Background())
+	ops, _ := s.Store.workList(u.ID, "operation", "", 0, 20)
+	if len(ops) != 1 {
+		t.Fatal("batch produced several Router operations")
+	}
+	if e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		event, rule, e := assessmentInputs(tx, u.ID, workString(inbox[0], "event_id"), rule.ID)
+		if e != nil {
+			return e
+		}
+		prompt, e := assessmentBatch(tx, u.ID, event, rule, inbox[0].Data["event_batch"])
+		if e != nil {
+			return e
+		}
+		if len(prompt) > 32768 {
+			t.Fatal("unbounded batch")
+		}
+		return nil
+	}); e != nil {
+		t.Fatal(e)
+	}
+}
+
+func TestContinuousCancelBeforeDispatchAndProtocolFailClosed(t *testing.T) {
+	s, u, b := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { t.Error("locally cancelled operation reached runtime") })
+	v := fixtureWork(t, s, u, "cancel")
+	var op workRecord
+	e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		var e error
+		op, e = s.prepareWorkOperation(tx, u, v, "execute", "fix", "execute", false)
+		return e
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	v, _ = workGet(s.Store.DB, u.ID, "work", v.ID)
+	body, _ := json.Marshal(workBody{Operation: "cancel", Action: "cancel", Expected: v.Revision})
+	w := request(s, b, "POST", "/api/me/work-orders/"+v.ID+"/actions", string(body), map[string]string{"X-Expected-User-Id": u.ID})
+	requireStatus(t, w, 200)
+	s.deliverWork(context.Background(), op)
+	original, _ := workGet(s.Store.DB, u.ID, "operation", op.ID)
+	if original.State != "settled" || workString(original, "status") != "cancelled_before_dispatch" {
+		t.Fatal("local cancellation not retained")
+	}
+	_, e = s.Store.DB.Exec("UPDATE deermate_agent_devices SET data=json_remove(data,'$.continuous_protocol')")
+	if e != nil {
+		t.Fatal(e)
+	}
+	e = s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		_, e := s.prepareWorkOperation(tx, u, v, "execute", "fix", "new", false)
+		return e
+	})
+	if !errors.Is(e, ErrConflict) {
+		t.Fatal("old Worker accepted continuous work", e)
+	}
+}
+
+func TestContinuousAutoBudgetAndRuleRecheck(t *testing.T) {
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {})
+	src := workRecord{ID: "github", Kind: "source", Owner: u.ID, State: "enabled", Data: map[string]any{"generation": 1, "baseline": true}}
+	rule := newWork(u.ID, "rule", "auto", "", map[string]any{"source_id": "github", "project": "demo", "grant_id": "grant", "native_budget": 1})
+	event := newWork(u.ID, "event", "candidate", "", map[string]any{"source_id": "github", "source_generation": 1, "thread_key": "github:fixture/project:8"})
+	var d workRecord
+	e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		for _, v := range []*workRecord{&src, &rule, &event} {
+			if e := workPut(tx, v); e != nil {
+				return e
+			}
+		}
+		d = newWork(u.ID, "decision", "suggested", "", map[string]any{"event_id": event.ID, "event_revision": event.Revision, "source_id": src.ID, "source_generation": 1, "rule_id": rule.ID, "rule_revision": rule.Revision, "goal": "Fix the authorized issue", "title": "Fixture", "scope": "in_scope", "project": "demo", "grant_id": "grant"})
+		if e := workPut(tx, &d); e != nil {
+			return e
+		}
+		_, e := s.acceptWorkDecision(tx, u, d, "", "", true)
+		return e
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	var used int
+	_ = s.Store.DB.QueryRow("SELECT used FROM deermate_work_budget WHERE kind='native'").Scan(&used)
+	if used != 1 {
+		t.Fatal("auto did not reserve quota")
+	}
+	d, _ = workGet(s.Store.DB, u.ID, "decision", d.ID)
+	if d.State != "accepted" {
+		t.Fatal("auto did not retain decision")
+	}
+	e = s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error { rule.State = "off"; return workPut(tx, &rule) })
+	if e != nil {
+		t.Fatal(e)
+	}
+	e = s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error { _, _, e := assessmentInputs(tx, u.ID, event.ID, rule.ID); return e })
+	if !errors.Is(e, ErrConflict) {
+		t.Fatal("disabled rule accepted", e)
+	}
+	now := time.Date(2026, 11, 4, 23, 59, 59, 0, time.UTC)
+	e = s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		if e := workReserve(tx, u.ID, "boundary", 1, now); e != nil {
+			return e
+		}
+		return workReserve(tx, u.ID, "boundary", 1, now.Add(time.Second))
+	})
+	if e != nil {
+		t.Fatal("UTC boundary did not reset", e)
+	}
+}
+
+func TestContinuousAssessorHasOneSlotAndInputDoesNotOccupyRouter(t *testing.T) {
+	var admissions atomic.Int32
+	s, u, b := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {
+		admissions.Add(1)
+		respond(w, 200, map[string]any{"known": true, "status": "running", "run_id": "assessment"})
+	})
+	src := workRecord{ID: "github", Kind: "source", Owner: u.ID, State: "enabled", Data: map[string]any{"generation": 1, "baseline": true}}
+	rule := newWork(u.ID, "rule", "observe", "", map[string]any{"source_id": "github"})
+	event := newWork(u.ID, "event", "candidate", "", map[string]any{"source_id": "github", "source_generation": 1})
+	ops := []workRecord{}
+	e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		for _, v := range []*workRecord{&src, &rule, &event} {
+			if e := workPut(tx, v); e != nil {
+				return e
+			}
+		}
+		for range 2 {
+			op := newWork(u.ID, "operation", "prepared", event.ID, map[string]any{"kind": "assessor", "thread_id": "assessor-" + uuid(), "event_id": event.ID, "event_revision": event.Revision, "rule_id": rule.ID, "rule_revision": rule.Revision, "_user_version": u.Version, "_nonce": opaque()})
+			if e := workPut(tx, &op); e != nil {
+				return e
+			}
+			ops = append(ops, op)
+		}
+		return nil
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	s.deliverWork(context.Background(), ops[0])
+	s.deliverWork(context.Background(), ops[1])
+	if admissions.Load() != 1 {
+		t.Fatal("several assessments admitted concurrently", admissions.Load())
+	}
+	second, _ := workGet(s.Store.DB, u.ID, "operation", ops[1].ID)
+	if second.State != "prepared" || workString(second, "hold_reason") != "waiting_assessor" {
+		t.Fatal("assessment slot not held", second.State)
+	}
+	w := request(s, b, "POST", "/api/me/router/messages", `{"operation_id":"during-assessment","text":"Another owner question"}`, map[string]string{"X-Expected-User-Id": u.ID})
+	requireStatus(t, w, 200)
+	s.pumpRouter(context.Background())
+	var router int
+	_ = s.Store.DB.QueryRow("SELECT count(*) FROM deermate_work_records WHERE kind='operation' AND json_extract(data,'$.kind')='router'").Scan(&router)
+	if router != 1 {
+		t.Fatal("assessment blocked Router admission")
+	}
+}
+
+func TestContinuousRejectedContinuationPreservesHeadAndInputRetainsSlot(t *testing.T) {
+	var status atomic.Value
+	status.Store("rejected")
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {
+		value := status.Load().(string)
+		task := ""
+		if value != "rejected" {
+			task = "new-head"
+		}
+		respond(w, 200, map[string]any{"known": true, "status": value, "tracking_id": task})
+	})
+	work := fixtureWork(t, s, u, "continue")
+	work.Data["head"] = "old-head"
+	var op workRecord
+	e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		if e := workPut(tx, &work); e != nil {
+			return e
+		}
+		var e error
+		op, e = s.prepareWorkOperation(tx, u, work, "followup", "Continue", "rejected", false)
+		return e
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	s.deliverWork(context.Background(), op)
+	work, _ = workGet(s.Store.DB, u.ID, "work", work.ID)
+	if workString(work, "head") != "old-head" || workString(work, "active_operation") != "" {
+		t.Fatal("rejection erased the existing head")
+	}
+	status.Store("input_required")
+	e = s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		var e error
+		op, e = s.prepareWorkOperation(tx, u, work, "followup", "Continue", "input", false)
+		return e
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	s.deliverWork(context.Background(), op)
+	saved, _ := workGet(s.Store.DB, u.ID, "operation", op.ID)
+	work, _ = workGet(s.Store.DB, u.ID, "work", work.ID)
+	if saved.State != "acknowledged" || workString(work, "active_operation") != op.ID {
+		t.Fatal("waiting Native input released its execution slot")
+	}
+}
+
+func TestContinuousContextCursorIsOwnerAndRevisionBound(t *testing.T) {
+	s, u, b := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {})
+	work := fixtureWork(t, s, u, "cursor")
+	e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		event := newWork(u.ID, "event", "assessed", "", map[string]any{"title": "bounded"})
+		if e := workPut(tx, &event); e != nil {
+			return e
+		}
+		work.Data["refs"] = []any{map[string]any{"kind": "event", "id": event.ID, "revision": event.Revision}}
+		return workPut(tx, &work)
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	path := "/api/me/work-orders/" + work.ID + "/context?limit=1"
+	w := request(s, b, "GET", path, "", nil)
+	requireStatus(t, w, 200)
+	var page struct {
+		Cursor string       `json:"next_cursor"`
+		Items  []workRecord `json:"items"`
+	}
+	if json.Unmarshal(w.Body.Bytes(), &page) != nil || len(page.Items) != 1 || page.Cursor == "" {
+		t.Fatal("missing continuation", w.Body.String())
+	}
+	w = request(s, b, "GET", path+"&cursor="+page.Cursor, "", nil)
+	requireStatus(t, w, 200)
+	w = request(s, b, "GET", path+"&cursor="+page.Cursor+"tampered", "", nil)
+	requireStatus(t, w, 422)
+	e = s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error { work.Data["title"] = "changed"; return workPut(tx, &work) })
+	if e != nil {
+		t.Fatal(e)
+	}
+	w = request(s, b, "GET", path+"&cursor="+page.Cursor, "", nil)
+	requireStatus(t, w, 409)
+}
+
+func TestContinuousRepositoryChangeDisablesSourceAndAutoRules(t *testing.T) {
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { t.Error("configuration change invoked runtime") })
+	src := workRecord{ID: "github", Kind: "source", Owner: u.ID, State: "enabled", Data: map[string]any{"repository": "fixture/project", "generation": 1, "baseline": true}}
+	rule := newWork(u.ID, "rule", "auto", "", map[string]any{"source_id": "github", "project": "demo", "grant_id": "grant"})
+	e := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		if e := workPut(tx, &src); e != nil {
+			return e
+		}
+		return workPut(tx, &rule)
+	})
+	if e != nil {
+		t.Fatal(e)
+	}
+	s.cfg.GitHubRepository = "different/project"
+	if e = s.syncWorkSources(); e != nil {
+		t.Fatal(e)
+	}
+	src, _ = workGet(s.Store.DB, u.ID, "source", src.ID)
+	rule, _ = workGet(s.Store.DB, u.ID, "rule", rule.ID)
+	if src.State != "disabled" || workInt(src, "generation") != 2 || rule.State != "observe" || rule.Revision != 2 {
+		t.Fatal("old auto scope survived repository change")
+	}
+}
+
+func TestContinuousExpiringGrantRemainsValidUntilDeadline(t *testing.T) {
+	s, u, _ := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) {})
+	g, e := s.agentGrant("grant", u.ID)
+	if e != nil {
+		t.Fatal(e)
+	}
+	deadline := time.Now().Add(time.Minute).Unix()
+	g.Active.ExpiresAt = &deadline
+	g.Active.Duration = "fixed"
+	raw, _ := json.Marshal(g)
+	if _, e = s.Store.DB.Exec("UPDATE deermate_agent_grants SET data=? WHERE id=?", string(raw), g.ID); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = s.workGrant(s.Store.DB, u.ID, g.ID, "demo", "execute"); e != nil {
+		t.Fatal("valid short grant rejected", e)
+	}
+	deadline = time.Now().Add(-time.Second).Unix()
+	raw, _ = json.Marshal(g)
+	_, e = s.Store.DB.Exec("UPDATE deermate_agent_grants SET data=? WHERE id=?", string(raw), g.ID)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = s.workGrant(s.Store.DB, u.ID, g.ID, "demo", "execute"); !errors.Is(e, ErrConflict) {
+		t.Fatal("expired grant admitted", e)
 	}
 }

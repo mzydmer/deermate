@@ -174,3 +174,46 @@ async def test_expiry_respects_running_task_policy(settings, expiry_policy):
         assert result.session_id
     finally:
         await worker.close()
+
+
+def test_continuous_assignment_cannot_silently_use_newer_grant_or_device(settings):
+    from deermate.work_reports import authorize_work, work_prompt
+
+    state = grant_state(settings)
+    prompt = work_prompt(
+        "work",
+        "operation",
+        "demo",
+        "bounded",
+        {"grant_id": "fixture", "version": 1, "instance_id": "device-one"},
+    )
+    authorize_work(settings, prompt, "demo", "fixture", "device-one", "submit")
+    state["grants"]["fixture"]["version"] = 2
+    private_save(settings.state_dir / "remote-authorizations.json", state)
+    with pytest.raises(Conflict):
+        authorize_work(settings, prompt, "demo", "fixture", "device-one", "submit")
+    with pytest.raises(Conflict):
+        authorize_work(settings, prompt, "demo", "fixture", "device-two", "submit")
+
+
+def test_continuous_relay_selects_only_frozen_grant_when_projects_overlap(tmp_path):
+    from deermate.bridge import BridgeError
+    from deermate.relay import RelayDirectoryBridge
+
+    grants = [
+        {"id": "one", "version": 1, "instance_id": "a" * 32, "projects": ["demo"]},
+        {"id": "two", "version": 2, "instance_id": "b" * 32, "projects": ["demo"]},
+    ]
+    path = tmp_path / "relay.json"
+    private_save(path, {"grants": grants})
+    relay = RelayDirectoryBridge(path)
+    with pytest.raises(BridgeError):
+        relay.target(project="demo")
+    selected, native = relay.target(
+        project="demo", authorization={"grant_id": "two", "version": 2, "instance_id": "b" * 32}
+    )
+    assert selected["id"] == "two" and native is None
+    with pytest.raises(BridgeError):
+        relay.target(
+            project="demo", authorization={"grant_id": "two", "version": 1, "instance_id": "b" * 32}
+        )

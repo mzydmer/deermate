@@ -20,6 +20,8 @@ type Config = {
   config: RecordView;
   module_available: boolean;
   github_configured: boolean;
+  reserved?: { model: number; native: number };
+  budget_day?: string;
 };
 type Router = { session: RecordView; items: RecordView[] };
 const str = (v: RecordView, k: string) =>
@@ -79,6 +81,7 @@ export function ContinuousSecretary({
     queryKey: [...prefix, "config"],
     queryFn: () => api<Config>("continuous-config"),
     enabled: canRun,
+    refetchInterval: canRun ? 10000 : false,
   });
   const enabled = config.data?.config.data.enabled === true;
   const works = useQuery({
@@ -143,9 +146,28 @@ export function ContinuousSecretary({
     }
   }
   const status = (v: RecordView) => {
-    const raw = str(v, "stage") || v.state;
+    const raw =
+      v.kind === "work" && ["paused", "closed"].includes(v.state)
+        ? v.state
+        : str(v, "stage") || v.state;
     const labels: Record<string, [string, string]> = {
       ready: ["待执行", "Ready"],
+      waiting_budget: [
+        "今日后台额度已用尽",
+        "Daily background budget exhausted",
+      ],
+      waiting_model: ["等待模型配置", "Model configuration required"],
+      waiting_assessor: ["研判排队中", "Assessment queued"],
+      waiting_policy: [
+        "当前规则已暂停派发",
+        "Dispatch paused by current policy",
+      ],
+      waiting_authorization: [
+        "等待设备连接或有效授权",
+        "Device connection or current grant required",
+      ],
+      rejected: ["接纳前检查未通过", "Rejected before execution"],
+      stale: ["依据已变化，未派发", "Source changed; not dispatched"],
       queued: ["等待接纳", "Queued"],
       pending: ["待处理", "Pending"],
       active: ["进行中", "Active"],
@@ -158,7 +180,7 @@ export function ContinuousSecretary({
         "Receipt unknown; inspect original operation",
       ],
       settled: ["已收到回执", "Receipt received"],
-      paused: ["已暂停", "Paused"],
+      paused: ["已暂停派单", "Dispatch paused"],
       closed: ["已结束", "Closed"],
       completed: ["执行结束", "Execution finished"],
       verification_required: ["执行结束，尚需验证", "Verification required"],
@@ -257,6 +279,14 @@ export function ContinuousSecretary({
               "Use an ID from model settings. Background limit: 20 requests per UTC day, 1024 output tokens per request. V1 requires the bounded OpenAI-compatible client.",
             )}
           </p>
+          {config.data?.reserved && (
+            <p className="dm-small dm-muted">
+              {text("今天已预留：后台请求", "Reserved today: model requests")}{" "}
+              {config.data.reserved.model}/20 ·{" "}
+              {text("自动执行", "automatic rounds")}{" "}
+              {config.data.reserved.native} · {config.data.budget_day} UTC
+            </p>
+          )}
           <button
             className="dm-button"
             disabled={
@@ -273,8 +303,8 @@ export function ContinuousSecretary({
         {enabled && config.data && (
           <label className="dm-continuous-budget">
             {text(
-              "自动 Native 轮次/UTC 日",
-              "Automatic Native rounds / UTC day",
+              "自动执行轮次/UTC 日",
+              "Automatic execution rounds / UTC day",
             )}
             <select
               value={Number(config.data.config.data.native_budget ?? 0)}
@@ -451,6 +481,14 @@ export function ContinuousSecretary({
             {current?.id === v.id && (
               <div className="dm-work-detail">
                 <p>{str(v, "preview")}</p>
+                {str(v, "source_state") === "unavailable" && (
+                  <p className="dm-small dm-muted">
+                    {text(
+                      "来源暂不可读，已隐藏摘要。可继续处理已有工作的停止或关闭。",
+                      "Source unavailable; summaries are hidden. Existing work can still be stopped or closed.",
+                    )}
+                  </p>
+                )}
                 <p className="dm-small">
                   Codex · {str(v, "project")} ·{" "}
                   {str(v, "incarnation") ? (
@@ -568,7 +606,8 @@ export function ContinuousSecretary({
           {sources.data?.items.map((src) => (
             <div key={src.id}>
               <p>
-                {str(src, "repository") ||
+                {str(src, "configured_repository") ||
+                  str(src, "repository") ||
                   text("部署尚未指定仓库", "No repository configured")}{" "}
                 · {src.state}
               </p>

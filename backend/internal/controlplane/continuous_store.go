@@ -34,6 +34,7 @@ func (s *Store) initializeContinuous() error {
  CREATE INDEX IF NOT EXISTS deermate_work_active ON deermate_work_records(kind,state,updated,owner);
  CREATE INDEX IF NOT EXISTS deermate_work_owner ON deermate_work_records(owner,kind,updated,id);
  CREATE INDEX IF NOT EXISTS deermate_work_parent ON deermate_work_records(owner,parent,kind,state);
+ CREATE INDEX IF NOT EXISTS deermate_work_event_decision ON deermate_work_records(owner,kind,json_extract(data,'$.event_id'));
  CREATE TABLE IF NOT EXISTS deermate_work_keys(owner TEXT NOT NULL,kind TEXT NOT NULL,key TEXT NOT NULL,record TEXT NOT NULL,
  PRIMARY KEY(owner,kind,key));
  CREATE TABLE IF NOT EXISTS deermate_work_budget(owner TEXT NOT NULL,day TEXT NOT NULL,kind TEXT NOT NULL,used INTEGER NOT NULL,
@@ -77,6 +78,11 @@ func newWork(owner, kind, state, parent string, data map[string]any) workRecord 
 func workHash(v any) string { b, _ := json.Marshal(v); return digest(string(b)) }
 
 func workPut(tx *sql.Tx, v *workRecord) error {
+	restoreSourceIndex := false
+	if v.Kind == "source" && v.Revision > 0 && v.State == "enabled" && workString(*v, "error") == "" {
+		old, e := workGet(tx, v.Owner, v.Kind, v.ID)
+		restoreSourceIndex = e == nil && workString(old, "error") != "" && workInt(old, "generation") == workInt(*v, "generation")
+	}
 	b, err := json.Marshal(v.Data)
 	if err != nil {
 		return err
@@ -118,7 +124,12 @@ func workPut(tx *sql.Tx, v *workRecord) error {
 		if _, err = tx.Exec("DELETE FROM "+table+" WHERE id=? AND kind=?", v.ID, v.Kind); err != nil {
 			return err
 		}
-		if v.State != "removed" && v.State != "unavailable" && v.State != "superseded" {
+		indexable := v.State != "removed" && v.State != "unavailable" && v.State != "superseded"
+		if source := workString(*v, "source_id"); source != "" {
+			src, e := workGet(tx, v.Owner, "source", source)
+			indexable = indexable && e == nil && src.State == "enabled" && workString(src, "error") == "" && workInt(*v, "source_generation") == workInt(src, "generation")
+		}
+		if indexable {
 			_, err = tx.Exec("INSERT INTO "+table+"(id,kind,title,body) VALUES(?,?,?,?)", v.ID, v.Kind, workString(*v, "title"), workString(*v, "goal")+" "+workString(*v, "preview"))
 		}
 	}
@@ -130,6 +141,16 @@ func workPut(tx *sql.Tx, v *workRecord) error {
 		}
 		if exists > 0 {
 			_, err = tx.Exec("DELETE FROM "+table+" WHERE id IN (SELECT id FROM deermate_work_records WHERE owner=? AND json_extract(data,'$.source_id')=?)", v.Owner, v.ID)
+		}
+	}
+	if restoreSourceIndex {
+		table := "deermate_work_fts_" + digest(v.Owner)[:24]
+		var exists int
+		if e := tx.QueryRow("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", table).Scan(&exists); e != nil {
+			return e
+		}
+		if exists > 0 {
+			_, err = tx.Exec("INSERT INTO "+table+"(id,kind,title,body) SELECT id,kind,json_extract(data,'$.title'),coalesce(json_extract(data,'$.goal'),'')||' '||coalesce(json_extract(data,'$.preview'),'') FROM deermate_work_records WHERE owner=? AND kind IN ('event','work') AND state NOT IN ('removed','unavailable','superseded') AND json_extract(data,'$.source_id')=? AND json_extract(data,'$.source_generation')=? LIMIT 10020", v.Owner, v.ID, workInt(*v, "generation"))
 		}
 	}
 	return err

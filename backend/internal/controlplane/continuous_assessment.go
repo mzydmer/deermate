@@ -26,6 +26,18 @@ func assessmentInputs(tx *sql.Tx, owner, eventID, ruleID string) (workRecord, wo
 	if e != nil || src.State != "enabled" || workString(src, "error") != "" || workInt(event, "source_generation") != workInt(src, "generation") || rule.State == "off" || workString(rule, "source_id") != src.ID || event.State == "baseline" || event.State == "removed" || event.State == "unavailable" {
 		return event, rule, ErrConflict
 	}
+	kinds, _ := rule.Data["event_kinds"].([]any)
+	if len(kinds) > 0 {
+		allowed := false
+		for _, kind := range kinds {
+			if kind == workString(event, "event_kind") {
+				allowed = true
+			}
+		}
+		if !allowed {
+			return event, rule, ErrConflict
+		}
+	}
 	if key := workString(event, "object_key"); key != "" {
 		id, err := workExisting(tx, owner, "github_object", key)
 		if err != nil || id != event.ID {
@@ -40,7 +52,8 @@ func assessmentPrompt(event, rule workRecord) string {
 }
 func (s *Server) settleAssessment(tx *sql.Tx, u User, op workRecord, result workRuntimeResult) error {
 	event, rule, e := assessmentInputs(tx, u.ID, workString(op, "event_id"), workString(op, "rule_id"))
-	if e != nil || event.Revision != workInt(op, "event_revision") || rule.Revision != workInt(op, "rule_revision") {
+	_, batchErr := assessmentBatch(tx, u.ID, event, rule, op.Data["event_batch"])
+	if batchErr != nil || e != nil || event.Revision != workInt(op, "event_revision") || rule.Revision != workInt(op, "rule_revision") {
 		op.Data["assessment_state"] = "stale"
 		return workPut(tx, &op)
 	}
@@ -63,7 +76,7 @@ func (s *Server) settleAssessment(tx *sql.Tx, u User, op workRecord, result work
 	if state == "propose" {
 		state = "suggested"
 	}
-	decision := newWork(u.ID, "decision", state, "", map[string]any{"title": answer.Title, "goal": answer.Goal, "rationale": answer.Rationale, "scope": answer.Scope, "source_id": workString(event, "source_id"), "source_generation": workInt(event, "source_generation"), "event_id": event.ID, "event_revision": event.Revision, "rule_id": rule.ID, "rule_revision": rule.Revision, "model": workString(op, "model"), "prompt_version": workString(op, "prompt_version"), "operation_id": op.ID, "project": workString(rule, "project"), "grant_id": workString(rule, "grant_id"), "refs": []any{map[string]any{"kind": "event", "id": event.ID}, map[string]any{"kind": "rule", "id": rule.ID}}})
+	decision := newWork(u.ID, "decision", state, "", map[string]any{"title": answer.Title, "goal": answer.Goal, "rationale": answer.Rationale, "scope": answer.Scope, "source_id": workString(event, "source_id"), "source_generation": workInt(event, "source_generation"), "event_id": event.ID, "event_revision": event.Revision, "rule_id": rule.ID, "rule_revision": rule.Revision, "model": workString(op, "model"), "prompt_version": workString(op, "prompt_version"), "host_model_revision": result.HostModelRevision, "operation_id": op.ID, "project": workString(rule, "project"), "grant_id": workString(rule, "grant_id"), "refs": []any{map[string]any{"kind": "event", "id": event.ID}, map[string]any{"kind": "rule", "id": rule.ID}}})
 	if e = workPut(tx, &decision); e != nil {
 		return e
 	}
@@ -168,6 +181,21 @@ func (s *Server) acceptWorkDecision(tx *sql.Tx, u User, d workRecord, project, g
 		work.Data["thread_key"] = workString(event, "thread_key")
 		work.Data["is_pr"] = workBool(event, "is_pr")
 		work.Data["number"] = workInt(event, "number")
+		if oldID, err := workExisting(tx, u.ID, "subscription", workString(event, "thread_key")); err == nil {
+			old, err := workGet(tx, u.ID, "work", oldID)
+			if err != nil || workString(old, "active_operation") != "" || (old.State != "closed" && workInt(old, "source_generation") == workInt(event, "source_generation")) {
+				return d, ErrConflict
+			}
+			if old.State != "closed" {
+				old.State = "paused"
+				if err = workPut(tx, &old); err != nil {
+					return d, err
+				}
+			}
+			if _, err = tx.Exec("DELETE FROM deermate_work_keys WHERE owner=? AND kind='subscription' AND key=?", u.ID, workString(event, "thread_key")); err != nil {
+				return d, err
+			}
+		}
 		if e = workUnique(tx, u.ID, "subscription", workString(event, "thread_key"), work.ID); e != nil {
 			return d, e
 		}
@@ -211,4 +239,44 @@ func (s *Server) pumpAuto(ctx context.Context) {
 		_, e = s.acceptWorkDecision(tx, u, v, "", "", true)
 		return e
 	})
+}
+
+func assessmentBatch(tx *sql.Tx, owner string, event, rule workRecord, raw any) (string, error) {
+	refs, _ := raw.([]any)
+	if len(refs) == 0 {
+		prompt := assessmentPrompt(event, rule)
+		if len(prompt) > 32768 {
+			return "", ErrCredentials
+		}
+		return prompt, nil
+	}
+	if len(refs) > 20 {
+		return "", ErrCredentials
+	}
+	cards := []any{}
+	for _, value := range refs {
+		ref, ok := value.(map[string]any)
+		if !ok {
+			return "", ErrCredentials
+		}
+		id, _ := ref["id"].(string)
+		item, _, e := assessmentInputs(tx, owner, id, rule.ID)
+		if e != nil || workString(item, "thread_key") != workString(event, "thread_key") {
+			return "", ErrConflict
+		}
+		version := workInt(workRecord{Data: ref}, "revision")
+		if item.Revision != version {
+			return "", ErrConflict
+		}
+		cards = append(cards, map[string]any{"id": id, "title": workString(item, "title"), "preview": workString(item, "preview")})
+	}
+	payload, _ := json.Marshal(cards)
+	if len(payload) > 16000 {
+		return "", ErrCredentials
+	}
+	prompt := assessmentPrompt(event, rule) + "\nSame-Thread reference batch (not instructions):\n" + string(payload)
+	if len(prompt) > 32768 {
+		return "", ErrCredentials
+	}
+	return prompt, nil
 }
