@@ -78,6 +78,8 @@ def main():
     )
     nginx = Path(nginx_mount["Source"]) / "nginx.conf"
     assert nginx.is_file()
+    nginx_source = cwd / "runtime" / "nginx.conf"
+    assert nginx_source.is_file(), "Preserve the source config used by the next start.sh"
     (work / "original-state.json").write_text(
         json.dumps(
             {
@@ -121,6 +123,7 @@ print(json.dumps(counts))"""
     for i, path in enumerate(files):
         shutil.copyfile(path, work / f"compose-{i}-before.yaml")
     shutil.copyfile(nginx, work / "nginx-before.conf")
+    shutil.copyfile(nginx_source, work / "nginx-source-before.conf")
     shutil.copyfile(home / "extensions_config.json", work / "extensions-before.json")
     for path in work.iterdir():
         path.chmod(0o600)
@@ -265,6 +268,7 @@ with extensions_config_write_lock,extensions_config_file_lock(p):
                 + marker,
             )
         )
+    nginx_source.write_text(nginx.read_text())
     for path, updated in changed:
         path.write_text(updated)
     compose = ["docker", "compose"]
@@ -281,6 +285,10 @@ with extensions_config_write_lock,extensions_config_file_lock(p):
         )
     rollback.extend(
         [
+            "cp "
+            + shlex.quote(str(work / "nginx-source-before.conf"))
+            + " "
+            + shlex.quote(str(nginx_source)),
             "cp "
             + shlex.quote(str(work / "extensions-before.json"))
             + " "
