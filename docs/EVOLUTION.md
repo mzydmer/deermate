@@ -453,3 +453,23 @@ Go 在真实 run 成功接纳后核对固定 SQLite 中的 owner、interactive o
 用户要求从设计进入实现并上线。新增 Go 管理页/API、显式期限/范围、逐版本本机确认、取消待确认、撤销与状态观测；以主动出站 HTTPS 替代新增 SSH 账号/到期 timer 的产品化依赖，保留旧 SSH 方式与历史任务。Go 与 Worker 双向接纳、90 秒观测和单 owner 门禁在提示词外执行；过期队列不启动，在途 finish/stop 策略独立测试。见 [ADR 0014](decisions/0014-user-managed-agent-authorization.md)与[指南](agent-authorizations.md)。
 
 Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/wheel 和 29 项固定部署子集通过；真实 Go→连接器→Worker→离线 Native 的修复、验证、幂等与撤销通过，浏览器确认待本机状态、取消与 390px 布局。本条先记录本地验收；云端上线与旧过期记录导入在实际完成后另记，不能据此推断已恢复本机执行权限。
+
+## 2026-11-03 · M4.5 持续任务方案待用户审核
+
+用户要求基于前项调研先制定 spec 和 plan，审核通过后再开始改造。以 `19284cd` 为设计基线，新增[持续任务/事件调度/可追溯记忆 spec](specs/m4-continuous-agent.md)、[P0–P7 实施 plan](specs/m4-continuous-agent-plan.md)和 [Proposed ADR 0015](decisions/0015-continuous-agent-control-plane.md)，在基础规格保留 FR-030–FR-032 为拟议需求。
+
+方案复用已经实现的用户授权、出站 HTTPS、原 Worker/driver/journal 和 DeerMem；Go 保存持续工作及事件，DeerFlow 负责受限研判与秘书对话，执行仍保持一对话一原生会话。首期单仓库/Codex，先观察/本人接纳，再接入有边界的 auto；明确引用召回、预算/背压、未知结果核对、来源失效、UI 与升级回退要求。其他执行器、站外写入、语义提取和模型 Watchdog 留在后续。
+
+所有实施项、CONT-01–CONT-19 和实机验收均未开始；本轮只检查设计文档的链接、编号及边界一致性，不调用模型/Native、不调整线上服务或权限。接受设计与实现、验证、发布分别记录。
+
+用户进一步询问是否体现 DSH Router 思想后，明确补入独立持久 Router Session、host 工具边界、异步 Assessor/Worker 回报、已关联 Thread 直通及越范围 handoff。区分 Go 确定性 dispatcher、DeerFlow Router、Codex 任务会话和设备 Worker 服务，避免只有一个改名的聊天入口。新增 CONT-20–CONT-23；全部 23 条仍待验收，spec/plan/ADR 保持待审核。
+
+## 2026-11-03 · README 研究定位与可复现评估方向
+
+按用户要求在中英文 README 增加研究问题、明确标注为 Proposed 的 Router/Worker 图、Go/Router/执行会话分工、五项可测量价值，以及受控对照/消融和开放复现材料的计划。归属 DSH 与上下文工程的设计来源；不宣称新算法、已有 benchmark 或未经测量的性能提升。plan 增加 R-EVAL-01–R-EVAL-05，区分离线调度测试、真实模型质量、功能验收和注意力代理指标。
+
+同时修正 README 中设备配对仍规划、旧临时链路仍可用、个人首页未升级云端等过时表述，保留本地授权验收和历史真实 Native 证据的各自边界。本轮仅编辑文档并核对链接、状态与中英文内容，不运行模型/Native 或上线新架构。
+
+## 2026-11-04 UTC · M4.5 获准进入实施
+
+用户明确批准按 spec/plan 连续开发，设计和 ADR 0015 转为 Accepted。以 `5a1ed3a` 为实现基线，先核对固定运行时、原生 journal、用户授权协议与幂等查询，再逐阶段实现。批准不代表 CONT 或比较实验已经通过，也不恢复旧云端/家庭授权。

@@ -129,6 +129,17 @@ Owner-requested language change; [ADR 0007](decisions/0007-go-control-plane.md) 
 
 First release uses existing owned conversations/tasks. Authorized external-source tracking follows separately. Design rationale: [ADR 0013](decisions/0013-memory-backed-personal-briefing.md).
 
+## M4.5 — Continuous work and event-driven secretary（Accepted，实施中）
+
+[功能 spec](specs/m4-continuous-agent.md) · [实施 plan](specs/m4-continuous-agent-plan.md) · [Proposed ADR 0015](decisions/0015-continuous-agent-control-plane.md)。这是下一阶段设计，用户审核通过前不开始改造；不替代 M4.4 尚未完成的语义提取等范围。
+
+- [x] 用户审核 spec / plan；2026-11-03 明确批准开始开发。
+- [ ] P0–P2：固定 Router/Worker 工具边界、Go inbox/工作/事件账本、非阻塞派单与原会话回执核对。
+- [ ] P3–P4：单仓库 GitHub observe、已关联 Thread 直通/交回、有界引用召回和本人关键词查询。
+- [ ] P5：统一秘书入口、持续工作详情及待处理界面。
+- [ ] P6：本人启用的有界 auto、预算、背压和程序监测。
+- [ ] P7：有限实机、低内存/升级回退、实际交付与脱敏收据。
+
 ## M5 — Extend the ecosystem
 
 - [ ] Add an optional Hermesh CLI bridge; keep its separate upstream implementation optional.

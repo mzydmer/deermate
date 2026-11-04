@@ -3,9 +3,10 @@
 <h1 align="center">DeerMate</h1>
 <p align="center"><strong>一个私人秘书，一支 Agent 团队，你自己的机器。</strong></p>
 <p align="center">跟秘书交代目标，让合适的 Agent 接手，在同一个工作台跟进结果。</p>
-<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · 本地 Worker Alpha · Go 主后端</p>
+<p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · Agent 系统研究 Alpha · Go 主后端</p>
+<p align="center"><a href="#research">研究方向</a> · <a href="docs/specs/m4-continuous-agent.md">Spec</a> · <a href="docs/specs/m4-continuous-agent-plan.md">实施与评估计划</a> · <a href="docs/STATUS.md">开发进度</a></p>
 
-> **当前阶段：Go 控制端 + 云到家庭 Alpha，2026-10-29。** 真实云端秘书模型已通过单独授权的临时 SSH 链路调用家里的 Codex，返回补丁、独立测试及送达通知。Go 负责登录、管理和公网 API，DeerFlow/Worker 保留 Python。自动设备配对和多岗位路由仍规划中；视频仍是概念预览。[已验收范围与边界](docs/specs/m2-home-reverse-link.md)。
+> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-03。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。新的持久 Router/Worker 架构处于 **待审核提案**，对比实验尚未开展。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
 
 ## 你的私人 Agent 秘书
 
@@ -21,6 +22,44 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 
 技术路线以 **Go 主服务/管理服务 + DeerFlow 内部运行时 + Python Worker + 会话适配层 + 按需桌面工具**为核心。**Hermesh 作为可选桥接**，用户登录、角色与前端 API 统一由 Go 提供，Docker 会自动编译 Go 服务。DeerMate 是独立项目，与这些上游项目没有官方隶属关系。
 
+<a id="research"></a>
+
+## 研究方向：持续协作的私人 Agent 系统
+
+DeerMate 研究如何让一个私人秘书跨独立 Agent 会话、变化的信息流和用户自己的设备，持续推进工作。我们关注任务身份与授权如何保持、失败后如何恢复真实证据，以及何时需要人的注意力。
+
+研究贡献目标是**可运行的系统设计、明确的不变量和可复现的评估方法**。架构借鉴 [DSH Super-agent 的 Router/Worker 思想](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/004-prompts.md)和[上下文工程](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents)，探索它们在 Go 控制、自托管、原生会话连续性与独立执行证据中的具体实现。
+
+**M4.5 目标架构：待审核设计，尚无 Router 对比实验结果。**
+
+```mermaid
+flowchart TD
+    U[用户请求] --> G[Go：持久收件箱、权限、预算与接纳]
+    S[GitHub与任务事件] --> G
+    G -->|新请求或未归属工作| R[Router：持久 DeerFlow 私人秘书]
+    R -->|派单或追问提议| G
+    G -->|已接纳任务及已关联事件| W[独立任务 Worker 会话：首期 Codex]
+    W -->|证据、结果或交回路由| G
+    G -->|待决策或最终结果| R
+    G --> H[工作台与历史记录]
+```
+
+**Router 负责统筹与沟通，任务 Worker 负责执行。** Router 异步派单后仍能接待新请求；已关联 Thread 的事件经过 Go 校验后直通原 Worker，超范围的请求再交回 Router。Go 保存持久状态并执行权限门禁，每个任务 Worker 保留独立执行对话与原生会话。首期 Native 并发 1 是小规模部署的执行配额，协调过程仍然异步。
+
+| 研究问题 | 拟研究的机制 | 计划测量什么 |
+| --- | --- | --- |
+| 后台工作持续时，秘书能否保持响应？ | Router/Worker 分工、异步回报与订阅直通 | 前台响应 p50/p95、路由模型调用、积压与完成工作量 |
+| 主动处理能否持续服从已有授权？ | 代码接纳范围、版本化规则及 off/observe/auto | 越权接纳、错误任务关联、决策依据与模型请求数 |
+| 断线、重启和丢回执后，任务身份能否保持？ | 固定原生会话、持久操作及未知结果核对 | 重复原生根、副作用重放、恢复结果及人工介入案例 |
+| 记忆能否在预算内找回正确证据？ | 工作→事件→会话→证据的有界引用，加上个人记忆 | 来源找回正确性、上下文大小、读取延迟与失效/越权泄漏案例 |
+| 持续协作能否减少人的监督负担？ | 结构化待处理、以证据确认完成、安静的常规更新 | 每件完成工作所需人工介入、漏报的重要问题与通知数量 |
+
+计划对比三类方案：具备等价后台工具的单协调会话、所有事件经过 Router 的双层系统、加入 Thread 直通的双层系统；另做引用召回与路由机制的消融。使用相同事件轨迹、模型版本、预算和 Worker 配额，同时报告延迟、完成证据、模型用量和失败结果。
+
+计划开放可回放的合成事件、故障注入场景、固定版本配置和脱敏收据。现有[验证材料](docs/verification/README.md)提供组件和有限集成的证据；新方案的 **23 项验收标准仍待完成**，尚未宣称性能提升。
+
+[阅读 Spec](docs/specs/m4-continuous-agent.md) · [实施与评估 Plan](docs/specs/m4-continuous-agent-plan.md) · [架构决策草案](docs/decisions/0015-continuous-agent-control-plane.md)
+
 **最低成本试运行：** 可选[单机 Docker 部署](docs/single-host.md)，复用四个预构建镜像、服务器系统盘与网络，保留 Go 登录和管理功能。实际 2 核 2 GiB 轻量云主机已通过有限页面/API 与整机重启验收；模型负载和家庭 Worker 仍需单独验证（[收据](docs/verification/single-host-cloud-2026-10-27.json)）。无需为此创建 ACK、NAT 或负载均衡，初次使用 SSH 本地转发访问。 另有可选[公网 IP HTTPS](docs/specs/single-host-public-ip.md)：新加坡小主机已通过账号迁移、可信证书、登录与整机重启验收（[收据](docs/verification/single-host-public-ip-2026-10-27.json)）；默认私有配置保留。
 
 ## 先看概念视频
@@ -29,7 +68,7 @@ DeerMate 希望把这些事变成可以追踪的工作：秘书记住偏好、�
 
 **[▶ 观看 24 秒概念视频](https://github.com/mzydmer/deermate/blob/main/docs/assets/deermate-concept.mp4)** · [下载 MP4](https://raw.githubusercontent.com/mzydmer/deermate/main/docs/assets/deermate-concept.mp4) · [分镜与生成方法](docs/media.md)
 
-视频呈现目标流程：一句话交代 → 按角色派工 → 在自己的机器执行 → 独立审核 → 返回 diff 和测试证据。它是概念动效，**不代表软件已经实现**。首个集成完成后，会补充真实运行演示。
+视频呈现目标流程：一句话交代 → 按角色派工 → 在自己的机器执行 → 独立审核 → 返回 diff 和测试证据。它仍是概念动效；实际执行证据由下文各项验收收据单独记录。
 
 ## 运行本地 Worker
 
@@ -55,7 +94,7 @@ deermate diff TASK_ID
 
 `TASK_ID` 使用提交接口返回的值。服务只监听 `127.0.0.1`，并创建本地 bearer token。[完整安装、中断、继续与恢复说明](docs/local-worker.md)。
 
-同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入后台任务工具，另有只读 `check_worker_connection` 供秘书检查连接，不创建任务。Worker 独立于 MCP 进程运行；真实千问已通过正式 run API 自行选工具，经 SSH 开发服务完成本机真实 Codex 修复、独立测试与通知 delivered，见[真实模型验收](docs/secretary-acceptance.md)。另已按用户授权验收临时云到家庭链路：真实模型/Codex 派单、独立测试、通知和 9 项 OpenSSH 权限检查通过（[收据](docs/verification/home-link-2026-10-28.json)）；自动配对和实际到期观察仍待完成。
+同一主机上的可信 DeerFlow 进程可安装 `.[mcp]`，按 [DeerFlow 接入指南](docs/deerflow.md)和[配置示例](examples/deerflow.extensions.json)接入后台任务工具，另有只读 `check_worker_connection` 供秘书检查连接，不创建任务。Worker 独立于 MCP 进程运行；真实千问已通过正式 run API 自行选工具，经 SSH 开发服务完成本机真实 Codex 修复、独立测试与通知 delivered，见[真实模型验收](docs/secretary-acceptance.md)。历史临时云到家庭链路也通过真实模型/Codex 派单、独立测试、通知和 9 项 OpenSSH 检查（[收据](docs/verification/home-link-2026-10-28.json)），该授权已经到期。新的[设备授权与出站 HTTPS](docs/agent-authorizations.md)有独立本地验收，实际部署及真实设备结果以 STATUS 为准。
 
 派单前可运行 `deermate doctor` 检查本地连接，或运行 `deermate --config controller.toml --worker home doctor` 检查已注册的家庭 Worker。命令检查凭据、SSH/Worker 身份与协议，输出脱敏 JSON；受阻时退出码为 1。API 可达不代表原生 Agent 已登录、有空闲容量或项目权限。见 [SSH 接入与预检指南](docs/ssh-worker.md)。
 
@@ -75,9 +114,9 @@ deermate diff TASK_ID
 
 | 能力 | 目标体验 | 进展 |
 | --- | --- | --- |
-| 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | 规划中 |
-| 专事专办 | 根据职责、项目权限、设备在线情况和预算分派 | 规划中 |
-| 家里与云端协作 | 调用自有机器；离线设备明确显示等待状态 | 临时云到家庭真实任务通过；通用设备接入待完成 |
+| 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | M4.5 Router/Worker spec 与 plan 待审核 |
+| 专事专办 | 根据职责、项目权限、设备在线情况和预算分派 | 有代码边界的 Router 设计提案，首期 Codex |
+| 家里与云端协作 | 调用自有机器；离线设备明确显示等待状态 | 历史临时链路已验收；用户管理配对/HTTPS 已本地验收 |
 | 持久会话 | 本地提交、查询、事件、中断、继续；幂等提交和显式恢复 | 已有本地实现 |
 | 开源项目维护 | issue 分流、修复、测试、独立审核 | 规划中 |
 | 竞品与资料跟踪 | 对比历史快照，保留引用，有实质变化再报告 | 规划中 |
@@ -94,12 +133,12 @@ flowchart TD
     UI --> G[Go 主 API、登录与管理]
     G --> D[内部 DeerFlow Agent 运行时]
     D --> M[Python MCP 与持久任务跟踪]
-    M --> S[Python SSH 连接器]
+    M --> S[已登记传输：出站 HTTPS 或 SSH]
     S --> W[自有机器上的 Python Worker]
     W --> C[Codex app-server]
     W --> R[Diff、独立测试与会话证据]
     R --> D
-    G -. 规划中 .-> P[专职路由与项目授权]
+    G -. M4.5提案 .-> P[持久 Router 与事件驱动工作]
     P -. 规划中 .-> A[Claude、DeepSeek、调研与桌面适配器]
     M -. 可选、规划中 .-> H[自托管 Hermesh 桥接]
 ```
@@ -110,7 +149,7 @@ flowchart TD
 | 主服务与管理服务 | Go `net/http` | 前端 API、工作区聚合、用户角色、登录会话、CSRF 与审计 |
 | 持久化 | 首先 SQLite，必要时 PostgreSQL | 任务与远程会话映射、事件游标、恢复记录 |
 | 远程 Worker | Python asyncio | 有边界地运行外部 Agent，收集产物 |
-| 加密连接 | AsyncSSH，使用 SSH 协议 | 主机身份校验、加密传输 |
+| 加密连接 | 出站 HTTPS 连接器或可选 AsyncSSH | 用户管理设备授权或显式 SSH 注册；本地 HTTPS 与历史 SSH 验收范围分开 |
 | 会话适配器 | Python | 统一各 Agent 的启动、查询、继续、中断和结果 |
 | 界面 | 优先复用 DeerFlow | 增加远程任务卡片，避免维护两套工作台 |
 
@@ -137,13 +176,13 @@ flowchart TD
 
 Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以它们实际开放的接口为准。它们能调用我们的 MCP 工具，不等于我们能反向唤醒、控制或取消它们。第一版不依赖它们。
 
-拟定的接入流程：
+用户管理的设备接入已本地验收，按[授权指南](docs/agent-authorizations.md)操作，部署范围另查 STATUS：
 
-1. 注册机器，通过可信渠道核对 SSH 主机指纹。
-2. 使用独立且受限的系统账户运行 Python Worker，配置允许访问的项目根目录。
-3. 在执行机上按官方方式登录外部 Agent。
-4. 注册 Agent 能力，设置项目级权限与任务限制。
-5. 先执行只读检查，再按需开放写入。
+1. 从“Agent 授权”生成短时配对命令，在设备执行。
+2. 启动本地 Worker 和主动出站 HTTPS 连接器，无需开放本机 Worker 公网端口。
+3. 选择项目、操作、期限，以及到期时对已开始任务的处理方式。
+4. 在本机确认同一个授权版本；原生 Agent 登录留在设备。
+5. 派单前分别检查授权和连接。连接检查不会运行 Native 任务。
 
 直接 SSH 已有[实现与部署指南](docs/ssh-worker.md)。本地实现使用[Worker 指南](docs/local-worker.md)和[TOML 示例](examples/local-worker.toml)。[更完整的 YAML 示例](examples/deermate.example.yaml)仍是设计草案，不能用于启动服务。当前从仓库安装，不声称包注册表中的同名项目属于本仓库。
 
@@ -158,22 +197,25 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 - 为任务设置时限、并发上限、失效时间和取消方式。
 - issue、邮件、网页和其他 Agent 的回复都是外部数据，不能提升权限。
 
-**加密进展：** 直接 SSH 已实现明确的主机密钥校验、专用凭据和有限连接寿命，临时密钥协议测试已通过；尚无独立审计或真实设备部署证明。SSH 两端可以读取明文，中继/NAT 和 Hermesh 另有信任边界。详见[安全模型](docs/security.md)和[撤权行为](docs/ssh-worker.md)。
+**加密进展：** SSH 使用固定主机身份；出站 HTTPS 复用可信服务与本机确认的授权。云端应用和执行端可以读取任务明文。历史真实 SSH 与本地 HTTPS 授权证据各有范围，尚无独立审计；Hermesh 保留自己的信任边界。详见[安全模型](docs/security.md)、[设备授权](docs/agent-authorizations.md)和[SSH 撤权](docs/ssh-worker.md)。
 
 ## 开发进展
 
-当前阶段：**M4.4c–e，今日关注与首页动作**；已实现并本地验收，沿用 Go 后端与统一设计规范。[记忆指南](docs/personal-memory.md)说明存取与召回；[首页指南](docs/personal-home.md)说明关注历史对话、证据简报、只读跟进、原会话续接和可选目标建议。语义提取、自动归并及模型作业预算仍待开发，云端尚未升级。已交付内容与计划能力分别列出。
+已交付 **M4.4c–e，今日关注与首页动作**，有本地验收及既有新加坡单机的云端首页/API 验收。[记忆指南](docs/personal-memory.md)说明存取与召回；[首页指南](docs/personal-home.md)说明关注历史对话、证据简报、只读跟进、原会话续接和可选目标建议。语义提取、自动归并及模型作业预算仍待开发。
+
+下一研究阶段 **M4.5，持久 Router/Worker 协作**处于待用户审核提案。用户管理的 Agent 授权另有[本地收据](docs/verification/agent-authorization-local-2026-11-03.json)。这些证据不表示 M4.5 已上线或已完成对比实验。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
 | M0 | 中英文 README、架构、安全边界、接入契约、概念视频 | 已在仓库提供 |
 | M1 | 本地 Python Worker、Codex 适配器、可验证的单任务生命周期 | 已有实现，验证范围见指南 |
-| M2 | DeerFlow 工具、SSH 远程 Worker、重启和重连恢复 | MCP/直接 SSH 与临时云到家庭任务已验收；自动注册与实际到期观察待完成 |
+| M2 | DeerFlow 工具、远程 Worker、重启和重连恢复 | 历史 MCP/SSH 链路已验收；用户管理配对/HTTPS 已本地验收，真实到期观察另行记录 |
 | M3 | Claude/ACP 适配、独立审核、GitHub 维护流程 | 规划中 |
-| M4 | 秘书工作台、Go 主服务/管理 API、统一设计规范 | 已实现并本地验收；竞品跟踪/邮件和项目执行授权待开发 |
-| M4.4a | 个人设置、显式记忆存取、范围内 FTS5 召回与聊天注入 | 已本地验收；未升级既有云端 |
-| M4.4b | 对话中的明确记忆指令、规范来源与失效控制 | 已本地验收；无额外提取模型调用 |
-| M4.4c–e | 持久关注、任务证据、目标建议与首页动作接纳 | 已本地合成验收；新首页 Native 入口待真实执行验收 |
+| M4 | 秘书工作台、Go 主服务/管理 API、统一设计规范 | 工作台已有实现，用户管理执行授权已本地验收；竞品跟踪/邮件待开发 |
+| M4.4a | 个人设置、显式记忆存取、范围内 FTS5 召回与聊天注入 | 已本地验收并部署云端，记忆默认关闭 |
+| M4.4b | 对话中的明确记忆指令、规范来源与失效控制 | 已本地验收并部署云端，无额外提取模型调用 |
+| M4.4c–e | 持久关注、任务证据、目标建议与首页动作接纳 | 云端首页/API 已验收；动作使用本地合成模型，新首页 Native 入口待真实验收 |
+| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | Spec/plan 待审核，23 项验收及对比实验待完成 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
 
 已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。[本地验证与限制](docs/local-worker.md)。
@@ -182,7 +224,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 不承诺未经验证的发布日期或生产可用性。[完整路线与验收标准](docs/roadmap.md)。
 
-当前常规测试为 **244 项通过、9 项 opt-in 用例跳过**。个人记忆另有固定 Provider/图/来源/首页契约 41 项、实际 Go/Gateway API 43 项、浏览器 14 项通过；本轮固定部署/overlay 子集 27 项通过。仅使用合成数据及离线 Fake 对话模型，没有真实供应方/Native 调用或云端升级。历史云到家庭 Codex 证据保留原范围，见 [STATUS](docs/STATUS.md)与[首页收据](docs/verification/personal-home-2026-11-02.json)。
+`701a309` 的实现验收记录 **244 项通过、9 项 opt-in 跳过**，固定 Provider/图/来源/首页契约 41 项、Go/Gateway API 43 项、浏览器 14 项和部署/overlay 27 项，使用合成数据与离线 Fake 模型。[云端升级收据](docs/verification/personal-home-cloud-2026-11-03.json)另记 25 项公网 HTTPS/API、8 项页面检查及历史账号/任务/模型文件保留；升级时没有模型/Native 执行或负载测试。授权模块有独立本地收据。各项证据保留原提交和场景范围，不作为 Router 对比结果，见 [STATUS](docs/STATUS.md)与[本地首页收据](docs/verification/personal-home-2026-11-02.json)。
 
 首个开发任务：[Python Worker 与 Codex 会话生命周期 · #1](https://github.com/mzydmer/deermate/issues/1)。
 
@@ -191,6 +233,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 - [DeerFlow](https://github.com/bytedance/deer-flow)：秘书基础，优先复用现有能力。
 - [Hermesh](https://github.com/hermeshai/hermesh)：架构参考和可选桥接，其实现独立维护。
 - [Codex](https://github.com/openai/codex)、[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)：通过公开接口连接的外部执行者。
+- [DSH Super-agent prototype](https://github.com/deepseek-ai/dsh-superagent-prototype)：Router/Worker、订阅直通与观察模式的研究参考，独立维护。
 - [AsyncSSH](https://github.com/ronf/asyncssh)：已用于可选 SSH 传输，测试版本 2.24.1，不自行发明加密协议。
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)：已用于可选 stdio 桥接，测试版本 1.30.0。
 - [Playwright MCP](https://github.com/microsoft/playwright-mcp)、[Peekaboo](https://github.com/openclaw/Peekaboo)：可选网页与桌面能力。

@@ -8,14 +8,14 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-6ee7b7" /></a>
-  <img alt="Stage: local worker alpha" src="https://img.shields.io/badge/Stage-local_worker_alpha-fbbf24" />
+  <img alt="Stage: systems research alpha" src="https://img.shields.io/badge/Stage-systems_research_alpha-fbbf24" />
   <img alt="Backend: Go" src="https://img.shields.io/badge/Backend-Go-00ADD8" />
   <img alt="Deployment goal: self hosted" src="https://img.shields.io/badge/Deployment_goal-self_hosted-c4b5fd" />
 </p>
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
-<p align="center"><a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
+<p align="center"><a href="#research">Research</a> · <a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Go control plane + cloud-to-home alpha · 2026-10-29.** A real cloud secretary model now delegates through a separately approved temporary SSH link to home Codex, returning an independently tested patch and delivered notification. Go owns login/management/public APIs; DeerFlow/Worker remain internal Python services. Device pairing and specialist routing remain planned; the video is simulated. [Verified scope and limits](docs/specs/m2-home-reverse-link.md).
+> **Personal-agent systems research alpha · 2026-11-03.** Go control, real Codex session continuity and the personal-memory home have retained implementation evidence. User-managed device authorization and outbound HTTPS have separate local acceptance. The persistent Router/Worker architecture is a **proposal awaiting review**; comparative research experiments have not run. The video is a concept film. [Current status](docs/STATUS.md) · [Research spec](docs/specs/m4-continuous-agent.md).
 
 ## Meet your personal agent secretary
 
@@ -31,13 +31,51 @@ DeerMate is an open-source project for making that workflow practical: a private
 
 It builds around **DeerFlow**, with a **Go main/management backend**, Go user/login and frontend APIs, and a Python execution worker, provider-specific session adapters, and optional browser or desktop tools. **Hermesh is an optional bridge**, rather than a required Go service. This repository is an independent project; the upstream projects are not affiliated with it.
 
+<a id="research"></a>
+
+## Research focus: a persistent secretary across agent sessions and machines
+
+DeerMate studies how a private assistant can maintain ongoing work across isolated agent sessions, changing event streams and user-owned machines. The research target is a system that preserves the identity and authority of each task, recovers evidence after failures, and uses human attention deliberately.
+
+Our contribution target is an executable systems design, explicit invariants and reproducible evaluation. The design builds on the [DSH Super-agent Router/Worker model](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/004-prompts.md) and [context engineering](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents). DeerMate applies these ideas to a Go-controlled, self-hosted assistant that preserves native coding sessions and independently collected execution evidence.
+
+**Proposed M4.5 architecture — awaiting review, not an implemented Router benchmark:**
+
+```mermaid
+flowchart TD
+    U[User requests] --> G[Go: durable inbox, policy, budget and admission]
+    S[GitHub and task events] --> G
+    G -->|New or unassigned work| R[Router: persistent DeerFlow secretary]
+    R -->|Dispatch or follow-up proposal| G
+    G -->|Admitted work and bound-thread input| W[Independent task Worker sessions: Codex first]
+    W -->|Evidence, result or handoff| G
+    G -->|Decision needed or final result| R
+    G --> H[Workspace and work history]
+```
+
+The **Router** coordinates work and communicates with the user. It dispatches asynchronously and can handle another request while a Worker runs. Known thread events pass through Go's checks to their existing Worker; a Worker hands an out-of-scope request back for routing. **Go** owns durable state and enforces admission, while each **task Worker** retains its own execution conversation and native session. The first proposal limits Native concurrency to one for a small deployment; coordination remains asynchronous.
+
+| Research question | Design under study | Planned measurements |
+| --- | --- | --- |
+| Can a secretary stay responsive while work continues? | Isolated Router/Worker roles, asynchronous reports and subscribed-thread pass-through | Foreground response p50/p95, routing-model calls, backlog and completed work |
+| Can proactive work remain within granted authority? | Host-enforced scope, versioned rules and `off / observe / auto` modes | Unauthorized admissions, wrong-task attachments, decision provenance and model requests |
+| Can task identity survive interruptions? | One native session per execution chat, durable operations and uncertain-outcome reconciliation | Duplicate native roots, replayed side effects, recovery outcomes and cases needing a person |
+| Can memory recover the relevant evidence within a budget? | Bounded work→event→session→evidence references alongside personal memory | Correct source retrieval, context size, read latency and stale/unauthorized disclosure cases |
+| Can the system reduce supervisory effort? | Structured attention, evidence-based completion and quiet routine updates | Human interventions per completed task, missed actionable issues and notification volume |
+
+Planned evaluations compare a single-session coordinator with equivalent background tools, Router/Worker with all events routed, and Router/Worker with thread pass-through. Ablations examine reference recall and routing separately, using the same event traces, model versions, budgets and Worker limits. Results should report latency, completion evidence, model usage and failure outcomes together.
+
+We plan to publish replayable synthetic event traces, fault-injection cases, pinned configurations and sanitized receipts. Existing [verification artifacts](docs/verification/README.md) establish scoped component/integration behavior; they are not comparative Router results. The new design has **23 pending acceptance criteria** and no claimed performance gain.
+
+[Read the spec](docs/specs/m4-continuous-agent.md) · [Implementation and evaluation plan](docs/specs/m4-continuous-agent-plan.md) · [Proposed architecture decision](docs/decisions/0015-continuous-agent-control-plane.md)
+
 ## See the idea
 
 [![Play the DeerMate concept video — simulated workflow, not a live demo](docs/assets/concept-preview.gif)](https://github.com/mzydmer/deermate/blob/main/docs/assets/deermate-concept.mp4)
 
 **[▶ Watch the 24-second concept video](https://github.com/mzydmer/deermate/blob/main/docs/assets/deermate-concept.mp4)** · [Download MP4](https://raw.githubusercontent.com/mzydmer/deermate/main/docs/assets/deermate-concept.mp4) · [Storyboard and reproduction](docs/media.md)
 
-The film illustrates an intended handoff: one request → role-based routing → work on your own machine → an independent review → a result with a diff and test evidence. It is a motion storyboard, not a recording of functioning software. A live demo will replace it when the first integration is working.
+The film illustrates an intended handoff: one request → role-based routing → work on your own machine → an independent review → a result with a diff and test evidence. It remains a motion storyboard. Actual execution evidence is recorded separately in the verification receipts linked below.
 
 ## Run the local worker
 
@@ -64,7 +102,7 @@ deermate diff TASK_ID
 
 Replace `TASK_ID` with the submission's returned ID. The service binds to `127.0.0.1` and creates a local bearer token. It is not a remotely exposed production service. [Full setup, cancellation, recovery, and verification →](docs/local-worker.md)
 
-To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its background task tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. A real model has now selected MCP tools through the normal run API, completed a real local Codex repair and delivered its notification. See [live acceptance](docs/secretary-acceptance.md). A separately approved temporary cloud-to-home link has also passed real model/Codex dispatch, independent validation, notification and nine OpenSSH policy checks ([receipt](docs/verification/home-link-2026-10-28.json)); automatic pairing and actual lease expiry remain unverified.
+To connect a trusted DeerFlow process on the same host, install `.[mcp]` and configure its background task tools using the [DeerFlow guide](docs/deerflow.md) and [example configuration](examples/deerflow.extensions.json). The additional read-only `check_worker_connection` tool checks the configured connection without submitting work. The Worker runs independently of the MCP process. A real model has selected MCP tools through the normal run API, completed a real local Codex repair and delivered its notification. See [live acceptance](docs/secretary-acceptance.md). A historical, separately approved temporary cloud-to-home link also passed real model/Codex dispatch, independent validation, notification and nine OpenSSH policy checks ([receipt](docs/verification/home-link-2026-10-28.json)); that grant has expired. The newer [device authorization and outbound HTTPS path](docs/agent-authorizations.md) has separate local acceptance; deployment and live-device results are tracked in STATUS.
 
 Run `deermate --config controller.toml --worker home doctor` before dispatching to an enrolled home Worker. It checks credentials, pinned identities and protocol, returns sanitized JSON and exits nonzero when blocked. A reachable API does not establish native-agent login, capacity or project authorization. See the [SSH setup and preflight guide](docs/ssh-worker.md).
 
@@ -90,9 +128,9 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 
 | Capability | Intended experience | Status |
 | --- | --- | --- |
-| A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | Planned |
-| Specialist routing | Choose an eligible agent by role, project, device availability, and budget | Planned |
-| Home and cloud workers | Run bounded work on machines you own; show offline devices explicitly | One temporary cloud-to-home task verified; guided device enrollment pending |
+| A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | M4.5 Router/Worker spec and plan proposed; review pending |
+| Specialist routing | Choose an eligible agent by role, project, device availability, and budget | Host-bounded Router design proposed; Codex first |
+| Home and cloud workers | Run bounded work on machines you own; show offline devices explicitly | Historical temporary link verified; user-managed pairing/HTTPS locally verified |
 | Durable sessions | Local start/status/events/interrupt/resume; idempotent submission and explicit restart recovery | Local implementation |
 | Repository maintenance | Triage issues, prepare fixes, collect CI evidence, and request independent review | Planned |
 | Research watchlists | Track changes, keep citations, compare snapshots, and surface meaningful updates | Planned |
@@ -109,12 +147,12 @@ flowchart TD
     UI --> Go[Go main API, login and management]
     Go --> Runtime[Private DeerFlow Agent runtime]
     Runtime --> Tasks[Python MCP and durable task tracking]
-    Tasks --> Link[Python SSH connector]
+    Tasks --> Link[Registered transport: outbound HTTPS or SSH]
     Link --> Worker[Python Worker on your machine]
     Worker --> Codex[Codex app-server]
     Worker --> Results[Diff, tests and native session evidence]
     Results --> Runtime
-    Go -. planned .-> Routing[Specialist routing and project grants]
+    Go -. proposed M4.5 .-> Routing[Persistent Router and event-driven work]
     Routing -. planned .-> Other[Claude, DeepSeek, research and desktop adapters]
     Tasks -. optional, planned .-> Hermesh[Self-hosted Hermesh bridge]
 ```
@@ -127,7 +165,7 @@ The backend follows the owner’s updated **Go control plane + Python Agent runt
 | Main and management backend | Go `net/http` | Frontend API boundary, workspace summary, users/roles, sessions, CSRF and audit |
 | Persistence | SQLite initially; PostgreSQL when needed | Task/session mapping, event cursors, and recovery records |
 | Remote worker | Python asyncio | Bounded subprocess execution and local artifact collection |
-| Private link | AsyncSSH using the SSH protocol | Encrypted transport with pinned host identity |
+| Private link | Outbound HTTPS connector or optional AsyncSSH | User-managed device grants or explicitly enrolled SSH; local HTTPS and historical SSH evidence have separate scopes |
 | Agent adapters | Python wrappers for each supported interface | Normalize native agent lifecycle and output |
 | UI | Reuse DeerFlow first; add task cards | A single place to follow the work |
 
@@ -154,13 +192,13 @@ The Codex native app-server adapter is implemented locally. The remaining adapte
 
 Grok Bot and Muse are possible external clients or collaborators, subject to the interfaces their products expose. An assistant being able to call our MCP tools does **not** establish that DeerMate can wake, control, or cancel that assistant. They are not required for the initial system.
 
-Planned connection flow:
+User-managed device enrollment is locally verified; follow the [authorization guide](docs/agent-authorizations.md) and check STATUS for deployment scope:
 
-1. Register a machine and verify its SSH host fingerprint through a trusted channel.
-2. Run the Python worker with a dedicated, limited OS account and configured project roots.
-3. Authenticate each external agent locally using its supported login method.
-4. Register adapter capabilities and project-specific policies.
-5. Run a read-only smoke task before enabling writes.
+1. Start pairing from **Agent authorization** and run its short-lived pairing command on the device.
+2. Run the local Worker and the outbound HTTPS connector; no public Worker port is needed.
+3. Choose projects, operations, duration and the policy for work already running at expiry.
+4. Confirm that exact authorization version locally. Keep native-agent authentication on the device.
+5. Check connection and authorization separately before submitting work. A connection check runs no Native task.
 
 Direct SSH implementation and provisioning are documented in [the SSH guide](docs/ssh-worker.md). Local setup uses the [worker guide](docs/local-worker.md) and [TOML example](examples/local-worker.toml). The [broader YAML example](examples/deermate.example.yaml) remains design-only. Install from this repository; a package named `deermate` on a registry is not claimed to be this project.
 
@@ -175,22 +213,25 @@ The target is unattended work within permissions you set in advance. The propose
 - **Bound the work:** task limits, concurrency limits, expiry, and cancellation are first-class design requirements.
 - **Treat outside text as data:** an issue, email, web page, or another agent's result cannot grant additional authority.
 
-**Encryption status:** direct SSH implements explicit host-key verification, dedicated credentials and bounded connection lifetime. Generated-key protocol tests pass; no independent audit or actual device deployment is claimed. SSH endpoints can read plaintext. Relay/NAT and Hermesh have separate trust boundaries. See [security](docs/security.md) and [revocation](docs/ssh-worker.md).
+**Encryption status:** SSH uses pinned host identity; the outbound HTTPS path uses the existing trusted service and locally confirmed grants. The cloud application and execution endpoints can read task plaintext. Historical live SSH evidence and local HTTPS authorization evidence have separate scopes; no independent audit is claimed. Hermesh has its own trust boundary. See [security](docs/security.md), [device authorization](docs/agent-authorizations.md) and [SSH revocation](docs/ssh-worker.md).
 
 ## Development status
 
-We track delivered work separately from planned functionality. Current work: **M4.4c–e personal focus and home actions**, implemented on the Go backend and shared design system, locally verified and deployed to the existing Singapore single-host installation. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
+We track delivered work separately from planned functionality. Delivered scope includes **M4.4c–e personal focus and home actions**, implemented on the Go backend and shared design system, locally verified and deployed to the existing Singapore single-host installation. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
+
+The next research milestone, **M4.5 persistent Router/Worker coordination**, is proposed and awaiting user review. User-managed Agent authorization has its own [local acceptance receipt](docs/verification/agent-authorization-local-2026-11-03.json). Neither establishes a deployed M4.5 Router or a comparative benchmark result.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
 | M0 | English/Chinese README, architecture, security boundaries, contracts, concept film | In this repository |
 | M1 | Local Python worker + Codex adapter + one verified task lifecycle | Implemented locally; see verification scope |
-| M2 | DeerFlow tools + SSH remote worker + restart/reconnect reconciliation | MCP/direct SSH and temporary cloud-to-home task verified; automatic enrollment and expiry observation pending |
+| M2 | DeerFlow tools + remote worker + restart/reconnect reconciliation | Historical MCP/SSH link verified; user-managed pairing/HTTPS locally verified; live expiry observation remains separate |
 | M3 | Claude/ACP adapters + independent review + GitHub maintenance workflow | Planned |
-| M4 | Secretary workspace, Go main/management APIs, shared design system | Implemented and locally verified; watchlists/mail and execution grants remain planned |
+| M4 | Secretary workspace, Go main/management APIs, shared design system | Workspace implemented; user-managed execution grants locally verified; watchlists/mail planned |
 | M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified and cloud-deployed; memory defaults off |
 | M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified and cloud-deployed; no extra extraction-model calls |
 | M4.4c–e | Persistent personal focus, task evidence, goal suggestions and admitted home actions | Cloud home/API verified; action tests use local synthetic models; new home Native entry still needs live acceptance |
+| M4.5 | Persistent Router, isolated Worker sessions, event pass-through, bounded recall and admission | Proposed spec/plan; 23 acceptance criteria pending; comparative evaluations planned |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
@@ -211,6 +252,7 @@ Track the first implementation milestone: [Python worker + Codex session lifecyc
 | [Hermesh](https://github.com/hermeshai/hermesh) | Design inspiration and optional bridge; its code remains independently maintained |
 | [Codex](https://github.com/openai/codex) | A native coding-agent runtime connected through documented interfaces |
 | [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | An optional ACP worker runtime |
+| [DSH Super-agent prototype](https://github.com/deepseek-ai/dsh-superagent-prototype) | Research reference for Router/Worker roles, subscriptions and observe mode; independently maintained |
 | [AsyncSSH](https://github.com/ronf/asyncssh) | Implemented optional SSH transport; tested at 2.24.1; no custom cryptography |
 | [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) | Implemented optional stdio bridge; tested with SDK 1.30.0 |
 | [Playwright MCP](https://github.com/microsoft/playwright-mcp) / [Peekaboo](https://github.com/openclaw/Peekaboo) | Optional web and desktop capabilities |

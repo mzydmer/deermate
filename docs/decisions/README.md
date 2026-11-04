@@ -16,9 +16,9 @@ Record significant choices and their consequences here. Current implementation a
 | [0010](0010-temporary-home-reverse-link.md) | Accepted | Two restricted SSH legs for a temporary outbound home Worker link | Approved cloud-to-Mac deployment, nine OpenSSH policy checks and real model/Codex result verified; actual expiry observation pending |
 | [0011](0011-codex-conversation-turns.md) | Accepted; chat cardinality superseded by 0012 | One child task per follow-up, sharing the native session/workspace | Worker head admission, scoped DeerFlow provider and ordinary tracking; live deployment tracked in STATUS |
 | [0012](0012-one-chat-one-coding-session.md) | Accepted | One chat incarnation binds one registered coding session; first-message names and editable titles | Durable admission journal and configured guard; offline graph/Gateway and real cloud Codex/browser acceptance verified; Claude adapter pending |
-| [0013](0013-memory-backed-personal-briefing.md) | Accepted | Reuse semantic memory with a Go attention/briefing product layer, sourced progress and explicit actions | M4.4a personal facts and M4.4b explicit chat requests/source validation locally verified; semantic extraction, briefing and actions pending |
-
+| [0013](0013-memory-backed-personal-briefing.md) | Accepted | Reuse semantic memory with a Go attention/briefing product layer, sourced progress and explicit actions | Personal facts, explicit capture, attention/briefing and home actions implemented; local/cloud evidence and remaining scope in STATUS |
 | [0014](0014-user-managed-agent-authorization.md) | Accepted | User-owned expiry, local confirmation and outbound HTTPS relay | Local verification and deployment tracked in STATUS |
+| [0015](0015-continuous-agent-control-plane.md) | Accepted; implementation in progress | Persistent Router/independent Worker, async inbox, subscribed-thread pass-through and Go admission | P0 contract audit started; implementation and verification tracked in STATUS |
 
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 

@@ -10,6 +10,14 @@
 
 本节是实现/本地验收范围，线上发布尚待本轮后续记录；原过期授权不恢复。首期单设备 owner，后台站外提醒、开机服务、设备身份定期自动轮换、共享租户及完整原生登录/容量探测仍未实现；原生模型未用于本次验收。
 
+## 当前开发 · M4.5 持续任务与事件调度
+
+基于 DSH 官方原型和公开工程资料整理了[功能 spec](specs/m4-continuous-agent.md)、[分阶段 plan](specs/m4-continuous-agent-plan.md)与 [Proposed ADR 0015](decisions/0015-continuous-agent-control-plane.md)。推荐保留 Go/DeerFlow/现有 Worker 和单会话绑定，显式采用持久 Router/独立任务 Worker、异步回报、Thread 直通及 handoff；Go 保存 inbox 和授权接纳。新增单仓库 GitHub observe、按引用召回及最后阶段的 opt-in auto。
+
+**用户已于 2026-11-03 明确批准开始改造；当前以 `5a1ed3a` 为实现基线核对 P0，CONT-01–CONT-23 仍待验收。** 以 `19284cd` 为设计基线，已实现的用户管理 Agent 授权作为前置，不重建旧 SSH 方案。没有运行真实模型/Native、接入新来源、改变线上服务或增加权限；既有授权模块交付状态仍按上节核对。
+
+中英文 README 已增加研究定位、目标 Router/Worker 图、五项研究问题和对比/消融方向；plan 新增 R-EVAL-01–R-EVAL-05。当前没有 Router 比较结果，已有组件/云端收据继续保留原范围。
+
 ## 前项交付 · 个人秘书首页闭环
 
 在 M4.4a/b 个人记忆基础上，接通[今日关注与首页动作](personal-home.md)：显式关注可越过最近 20 条限制，来源按 owner/thread/incarnation 重检；最多三项进展独立展示任务状态、验证、来源时间和执行端同步。已读、暂停、完成、今天隐藏及取消关注可用。本人保存的有效长期目标可另行开启最多两个可解释的新话题建议。
