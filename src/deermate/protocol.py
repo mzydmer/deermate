@@ -23,6 +23,7 @@ class WorkerCapabilities(BaseModel):
         min_length=3, max_length=6
     )
     continuation: Literal["child-tasks-v1"] | None = None
+    authorization_protocol: Literal["local-grants-v1"] | None = None
     remote: Literal[False]
 
     @model_validator(mode="after")

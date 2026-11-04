@@ -63,6 +63,8 @@ async def pair(args):
                 headers={"Authorization": "Bearer " + read_token(settings.state_dir / "api.token")},
             )
             response.raise_for_status()
+            if response.json().get("authorization_protocol") != "local-grants-v1":
+                raise ValueError("Upgrade the local Worker before pairing remote authorizations")
             instance = response.json()["instance_id"]
         state = {
             "server": server_origin(args.server),
@@ -152,6 +154,42 @@ async def process_request(client, local, state, settings, packet):
     )
     status, body = 403, {"detail": "Locally confirmed authorization required"}
     if allowed and job["deadline"] > packet["server_time"]:
+        capabilities = await local.get(
+            "/capabilities",
+            headers={"Authorization": "Bearer " + read_token(settings.state_dir / "api.token")},
+        )
+        identity = capabilities.json() if capabilities.status_code == 200 else {}
+        if (
+            identity.get("instance_id") != state["instance_id"]
+            or identity.get("authorization_protocol") != "local-grants-v1"
+        ):
+            allowed = False
+            status, body = (
+                409,
+                {
+                    "detail": "Worker identity or local authorization protocol unavailable; "
+                    "upgrade and recheck"
+                },
+            )
+        operation = (
+            "check"
+            if job["path"] == "/capabilities"
+            else "submit"
+            if job["path"] == "/tasks"
+            else "continue"
+            if job["path"].endswith("/continue")
+            else "cancel"
+            if job["path"].endswith("/cancel")
+            else "status"
+        )
+        if operation != "check" and operation not in approved["policy"]["operations"]:
+            allowed = False
+        if (
+            operation == "submit"
+            and (job.get("body") or {}).get("project_id") not in approved["policy"]["projects"]
+        ):
+            allowed = False
+    if allowed and job["deadline"] > packet["server_time"]:
         # Defense in depth: no arbitrary URL/port/header/command from the server.
         from .relay import operation_path
 
@@ -237,6 +275,7 @@ async def connect(args):
                     if (
                         response.status_code == 200
                         and response.json()["instance_id"] == state["instance_id"]
+                        and response.json().get("authorization_protocol") == "local-grants-v1"
                     ):
                         worker_status = "reachable"
                 except (httpx.HTTPError, ValueError, KeyError):

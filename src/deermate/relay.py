@@ -63,6 +63,14 @@ class BoundRelayBridge(TaskBridge):
     async def check_connection(self):
         result = await super().check_connection()
         if result["status"] == "reachable":
+            if result["capabilities"].get("authorization_protocol") != "local-grants-v1":
+                return connection_report(
+                    self.connection_info,
+                    error=BridgeError(
+                        "Worker upgrade required for local authorization enforcement",
+                        code="unsupported_protocol",
+                    ),
+                )
             if result["capabilities"]["instance_id"] != self.grant["instance_id"]:
                 return connection_report(
                     self.connection_info,

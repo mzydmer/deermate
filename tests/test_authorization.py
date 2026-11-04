@@ -10,6 +10,54 @@ from deermate.models import Conflict, State, SubmitTask
 from deermate.worker import Worker
 
 
+@pytest.mark.asyncio
+async def test_connector_refuses_a_worker_without_authorization_enforcement(settings):
+    import json
+
+    import httpx
+
+    from deermate.device_connector import process_request
+
+    token = settings.state_dir / "api.token"
+    token.parent.mkdir(parents=True, exist_ok=True)
+    token.write_text("a" * 48)
+    token.chmod(0o600)
+    policy = {"operations": ["submit"], "projects": ["demo"]}
+    state = {"instance_id": "a" * 32, "approvals": {"fixture": {"version": 1, "policy": policy}}}
+    packet = {
+        "server_time": int(time.time()),
+        "grants": [{"id": "fixture", "revoked": False, "version": 1, "active": policy}],
+        "request": {
+            "id": "request",
+            "grant_id": "fixture",
+            "version": 1,
+            "method": "POST",
+            "path": "/tasks",
+            "body": {"project_id": "demo"},
+            "deadline": int(time.time()) + 15,
+        },
+    }
+    recorded = []
+
+    async def old_worker(request):
+        assert request.method == "GET" and request.url.path == "/capabilities"
+        return httpx.Response(200, json={"instance_id": "a" * 32})
+
+    async def cloud(request):
+        recorded.append(json.loads(request.content))
+        return httpx.Response(200, json={"saved": True})
+
+    async with (
+        httpx.AsyncClient(base_url="http://cloud", transport=httpx.MockTransport(cloud)) as client,
+        httpx.AsyncClient(
+            base_url="http://worker", transport=httpx.MockTransport(old_worker)
+        ) as local,
+    ):
+        await process_request(client, local, state, settings, packet)
+    assert recorded[0]["status"] == 409
+    assert "upgrade" in recorded[0]["body"]["detail"]
+
+
 def grant_state(settings, **changes):
     policy = {
         "projects": ["demo"],
