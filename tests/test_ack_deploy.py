@@ -255,7 +255,12 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
     config = yaml.safe_load(application["data"]["config.yaml"])
     assert config["database"]["backend"] == "sqlite"
     assert config["checkpointer"]["type"] == "sqlite"
-    assert config["tools"][:2] == [
+    assert config["tools"][:3] == [
+        {
+            "name": "secretary_route",
+            "group": "secretary",
+            "use": "deermate.continuous_middleware:secretary_route",
+        },
         {
             "name": "web_search",
             "group": "web",
@@ -263,7 +268,7 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         },
         {"name": "web_fetch", "group": "web", "use": "deermate.web_tools:web_fetch"},
     ]
-    assert config["tools"][2:] == (
+    assert config["tools"][3:] == (
         [
             {
                 "name": "continue_codex",
@@ -275,9 +280,10 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         else []
     )
     assert config["tool_groups"] == (
-        [{"name": "web"}] + ([{"name": "deermate"}] if enabled else [])
+        [{"name": "web"}, {"name": "secretary"}] + ([{"name": "deermate"}] if enabled else [])
     )
     assert config["plugins"] == [
+        {"name": "deermate-continuous", "use": "deermate.continuous:install", "required": True},
         {"name": "deermate-briefing", "use": "deermate.briefing:install", "required": True},
         {
             "name": "deermate-memory",
@@ -291,6 +297,7 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         },
     ]
     assert config["extensions"]["middlewares"] == [
+        "deermate.continuous_middleware:ContinuousMiddleware",
         "deermate.briefing_middleware:BriefingActionMiddleware",
         "deermate.session_middleware:CodingSessionMiddleware",
         "deermate.memory_middleware:PersonalMemoryMiddleware",

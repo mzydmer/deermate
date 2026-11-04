@@ -473,3 +473,10 @@ Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/whee
 ## 2026-11-04 UTC · M4.5 获准进入实施
 
 用户明确批准按 spec/plan 连续开发，设计和 ADR 0015 转为 Accepted。以 `5a1ed3a` 为实现基线，先核对固定运行时、原生 journal、用户授权协议与幂等查询，再逐阶段实现。批准不代表 CONT 或比较实验已经通过，也不恢复旧云端/家庭授权。
+
+
+## 2026-11-04 · M4.5 第一轮实现进入集成验收
+
+新增 Go 工作/事件/决策与发送屏障，固定 DeerFlow 的持久 Router/无工具 Assessor 适配、原 journal 的 Native 续接、只读 GitHub 来源及来源失效检查、有界检索和工作首页。持续任务协议由设备心跳明确报告；新模块与来源默认关闭，auto 仍需有效范围和非零额度。
+
+隔离 Compose 的合成账号通过真实页面完成两轮离线 Router 对话，使用相同 Thread；既有个人部署未作为 fixture。当前细化仍在测试，完整验收、低内存测量、真实 Provider/Native 与云端交付尚未由本条记录确认。见 [实施记录](specs/m4-continuous-agent-plan.md)。

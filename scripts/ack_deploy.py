@@ -376,6 +376,7 @@ def post_render(documents, settings, rollout="review"):
             [
                 {"name": "DEER_FLOW_CHANNELS_GATEWAY_URL", "value": "http://127.0.0.1:8001"},
                 {"name": "DEER_FLOW_CHANNELS_LANGGRAPH_URL", "value": "http://127.0.0.1:8001/api"},
+                {"name": "DEERMATE_CONTROL_INTERNAL_URL", "value": "http://127.0.0.1:8080"},
             ]
         )
         # The legacy runtime/auth endpoints must not be reachable via a Pod IP.

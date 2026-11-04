@@ -155,6 +155,7 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
             "operations": ["submit", "status", "events", "cancel", "resume", "input"],
             "continuation": "child-tasks-v1",
             "authorization_protocol": "local-grants-v1",
+            "continuous_protocol": "work-orders-v1",
             "remote": False,
         }
 

@@ -10,6 +10,7 @@ from .config import Settings
 from .models import ACTIVE, Conflict, State
 from .rpc import RpcError
 from .store import Store
+from .work_reports import is_work_prompt
 from .workspace import collect, prepare
 
 
@@ -59,7 +60,12 @@ class Worker:
                         if stop or task.status == State.INPUT_REQUIRED:
                             await self.cancel(task_id)
             busy = {self.store.get(tid).project_id for tid in self.running}
+            exclusive = any(is_work_prompt(self.store.get(tid).prompt) for tid in self.running)
             for task in self.store.queued():
+                if exclusive:
+                    break
+                if is_work_prompt(task.prompt) and self.running:
+                    continue
                 grant_id = task.policy.get("authorization")
                 if grant_id:
                     try:
@@ -76,6 +82,7 @@ class Worker:
                     break
                 if task.project_id in busy:
                     continue
+                exclusive = is_work_prompt(task.prompt)
                 busy.add(task.project_id)
                 self.store.update(task.task_id, status=State.STARTING)
                 job = asyncio.create_task(self._execute(task.task_id))
@@ -126,7 +133,12 @@ class Worker:
                 self.settings, task, lambda kind, payload: self._record(task_id, kind, payload)
             )
             self.adapters[task_id] = adapter
-            async with asyncio.timeout(self.settings.task_timeout_seconds):
+            timeout = (
+                min(self.settings.task_timeout_seconds, 1800)
+                if is_work_prompt(task.prompt)
+                else self.settings.task_timeout_seconds
+            )
+            async with asyncio.timeout(timeout):
                 await adapter.start()
                 if self.store.get(task_id).status == State.CANCELLING:
                     await adapter.interrupt()
@@ -163,9 +175,16 @@ class Worker:
                     "attempt": task.attempt,
                     "acceptance": "Configured command exit status; not a correctness guarantee.",
                 }
+                from .work_reports import scope_report
+
+                report = scope_report(task.prompt, adapter.summary)
+                if report:
+                    result["work_report"] = report
                 state = (
                     State.NEEDS_REVIEW
-                    if receipt is None or adapter.policy_denied
+                    if receipt is None
+                    or adapter.policy_denied
+                    or (report and report["scope"] == "out_of_scope")
                     else State.COMPLETED
                     if receipt["exit_code"] == 0
                     else State.FAILED

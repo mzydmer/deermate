@@ -1223,3 +1223,76 @@ body,
  .dm-personal-home .dm-text-button, .dm-personal-home .dm-focus-actions a, .dm-personal-home :is(button,summary,a,input,textarea,select) { min-height: 44px; }
  .dm-personal-home :is(input,textarea,select) { font-size: 16px; }
 }
+
+/* Continuous secretary uses the shared controls and semantic tokens. */
+.dm-continuous-form {
+  display: grid;
+  gap: var(--dm-space-3);
+  margin-block: var(--dm-space-4);
+}
+.dm-continuous label {
+  display: grid;
+  gap: var(--dm-space-2);
+  font-size: 14px;
+}
+.dm-continuous input,
+.dm-continuous textarea,
+.dm-continuous select {
+  width: 100%;
+  min-height: 36px;
+  padding: var(--dm-space-2) var(--dm-space-3);
+  border: 1px solid var(--dm-border-strong);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-background);
+  color: var(--dm-foreground);
+  font: inherit;
+}
+.dm-continuous textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.dm-continuous input:focus-visible,
+.dm-continuous textarea:focus-visible,
+.dm-continuous select:focus-visible {
+  outline: 2px solid var(--dm-focus);
+  outline-offset: 2px;
+}
+.dm-continuous-form > .dm-button {
+  justify-self: start;
+}
+.dm-continuous-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dm-space-3);
+}
+.dm-router-reply {
+  white-space: pre-wrap;
+  border-inline-start: 2px solid var(--dm-border);
+  padding-inline-start: var(--dm-space-3);
+}
+.dm-continuous p,
+.dm-continuous code {
+  overflow-wrap: anywhere;
+}
+.dm-continuous-error {
+  color: var(--dm-danger);
+}
+.dm-work-detail {
+  display: grid;
+  gap: var(--dm-space-3);
+  margin-block-start: var(--dm-space-3);
+}
+.dm-work-detail code {
+  display: block;
+  color: var(--dm-muted);
+  font-size: 12px;
+}
+.dm-continuous-budget {
+  margin-block: var(--dm-space-4);
+  max-width: 280px;
+}
+@media (max-width: 640px) {
+  .dm-continuous-fields {
+    grid-template-columns: 1fr;
+  }
+}

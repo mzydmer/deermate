@@ -49,14 +49,15 @@ type agentGrant struct {
 	Updated        int64        `json:"updated_at"`
 }
 type agentDevice struct {
-	Legacy   bool     `json:"legacy"`
-	ID       string   `json:"id"`
-	Name     string   `json:"name"`
-	Owner    string   `json:"owner_id"`
-	Instance string   `json:"instance_id"`
-	Projects []string `json:"projects"`
-	LastSeen int64    `json:"last_seen_at"`
-	Worker   string   `json:"worker_status"`
+	Legacy     bool     `json:"legacy"`
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	Owner      string   `json:"owner_id"`
+	Instance   string   `json:"instance_id"`
+	Projects   []string `json:"projects"`
+	LastSeen   int64    `json:"last_seen_at"`
+	Worker     string   `json:"worker_status"`
+	Continuous string   `json:"continuous_protocol,omitempty"`
 }
 type relayRequest struct {
 	ID       string          `json:"id"`
@@ -531,17 +532,19 @@ func (s *Server) agentPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var b struct {
-		Worker string `json:"worker_status"`
+		Worker     string `json:"worker_status"`
+		Continuous string `json:"continuous_protocol"`
 	}
 	if !decode(w, r, &b) {
 		return
 	}
-	if b.Worker != "reachable" && b.Worker != "unavailable" {
+	if (b.Worker != "reachable" && b.Worker != "unavailable") || (b.Continuous != "" && b.Continuous != "work-orders-v1") {
 		fail(w, 422, "invalid_status", "Unknown worker observation")
 		return
 	}
 	d.LastSeen = time.Now().Unix()
 	d.Worker = b.Worker
+	d.Continuous = b.Continuous
 	data, _ := json.Marshal(d)
 	if _, err := s.Store.DB.Exec("UPDATE deermate_agent_devices SET data=? WHERE id=?", string(data), d.ID); err != nil {
 		storeError(w, err)
@@ -588,7 +591,7 @@ func (s *Server) agentPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, _ = s.Store.DB.Exec("DELETE FROM deermate_agent_requests WHERE deadline<?", time.Now().Add(-10*time.Minute).Unix())
-	respond(w, 200, map[string]any{"grants": own, "request": job, "server_time": time.Now().Unix(), "lease_until": time.Now().Add(90 * time.Second).Unix()})
+	respond(w, 200, map[string]any{"continuous_protocol": "work-orders-v1", "grants": own, "request": job, "server_time": time.Now().Unix(), "lease_until": time.Now().Add(90 * time.Second).Unix()})
 }
 func (s *Server) agentConfirm(w http.ResponseWriter, r *http.Request) {
 	d, ok := s.agentDeviceAuth(w, r)

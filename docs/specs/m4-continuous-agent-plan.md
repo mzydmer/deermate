@@ -163,3 +163,11 @@ P0–P5 构成第一个可用版本：能观察、建议和手动接纳。P6 增
 | 真实模型 / Native / 云端变更 | 本次设计阶段未执行 |
 
 每阶段实施时补充：commit、实际命令、检查结果、对应 CONT 编号、遗留问题和下一阶段入口。原本地/云端历史收据仅证明其原提交，不用来填本计划的通过状态。
+
+### 2026-11-04 · 第一轮实现（持续推进中）
+
+已新增 Go 版本化工作账本、幂等输入/操作、独立 Router/Assessor/Native 投递泵、原操作只读核对、单仓库只读来源、observe/显式接纳/限额 auto、有界引用/本人 FTS 和首页入口。Python 内部适配器复用 AgentRuns、原 journal 与 ordinary driver；Worker 增加版本化范围报告、持续任务独占执行和 30 分钟上限，设备心跳报告 `work-orders-v1` 能力。原设备授权不自动扩大。
+
+当前阶段仍在验收，以上“已实现”不代表 P0–P7 或 CONT 全部通过。首轮检查得到：Go vet/race/无 CGO 构建通过；Python 257 passed / 11 skipped；固定 DeerFlow 契约 32 passed；前端 TypeScript 和生产编译通过。随后新增的协议/取消/来源失效细化须再次回归。独立合成 Compose 已在真实 Gateway 中完成两轮 Router 输入，复用原 Router Thread，零真实 Provider/Native 调用。
+
+继续顺序：补批次和取消/自动额度的故障用例 → 当前提交完整回归 → 最终 UI/重启/低内存负载 → 文档与收据。真实只读 GitHub、真实 Native 和云端发布仍需实际配置与有效授权，不能使用过期 SSH 或研究连接代替产品凭据。研究对照与消融单独记账，不以此处的功能测试推断效果。

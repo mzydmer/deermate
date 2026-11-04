@@ -264,6 +264,7 @@ async def connect(args):
             try:
                 state = private_json(path)  # An explicit local approval can arrive while polling.
                 worker_status = "unavailable"
+                continuous_protocol = ""
                 try:
                     response = await local.get(
                         "/capabilities",
@@ -278,13 +279,17 @@ async def connect(args):
                         and response.json().get("authorization_protocol") == "local-grants-v1"
                     ):
                         worker_status = "reachable"
+                        if response.json().get("continuous_protocol") == "work-orders-v1":
+                            continuous_protocol = "work-orders-v1"
                 except (httpx.HTTPError, ValueError, KeyError):
                     pass
-                response = await client.post(
-                    "/api/agent-devices/poll", json={"worker_status": worker_status}
-                )
+                observation = {"worker_status": worker_status}
+                if state.get("continuous_server"):
+                    observation["continuous_protocol"] = continuous_protocol
+                response = await client.post("/api/agent-devices/poll", json=observation)
                 response.raise_for_status()
                 packet = response.json()
+                state["continuous_server"] = packet.get("continuous_protocol") == "work-orders-v1"
                 if len(response.content) > 256_000:
                     raise ValueError("Cloud policy exceeded limit")
                 install_snapshot(packet, state, settings)

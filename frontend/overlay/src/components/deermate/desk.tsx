@@ -43,6 +43,7 @@ import { WorkspaceSidebarTrigger } from "@/components/workspace/workspace-sideba
 import { BrandMotion } from "./brand";
 import { MotionTabs } from "./motion-tabs";
 import { PersonalHome } from "./personal-home";
+import { ContinuousSecretary } from "./continuous-secretary";
 import { PersonalGreeting, PersonalMemoryPanel } from "./personal-memory";
 import { TaskDetail, type DeskTask } from "./task-detail";
 
@@ -214,6 +215,14 @@ export function DeerMateDesk() {
             </small>
           </div>
         </section>
+        {user?.id && (
+          <ContinuousSecretary
+            key={user.id}
+            userId={user.id}
+            zh={zh}
+            canRun={user.system_role === "admin"}
+          />
+        )}
         {user?.id && (
           <PersonalHome
             key={user.id}

@@ -1,6 +1,7 @@
 """Local HTTP client and the DeerFlow ordinary-tools lifecycle mapping."""
 
 import asyncio
+import json
 import os
 import re
 import stat
@@ -135,6 +136,12 @@ def snapshot(task: Task) -> dict:
                 "stderr": stderr[:2000],
                 "output_truncated": len(stdout) > 2000 or len(stderr) > 2000,
             }
+        if isinstance(result.get("work_report"), dict):
+            from .work_reports import scope_report
+
+            report = scope_report(task.prompt, json.dumps(result["work_report"]))
+            if report:
+                evidence["work_report"] = report
         response["result"] = evidence
     return response
 

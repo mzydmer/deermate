@@ -17,6 +17,7 @@ def runtime_config() -> dict:
     return {
         "extensions": {
             "middlewares": [
+                "deermate.continuous_middleware:ContinuousMiddleware",
                 "deermate.briefing_middleware:BriefingActionMiddleware",
                 "deermate.session_middleware:CodingSessionMiddleware",
                 "deermate.memory_middleware:PersonalMemoryMiddleware",
@@ -24,14 +25,20 @@ def runtime_config() -> dict:
         },
         "tools": [
             {
+                "name": "secretary_route",
+                "group": "secretary",
+                "use": "deermate.continuous_middleware:secretary_route",
+            },
+            {
                 "name": "web_search",
                 "group": "web",
                 "use": "deerflow.community.ddg_search.tools:web_search_tool",
             },
             {"name": "web_fetch", "group": "web", "use": "deermate.web_tools:web_fetch"},
         ],
-        "tool_groups": [{"name": "web"}],
+        "tool_groups": [{"name": "web"}, {"name": "secretary"}],
         "plugins": [
+            {"name": "deermate-continuous", "use": "deermate.continuous:install", "required": True},
             {"name": "deermate-briefing", "use": "deermate.briefing:install", "required": True},
             {
                 "name": "deermate-memory",
@@ -115,6 +122,34 @@ async def session_binding(payload: Mapping, context) -> dict:
 
     saved = journal()
     binding = saved.owned_binding(key, principal.user_id, thread) if isinstance(key, str) else None
+    if not binding:
+        # Direct admitted work uses the same journal without a redundant model
+        # run just to write a checkpoint marker. Resolve only the current owned
+        # incarnation after the host's fresh get_state permission check.
+        import json
+        import sqlite3
+
+        from .briefing import database
+
+        try:
+            with sqlite3.connect(database().resolve().as_uri() + "?mode=rw", uri=True) as db:
+                db.row_factory = sqlite3.Row
+                row = db.execute(
+                    "SELECT incarnation,project_id,metadata_json FROM threads_meta "
+                    "WHERE thread_id=? AND user_id=?",
+                    (thread, principal.user_id),
+                ).fetchone()
+                if (
+                    row
+                    and row["incarnation"]
+                    and not row["project_id"]
+                    and not json.loads(row["metadata_json"] or "{}").get("deerflow_archived")
+                ):
+                    binding = saved.binding(
+                        ChatScope(principal.user_id, thread, row["incarnation"])
+                    )
+        except (sqlite3.OperationalError, ModuleNotFoundError):
+            pass
     if not binding:
         return {"bound": False, "title": state.get("values", {}).get("title")}
     scope = ChatScope(binding["user_id"], binding["thread_id"], binding["incarnation"])

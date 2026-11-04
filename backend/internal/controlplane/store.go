@@ -145,7 +145,10 @@ func (s *Store) initialize() error {
 	if err = s.initializeBriefing(); err != nil {
 		return err
 	}
-	return s.initializeBriefingActions()
+	if err = s.initializeBriefingActions(); err != nil {
+		return err
+	}
+	return s.initializeContinuous()
 }
 
 const userColumns = "id,email,coalesce(password_hash,''),system_role,disabled,needs_setup,token_version,oauth_provider"

@@ -24,15 +24,20 @@ type Config struct {
 	JWTSecret         string
 	PasswordCost      int
 	AuthorizationHome string
+	ContinuousEnabled bool
+	GitHubSecretHome  string
+	GitHubRepository  string
 }
 type Server struct {
-	Store          *Store
-	cfg            Config
-	mux            *http.ServeMux
-	engine         *runtimeAdapter
-	dummy          string
-	hashing        chan struct{}
-	memoryDelivery chan struct{}
+	Store           *Store
+	cfg             Config
+	mux             *http.ServeMux
+	engine          *runtimeAdapter
+	dummy           string
+	hashing         chan struct{}
+	memoryDelivery  chan struct{}
+	githubTransport http.RoundTripper
+	continuousLanes map[string]chan struct{}
 }
 type sessionKey struct{}
 
@@ -64,6 +69,7 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 		return nil, err
 	}
 	engine.onResponse = s.captureMemoryResponse
+	s.continuousLanes = map[string]chan struct{}{"router": make(chan struct{}, 1), "assessor": make(chan struct{}, 1), "native": make(chan struct{}, 1), "source": make(chan struct{}, 1)}
 	s.routes()
 	return s, nil
 }
@@ -185,6 +191,7 @@ func (s *Server) protected(admin bool, h http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) routes() {
+	s.continuousRoutes()
 	s.authorizationRoutes()
 	s.memoryRoutes()
 	s.briefingRoutes()
@@ -525,7 +532,7 @@ func (s *Server) preferences(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
-	if strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.briefing/") || strings.HasPrefix(strings.TrimSpace(r.Header.Get("Idempotency-Key")), "extension:deermate.briefing:") || strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.memory/") || r.URL.Path == "/api/memory" || strings.HasPrefix(r.URL.Path, "/api/memory/") {
+	if strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.continuous/") || strings.HasPrefix(strings.TrimSpace(r.Header.Get("Idempotency-Key")), "extension:deermate.continuous:") || strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.briefing/") || strings.HasPrefix(strings.TrimSpace(r.Header.Get("Idempotency-Key")), "extension:deermate.briefing:") || strings.HasPrefix(r.URL.Path, "/api/plugins/deermate.memory/") || r.URL.Path == "/api/memory" || strings.HasPrefix(r.URL.Path, "/api/memory/") {
 		fail(w, 403, "personal_api_required", "Use the personal memory API")
 		return
 	}
