@@ -59,3 +59,9 @@ Authenticated mutations need the session's `csrf_token` cookie value in `X-CSRF-
 This single-instance alpha has one Go service and one pinned runtime sharing local-disk SQLite. It is not an HA or arbitrary DeerFlow-version migration. Runtime requests receive short-lived real-user/version JWTs; browser-supplied internal identities and upstream auth cookies are stripped. Execution is admin-only until project-scoped grants exist; ordinary users can inspect their own threads/tasks and manage cosmetic preferences.
 
 Public registration, OAuth providers, PAT/API-key login, email changes, MFA, recovery email and project-scoped execution grants are not implemented. Disabled legacy auth routes fail explicitly. Account/audit/session queries are bounded; enterprise audit retention/pagination is separate work. Mutations are not automatically retried. Closing a stream does not cancel the underlying task.
+
+## Continuous secretary Alpha
+
+Default off: `DEERMATE_CONTINUOUS_ENABLED=true` enables the installation capability; the owner separately opts in through `/api/me/continuous-config`. Go owns `/api/me/router`, `/api/me/work-orders` (actions/timeline/context/search), `/api/me/work-sources`, `/api/me/automation-rules` and `/api/me/work-decisions`. All mutations use owner/CSRF and revision/idempotency checks. The internal continuous plugin is blocked from public proxy access.
+
+Optional fixed-repository ingestion uses `DEERMATE_GITHUB_REPOSITORY` and `DEERMATE_GITHUB_SECRET_HOME/github-read-token` (private read-only credential). Setup, supported model bounds, Worker capability, MCP profile, durable recovery and limits: [guide](../docs/continuous-secretary.md). New tables coexist with existing accounts and task journals; no historical chat import runs at startup.

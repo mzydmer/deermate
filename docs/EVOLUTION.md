@@ -480,3 +480,17 @@ Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/whee
 新增 Go 工作/事件/决策与发送屏障，固定 DeerFlow 的持久 Router/无工具 Assessor 适配、原 journal 的 Native 续接、只读 GitHub 来源及来源失效检查、有界检索和工作首页。持续任务协议由设备心跳明确报告；新模块与来源默认关闭，auto 仍需有效范围和非零额度。
 
 隔离 Compose 的合成账号通过真实页面完成两轮离线 Router 对话，使用相同 Thread；既有个人部署未作为 fixture。当前细化仍在测试，完整验收、低内存测量、真实 Provider/Native 与云端交付尚未由本条记录确认。见 [实施记录](specs/m4-continuous-agent-plan.md)。
+
+## 2026-11-04 · M4.5 Alpha 恢复、授权与完整离线链路
+
+`b952ee9` 在 `e172857` 第一轮实现上补齐固定授权/设备/版本检查、Assessor 独立槽、明确拒绝的持久回执、账户重认证后的只读核对、来源规则/批次快照和失效索引、原生 head 改变的显式恢复。新一轮排队清除上一轮验证标记/摘要，历史回执仍保留。新增独立 fixture 准备、API/进程中断、低内存读取、完整 Native 协议和指定旧 Go 镜像回退脚本，默认不接触个人或云端实例。
+
+最终 Go mod/vet/race/无 CGO 构建、Python **260 passed / 11 skipped**、固定 DeerFlow **37 passed**、Ruff/wheel、TypeScript/完整生产构建、共享 token 及实际固定 Helm/Compose **29 项**通过。真实 Go/Gateway 完成两轮同一 Router Thread，并在接纳后丢 ACK/重启 Go 时核对一个原 run，perform 计数为 1。实际 ordinary driver→relay→连接器→Worker→假 Codex 两轮共用一根，两次独立测试通过；Native 在途时 Router 能处理新输入。没有真实模型/Codex 调用。
+
+1,000 个合成工作/10,000 个事件，各 100 次、并发 1 的列表/详情/引用/搜索 p95 为 69.666/39.341/42.354/84.995 ms，四服务健康，无 OOM，容器合计限额 1472 MiB。初次误用跨架构 binary 已排除；amd64 的全量 BM25 评分搜索 p95 505.319 ms 未达标，改为最近索引匹配上限 20 后通过。结果不是冷读、真实 2 GiB 主机或 Router 对照实验。
+
+早期 toy Worker 镜像缺 Git、MCP CLI 命令错误分别阻断准备/派发；后者留未知操作，没有重放。修正后用全新隔离实例完成原生链路。停用模块→指定旧 Go `m4c`→新镜像实际保留账号/线程/工作/journal 及未知操作，未覆盖数据库。最终 Python/Gateway 32 个源文件及前端 16 个 overlay 文件与实际镜像逐文件匹配；完整 Native 镜像早于最终 Go 验证标记修正，后者以专项及最终 race 回归验证。
+
+同源 390px iframe 的浅深色、未授权按钮与键盘焦点已经真实检查并留截图。完整 CONT-16、更多中断/公平性、真实 GitHub/Provider/Codex、云端发布和 R-EVAL 比较仍未完成；原个人 2026 实例未升级，旧 SSH 不恢复。中英文 README、基础规格、plan、STATUS 和[使用指南](continuous-secretary.md)已同步实现/验收/部署边界。[脱敏收据](verification/continuous-secretary-2026-11-04.json)保留失败与限制。
+
+交付核对：本轮 Git SSH/HTTPS 推送分别因公钥/凭据不可用而失败，远端 main 通过 GitHub 连接器核对仍为 `5a1ed3a`。本地提交完整保留；没有借插件另造提交链或改写远端历史。两个独立合成 Compose 已停止，数据/未知操作证据保留。

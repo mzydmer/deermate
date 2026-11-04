@@ -4,6 +4,7 @@ These receipts describe known test fixtures, not private user work or a producti
 
 | Receipt | Scope |
 | --- | --- |
+| [continuous-secretary-2026-11-04.json](continuous-secretary-2026-11-04.json) | M4.5 Alpha: 260 Python / 37 pinned contracts, actual Go/Gateway persistent Router and lost-ACK process restart, full driver/relay/Worker with two fake-native rounds on one root and concurrent Router response, 1,000/10,000 corpus timings, specific old-Go rollback preserving one unknown operation. UI partial; live GitHub/provider/Codex, cloud and comparative research remain separate. |
 | [personal-home-2026-11-02.json](personal-home-2026-11-02.json) | Synthetic deterministic home loop: 41 pinned contracts, 43 actual local Go/Gateway API checks, 14 browser checks and full source/image correspondence. Codex continuation uses a Submitter fixture; real Native/cloud acceptance remain separate. |
 | [codex-conversation-live-2026-10-29.json](codex-conversation-live-2026-10-29.json) | Real cloud model selects two scoped follow-ups to the earlier home Codex repair: one native session/workspace, marker recall, preserved parent/patch evidence, independent tests and delivered notifications; versioned Gateway image upgrade and unchanged lease. |
 | [codex-conversation-gateway-2026-10-29.json](codex-conversation-gateway-2026-10-29.json) | Actual pinned Gateway/SQL/SSH with three child-task rounds, one offline native session/workspace, preserved parent evidence and scoped reconciliation. Real-model deployment evidence is separate. |

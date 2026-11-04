@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight and a real three-round cloud-model/home-Codex conversation verified over an approved temporary reverse SSH link; general enrollment and actual expiry observation remain pending. Updated: 2026-10-28. This is a sequence of acceptance targets, not a delivery schedule.
+Status: M1–M2.5, M4.1 workspace, Go control plane and shared design language implemented; single-host public IP HTTPS verified. Worker preflight and a real three-round cloud-model/home-Codex conversation verified over an approved temporary reverse SSH link; general enrollment and actual expiry observation remain pending. Updated: 2026-11-04. This is a sequence of acceptance targets, not a delivery schedule.
 
 See [SPEC.md](SPEC.md) for stable requirements, [STATUS.md](STATUS.md) for current implementation and verification, and [EVOLUTION.md](EVOLUTION.md) for project history. Agents start at [AGENTS.md](../AGENTS.md).
 
@@ -160,3 +160,15 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 主动 HTTPS 连接与持久单次投递；本地跨运行时及过期/幂等测试。
 - [ ] 本轮线上部署与 HTTPS 页面验收。
 - [ ] 开机守护、身份凭据定期轮换、后台提醒与共享设备授权。
+
+## M4.5 — Persistent secretary Alpha
+
+- [x] Implement default-off Go work/event/inbox/decision ledger and guarded runtime adapters.
+- [x] Isolate persistent Router, no-tool Assessor and original native task sessions; preserve one chat/native root and operation reconciliation.
+- [x] Add fixed-repository read-only observe, explicit acceptance, bounded opt-in auto, source invalidation and owner-scoped FTS/reference reads.
+- [x] Add the protected secretary/work/source/rule interface and setup guide.
+- [ ] Complete all CONT-01–23 end-to-end acceptance, including full mobile/accessibility/failure states and compatible rollback.
+- [ ] Verify one separately configured live GitHub/model/Codex loop, then deploy with valid access.
+- [ ] Publish R-EVAL-01–05 comparisons and ablations; local functional tests do not establish research gains.
+
+[Implementation plan](specs/m4-continuous-agent-plan.md) · [Usage](continuous-secretary.md) · [Current evidence](verification/continuous-secretary-2026-11-04.json).

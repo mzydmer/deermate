@@ -267,7 +267,7 @@ DSH 的精确日志读取可能重放整份日志，本方案不能据此宣称�
 
 ## 11. 提议的公开与内部接口
 
-以下均为待实现接口。写入沿用会话、CSRF、owner、`operation_id` 和 `expected_revision`；返回公开视图，不暴露技术 token、任意本机路径或第三方凭据。普通账号保持既有只读边界；新增来源/规则/执行由设备 owner 管理。
+以下接口已有 Alpha 实现，实际状态与限制见 [STATUS](../STATUS.md) 和[使用指南](../continuous-secretary.md)。写入沿用会话、CSRF、owner、`operation_id` 和 `expected_revision`；返回公开视图，不暴露技术 token、任意本机路径或第三方凭据。普通账号保持既有只读边界；新增来源/规则/执行由设备 owner 管理。
 
 | 接口 | 行为 |
 | --- | --- |
@@ -342,3 +342,11 @@ DSH 的精确日志读取可能重放整份日志，本方案不能据此宣称�
 - [计算/状态/环境解耦](https://www.anthropic.com/research/managed-agents)、[多 Agent 调研系统](https://www.anthropic.com/research/multi-agent-research-system)：保持云端协调与设备执行边界，并按任务价值限制并发和成本。
 
 待用户审核的推荐选择：**保留 Go + DeerFlow + 现有 Worker；独立 Router/Worker 角色、异步回报及已关联 Thread 直通；V1 单仓库/Codex；先 observe 后 opt-in auto；原生绑定不变；先有界引用召回；先程序监测；站外写入和其他执行器后续。** 本次仅设计文档，不以历史收据充当 CONT 验收结果。
+
+## 2026-11-04 · 实现映射
+
+Go 的 `continuous_*.go` 以版本化 `workRecord` envelope 保存来源/事件/规则/Router/inbox/决策/工作/操作/上下文，唯一键和预算独立表提供事务约束。Python `continuous.py` 是原 AgentRuns/journal/ordinary driver 的内部适配层，`continuous_middleware.py` 强制角色与请求限制；Worker 的结构化范围报告为 `DEERMATE_WORK_V1`。这些实现不引入第二份 Native 主状态。
+
+本人 FTS5 使用 trigram MATCH，按最近索引顺序返回最多 20 项，避免高频词触发全历史 BM25 评分；短词只查最近 200 张卡。排序取舍及低配实测见使用指南/本轮收据。来源撤销与逐跳版本仍由账本检查，索引不构成权限。
+
+验收按 CONT 保留原标准，组件通过不等同端到端全部通过。真实只读来源/真实 Native、完整 UI 状态、兼容回退及研究对照尚未全部完成，详见 plan。

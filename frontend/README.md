@@ -40,3 +40,7 @@ Personal-memory UI acceptance uses [`verify_memory_frontend.cjs`](../scripts/ver
 
 
 The [personal home](../docs/personal-home.md) keeps explicit attention topics beyond the recent-chat page and adds evidence-backed focus, opt-in goal suggestions and admitted actions. `verify_personal_home.cjs` uses the same synthetic fixture variables plus `DEERMATE_BROWSER_EXECUTABLE`; set `NODE_OPTIONS=--dns-result-order=ipv4first` when localhost resolves to IPv6 but the bundle publishes IPv4 only. It requires a separate loopback bundle with only `capture-fixture`, clicks real read-only follow-up/new-topic actions, and checks feedback, source loss, owner change, keyboard, mobile, dark and failed-refresh behavior. Each complete pass creates two offline Fake-model runs, zero real-provider/Native calls. Do not point it at a personal or production deployment.
+
+## Continuous secretary entry
+
+`continuous-secretary.tsx` connects the protected home to the persistent Router, work details, original-operation reconciliation, candidates and source/rule settings. It follows the existing neutral tokens, native controls and mobile single-column layout; no additional animation system is introduced. Server permissions/revisions determine execution buttons. The module is default off and unconfigured devices are never shown as ready. [Setup and current limits](../docs/continuous-secretary.md).

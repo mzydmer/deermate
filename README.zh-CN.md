@@ -6,7 +6,7 @@
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · Agent 系统研究 Alpha · Go 主后端</p>
 <p align="center"><a href="#research">研究方向</a> · <a href="docs/specs/m4-continuous-agent.md">Spec</a> · <a href="docs/specs/m4-continuous-agent-plan.md">实施与评估计划</a> · <a href="docs/STATUS.md">开发进度</a></p>
 
-> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-03。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。新的持久 Router/Worker 架构处于 **待审核提案**，对比实验尚未开展。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
+> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-04。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。持久 Router/Worker 已有默认关闭的 **Alpha 实现和离线集成验收**，真实接入与对比实验另行验收。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
 
 ## 你的私人 Agent 秘书
 
@@ -30,7 +30,7 @@ DeerMate 研究如何让一个私人秘书跨独立 Agent 会话、变化的信�
 
 研究贡献目标是**可运行的系统设计、明确的不变量和可复现的评估方法**。架构借鉴 [DSH Super-agent 的 Router/Worker 思想](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/004-prompts.md)和[上下文工程](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents)，探索它们在 Go 控制、自托管、原生会话连续性与独立执行证据中的具体实现。
 
-**M4.5 目标架构：待审核设计，尚无 Router 对比实验结果。**
+**M4.5 Alpha 架构：已有实现，尚无 Router 对比实验结果。**
 
 ```mermaid
 flowchart TD
@@ -56,7 +56,7 @@ flowchart TD
 
 计划对比三类方案：具备等价后台工具的单协调会话、所有事件经过 Router 的双层系统、加入 Thread 直通的双层系统；另做引用召回与路由机制的消融。使用相同事件轨迹、模型版本、预算和 Worker 配额，同时报告延迟、完成证据、模型用量和失败结果。
 
-计划开放可回放的合成事件、故障注入场景、固定版本配置和脱敏收据。现有[验证材料](docs/verification/README.md)提供组件和有限集成的证据；新方案的 **23 项验收标准仍待完成**，尚未宣称性能提升。
+计划开放可回放的合成事件、故障注入场景、固定版本配置和脱敏收据。现有[验证材料](docs/verification/README.md)提供组件和有限集成的证据；新方案的 **23 项验收标准按组件/集成/真实接入分别追踪**，尚未宣称性能提升。
 
 [阅读 Spec](docs/specs/m4-continuous-agent.md) · [实施与评估 Plan](docs/specs/m4-continuous-agent-plan.md) · [架构决策草案](docs/decisions/0015-continuous-agent-control-plane.md)
 
@@ -114,7 +114,7 @@ deermate diff TASK_ID
 
 | 能力 | 目标体验 | 进展 |
 | --- | --- | --- |
-| 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | M4.5 Router/Worker spec 与 plan 待审核 |
+| 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | M4.5 默认关闭 Alpha；[接入与使用](docs/continuous-secretary.md) |
 | 专事专办 | 根据职责、项目权限、设备在线情况和预算分派 | 有代码边界的 Router 设计提案，首期 Codex |
 | 家里与云端协作 | 调用自有机器；离线设备明确显示等待状态 | 历史临时链路已验收；用户管理配对/HTTPS 已本地验收 |
 | 持久会话 | 本地提交、查询、事件、中断、继续；幂等提交和显式恢复 | 已有本地实现 |
@@ -215,7 +215,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 | M4.4a | 个人设置、显式记忆存取、范围内 FTS5 召回与聊天注入 | 已本地验收并部署云端，记忆默认关闭 |
 | M4.4b | 对话中的明确记忆指令、规范来源与失效控制 | 已本地验收并部署云端，无额外提取模型调用 |
 | M4.4c–e | 持久关注、任务证据、目标建议与首页动作接纳 | 云端首页/API 已验收；动作使用本地合成模型，新首页 Native 入口待真实验收 |
-| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | Spec/plan 待审核，23 项验收及对比实验待完成 |
+| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | 默认关闭 Alpha，离线集成已验证；完整实机/UI 与对比实验待完成 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
 
 已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。[本地验证与限制](docs/local-worker.md)。

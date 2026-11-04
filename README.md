@@ -15,7 +15,7 @@
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 <p align="center"><a href="#research">Research</a> · <a href="#see-the-idea">Preview</a> · <a href="#how-it-fits-together">Architecture</a> · <a href="#connect-your-agents">Integrations</a> · <a href="#development-status">Progress</a> · <a href="CONTRIBUTING.md">Contribute</a></p>
 
-> **Personal-agent systems research alpha · 2026-11-03.** Go control, real Codex session continuity and the personal-memory home have retained implementation evidence. User-managed device authorization and outbound HTTPS have separate local acceptance. The persistent Router/Worker architecture is a **proposal awaiting review**; comparative research experiments have not run. The video is a concept film. [Current status](docs/STATUS.md) · [Research spec](docs/specs/m4-continuous-agent.md).
+> **Personal-agent systems research alpha · 2026-11-04.** Go control, real Codex session continuity and the personal-memory home have retained implementation evidence. User-managed device authorization and outbound HTTPS have separate local acceptance. The persistent Router/Worker architecture now has an opt-in Alpha implementation and isolated offline acceptance; live integrations and comparative research experiments remain separate. The video is a concept film. [Current status](docs/STATUS.md) · [Research spec](docs/specs/m4-continuous-agent.md).
 
 ## Meet your personal agent secretary
 
@@ -39,7 +39,7 @@ DeerMate studies how a private assistant can maintain ongoing work across isolat
 
 Our contribution target is an executable systems design, explicit invariants and reproducible evaluation. The design builds on the [DSH Super-agent Router/Worker model](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/004-prompts.md) and [context engineering](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents). DeerMate applies these ideas to a Go-controlled, self-hosted assistant that preserves native coding sessions and independently collected execution evidence.
 
-**Proposed M4.5 architecture — awaiting review, not an implemented Router benchmark:**
+**M4.5 Alpha architecture — implementation available; no comparative Router benchmark yet:**
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,7 @@ flowchart TD
     G --> H[Workspace and work history]
 ```
 
-The **Router** coordinates work and communicates with the user. It dispatches asynchronously and can handle another request while a Worker runs. Known thread events pass through Go's checks to their existing Worker; a Worker hands an out-of-scope request back for routing. **Go** owns durable state and enforces admission, while each **task Worker** retains its own execution conversation and native session. The first proposal limits Native concurrency to one for a small deployment; coordination remains asynchronous.
+The **Router** coordinates work and communicates with the user. It dispatches asynchronously and can handle another request while a Worker runs. Known thread events pass through Go's checks to their existing Worker; a Worker hands an out-of-scope request back for routing. **Go** owns durable state and enforces admission, while each **task Worker** retains its own execution conversation and native session. The Alpha limits Native concurrency to one for a small deployment; coordination remains asynchronous.
 
 | Research question | Design under study | Planned measurements |
 | --- | --- | --- |
@@ -67,7 +67,7 @@ Planned evaluations compare a single-session coordinator with equivalent backgro
 
 We plan to publish replayable synthetic event traces, fault-injection cases, pinned configurations and sanitized receipts. Existing [verification artifacts](docs/verification/README.md) establish scoped component/integration behavior; they are not comparative Router results. The new design has **23 pending acceptance criteria** and no claimed performance gain.
 
-[Read the spec](docs/specs/m4-continuous-agent.md) · [Implementation and evaluation plan](docs/specs/m4-continuous-agent-plan.md) · [Proposed architecture decision](docs/decisions/0015-continuous-agent-control-plane.md)
+[Read the spec](docs/specs/m4-continuous-agent.md) · [Implementation and evaluation plan](docs/specs/m4-continuous-agent-plan.md) · [Accepted architecture decision](docs/decisions/0015-continuous-agent-control-plane.md)
 
 ## See the idea
 
@@ -219,7 +219,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 We track delivered work separately from planned functionality. Delivered scope includes **M4.4c–e personal focus and home actions**, implemented on the Go backend and shared design system, locally verified and deployed to the existing Singapore single-host installation. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
 
-The next research milestone, **M4.5 persistent Router/Worker coordination**, is proposed and awaiting user review. User-managed Agent authorization has its own [local acceptance receipt](docs/verification/agent-authorization-local-2026-11-03.json). Neither establishes a deployed M4.5 Router or a comparative benchmark result.
+**M4.5 persistent Router/Worker coordination** is implemented as a default-off Alpha. See the [usage and setup guide](docs/continuous-secretary.md), [progress](docs/STATUS.md) and [local evidence](docs/verification/continuous-secretary-2026-11-04.json). User-managed Agent authorization has its own [local acceptance receipt](docs/verification/agent-authorization-local-2026-11-03.json). Local evidence does not establish a deployed M4.5 Router or a comparative benchmark result.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -231,7 +231,7 @@ The next research milestone, **M4.5 persistent Router/Worker coordination**, is 
 | M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified and cloud-deployed; memory defaults off |
 | M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified and cloud-deployed; no extra extraction-model calls |
 | M4.4c–e | Persistent personal focus, task evidence, goal suggestions and admitted home actions | Cloud home/API verified; action tests use local synthetic models; new home Native entry still needs live acceptance |
-| M4.5 | Persistent Router, isolated Worker sessions, event pass-through, bounded recall and admission | Proposed spec/plan; 23 acceptance criteria pending; comparative evaluations planned |
+| M4.5 | Persistent Router, isolated Worker sessions, event pass-through, bounded recall and admission | Opt-in Alpha; local fixtures verified, full live/UI criteria and comparative evaluations pending |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).
