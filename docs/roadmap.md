@@ -131,7 +131,7 @@ First release uses existing owned conversations/tasks. Authorized external-sourc
 
 ## M4.5 — Continuous work and event-driven secretary（Accepted，实施中）
 
-[功能 spec](specs/m4-continuous-agent.md) · [实施 plan](specs/m4-continuous-agent-plan.md) · [Proposed ADR 0015](decisions/0015-continuous-agent-control-plane.md)。这是下一阶段设计，用户审核通过前不开始改造；不替代 M4.4 尚未完成的语义提取等范围。
+[功能 spec](specs/m4-continuous-agent.md) · [实施 plan](specs/m4-continuous-agent-plan.md) · [ADR 0015](decisions/0015-continuous-agent-control-plane.md)。用户已批准开发，P0–P6 Alpha 已实现，以下复选框表示阶段验收而非代码是否存在；不替代 M4.4 尚未完成的语义提取等范围。[当前证据与限制](STATUS.md)。
 
 - [x] 用户审核 spec / plan；2026-11-03 明确批准开始开发。
 - [ ] P0–P2：固定 Router/Worker 工具边界、Go inbox/工作/事件账本、非阻塞派单与原会话回执核对。
@@ -139,6 +139,8 @@ First release uses existing owned conversations/tasks. Authorized external-sourc
 - [ ] P5：统一秘书入口、持续工作详情及待处理界面。
 - [ ] P6：本人启用的有界 auto、预算、背压和程序监测。
 - [ ] P7：有限实机、低内存/升级回退、实际交付与脱敏收据。
+
+P5 已补真实 Chrome 390/1280/1440px、浅深色、键盘/减少动态、工作草稿隔离、普通账号隔离、局部读取失败/过时/恢复；[独立 UI 收据](verification/continuous-ui-2026-11-04.json)。来源候选等完整矩阵尚未通过，不据此勾选整个阶段。
 
 ## M5 — Extend the ecosystem
 

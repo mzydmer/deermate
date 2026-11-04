@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-04T14:42:35.755602+00:00",
+  "scope": "M4.5 local frontend acceptance; actual browser viewport, isolated offline fixture; no new model or Native execution",
+  "parent_commit": "07863fc",
+  "historical_runtime_evidence": "continuous-secretary-2026-11-04.json; not rerun by this frontend-only pass",
+  "fixture": {
+    "compose_project": "deermate-native-check",
+    "loopback_port": 2037,
+    "provider": "continuous-fixture (offline Fake)",
+    "grants_revoked_before_ui": true,
+    "synthetic_owner_and_member": true,
+    "state_samples": 8,
+    "state_samples_scope": "presentation only; no operations created for the samples",
+    "personal_2026_touched": false,
+    "cloud_touched": false
+  },
+  "build": {
+    "typescript_no_emit": "passed",
+    "next_production_build": "passed",
+    "final_css_rebuild_and_typecheck": "passed",
+    "static_pages": 163,
+    "image": "deermate.local/continuous/frontend:ui-verified",
+    "image_id": "sha256:e7f2a432cb15219552227ab046e2c3def194d8cde2c653aeaa12ce570210de9a",
+    "strategy": "Full production source build, then CSS-only incremental production rebuild; reused pinned installed dependencies, no skipped TypeScript checks",
+    "source_correspondence": {
+      "checked": 17,
+      "mismatches": [],
+      "files": [
+        {
+          "file": "frontend/overlay/public/deermate/vendor/lottie-light-5.13.0.min.js",
+          "sha256": "9588432bec30c8ef8200bac4a67d8aaad881047bc2a6c9fa624d90ec96402410",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/public/deermate/vendor/lottie-web-LICENSE.md",
+          "sha256": "9d8d4d8b4bb99572ee8b51025a30b8493d949798cac465c6c15b1b29420bcb06",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/app/page.tsx",
+          "sha256": "85a97010c64e520a2c8f1c502e3242e080ddc53382770a9e6b70918fa5070fe8",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/app/workspace/page.tsx",
+          "sha256": "af0da81e1e0a1ff1c67fb9176bc4b0140430cd05d78e50b8466519b823e6822f",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/auth-frame.tsx",
+          "sha256": "121fa7df5b9de77bfedad812558f629bba0aac6a2df3d800903113872aea8a51",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/brand.tsx",
+          "sha256": "7074aaee5d73d123bc4f6838f787ea350cd0c06a825f5d8f726de19c316122b7",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/continuous-intents.ts",
+          "sha256": "a80b56cfb724e0cd1650dc39cca7a45842e8cf74c7d3f35a6f1cb89ba23a0be6",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/continuous-secretary.tsx",
+          "sha256": "8876b1bc391135ebafd0366e70bc2c8fc6cf3dcef2969fd41ea5b3b1cda39a6d",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/desk.tsx",
+          "sha256": "8957761bec5c0f26c6d8aef0726678935575c04f1803af3e55b174677c9c2c91",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/motion-tabs.tsx",
+          "sha256": "298c0869110778bc65a774a0ba99d760cba98ef74da19cdfe6a22b86ce842151",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/personal-home.tsx",
+          "sha256": "a0aa2298f7ce5b3ce44ccff4df6ea63c9c43d4bf130d3abcba5ab751bdc00e76",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/personal-memory.tsx",
+          "sha256": "d536c31415c49e246a3fdb67ccc5bec491159f3daba26cde59908fb0fc34dd15",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/deermate/task-detail.tsx",
+          "sha256": "4802347daf3e2c7a19a46ca382986d842972aed6c50b62c6dce6b51f7999806d",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/workspace/welcome.tsx",
+          "sha256": "bbda07f06f735b929c7b1358d1e4831ee90357e80d0c0d3b20437b73779f06f9",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/components/workspace/workspace-header.tsx",
+          "sha256": "d6bf5b47d411cbd00a67438c164da421b58518597818843c62ba966da542ce60",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/styles/deermate.css",
+          "sha256": "330d7856f25a8d390a97b0724e13c33eee5256f66cbdb9db682a4dbce9018758",
+          "matches_image": true
+        },
+        {
+          "file": "frontend/overlay/src/styles/design-tokens.css",
+          "sha256": "683ef7627a69d14f7fb6784f48ece4dc3a063f575477e2b8dd2f319f17f8cdd7",
+          "matches_image": true
+        }
+      ]
+    }
+  },
+  "browser": {
+    "control": "cua_repl Chrome; separate in-app browser member login",
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1280,
+        "height": 900
+      },
+      {
+        "width": 1440,
+        "height": 900
+      }
+    ],
+    "actual_viewport_not_iframe": true,
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "horizontal_document_overflow": false,
+    "mobile_visible_controls": {
+      "input_min_height_px": 44,
+      "select_min_height_px": 44,
+      "textarea_min_height_px": 80,
+      "font_px": 16
+    },
+    "keyboard": {
+      "disabled_continue_skipped_to_pause": true,
+      "focus_outline_px": 2,
+      "focus_outline_style": "solid",
+      "light_focus_color": "rgb(0, 112, 243)"
+    },
+    "reduced_motion": {
+      "native_chrome_rendering_emulation": true,
+      "animated_desk_elements": 0,
+      "brand_player_display": "none",
+      "tab_transition": "0s"
+    }
+  },
+  "checks": [
+    {
+      "id": "loading",
+      "result": "passed",
+      "scope": "actual settings and work loading after reload"
+    },
+    {
+      "id": "work_draft_isolation",
+      "result": "passed",
+      "scope": "two different work drafts; return restores only the selected work draft"
+    },
+    {
+      "id": "closed_work",
+      "result": "passed",
+      "scope": "closed work has no next-round input"
+    },
+    {
+      "id": "unconfigured_source_and_empty_suggestions",
+      "result": "passed",
+      "scope": "source enable disabled; explicit empty suggestion copy"
+    },
+    {
+      "id": "ordinary_member_isolation",
+      "result": "passed",
+      "scope": "real login to own empty workspace, no owner continuous work panel or draft"
+    },
+    {
+      "id": "eight_state_cards",
+      "result": "passed",
+      "scope": "ready, queued, input_required, uncertain, cancel_requested, cancelled, verification_required, handoff labels only"
+    },
+    {
+      "id": "partial_read_failure",
+      "result": "passed",
+      "scope": "nginx 503 for rules and work timelines; visible local errors and disabled rule writes"
+    },
+    {
+      "id": "stale_work_read",
+      "result": "passed",
+      "scope": "work-list 503 retains prior content, shows stale warning, disables pause/close; reconcile still enabled"
+    },
+    {
+      "id": "read_failure_recovery",
+      "result": "passed",
+      "scope": "base nginx restored; warning cleared, original two operation receipts readable, actions enabled"
+    },
+    {
+      "id": "uncertain_intent_recovery",
+      "result": "passed",
+      "scope": "8 offline Node regression scenarios, not a browser network-loss-after-admission test"
+    }
+  ],
+  "regressions": {
+    "intent_node24": {
+      "passed_scenarios": 8,
+      "command": "node scripts/verify_continuous_intents.mjs"
+    },
+    "frontend_overlay": {
+      "passed": 3,
+      "command": ".venv/bin/python -m pytest -q tests/test_frontend_overlay.py"
+    },
+    "related_frontend_deploy_subset": {
+      "passed": 24,
+      "skipped": 3,
+      "scope": "retained local regression.log; actual pinned Helm 29 is historical evidence, not rerun here"
+    },
+    "fixture_ruff": "passed",
+    "shared_design_tokens": "passed",
+    "diff_check": "passed",
+    "new_ci_job": "frontend-intents; added locally, remote run not claimed",
+    "go_worker_full_suite": "historical baseline only; unchanged this pass"
+  },
+  "counts_before": {
+    "runs": 7,
+    "native_tasks": 2,
+    "budget": [
+      [
+        "model",
+        5
+      ]
+    ]
+  },
+  "counts_after": {
+    "runs": 7,
+    "native_tasks": 2,
+    "budget": [
+      [
+        "model",
+        5
+      ]
+    ]
+  },
+  "new_model_runs": 0,
+  "new_native_tasks": 0,
+  "new_background_model_reservations": 0,
+  "proof_images": [
+    {
+      "path": "docs/assets/continuous-ui-desktop-2026-11-04.png",
+      "sha256": "f4977d04799013d031f297ff87b7871db047b2d87158974a9d844896d1fb9610",
+      "visually_reviewed": true
+    },
+    {
+      "path": "docs/assets/continuous-ui-mobile-light-2026-11-04.png",
+      "sha256": "1395354718320bb6932a42af4ec6acd3cdeac878ffd155e9eaa8711083e7eb09",
+      "visually_reviewed": true
+    },
+    {
+      "path": "docs/assets/continuous-ui-mobile-dark-2026-11-04.png",
+      "sha256": "2d30abe4cab10acc5d91aa0cf5981e7d4801df6e20be336ef9b4e90d90c5c94f",
+      "visually_reviewed": true
+    }
+  ],
+  "limitations": [
+    "Full CONT-16 remains open: real-source candidate acceptance, credential/source invalidation and backpressure interface matrix not all covered",
+    "State cards do not prove real task cancellation, handoff or execution",
+    "Intent cache and drafts are component-memory only; page reload requires authoritative original-operation reconciliation",
+    "No actual phone, live provider, real Codex, GitHub polling, cloud upgrade or research benchmark",
+    "Initial screenshots from an existing device-toolbar tab had a scale discrepancy and were excluded from published images; clean Chrome tabs used for final screenshots",
+    "Geometry of closed details can remain cached after viewport change; visible controls rechecked after expansion"
+  ],
+  "cleanup": {
+    "nginx_fault_override_removed": true,
+    "fixture_stopped_volumes_preserved": true,
+    "browser_viewport_reset": true,
+    "agent_tabs_closed": true,
+    "no_cloud_or_real_device_access_added": true
+  },
+  "delivery": {
+    "local_commit_intended": true,
+    "remote_publish": "not attempted this pass; previously unavailable Git SSH/HTTPS credentials",
+    "remote_ci": "not claimed"
+  }
+}

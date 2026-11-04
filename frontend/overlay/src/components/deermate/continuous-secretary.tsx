@@ -7,6 +7,8 @@ import { useRef, useState } from "react";
 import { fetch as authFetch } from "@/core/api/fetcher";
 import { getBackendBaseURL } from "@/core/config";
 
+import { ContinuousIntents } from "./continuous-intents";
+
 type RecordView = {
   id: string;
   kind: string;
@@ -45,10 +47,10 @@ export function ContinuousSecretary({
   const [model, setModel] = useState("");
   const [instruction, setInstruction] = useState("");
   const [selected, setSelected] = useState("");
-  const [followup, setFollowup] = useState("");
+  const [followups, setFollowups] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const keys = useRef(new Map<string, string>());
+  const intents = useRef(new ContinuousIntents());
   async function api<T>(
     path: string,
     method = "GET",
@@ -66,12 +68,15 @@ export function ContinuousSecretary({
       const value = (await response.json().catch(() => null)) as {
         detail?: { message?: string };
       } | null;
-      throw new Error(
-        value?.detail?.message ??
-          text(
-            "暂时无法读取，请刷新后核对原操作。",
-            "Unavailable. Refresh and inspect the original operation.",
-          ),
+      throw Object.assign(
+        new Error(
+          value?.detail?.message ??
+            text(
+              "暂时无法读取，请刷新后核对原操作。",
+              "Unavailable. Refresh and inspect the original operation.",
+            ),
+        ),
+        { status: response.status },
       );
     }
     return (await response.json()) as T;
@@ -119,6 +124,7 @@ export function ContinuousSecretary({
     refetchInterval: 5000,
   });
   const current = works.data?.items.find((v) => v.id === selected);
+  const readUnavailable = config.isError || works.isError;
   async function mutate(
     path: string,
     method: string,
@@ -128,17 +134,16 @@ export function ContinuousSecretary({
     if (busy) return;
     setBusy(true);
     setError("");
-    const fingerprint = JSON.stringify([path, method, body]);
-    let operation = keys.current.get(fingerprint);
-    if (!operation) {
-      operation = crypto.randomUUID();
-      keys.current.set(fingerprint, operation);
-    }
+    const intent = intents.current.begin(path, method, body);
     try {
-      await api(path, method, { ...body, operation_id: operation });
-      keys.current.delete(fingerprint);
+      await api(path, method, intent.body);
+      intents.current.confirmed(intent);
       done?.();
     } catch (e) {
+      intents.current.rejected(
+        intent,
+        (e as { status?: number } | null)?.status,
+      );
       setError(e instanceof Error ? e.message : "Unavailable");
     } finally {
       setBusy(false);
@@ -218,6 +223,11 @@ export function ContinuousSecretary({
           {text("正在读取设置…", "Loading settings…")}
         </p>
       )}
+      {works.isPending && (
+        <p role="status" className="dm-muted">
+          {text("正在读取工作…", "Loading work…")}
+        </p>
+      )}
       {(config.isError || works.isError || router.isError) && (
         <p role="alert">
           {text(
@@ -291,6 +301,7 @@ export function ContinuousSecretary({
             className="dm-button"
             disabled={
               busy ||
+              config.isError ||
               !config.data?.module_available ||
               (!enabled && !model && !str(config.data.config, "model"))
             }
@@ -359,10 +370,20 @@ export function ContinuousSecretary({
                 required
               />
             </label>
-            <button className="dm-button" disabled={busy || !message.trim()}>
+            <button
+              className="dm-button"
+              disabled={
+                busy || readUnavailable || router.isError || !message.trim()
+              }
+            >
               {text("发送", "Send")}
             </button>
           </form>
+          {router.isPending && (
+            <p role="status" className="dm-muted">
+              {text("正在读取秘书回执…", "Loading secretary receipts…")}
+            </p>
+          )}
           <ul className="dm-focus-list dm-router-messages" aria-live="polite">
             {router.data?.items
               .slice(0, 6)
@@ -436,7 +457,7 @@ export function ContinuousSecretary({
                   />
                 </label>
               </div>
-              <button className="dm-button" disabled={busy}>
+              <button className="dm-button" disabled={busy || readUnavailable}>
                 {text("创建工作", "Create work")}
               </button>
             </form>
@@ -524,23 +545,41 @@ export function ContinuousSecretary({
                       className="dm-text-button"
                       disabled={
                         busy ||
+                        (readUnavailable && action !== "reconcile") ||
                         (!enabled && action !== "reconcile") ||
                         (action === "execute" && v.data.can_execute !== true) ||
+                        (action === "execute" &&
+                          !!str(v, "head") &&
+                          !followups[v.id]?.trim()) ||
                         (action === "cancel" && v.data.can_cancel !== true) ||
                         (action === "close" && !!v.data.active_operation)
                       }
                       onClick={() =>
-                        void mutate(`work-orders/${v.id}/actions`, "POST", {
-                          action:
-                            action === "execute" && str(v, "head")
-                              ? "followup"
-                              : action,
-                          text:
-                            action === "execute"
-                              ? followup || str(v, "goal")
-                              : "",
-                          expected_revision: v.revision,
-                        })
+                        void mutate(
+                          `work-orders/${v.id}/actions`,
+                          "POST",
+                          {
+                            action:
+                              action === "execute" && str(v, "head")
+                                ? "followup"
+                                : action,
+                            text:
+                              action === "execute"
+                                ? followups[v.id] || str(v, "goal")
+                                : "",
+                            expected_revision: v.revision,
+                          },
+                          () => {
+                            if (action === "execute")
+                              setFollowups((drafts) => {
+                                if (drafts[v.id] !== followups[v.id])
+                                  return drafts;
+                                const next = { ...drafts };
+                                delete next[v.id];
+                                return next;
+                              });
+                          },
+                        )
                       }
                     >
                       {
@@ -558,19 +597,34 @@ export function ContinuousSecretary({
                     </button>
                   ))}
                 </div>
-                <label>
-                  {text("下一轮问题", "Next round")}
-                  <textarea
-                    value={followup}
-                    onChange={(e) => setFollowup(e.target.value)}
-                    maxLength={8000}
-                  />
-                </label>
+                {v.state !== "closed" && (
+                  <label>
+                    {text("下一轮问题", "Next round")}
+                    <textarea
+                      value={followups[v.id] ?? ""}
+                      onChange={(e) =>
+                        setFollowups((drafts) => ({
+                          ...drafts,
+                          [v.id]: e.target.value,
+                        }))
+                      }
+                      placeholder={text(
+                        "填写下一步要求，再继续原会话。",
+                        "Describe the next step before continuing the same session.",
+                      )}
+                      maxLength={8000}
+                    />
+                  </label>
+                )}
                 <details>
                   <summary>
                     {text("回执与引用", "Receipts & references")}
                   </summary>
-                  {timeline.isError ? (
+                  {timeline.isPending ? (
+                    <p role="status">
+                      {text("正在读取回执…", "Loading receipts…")}
+                    </p>
+                  ) : timeline.isError ? (
                     <p role="alert">
                       {text("回执暂不可读", "Receipts unavailable")}
                     </p>
@@ -603,6 +657,20 @@ export function ContinuousSecretary({
           {sources.isError && (
             <p role="alert">{text("来源读取失败", "Source unavailable")}</p>
           )}
+          {sources.isPending && (
+            <p role="status">{text("正在读取来源…", "Loading source…")}</p>
+          )}
+          {rules.isError && (
+            <p role="alert">
+              {text(
+                "规则读取失败，已显示的规则可能过时。",
+                "Rules unavailable. Displayed rules may be stale.",
+              )}
+            </p>
+          )}
+          {rules.isPending && (
+            <p role="status">{text("正在读取规则…", "Loading rules…")}</p>
+          )}
           {sources.data?.items.map((src) => (
             <div key={src.id}>
               <p>
@@ -620,7 +688,12 @@ export function ContinuousSecretary({
               {str(src, "error") && <p role="alert">{str(src, "error")}</p>}
               <button
                 className="dm-text-button"
-                disabled={busy || !config.data?.github_configured}
+                disabled={
+                  busy ||
+                  readUnavailable ||
+                  sources.isError ||
+                  !config.data?.github_configured
+                }
                 onClick={() =>
                   void mutate(`event-sources/${src.id}`, "PATCH", {
                     enabled: src.state !== "enabled",
@@ -665,7 +738,12 @@ export function ContinuousSecretary({
                 required
               />
             </label>
-            <button className="dm-button" disabled={busy}>
+            <button
+              className="dm-button"
+              disabled={
+                busy || readUnavailable || sources.isError || rules.isError
+              }
+            >
               {text("添加观察规则", "Add observe rule")}
             </button>
           </form>
@@ -677,7 +755,7 @@ export function ContinuousSecretary({
                   {text("处理方式", "Mode")}
                   <select
                     value={rule.state}
-                    disabled={busy}
+                    disabled={busy || readUnavailable || rules.isError}
                     onChange={(e) =>
                       void mutate(`automation-rules/${rule.id}`, "PATCH", {
                         source_id: "github",
@@ -714,6 +792,18 @@ export function ContinuousSecretary({
               {text("建议读取失败", "Suggestions unavailable")}
             </p>
           )}
+          {decisions.isPending && (
+            <p role="status">{text("正在读取建议…", "Loading suggestions…")}</p>
+          )}
+          {decisions.isSuccess &&
+            !decisions.data.items.some((v) => v.state === "suggested") && (
+              <p className="dm-muted">
+                {text(
+                  "暂无待处理建议。配置来源与观察规则后，建议会显示在这里。",
+                  "No pending suggestions. Configure a source and observation rule to receive them here.",
+                )}
+              </p>
+            )}
           <ul className="dm-focus-list">
             {decisions.data?.items
               .filter((v) => v.state === "suggested")
@@ -729,6 +819,8 @@ export function ContinuousSecretary({
                         key={action}
                         disabled={
                           busy ||
+                          readUnavailable ||
+                          decisions.isError ||
                           (action === "accept" &&
                             ((!project && !str(d, "project")) ||
                               (!grant && !str(d, "grant_id"))))
