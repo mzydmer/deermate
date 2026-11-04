@@ -33,6 +33,7 @@ func TestAgentAuthorizationConfirmationExpiryAndOwnership(t *testing.T) {
 	requireStatus(t, request(server, browser{}, "POST", "/api/agent-devices/pair", agentBody(t, claim), nil), 201)
 	claim["device_token"] = strings.Repeat("z", 43)
 	requireStatus(t, request(server, browser{}, "POST", "/api/agent-devices/pair", agentBody(t, claim), nil), 409)
+	requireStatus(t, request(server, session(t, store, other), "POST", "/api/device-pairings", "{}", nil), 403)
 	headers := map[string]string{"Authorization": "Bearer " + token}
 	expires := time.Now().Add(time.Hour).Unix()
 	policy := agentPolicy{Projects: []string{"demo"}, Operations: []string{"submit", "status", "continue", "cancel"}, Duration: "fixed", ExpiresAt: &expires, ExpiryPolicy: "finish"}
@@ -59,6 +60,12 @@ func TestAgentAuthorizationConfirmationExpiryAndOwnership(t *testing.T) {
 	g, _ = server.agentGrant(g.ID, owner.ID)
 	if *g.Active.ExpiresAt != expires || g.Pending == nil {
 		t.Fatal("pending renewal changed effective deadline")
+	}
+	requireStatus(t, request(server, b, "POST", "/api/agent-authorizations/"+g.ID+"/changes/cancel", `{"pending_version":2}`, nil), 200)
+	requireStatus(t, request(server, browser{}, "POST", "/api/agent-devices/confirm", agentBody(t, map[string]any{"grant_id": g.ID, "version": 2, "policy": renew}), headers), 409)
+	g, _ = server.agentGrant(g.ID, owner.ID)
+	if g.Pending != nil || *g.Active.ExpiresAt != expires {
+		t.Fatal("cancelled change modified original grant")
 	}
 	requireStatus(t, request(server, b, "POST", "/api/agent-authorizations/"+g.ID+"/revocations", `{"expected_version":0}`, nil), 409)
 	requireStatus(t, request(server, b, "POST", "/api/agent-authorizations/"+g.ID+"/revocations", `{"expected_version":1}`, nil), 202)

@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-03",
+  "scope": "single-owner local authorization and actual Go HTTP/connector/Worker with offline native protocol fixture",
+  "python": {
+    "passed": 250,
+    "skipped": 9
+  },
+  "go": [
+    "mod verify",
+    "vet ./...",
+    "test -race ./...",
+    "CGO_ENABLED=0 build",
+    "linux/amd64 build"
+  ],
+  "deployment_contracts_passed": 29,
+  "browser": [
+    "explicit permission duration and expiry policy",
+    "pending does not grant access",
+    "cancel pending request",
+    "390px viewport: scrollWidth=clientWidth=390"
+  ],
+  "native_provider_calls": 0,
+  "production_permissions_activated": 0,
+  "limitations": [
+    "No real Native model invocation",
+    "Synthetic browser account and fixture-only login wrapper",
+    "Cloud deployment recorded separately",
+    "Full AUTH-01–AUTH-12 not all claimed"
+  ],
+  "sha256": {
+    "backend/internal/controlplane/authorizations.go": "4d3dae82ebcee8b8b9f7dee249c054be03966980dd630388ab283144c89e06d4",
+    "backend/internal/controlplane/authorizations.html": "541ca47c37ce880e04c287ab1dca87a71b05144c703f9ddd33dd0d56d740ccab",
+    "src/deermate/authorization.py": "60ace949095bc5cb940a10dcfd5e983dcda1ef35871b2f889bf16cedc8f72809",
+    "src/deermate/device_connector.py": "27cf29c484028108103e2031b6cf2a13696aa51a2c92819ef7ba82e9df01b751",
+    "src/deermate/relay.py": "c7717e3b36ad62ed730cbb1e231b28ebe71be5bf6b179a10fac549895fa1fc06",
+    "src/deermate/api.py": "fe16649c7be0a809f09a3254a532f9a7cb4ad36199780cabe90681f117f1dc61",
+    "src/deermate/worker.py": "85bd8e2ed46dd8d31014e1ab64f22e34c05ae40949f8dc017e897837366e83bb",
+    "src/deermate/session_middleware.py": "c46708ba1e99d43ea9b05eced67aa0de762ceb93d474a38b669254d88f117cc6"
+  }
+}

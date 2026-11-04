@@ -3,6 +3,7 @@ package controlplane
 import (
 	"context"
 	"crypto/subtle"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"io"
@@ -539,8 +540,13 @@ func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
 	}
 	// A platform MCP connector must not become ambient authority for another admin.
 	var deviceOwner string
-	if err := s.Store.DB.QueryRow("SELECT value FROM deermate_control_meta WHERE key='agent-owner'").Scan(&deviceOwner); err == nil && deviceOwner != u.ID && !regularRead(r) {
-		fail(w,403,"device_owner_required","This single-owner installation's execution/configuration belongs to another device owner")
+	ownerErr := s.Store.DB.QueryRow("SELECT value FROM deermate_control_meta WHERE key='agent-owner'").Scan(&deviceOwner)
+	if ownerErr != nil && !errors.Is(ownerErr, sql.ErrNoRows) {
+		storeError(w, ownerErr)
+		return
+	}
+	if ownerErr == nil && deviceOwner != u.ID && !regularRead(r) {
+		fail(w, 403, "device_owner_required", "This single-owner installation's execution/configuration belongs to another device owner")
 		return
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, 64<<20)

@@ -140,3 +140,12 @@ First release uses existing owned conversations/tasks. Authorized external-sourc
 ## Contribution priorities
 
 Prioritize bounded SSH enrollment, worker contract review, and configured-model notification verification before expanding adapters. Do not mark a feature supported solely because the upstream project advertises the capability.
+
+
+## Agent 授权产品化
+
+- [x] 用户选择期限、范围与到期任务策略；Go 管理页面与状态详情。
+- [x] 本机逐版本确认、取消申请、续期与撤销；Go/Worker 双向接纳。
+- [x] 主动 HTTPS 连接与持久单次投递；本地跨运行时及过期/幂等测试。
+- [ ] 本轮线上部署与 HTTPS 页面验收。
+- [ ] 开机守护、身份凭据定期轮换、后台提醒与共享设备授权。

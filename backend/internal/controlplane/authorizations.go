@@ -49,6 +49,7 @@ type agentGrant struct {
 	Updated        int64        `json:"updated_at"`
 }
 type agentDevice struct {
+	Legacy   bool     `json:"legacy"`
 	ID       string   `json:"id"`
 	Name     string   `json:"name"`
 	Owner    string   `json:"owner_id"`
@@ -86,6 +87,7 @@ func (s *Server) authorizationRoutes() {
 	s.mux.HandleFunc("POST /api/device-pairings", s.protected(true, s.agentPairStart))
 	s.mux.HandleFunc("POST /api/agent-authorizations", s.protected(true, s.agentCreate))
 	s.mux.HandleFunc("POST /api/agent-authorizations/{id}/changes", s.protected(true, s.agentChange))
+	s.mux.HandleFunc("POST /api/agent-authorizations/{id}/changes/cancel", s.protected(true, s.agentCancelChange))
 	s.mux.HandleFunc("POST /api/agent-authorizations/{id}/revocations", s.protected(true, s.agentRevoke))
 	s.mux.HandleFunc("POST /api/agent-authorizations/{id}/checks", s.protected(true, s.agentCheck))
 	s.mux.HandleFunc("POST /api/agent-devices/pair", s.agentPairClaim)
@@ -206,14 +208,28 @@ func (s *Server) agentPairStart(w http.ResponseWriter, r *http.Request) {
 	// The installed MCP runtime is single-owner; do not share it across admins.
 	owner := sessionOf(r).User.ID
 	tx, err := s.Store.DB.Begin()
-	if err != nil { storeError(w, err); return }
+	if err != nil {
+		storeError(w, err)
+		return
+	}
 	defer tx.Rollback()
 	_, err = tx.Exec("INSERT OR IGNORE INTO deermate_control_meta(key,value) VALUES('agent-owner',?)", owner)
 	var enrolledOwner string
-	if err == nil { err = tx.QueryRow("SELECT value FROM deermate_control_meta WHERE key='agent-owner'").Scan(&enrolledOwner) }
-	if err != nil { storeError(w, err); return }
-	if enrolledOwner != owner { fail(w,403,"single_owner_required","This installation's device connector belongs to another owner"); return }
-	if err = tx.Commit(); err != nil { storeError(w,err); return }
+	if err == nil {
+		err = tx.QueryRow("SELECT value FROM deermate_control_meta WHERE key='agent-owner'").Scan(&enrolledOwner)
+	}
+	if err != nil {
+		storeError(w, err)
+		return
+	}
+	if enrolledOwner != owner {
+		fail(w, 403, "single_owner_required", "This installation's device connector belongs to another owner")
+		return
+	}
+	if err = tx.Commit(); err != nil {
+		storeError(w, err)
+		return
+	}
 	id, secret := uuid(), opaque()
 	expiry := time.Now().Add(10 * time.Minute).Unix()
 	var count int
@@ -281,6 +297,7 @@ func (s *Server) agentPairClaim(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	d.Owner = owner
+	d.Legacy = false
 	d.LastSeen = 0
 	d.Worker = "unknown"
 	data, _ := json.Marshal(d)
@@ -426,6 +443,49 @@ func (s *Server) agentChange(w http.ResponseWriter, r *http.Request) {
 	}
 	respond(w, 202, g)
 }
+func (s *Server) agentCancelChange(w http.ResponseWriter, r *http.Request) {
+	var b struct {
+		Version int `json:"pending_version"`
+	}
+	if !decode(w, r, &b) {
+		return
+	}
+	tx, err := s.Store.DB.Begin()
+	if err != nil {
+		storeError(w, err)
+		return
+	}
+	defer tx.Rollback()
+	var data string
+	var g agentGrant
+	err = tx.QueryRow("SELECT data FROM deermate_agent_grants WHERE id=? AND owner=?", r.PathValue("id"), sessionOf(r).User.ID).Scan(&data)
+	if err != nil {
+		storeError(w, ErrNotFound)
+		return
+	}
+	json.Unmarshal([]byte(data), &g)
+	if g.Revoked || g.Pending == nil || g.PendingVersion != b.Version {
+		fail(w, 409, "version_conflict", "Pending request changed; reload before cancelling")
+		return
+	}
+	g.Pending = nil
+	g.PendingVersion = 0
+	g.Updated = time.Now().Unix()
+	if g.Active == nil {
+		g.Revoked = true
+		g.Cleanup = true
+	}
+	err = s.agentSave(tx, g, "authorization.request_cancelled")
+	if err == nil {
+		err = tx.Commit()
+	}
+	if err != nil {
+		storeError(w, err)
+		return
+	}
+	respond(w, 200, g)
+}
+
 func (s *Server) agentRevoke(w http.ResponseWriter, r *http.Request) {
 	var b struct {
 		Version int `json:"expected_version"`
@@ -569,6 +629,16 @@ func (s *Server) agentConfirm(w http.ResponseWriter, r *http.Request) {
 	} else {
 		expected, _ := json.Marshal(g.Pending)
 		actual, _ := json.Marshal(b.Policy)
+		active, _ := json.Marshal(g.Active)
+		if g.Active != nil && g.Version == b.Version && bytes.Equal(active, actual) {
+			tx.Rollback()
+			if err = s.writeAgentBridge(d.Owner); err != nil {
+				fail(w, 503, "configuration_pending", "Authorization saved; runtime configuration pending")
+				return
+			}
+			respond(w, 200, g)
+			return
+		}
 		if g.Pending == nil || b.Version != g.PendingVersion || !bytes.Equal(expected, actual) || !validateAgentPolicy(*g.Pending, d) {
 			fail(w, 409, "version_conflict", "Local confirmation does not match the current request")
 			return

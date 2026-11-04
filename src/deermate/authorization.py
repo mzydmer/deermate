@@ -46,13 +46,15 @@ def local_grant(state_dir: Path, grant_id: str, *, require_active=True) -> dict:
         if grant.get("revoked"):
             raise Conflict("remote authorization revoked")
         if require_active:
-            if active.get("expires_at") is not None and active["expires_at"] <= time.time():
-                raise Conflict("remote authorization expired")
             # Both clocks must agree with a recent local connector observation.
             issued = state["observed_at"]
             mono = state["observed_monotonic"]
             if not 0 <= time.time() - issued <= 90 or not 0 <= time.monotonic() - mono <= 90:
                 raise Conflict("remote authorization observation is stale")
+            observed_server = state.get("server_time", issued)
+            trusted_now = max(time.time(), observed_server + time.monotonic() - mono)
+            if active.get("expires_at") is not None and active["expires_at"] <= trusted_now:
+                raise Conflict("remote authorization expired")
         return grant
     except (OSError, ValueError, KeyError, TypeError) as error:
         raise Conflict("remote authorization unavailable; local confirmation required") from error

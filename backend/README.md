@@ -23,6 +23,7 @@ The binary waits for runtime readiness before opening its pinned SQLite database
 | `DEERMATE_ORIGIN` | Browser origin, default `http://localhost:2026`; HTTPS enables Secure cookies |
 | `DEERMATE_ALLOWED_HOSTS` | Explicit comma-separated host:port allowlist, including internal SSR and health hosts |
 | `DEERMATE_LISTEN` | Default `:8080`; use a private network/loopback behind nginx |
+| `DEERMATE_AUTHORIZATION_HOME` | Private MCP snapshot directory, e.g. `/runtime-home/agent-authorizations`; defaults beside the runtime data directory |
 
 The localhost origin is the reviewed Compose/ACK port-forward profile. Custom hostname/TLS deployment must update origin and host allowlists deliberately; arbitrary forwarded identity headers are not trusted.
 

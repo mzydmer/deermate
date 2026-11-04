@@ -20,6 +20,11 @@ from .config import load_settings
 DEFAULT_STATE = Path.home() / ".deermate-device"
 
 
+def approved_policy(state, grant_id, version):
+    candidate = state["approvals"].get(f"{grant_id}:{version}") or state["approvals"].get(grant_id)
+    return candidate if candidate and candidate["version"] == version else None
+
+
 def server_origin(value):
     parsed = urlsplit(value)
     if (
@@ -118,7 +123,10 @@ async def approve(args):
     ):
         raise ValueError("Authorization was not confirmed")
     # Persist before acknowledgement: an uncertain reply cannot lose local scope.
-    state["approvals"][grant["id"]] = {"version": grant["pending_version"], "policy": policy}
+    state["approvals"][f"{grant['id']}:{grant['pending_version']}"] = {
+        "version": grant["pending_version"],
+        "policy": policy,
+    }
     private_save(args.state / "device.json", state)
     async with connection(state) as client:
         response = await client.post(
@@ -133,7 +141,7 @@ async def process_request(client, local, state, settings, packet):
     job = packet.get("request")
     if not job:
         return
-    approved = state["approvals"].get(job["grant_id"])
+    approved = approved_policy(state, job["grant_id"], job["version"])
     grant = next((g for g in packet["grants"] if g["id"] == job["grant_id"]), None)
     allowed = (
         approved
@@ -179,6 +187,29 @@ async def process_request(client, local, state, settings, packet):
     result.raise_for_status()
 
 
+def install_snapshot(packet, state, settings):
+    local_state = {
+        "observed_at": time.time(),
+        "observed_monotonic": time.monotonic(),
+        "server_time": packet["server_time"],
+        "grants": {},
+    }
+    for grant in packet["grants"]:
+        approved = approved_policy(state, grant["id"], grant["version"])
+        if (
+            approved
+            and grant["instance_id"] == state["instance_id"]
+            and approved["version"] == grant["version"]
+            and approved["policy"] == grant["active"]
+        ):
+            local_state["grants"][grant["id"]] = {
+                "policy": approved["policy"],
+                "version": approved["version"],
+                "revoked": grant["revoked"],
+            }
+    private_save(settings.state_dir / "remote-authorizations.json", local_state)
+
+
 async def connect(args):
     path = args.state / "device.json"
     state = private_json(path)
@@ -217,25 +248,7 @@ async def connect(args):
                 packet = response.json()
                 if len(response.content) > 256_000:
                     raise ValueError("Cloud policy exceeded limit")
-                local_state = {
-                    "observed_at": time.time(),
-                    "observed_monotonic": time.monotonic(),
-                    "grants": {},
-                }
-                for grant in packet["grants"]:
-                    approved = state["approvals"].get(grant["id"])
-                    if (
-                        approved
-                        and grant["instance_id"] == state["instance_id"]
-                        and approved["version"] == grant["version"]
-                        and approved["policy"] == grant["active"]
-                    ):
-                        local_state["grants"][grant["id"]] = {
-                            "policy": approved["policy"],
-                            "version": approved["version"],
-                            "revoked": grant["revoked"],
-                        }
-                private_save(settings.state_dir / "remote-authorizations.json", local_state)
+                install_snapshot(packet, state, settings)
                 private_save(args.state / "pending.json", {"grants": packet["grants"]})
                 for grant in packet["grants"]:
                     if grant["revoked"] and not grant["device_confirmed"]:

@@ -98,3 +98,31 @@ async def test_expired_remote_queue_never_starts_native(settings):
         assert observed.workspace is None
     finally:
         await worker.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("expiry_policy", ["finish", "stop"])
+async def test_expiry_respects_running_task_policy(settings, expiry_policy):
+    grant_state(settings, expiry_policy=expiry_policy)
+    worker = Worker(settings)
+    task, _ = worker.store.submit(
+        SubmitTask(project_id="demo", prompt="slow fix", idempotency_key="running"),
+        settings.policy("demo") | {"authorization": "fixture"},
+    )
+    await worker.start()
+    try:
+        for _ in range(100):
+            if worker.store.get(task.task_id).status == State.RUNNING:
+                break
+            await asyncio.sleep(0.05)
+        assert worker.store.get(task.task_id).status == State.RUNNING
+        grant_state(settings, expires_at=time.time() - 1, expiry_policy=expiry_policy)
+        for _ in range(400):
+            if worker.store.get(task.task_id).status in {State.COMPLETED, State.CANCELLED}:
+                break
+            await asyncio.sleep(0.05)
+        result = worker.store.get(task.task_id)
+        assert result.status == (State.COMPLETED if expiry_policy == "finish" else State.CANCELLED)
+        assert result.session_id
+    finally:
+        await worker.close()

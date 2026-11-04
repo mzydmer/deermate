@@ -18,6 +18,8 @@ Record significant choices and their consequences here. Current implementation a
 | [0012](0012-one-chat-one-coding-session.md) | Accepted | One chat incarnation binds one registered coding session; first-message names and editable titles | Durable admission journal and configured guard; offline graph/Gateway and real cloud Codex/browser acceptance verified; Claude adapter pending |
 | [0013](0013-memory-backed-personal-briefing.md) | Accepted | Reuse semantic memory with a Go attention/briefing product layer, sourced progress and explicit actions | M4.4a personal facts and M4.4b explicit chat requests/source validation locally verified; semantic extraction, briefing and actions pending |
 
+| [0014](0014-user-managed-agent-authorization.md) | Accepted | User-owned expiry, local confirmation and outbound HTTPS relay | Local verification and deployment tracked in STATUS |
+
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 
 When replacing a decision, add a new ADR and mark the earlier one `Superseded by ADR NNNN`. Keep its original rationale. Routine implementation details and typo fixes do not need ADRs.

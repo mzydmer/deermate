@@ -447,3 +447,9 @@ Go 在真实 run 成功接纳后核对固定 SQLite 中的 owner、interactive o
 [脱敏云端收据](verification/personal-home-cloud-2026-11-03.json)：最终公网可信 HTTPS/API **25 项**、实际浏览器 **8 项**通过，覆盖原登录/密码、9 个旧对话及抽样消息、模型目录、个人资料/空关注/简报、默认关闭、owner/CSRF/匿名/原始插件拒绝、时区/对话名称和 5 项历史完成任务。1 个账号、9 个对话、19 次运行、5 个任务的历史行哈希以及模型文件字节保持。五服务运行正常，四个有 healthcheck 的服务 healthy，均未观测 OOM；主机 available 内存观察值约 647 MiB，不是负载或性能验收。最终深色桌面截图已查看，截图和原始私有痕迹仅留在 Git 忽略目录。
 
 临时部署公钥已删除，在配置到期前用同一密钥建立新连接得到 publickey 拒绝；本机部署私钥随后删除，其余公钥保持。旧家庭 Agent 授权期限及配置字节未更改，未恢复链路、调用模型/Native 或创建生产测试事实/关注。记忆/明确采集/目标建议仍默认关闭，不自动导入历史。原 localhost 实例未升级；实现阶段完整本地检查保留 `701a309` 的原收据，本次不重跑或扩张其声明。完整 MEM、真实新首页 Native 入口、实际负载、旧家庭授权到期清理和证书实际续期仍需分别验收。
+
+## 2026-11-03 用户管理 Agent 授权
+
+用户要求从设计进入实现并上线。新增 Go 管理页/API、显式期限/范围、逐版本本机确认、取消待确认、撤销与状态观测；以主动出站 HTTPS 替代新增 SSH 账号/到期 timer 的产品化依赖，保留旧 SSH 方式与历史任务。Go 与 Worker 双向接纳、90 秒观测和单 owner 门禁在提示词外执行；过期队列不启动，在途 finish/stop 策略独立测试。见 [ADR 0014](decisions/0014-user-managed-agent-authorization.md)与[指南](agent-authorizations.md)。
+
+Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/wheel 和 29 项固定部署子集通过；真实 Go→连接器→Worker→离线 Native 的修复、验证、幂等与撤销通过，浏览器确认待本机状态、取消与 390px 布局。本条先记录本地验收；云端上线与旧过期记录导入在实际完成后另记，不能据此推断已恢复本机执行权限。
