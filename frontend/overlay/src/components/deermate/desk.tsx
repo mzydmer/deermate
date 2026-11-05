@@ -44,7 +44,7 @@ import { BrandMotion } from "./brand";
 import { MotionTabs } from "./motion-tabs";
 import { PersonalHome } from "./personal-home";
 import { ContinuousSecretary } from "./continuous-secretary";
-import { PersonalGreeting, PersonalMemoryPanel } from "./personal-memory";
+import { PersonalGreeting } from "./personal-memory";
 import { TaskDetail, type DeskTask } from "./task-detail";
 
 const labels: Record<string, [string, string]> = {
@@ -178,7 +178,9 @@ export function DeerMateDesk() {
           <span className="dm-muted">{text("总览", "Overview")}</span>
         </div>
         <div className="dm-topbar-right">
-          <Link href="/docs" className="dm-product-docs-link">{text("产品文档", "Product docs")}</Link>
+          <Link href="/docs" className="dm-product-docs-link">
+            {text("产品文档", "Product docs")}
+          </Link>
           <span className={`dm-health ${health.isError ? "is-unknown" : ""}`}>
             <i />
             {health.isLoading
@@ -244,9 +246,6 @@ export function DeerMateDesk() {
               })
             }
           />
-        )}
-        {user?.id && (
-          <PersonalMemoryPanel key={user.id} userId={user.id} zh={zh} />
         )}
         <div className="dm-work-grid">
           <div className="dm-primary">

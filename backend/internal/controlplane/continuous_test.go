@@ -20,6 +20,10 @@ func continuousFixture(t *testing.T, runtime http.HandlerFunc) (*Server, User, b
 	db := testStore(t)
 	u := account(t, db, "secretary@example.com", "admin")
 	s := testServer(t, db, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/models" {
+			respond(w, 200, map[string]any{"models": []any{map[string]any{"name": "fixture"}}})
+			return
+		}
 		if strings.HasSuffix(r.URL.Path, "/capabilities") {
 			respond(w, 200, map[string]any{"contract_version": 1, "bounded": true})
 			return

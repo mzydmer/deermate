@@ -187,3 +187,5 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [ ] Publish R-EVAL-01–05 comparisons and ablations; local functional tests do not establish research gains.
 
 [Implementation plan](specs/m4-continuous-agent-plan.md) · [Usage](continuous-secretary.md) · [Current evidence](verification/continuous-secretary-2026-11-04.json).
+
+2026-11-04 用户要求取消秘书单独启用：交互与手动工作默认可用，沿用对话模型；设置集中管理本人记忆。见 [专项规格](specs/default-secretary-memory-settings.md)，实现/验收/发布在 STATUS 单独追踪，不改变既有后台/设备授权或整个 P7 验收状态。

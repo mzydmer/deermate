@@ -127,7 +127,7 @@ func (s *Server) pumpRouter(ctx context.Context) {
 		if e != nil || current.State != "pending" {
 			return ErrConflict
 		}
-		if !workEnabled(tx, inbox.Owner) {
+		if (workString(current, "origin") == "event" || workString(current, "origin") == "assessment") && !workEnabled(tx, inbox.Owner) {
 			return ErrDisabled
 		}
 		var n int
@@ -160,6 +160,11 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 		return
 	}
 	op := snapshot
+	resolvedModel := ""
+	if op.State == "prepared" && s.cfg.ContinuousEnabled && (workString(op, "kind") == "router" || workString(op, "kind") == "assessor") && workString(op, "model") == "" {
+		req, _ := http.NewRequestWithContext(context.WithValue(ctx, sessionKey{}, Session{User: u}), "GET", s.cfg.Origin, nil)
+		resolvedModel, _ = s.defaultWorkModel(req)
+	}
 	perform := false
 	if op.State == "prepared" {
 		e = s.Store.workTransaction(ctx, func(tx *sql.Tx) error {
@@ -174,7 +179,7 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 			if int64(u.Version) != workInt(op, "_user_version") {
 				return s.holdWork(tx, &op, "waiting_authorization")
 			}
-			if !s.cfg.ContinuousEnabled || !workEnabled(tx, u.ID) {
+			if !s.cfg.ContinuousEnabled || (backgroundWorkOperation(op) && !workEnabled(tx, u.ID)) {
 				return ErrDisabled
 			}
 			kind := workString(op, "kind")
@@ -198,8 +203,11 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 						return workPut(tx, &op)
 					}
 				}
-				cfg, e := workGet(tx, u.ID, "settings", "settings")
-				if e != nil || workString(cfg, "model") == "" {
+				model := workString(op, "model")
+				if model == "" {
+					model = resolvedModel
+				}
+				if model == "" {
 					return s.holdWork(tx, &op, "waiting_model")
 				}
 				if kind == "assessor" {
@@ -214,7 +222,7 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 				if e = workReserve(tx, u.ID, "model", 20, time.Now()); e != nil {
 					return s.holdWork(tx, &op, "waiting_budget")
 				}
-				op.Data["model"] = workString(cfg, "model")
+				op.Data["model"] = model
 				op.Data["prompt_version"] = "continuous-v1"
 			} else {
 				v, e := workGet(tx, u.ID, "work", op.Parent)
@@ -455,7 +463,7 @@ func (s *Server) workInternal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u, e := s.Store.User(owner)
-	if e != nil || u.Disabled || u.NeedsSetup || u.Role != "admin" || int64(u.Version) != workInt(op, "_user_version") || !s.cfg.ContinuousEnabled || !workEnabled(s.Store.DB, owner) || workString(op, "kind") != "router" || !slicesWorkState(op.State, "dispatching", "acknowledged", "uncertain") {
+	if e != nil || u.Disabled || u.NeedsSetup || u.Role != "admin" || int64(u.Version) != workInt(op, "_user_version") || !s.cfg.ContinuousEnabled || (backgroundWorkOperation(op) && !workEnabled(s.Store.DB, owner)) || workString(op, "kind") != "router" || !slicesWorkState(op.State, "dispatching", "acknowledged", "uncertain") {
 		fail(w, 403, "operation_expired", "Router admission is no longer current")
 		return
 	}

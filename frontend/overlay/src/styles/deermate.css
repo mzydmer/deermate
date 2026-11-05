@@ -1305,3 +1305,23 @@ body,
     min-height: 44px;
   }
 }
+
+.dm-memory-settings h2 {
+  margin-block-end: var(--dm-space-4);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+.dm-memory-settings > p {
+  margin-block-end: var(--dm-space-6);
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media (max-width: 600px) {
+  .dm-memory-settings :is(button, input, select) {
+    min-height: 44px;
+  }
+  .dm-memory-settings :is(input, textarea, select) {
+    font-size: 16px;
+  }
+}

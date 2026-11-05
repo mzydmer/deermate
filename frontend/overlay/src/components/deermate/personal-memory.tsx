@@ -157,14 +157,16 @@ export function PersonalGreeting({
 export function PersonalMemoryPanel({
   userId,
   zh,
+  embedded = false,
 }: {
   userId: string;
   zh: boolean;
+  embedded?: boolean;
 }) {
   const t = (cn: string, en: string) => (zh ? cn : en);
   const cache = useQueryClient();
   const profile = useProfile(userId);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(embedded);
   const [query, setQuery] = useState("");
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(0);
@@ -284,12 +286,8 @@ export function PersonalMemoryPanel({
     }
   }
 
-  return (
-    <details
-      className="dm-memory"
-      onToggle={(event) => setOpen(event.currentTarget.open)}
-    >
-      <summary>{t("个人设置与记忆", "Personal settings & memory")}</summary>
+  const contentView = (
+    <>
       {profile.isLoading && (
         <p role="status">{t("正在读取设置…", "Loading settings…")}</p>
       )}
@@ -541,6 +539,17 @@ export function PersonalMemoryPanel({
           )}
         </>
       )}
+    </>
+  );
+  return embedded ? (
+    <section className="dm-memory">{contentView}</section>
+  ) : (
+    <details
+      className="dm-memory"
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary>{t("个人设置与记忆", "Personal settings & memory")}</summary>
+      {contentView}
     </details>
   );
 }

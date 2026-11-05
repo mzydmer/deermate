@@ -21,6 +21,7 @@ type Page = { items: RecordView[] };
 type Config = {
   config: RecordView;
   module_available: boolean;
+  interactive_available?: boolean;
   github_configured: boolean;
   reserved?: { model: number; native: number };
   budget_day?: string;
@@ -44,7 +45,6 @@ export function ContinuousSecretary({
   const [goal, setGoal] = useState("");
   const [project, setProject] = useState("");
   const [grant, setGrant] = useState("");
-  const [model, setModel] = useState("");
   const [instruction, setInstruction] = useState("");
   const [selected, setSelected] = useState("");
   const [followups, setFollowups] = useState<Record<string, string>>({});
@@ -88,7 +88,10 @@ export function ContinuousSecretary({
     enabled: canRun,
     refetchInterval: canRun ? 10000 : false,
   });
-  const enabled = config.data?.config.data.enabled === true;
+  const enabled =
+    config.data?.interactive_available ??
+    config.data?.module_available ??
+    false;
   const works = useQuery({
     queryKey: [...prefix, "works"],
     queryFn: () => api<Page>("work-orders"),
@@ -210,6 +213,9 @@ export function ContinuousSecretary({
     >
       <div className="dm-section-heading">
         <h2>{text("秘书与工作", "Secretary & work")}</h2>
+        <Link href="/workspace?settings=memory">
+          {text("记忆管理", "Manage memory")}
+        </Link>
         <button
           className="dm-text-button"
           disabled={busy}
@@ -242,110 +248,13 @@ export function ContinuousSecretary({
         </p>
       )}
       {config.data && !enabled && (
-        <p className="dm-muted">
+        <p role="status" className="dm-muted">
           {text(
-            "持续秘书尚未启用。启用后可交代工作、关注仓库变化；自动执行额度默认 0。",
-            "The secretary is disabled. Enable it to delegate work and observe repository changes. Automatic execution defaults to zero.",
+            "秘书服务暂不可用，请稍后重试。",
+            "The secretary is temporarily unavailable. Try again later.",
           )}
         </p>
       )}
-      <details className="dm-attention-management">
-        <summary>{text("秘书设置", "Secretary settings")}</summary>
-        {!config.data?.module_available && (
-          <p className="dm-muted">
-            {text(
-              "此部署未开启持续任务模块，请按部署文档配置后重启 Go 服务。",
-              "This deployment has not enabled the continuous module. Configure it using the deployment guide and restart Go.",
-            )}
-          </p>
-        )}
-        <form
-          className="dm-continuous-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (config.data)
-              void mutate("continuous-config", "PATCH", {
-                enabled: !enabled,
-                model: model || str(config.data.config, "model"),
-                native_budget: Number(
-                  config.data.config.data.native_budget ?? 0,
-                ),
-                expected_revision: config.data.config.revision,
-              });
-          }}
-        >
-          <label>
-            {text("已配置的模型 ID", "Configured model ID")}
-            <input
-              value={model}
-              placeholder={config.data ? str(config.data.config, "model") : ""}
-              onChange={(e) => setModel(e.target.value)}
-              maxLength={150}
-            />
-          </label>
-          <p className="dm-small dm-muted">
-            {text(
-              "使用模型设置中的 ID。后台最多 20 次请求/UTC 日，每次输出上限 1024 tokens；目前仅接入已验证的 OpenAI 兼容客户端。",
-              "Use an ID from model settings. Background limit: 20 requests per UTC day, 1024 output tokens per request. V1 requires the bounded OpenAI-compatible client.",
-            )}
-          </p>
-          {config.data?.reserved && (
-            <p className="dm-small dm-muted">
-              {text("今天已预留：后台请求", "Reserved today: model requests")}{" "}
-              {config.data.reserved.model}/20 ·{" "}
-              {text("自动执行", "automatic rounds")}{" "}
-              {config.data.reserved.native} · {config.data.budget_day} UTC
-            </p>
-          )}
-          <button
-            className="dm-button"
-            disabled={
-              busy ||
-              config.isError ||
-              !config.data?.module_available ||
-              (!enabled && !model && !str(config.data.config, "model"))
-            }
-          >
-            {enabled
-              ? text("关闭持续秘书", "Disable secretary")
-              : text("启用持续秘书", "Enable secretary")}
-          </button>
-        </form>
-        {enabled && config.data && (
-          <label className="dm-continuous-budget">
-            {text(
-              "自动执行轮次/UTC 日",
-              "Automatic execution rounds / UTC day",
-            )}
-            <select
-              value={Number(config.data.config.data.native_budget ?? 0)}
-              disabled={busy}
-              onChange={(e) =>
-                void mutate("continuous-config", "PATCH", {
-                  enabled: true,
-                  model: str(config.data.config, "model"),
-                  native_budget: Number(e.target.value),
-                  expected_revision: config.data.config.revision,
-                })
-              }
-            >
-              {[0, 1, 2].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <p className="dm-small">
-          <Link href="/admin/agents">
-            {text(
-              "管理设备与项目授权",
-              "Manage device & project authorization",
-            )}
-          </Link>
-        </p>
-      </details>
       {enabled && (
         <>
           <form
@@ -397,6 +306,17 @@ export function ContinuousSecretary({
                     · {status(v)}
                   </p>
                   <p>{str(v, "text")}</p>
+                  {v.state === "waiting_model" && (
+                    <p role="status">
+                      {text(
+                        "请在模型设置中添加或选择支持的对话模型。",
+                        "Add or select a supported conversation model in model settings.",
+                      )}{" "}
+                      <Link href="/workspace?settings=models">
+                        {text("模型设置", "Model settings")}
+                      </Link>
+                    </p>
+                  )}
                   {str(v, "reply") && (
                     <p className="dm-router-reply">{str(v, "reply")}</p>
                   )}
@@ -654,6 +574,41 @@ export function ContinuousSecretary({
           <summary>
             {text("GitHub 来源与规则", "GitHub source & rules")}
           </summary>
+          {config.data && (
+            <label className="dm-continuous-budget">
+              {text("自动执行上限 / 天", "Automatic execution limit / day")}
+              <select
+                value={Number(config.data.config.data.native_budget ?? 0)}
+                disabled={busy || readUnavailable}
+                onChange={(e) =>
+                  void mutate("continuous-config", "PATCH", {
+                    enabled: true,
+                    native_budget: Number(e.target.value),
+                    expected_revision: config.data!.config.revision,
+                  })
+                }
+              >
+                {[0, 1, 2].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <p className="dm-small dm-muted">
+            {text(
+              "来源观察和自动处理由你单独开启。执行上限默认 0。",
+              "Enable source observation and automatic work separately. The execution limit starts at zero.",
+            )}
+          </p>
+          <Link href="/admin/agents">
+            {text(
+              "管理设备与项目授权",
+              "Manage device & project authorization",
+            )}
+          </Link>
+
           {sources.isError && (
             <p role="alert">{text("来源读取失败", "Source unavailable")}</p>
           )}

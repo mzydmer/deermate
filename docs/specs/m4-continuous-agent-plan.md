@@ -40,7 +40,7 @@ P0–P5 构成第一个可用版本：能观察、建议和手动接纳。P6 增
 - [x] P1.3 实现 spec 中的工作、时间线、候选、来源和规则 API；站内写入使用现有 auth/CSRF/operation ID/expected revision。
 - [x] P1.4 只实现可核对的状态投影：不根据摘要把 Native 标 completed，不把取消请求标 cancelled。
 - [x] P1.4a 持久 Router 会话引用、稳定输入 ID、优先级和投递/处理回执；重启核对原 Router/run，不能用清空 inbox 来恢复。
-- [x] P1.5 模块默认关闭；新表不扫描或改写旧对话，不创建模型请求。
+- [x] P1.5 原默认关闭已由 2026-11-04 [用户新要求](default-secretary-memory-settings.md)取代：交互默认可用，背景仍单独启用；新表不扫描或改写旧对话，页面读取不创建模型请求。
 
 建议代码落点（命名待 P0 固定）：
 

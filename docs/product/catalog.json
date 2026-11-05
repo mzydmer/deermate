@@ -51,12 +51,15 @@
   {
     "slug": "guide/memory",
     "group": "guide",
-    "title": "个人设置与记忆",
+    "title": "记忆管理",
     "description": "管理称呼、时区与长期事实，纠正或遗忘记录。",
     "updated": "2026-11-04",
     "status": "需本人开启",
     "sources": [
-      "docs/personal-memory.md"
+      "docs/personal-memory.md",
+      "frontend/overlay/src/components/workspace/settings/memory-settings-page.tsx",
+      "frontend/overlay/src/components/deermate/personal-memory.tsx",
+      "docs/specs/default-secretary-memory-settings.md"
     ]
   },
   {
@@ -88,11 +91,13 @@
     "title": "持续秘书与工作",
     "description": "在 Alpha 中持续跟进目标、观察来源和处理候选。",
     "updated": "2026-11-04",
-    "status": "Alpha · 默认关闭",
+    "status": "Alpha · 默认可用",
     "sources": [
       "docs/continuous-secretary.md",
       "docs/STATUS.md",
-      "docs/verification/continuous-cloud-2026-11-04.json"
+      "docs/verification/continuous-cloud-2026-11-04.json",
+      "docs/specs/default-secretary-memory-settings.md",
+      "backend/internal/controlplane/continuous_defaults.go"
     ]
   },
   {
@@ -131,7 +136,8 @@
     "sources": [
       "docs/specs/m4-continuous-agent.md",
       "docs/specs/m4-continuous-agent-plan.md",
-      "docs/SPEC.md"
+      "docs/SPEC.md",
+      "docs/specs/default-secretary-memory-settings.md"
     ]
   },
   {
@@ -144,7 +150,8 @@
     "sources": [
       "docs/specs/m4-memory-technical-design.md",
       "docs/personal-memory.md",
-      "docs/continuous-secretary.md"
+      "docs/continuous-secretary.md",
+      "docs/specs/default-secretary-memory-settings.md"
     ]
   },
   {

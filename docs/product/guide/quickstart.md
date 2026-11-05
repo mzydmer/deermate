@@ -32,4 +32,4 @@
 
 ## 接下来
 
-将需要长期跟进的对话加入 [今日关注](/docs/guide/focus)，把希望长期保留的偏好保存到 [个人记忆](/docs/guide/memory)。持续秘书功能已启用的环境可继续阅读 [持续秘书与工作](/docs/guide/continuous)。
+将需要长期跟进的对话加入 [今日关注](/docs/guide/focus)，把希望长期保留的偏好保存到 [个人记忆](/docs/guide/memory)。新版可直接进入「秘书与工作」，详见 [持续秘书与工作](/docs/guide/continuous)。

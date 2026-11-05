@@ -6,7 +6,7 @@
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · Agent 系统研究 Alpha · Go 主后端</p>
 <p align="center"><a href="#research">研究方向</a> · <a href="docs/specs/m4-continuous-agent.md">Spec</a> · <a href="docs/specs/m4-continuous-agent-plan.md">实施与评估计划</a> · <a href="docs/STATUS.md">开发进度</a></p>
 
-> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-04。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。持久 Router/Worker 已有默认关闭的 **Alpha 实现和离线集成验收**，真实接入与对比实验另行验收。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
+> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-04。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。持久 Router/Worker 已有**Alpha 实现和离线集成验收**（新版交互默认可用，发布状态见当前状态），真实接入与对比实验另行验收。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
 
 ## 你的私人 Agent 秘书
 
@@ -116,7 +116,7 @@ deermate diff TASK_ID
 
 | 能力 | 目标体验 | 进展 |
 | --- | --- | --- |
-| 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | M4.5 默认关闭 Alpha；[接入与使用](docs/continuous-secretary.md) |
+| 常驻私人秘书 | 一个对话入口，管理目标、偏好和后续工作 | M4.5 Alpha，新版交互默认可用；[接入与使用](docs/continuous-secretary.md) |
 | 专事专办 | 根据职责、项目权限、设备在线情况和预算分派 | 有代码边界的 Router 设计提案，首期 Codex |
 | 家里与云端协作 | 调用自有机器；离线设备明确显示等待状态 | 历史临时链路已验收；用户管理配对/HTTPS 已本地验收 |
 | 持久会话 | 本地提交、查询、事件、中断、继续；幂等提交和显式恢复 | 已有本地实现 |
@@ -205,7 +205,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 已交付 **M4.4c–e，今日关注与首页动作**，有本地验收及既有新加坡单机的云端首页/API 验收。[记忆指南](docs/personal-memory.md)说明存取与召回；[首页指南](docs/personal-home.md)说明关注历史对话、证据简报、只读跟进、原会话续接和可选目标建议。语义提取、自动归并及模型作业预算仍待开发。
 
-**M4.5，持久 Router/Worker 协作**已实现默认关闭 Alpha，并部署到既有单机；[上线收据](docs/verification/continuous-cloud-2026-11-04.json)记录 27 项公网 HTTPS/账号/数据/API 与 17 项授权回归通过，原数据保留。用户开关仍关闭、自动额度为 0、GitHub 来源未配置；实际 Router/Provider/Native、完整 UI 和对比实验仍待验证。用户管理的 Agent 授权另有[本地收据](docs/verification/agent-authorization-local-2026-11-03.json)。
+**M4.5，持久 Router/Worker 协作**已实现 Alpha，新版交互默认可用并复用对话模型，设置提供本人记忆管理；此更新发布状态见 [STATUS](docs/STATUS.md)。原默认关闭 Alpha 已部署到既有单机；[上线收据](docs/verification/continuous-cloud-2026-11-04.json)记录 27 项公网 HTTPS/账号/数据/API 与 17 项授权回归通过，原数据保留。用户开关仍关闭、自动额度为 0、GitHub 来源未配置；实际 Router/Provider/Native、完整 UI 和对比实验仍待验证。用户管理的 Agent 授权另有[本地收据](docs/verification/agent-authorization-local-2026-11-03.json)。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
@@ -217,7 +217,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 | M4.4a | 个人设置、显式记忆存取、范围内 FTS5 召回与聊天注入 | 已本地验收并部署云端，记忆默认关闭 |
 | M4.4b | 对话中的明确记忆指令、规范来源与失效控制 | 已本地验收并部署云端，无额外提取模型调用 |
 | M4.4c–e | 持久关注、任务证据、目标建议与首页动作接纳 | 云端首页/API 已验收；动作使用本地合成模型，新首页 Native 入口待真实验收 |
-| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | 默认关闭 Alpha，离线集成与云端 API 已验证；实际模型/Native、完整 UI 与对比实验待完成 |
+| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | Alpha，新版默认交互待发布；离线集成与历史云端 API 已验证；实际模型/Native、完整 UI 与对比实验待完成 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
 
 已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。[本地验证与限制](docs/local-worker.md)。

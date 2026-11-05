@@ -45,15 +45,41 @@ func (s *Server) workSources(w http.ResponseWriter, r *http.Request) {
 			workError(w, ErrCredentials)
 			return
 		}
+		model := ""
 		if *b.Enabled {
+			model, e = s.defaultWorkModel(r)
+			if e != nil {
+				fail(w, 422, "bounded_model_required", "Configure a supported conversation model in model settings")
+				return
+			}
 			if _, err := s.githubToken(); err != nil {
 				fail(w, 422, "github_secret_required", "Configure the deployment's read-only GitHub secret reference before enabling this source")
 				return
 			}
 		}
 		e = s.Store.workTransaction(r.Context(), func(tx *sql.Tx) error {
-			if !s.cfg.ContinuousEnabled || !workEnabled(tx, owner) {
+			if !s.cfg.ContinuousEnabled {
 				return ErrDisabled
+			}
+			if err := claimWorkOwner(tx, owner); err != nil {
+				return err
+			}
+			if *b.Enabled {
+				settings, err := workGet(tx, owner, "settings", "settings")
+				if errors.Is(err, ErrNotFound) {
+					settings = workRecord{ID: "settings", Kind: "settings", Owner: owner, Data: map[string]any{"native_budget": 0}}
+				} else if err != nil {
+					return err
+				}
+				if !workBool(settings, "enabled") {
+					settings.Data["native_budget"] = 0
+				}
+				settings.Data["enabled"] = true
+				settings.Data["model"] = model
+				settings.State = "enabled"
+				if err := workPut(tx, &settings); err != nil {
+					return err
+				}
 			}
 			current, err := workGet(tx, owner, "source", "github")
 			if err == nil {
@@ -135,8 +161,11 @@ func (s *Server) workRules(w http.ResponseWriter, r *http.Request) {
 	}
 	var out workRecord
 	e := s.Store.workTransaction(r.Context(), func(tx *sql.Tx) error {
-		if !s.cfg.ContinuousEnabled || !workEnabled(tx, owner) {
+		if !s.cfg.ContinuousEnabled {
 			return ErrDisabled
+		}
+		if err := claimWorkOwner(tx, owner); err != nil {
+			return err
 		}
 		if r.Method == "POST" {
 			if !workOperationID.MatchString(b.Operation) {

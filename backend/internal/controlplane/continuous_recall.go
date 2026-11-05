@@ -224,8 +224,11 @@ func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 	owner := sessionOf(r).User.ID
 	var out workRecord
 	e := s.Store.workTransaction(r.Context(), func(tx *sql.Tx) error {
-		if !s.cfg.ContinuousEnabled || !workEnabled(tx, owner) {
+		if !s.cfg.ContinuousEnabled {
 			return ErrDisabled
+		}
+		if e := claimWorkOwner(tx, owner); e != nil {
+			return e
 		}
 		var e error
 		out, e = enqueueRouter(tx, sessionOf(r).User, b.Operation, b.Text, "user", b.Work)
@@ -275,7 +278,7 @@ func (s *Server) workView(v workRecord) workRecord {
 			kind = "followup"
 		}
 		_, err := s.workGrant(s.Store.DB, v.Owner, workString(v, "grant_id"), workString(v, "project"), kind)
-		v.Data["can_execute"] = err == nil && s.cfg.ContinuousEnabled && workEnabled(s.Store.DB, v.Owner) && v.State == "active" && workString(v, "active_operation") == ""
+		v.Data["can_execute"] = err == nil && s.cfg.ContinuousEnabled && v.State == "active" && workString(v, "active_operation") == ""
 		_, cancelErr := s.workGrant(s.Store.DB, v.Owner, workString(v, "grant_id"), workString(v, "project"), "cancel")
 		pendingID := workString(v, "active_operation")
 		v.Data["can_cancel"] = cancelErr == nil && pendingID != ""

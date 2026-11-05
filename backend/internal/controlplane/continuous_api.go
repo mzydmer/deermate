@@ -80,7 +80,7 @@ func workError(w http.ResponseWriter, err error) {
 		return
 	}
 	if errors.Is(err, ErrDisabled) {
-		fail(w, 409, "continuous_disabled", "Enable the continuous secretary before starting work")
+		fail(w, 409, "continuous_disabled", "The secretary service is temporarily unavailable")
 		return
 	}
 	storeError(w, err)
@@ -132,6 +132,13 @@ func (s *Server) continuousConfig(w http.ResponseWriter, r *http.Request) {
 		if b.Enabled == nil || len(b.Model) > 150 || b.NativeBudget < 0 || b.NativeBudget > 2 {
 			workError(w, ErrCredentials)
 			return
+		}
+		if *b.Enabled && b.Model == "" {
+			b.Model, err = s.defaultWorkModel(r)
+			if err != nil {
+				fail(w, 422, "bounded_model_required", "Configure a supported conversation model in model settings")
+				return
+			}
 		}
 		if *b.Enabled && !s.boundedWorkModel(r, b.Model) {
 			fail(w, 422, "bounded_model_required", "Select a configured model with verified output and retry limits")
@@ -189,7 +196,7 @@ func (s *Server) continuousConfig(w http.ResponseWriter, r *http.Request) {
 		reserved[kind] = used
 	}
 	rows.Close()
-	respond(w, 200, map[string]any{"config": workPublic(v), "module_available": s.cfg.ContinuousEnabled, "contract_version": continuousVersion, "github_configured": (workRepository.MatchString(s.cfg.GitHubRepository) && s.cfg.GitHubSecretHome != ""), "reserved": reserved, "budget_day": day})
+	respond(w, 200, map[string]any{"config": workPublic(v), "module_available": s.cfg.ContinuousEnabled, "interactive_available": s.cfg.ContinuousEnabled, "model_policy": "conversation-default", "contract_version": continuousVersion, "github_configured": (workRepository.MatchString(s.cfg.GitHubRepository) && s.cfg.GitHubSecretHome != ""), "reserved": reserved, "budget_day": day})
 }
 func (s *Server) workOrders(w http.ResponseWriter, r *http.Request) {
 	if !s.workAccess(w, r) {
@@ -229,8 +236,11 @@ func (s *Server) createWork(ctx context.Context, u User, b workBody, origin stri
 		b.Title = string([]rune(strings.TrimSpace(b.Goal))[:min(40, len([]rune(strings.TrimSpace(b.Goal))))])
 	}
 	err = s.Store.workTransaction(ctx, func(tx *sql.Tx) error {
-		if !s.cfg.ContinuousEnabled || !workEnabled(tx, u.ID) {
+		if !s.cfg.ContinuousEnabled {
 			return ErrDisabled
+		}
+		if e := claimWorkOwner(tx, u.ID); e != nil {
+			return e
 		}
 		fingerprint := workHash([]any{b.Goal, b.Title, b.Project, b.Grant, b.Thread, origin})
 		if id, e := workExisting(tx, u.ID, "create", b.Operation); e == nil {
@@ -480,7 +490,7 @@ func safeWorkText(s string, max int) string {
 }
 
 func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, message, key string, automatic bool) (workRecord, error) {
-	if !s.cfg.ContinuousEnabled || !workEnabled(tx, u.ID) {
+	if !s.cfg.ContinuousEnabled || (automatic && !workEnabled(tx, u.ID)) {
 		return workRecord{}, ErrDisabled
 	}
 	if (v.State != "active" && kind != "cancel") || len(message) > 8000 || (kind != "cancel" && strings.TrimSpace(message) == "") {
