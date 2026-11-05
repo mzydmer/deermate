@@ -6,7 +6,11 @@
     "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
     "updated": "2026-11-04",
     "status": "Alpha",
-    "sources": ["docs/STATUS.md", "docs/SPEC.md"]
+    "sources": [
+      "docs/STATUS.md",
+      "docs/SPEC.md",
+      "docs/verification/continuous-cloud-2026-11-04.json"
+    ]
   },
   {
     "slug": "guide/quickstart",
@@ -40,7 +44,9 @@
     "description": "把历史对话加入关注，查看有来源的进展并跟进。",
     "updated": "2026-11-04",
     "status": "使用指南",
-    "sources": ["docs/personal-home.md"]
+    "sources": [
+      "docs/personal-home.md"
+    ]
   },
   {
     "slug": "guide/memory",
@@ -49,7 +55,9 @@
     "description": "管理称呼、时区与长期事实，纠正或遗忘记录。",
     "updated": "2026-11-04",
     "status": "需本人开启",
-    "sources": ["docs/personal-memory.md"]
+    "sources": [
+      "docs/personal-memory.md"
+    ]
   },
   {
     "slug": "guide/tools",
@@ -58,7 +66,9 @@
     "description": "使用公开搜索、网页读取以及已授权的数据连接。",
     "updated": "2026-11-04",
     "status": "使用指南",
-    "sources": ["docs/tools-and-connections.md"]
+    "sources": [
+      "docs/tools-and-connections.md"
+    ]
   },
   {
     "slug": "guide/authorization",
@@ -66,8 +76,11 @@
     "title": "设备与 Agent 授权",
     "description": "理解配对、本机确认、执行就绪、续期与撤销。",
     "updated": "2026-11-04",
-    "status": "本地验收",
-    "sources": ["docs/agent-authorizations.md"]
+    "status": "云端页面/API 已验收",
+    "sources": [
+      "docs/agent-authorizations.md",
+      "docs/verification/agent-authorization-cloud-2026-11-04.json"
+    ]
   },
   {
     "slug": "guide/continuous",
@@ -76,7 +89,11 @@
     "description": "在 Alpha 中持续跟进目标、观察来源和处理候选。",
     "updated": "2026-11-04",
     "status": "Alpha · 默认关闭",
-    "sources": ["docs/continuous-secretary.md", "docs/STATUS.md"]
+    "sources": [
+      "docs/continuous-secretary.md",
+      "docs/STATUS.md",
+      "docs/verification/continuous-cloud-2026-11-04.json"
+    ]
   },
   {
     "slug": "guide/faq",
@@ -150,6 +167,10 @@
     "description": "查看产品变化、启用条件和交付范围。",
     "updated": "2026-11-04",
     "status": "持续更新",
-    "sources": ["docs/EVOLUTION.md", "docs/STATUS.md"]
+    "sources": [
+      "docs/EVOLUTION.md",
+      "docs/STATUS.md",
+      "docs/verification/continuous-cloud-2026-11-04.json"
+    ]
   }
 ]
