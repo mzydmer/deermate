@@ -504,3 +504,9 @@ Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/whee
 Node 24 离线意图恢复 8 项、overlay 3 项、相关部署/前端子集 24 passed / 3 skipped、Ruff/token、完整 TypeScript/Next 生产构建通过。最终运行镜像 17 个 overlay 源文件逐一一致。验收前后 run=7、Native task=2、模型预算预留=5，没有新增模型或 Native 调用；Go/Worker 未修改，未重跑上轮完整套件。新增 CI job 尚未在远端运行。macOS 后续自动锁屏时通过浏览器视口能力继续；带原设备工具缩放的截图已排除，公开截图来自新建的正常标签页。
 
 [UI 收据](verification/continuous-ui-2026-11-04.json)与新截图保留实际范围。来源候选/凭据失效/背压的完整 UI 矩阵、真实 Provider/Codex/GitHub、云端及 R-EVAL 仍未完成。浏览器临时视口已恢复，2037 fixture 已停止且保留数据，个人 2026 与云端不变，未恢复旧 SSH 或新增真实设备权限。本轮未重试远端发布。
+
+## 2026-11-04 Agent 授权首期上线
+
+授权源码 `5a1ed3a` 已进入 main 并推送，云端 Go/Gateway 运行相同版本，五服务健康。原账号、数据卷、模型配置、SQLite 一致性备份与旧镜像保留；原家庭 SSH 记录只导入为已过期历史，未恢复 SSH 或新增执行授权。更新后的 Worker 必须声明 `local-grants-v1`，连接器在转发前复核能力与身份，拒绝旧 Worker 忽略授权标记的情况。固定源码最终 Python 251 passed / 9 skipped；线上 HTTPS owner 登录、管理 HTML、CSRF、到期原因及旧对话 API 共 17 项通过，见[收据](verification/agent-authorization-cloud-2026-11-04.json)。
+
+浏览器扩展上传受本地文件权限限制，未开启该权限；临时服务器限额编译随后停止，改通过同一 GitHub 仓库的部署专用分支传输已验收 binary/wheel/脚本，核对 archive/manifest SHA-256 后进行受控切换。binary 未进入 main。线上浏览器地址访问授权被拒绝，没有换浏览器或用其他途径绕过；本次不声称通过线上视觉验收，也不声称已经在真实设备启用新授权或调用原生模型。

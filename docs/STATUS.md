@@ -47,8 +47,8 @@
 | 工具与连接 | 公开搜索/网页读取及工具检查页已有云端证据；私人账户连接需独立服务/授权。[指南](tools-and-connections.md) |
 | 一个对话一个 Native | 自动命名/改名、真实 Codex 多轮同根与独立验证已有历史收据。[会话指南](chat-sessions.md) |
 | 记忆与首页 | 显式事实、本人 FTS、遗忘屏障、来源撤销、确定性简报/关注与首页动作已实现；语义提取仍未实现。[记忆](personal-memory.md) / [首页](personal-home.md) |
-| 用户管理设备授权 | 配对、逐版本本机确认、期限/项目/操作/到期策略、续期取消、撤销与出站 HTTPS 已有独立本地验收。[指南](agent-authorizations.md) / [收据](verification/agent-authorization-local-2026-11-03.json) |
-| 云端 | 既有新加坡实例曾于 2026-11-03 升级 M4.4a–e：25 项 HTTPS/API、8 项 UI 验收通过，历史数据保留，临时 admin SSH 已撤销。[历史收据](verification/personal-home-cloud-2026-11-03.json) |
+| 用户管理设备授权 | 配对、逐版本本机确认、期限/项目/操作/到期策略、续期取消、撤销与出站 HTTPS 已本地验收；Go/Gateway `5a1ed3a` 已部署，17 项 HTTPS/API 通过，线上视觉未验。[指南](agent-authorizations.md) / [本地](verification/agent-authorization-local-2026-11-03.json) / [云端](verification/agent-authorization-cloud-2026-11-04.json) |
+| 云端 | 2026-11-03 的 M4.4a–e 页面/记忆仍保留；2026-11-04 Go/Gateway 已升级 `5a1ed3a` 授权首期，17 项 HTTPS/API 通过、旧授权为过期历史、无新增执行授权。[首页历史](verification/personal-home-cloud-2026-11-03.json) / [授权上线](verification/agent-authorization-cloud-2026-11-04.json) |
 | 家庭接入 | 历史反向 SSH 授权已于 2026-10-30 截止，不能复用；本机 Worker 可达不等于当前产品授权/新协议就绪 |
 | 本地 | 个人入口 `localhost:2026` 本轮未升级；原 API/负载用独立 2036，本轮 UI 用独立 `deermate-native-check`/2037、合成账号及隔离网络。验收前后 run=7、Native task=2、模型预留=5，零新增调用；fixture 现已停止并保留卷 |
 
@@ -59,4 +59,4 @@
 3. 云端发布须重新核对活动任务、备份、固定镜像与有效部署访问；本轮批准开发不新增云登录/设备权限。
 4. 独立执行 R-EVAL 对照/消融和公开复现数据。真实模型研究请求额度须另行确定，不挪用有限实机验收上限。
 
-代码与新 UI 修正保留在本地提交。上轮远端 main 核对为 `5a1ed3a`；SSH 缺少可用公钥、HTTPS 缺少 Git 凭据，推送未完成，本轮未重试发布。新增离线意图恢复 CI job，未声明远端 CI 已运行。合成 Compose 验收实例均已停止，私有卷和故障证据保留，浏览器临时视口已恢复；个人环境不作为 fixture。
+本轮用户已要求推送和云端发布，发布工作区合并远端 `77c5c31` 授权上线记录；应用源码仍为已验收 `274c1b2`，未提交的产品文档不纳入此发布。用户明确将本机仓库/服务器部署密钥改为长期有效；实际推送、云端升级和验收结果在完成后补记。新增离线意图恢复 CI job，未声明远端 CI 已运行。合成 Compose 验收实例均已停止，私有卷和故障证据保留，浏览器临时视口已恢复；个人环境不作为 fixture。
