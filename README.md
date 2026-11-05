@@ -130,7 +130,7 @@ For a directly reachable SSH Worker, install `.[mcp,ssh]`, fill in [enrollment](
 
 | Capability | Intended experience | Status |
 | --- | --- | --- |
-| A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | M4.5 Router/Worker spec and plan proposed; review pending |
+| A persistent secretary | One conversation for goals, preferences, handoffs, and follow-ups | Default-off M4.5 Alpha; [setup and limits](docs/continuous-secretary.md) |
 | Specialist routing | Choose an eligible agent by role, project, device availability, and budget | Host-bounded Router design proposed; Codex first |
 | Home and cloud workers | Run bounded work on machines you own; show offline devices explicitly | Historical temporary link verified; user-managed pairing/HTTPS locally verified |
 | Durable sessions | Local start/status/events/interrupt/resume; idempotent submission and explicit restart recovery | Local implementation |
@@ -154,7 +154,7 @@ flowchart TD
     Worker --> Codex[Codex app-server]
     Worker --> Results[Diff, tests and native session evidence]
     Results --> Runtime
-    Go -. proposed M4.5 .-> Routing[Persistent Router and event-driven work]
+    Go -. opt-in M4.5 Alpha .-> Routing[Persistent Router and event-driven work]
     Routing -. planned .-> Other[Claude, DeepSeek, research and desktop adapters]
     Tasks -. optional, planned .-> Hermesh[Self-hosted Hermesh bridge]
 ```
@@ -221,7 +221,7 @@ The target is unattended work within permissions you set in advance. The propose
 
 We track delivered work separately from planned functionality. Delivered scope includes **M4.4c–e personal focus and home actions**, implemented on the Go backend and shared design system, locally verified and deployed to the existing Singapore single-host installation. See the [personal home guide](docs/personal-home.md) for followed conversations, evidence-based focus, read-only follow-ups and opt-in goal suggestions. Semantic extraction, automatic merging, shared projects and budgeted model jobs remain planned.
 
-**M4.5 persistent Router/Worker coordination** is implemented as a default-off Alpha. See the [usage and setup guide](docs/continuous-secretary.md), [progress](docs/STATUS.md) and [local evidence](docs/verification/continuous-secretary-2026-11-04.json). User-managed Agent authorization has its own [local acceptance receipt](docs/verification/agent-authorization-local-2026-11-03.json). Local evidence does not establish a deployed M4.5 Router or a comparative benchmark result.
+**M4.5 persistent Router/Worker coordination** is implemented as a default-off Alpha. See the [usage and setup guide](docs/continuous-secretary.md), [progress](docs/STATUS.md) and [local evidence](docs/verification/continuous-secretary-2026-11-04.json). User-managed Agent authorization has its own [local acceptance receipt](docs/verification/agent-authorization-local-2026-11-03.json). The existing single-host service now runs the same Alpha code: [27 public HTTPS/account/data/API checks and 17 authorization regressions](docs/verification/continuous-cloud-2026-11-04.json) passed with original data preserved. The owner switch stays off, automatic Native budget is zero and GitHub is unconfigured; no actual Router/provider/Native run or comparative benchmark is claimed.
 
 | Milestone | Deliverable | State |
 | --- | --- | --- |
@@ -233,7 +233,7 @@ We track delivered work separately from planned functionality. Delivered scope i
 | M4.4a | Personal settings, explicit memory CRUD, scoped FTS5 recall and chat injection | Locally verified and cloud-deployed; memory defaults off |
 | M4.4b | Opt-in explicit chat memory requests, canonical source links and revocation | Locally verified and cloud-deployed; no extra extraction-model calls |
 | M4.4c–e | Persistent personal focus, task evidence, goal suggestions and admitted home actions | Cloud home/API verified; action tests use local synthetic models; new home Native entry still needs live acceptance |
-| M4.5 | Persistent Router, isolated Worker sessions, event pass-through, bounded recall and admission | Opt-in Alpha; local fixtures verified, full live/UI criteria and comparative evaluations pending |
+| M4.5 | Persistent Router, isolated Worker sessions, event pass-through, bounded recall and admission | Opt-in Alpha; local fixtures and deployed APIs verified, actual provider/Native, full UI and comparative evaluations pending |
 | M5 | Optional Hermesh bridge + desktop execution + broader ecosystem adapters | Planned |
 
 **Verified so far:** a real Codex repair in a disposable repository returned a patch and an independently executed passing test. A live interruption and continuation preserved the same native session. Offline protocol tests cover idempotency, restart recovery, input handling, deadlines, and denied permissions. Native session IDs and policy snapshots persist in SQLite. In-flight work after restart requires explicit recovery; it is never automatically replayed. See [verification and current limits](docs/local-worker.md).

@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-04",
+  "source_commit": "5a1ed3ae364d0d758e8c0dc899b04b5345b22ea3",
+  "artifact_commit": "786e2af960e67ee40207adf88b50f16a34564669",
+  "manifest_sha256": "f37a6634090b00ce51c5221d0041ec1a6f2c58b651937a991cde3e308eb42bd9",
+  "archive_sha256": "21541c570aa610f52c168d28efae603c297f753d34dc4022c3b09a3dd6029a4b",
+  "operator_observation": {
+    "source": "Workbench terminal printed AUTHORIZATION_DEPLOYMENT JSON; original receipt retained on deployment host",
+    "control_revision": "5a1ed3ae364d0d758e8c0dc899b04b5345b22ea3",
+    "gateway_revision": "5a1ed3ae364d0d758e8c0dc899b04b5345b22ea3",
+    "database_backup_retained": true,
+    "same_home_volume": true,
+    "active_counts_before": {
+      "scheduled_task_runs": 0,
+      "runs": 0,
+      "mcp_tasks": 0
+    },
+    "services_running": true,
+    "five_containers_healthy": true,
+    "new_authorizations_activated": 0,
+    "migration": {
+      "owner_retained": true,
+      "legacy_imported_as_expired": true,
+      "grant_count": 1
+    }
+  },
+  "https_api_acceptance": {
+    "passed": true,
+    "checks": [
+      "public_health",
+      "anonymous_inventory_rejected",
+      "existing_owner_login",
+      "owner_inventory",
+      "expired_history_imported",
+      "no_new_active_grants",
+      "native_readiness_not_invented",
+      "no_private_credentials_in_projection",
+      "management_page_served",
+      "page_security_headers",
+      "admin_navigation",
+      "session_bound_csrf_required",
+      "readonly_connection_check",
+      "expired_reason_visible",
+      "original_deadline_retained",
+      "checks_preserve_authorization_state",
+      "existing_conversation_api"
+    ],
+    "grant_count": 1,
+    "active_grants": 0,
+    "native_provider_calls": 0,
+    "device_pairings_created": 0,
+    "permissions_activated": 0,
+    "scope": "Normal HTTPS owner login, deployed Go authorization APIs and management HTML; no native execution"
+  },
+  "latest_isolated_regression": {
+    "passed": 251,
+    "skipped": 9,
+    "seconds": 97.0,
+    "source_commit": "5a1ed3ae364d0d758e8c0dc899b04b5345b22ea3"
+  },
+  "delivery_notes": [
+    "Pinned release fetched from same public GitHub repository and SHA-256 verified",
+    "Browser upload required an extension permission and was not enabled",
+    "Temporary resource-limited server compiler stopped after switching to verified local artifacts",
+    "No new SSH grant or native model invocation",
+    "Live browser origin access was declined; no alternate browser or screenshot workaround attempted"
+  ],
+  "limits": [
+    "No new real-device grant activated",
+    "No real Native model execution under the new relay",
+    "Online visual/browser acceptance unavailable; local browser and deployed HTML/API checks retained separately",
+    "Deployment-only artifacts retained on codex/authorization-artifacts; binary not added to main"
+  ]
+}

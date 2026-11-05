@@ -35,3 +35,8 @@ Codex 登录和 Worker 全权本地 token 留在本机。云端和连接器均�
 原临时 SSH 授权可以导入为已过期历史。导入不恢复密钥、隧道或可用 token；使用“重新连接设备”走新流程。旧 SSH 传输仍可按原操作员配置使用，本模块不延长它的期限。
 
 实现与设计取舍见 [功能规格](specs/agent-authorization.md)和 [ADR 0014](decisions/0014-user-managed-agent-authorization.md)。
+
+
+## 当前上线范围
+
+Go/Gateway `5a1ed3a` 已部署，17 项公网 HTTPS/API 检查通过。原测试链路显示已过期；新权限仍由用户在页面选择期限并在本机确认。固定源码的完整回归为 251 passed / 9 skipped；另保留本地页面交互验收。线上浏览器访问未获授权，在线视觉检查尚未完成。见[部署收据](verification/agent-authorization-cloud-2026-11-04.json)。

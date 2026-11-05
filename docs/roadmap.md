@@ -142,6 +142,8 @@ First release uses existing owned conversations/tasks. Authorized external-sourc
 
 P5 已补真实 Chrome 390/1280/1440px、浅深色、键盘/减少动态、工作草稿隔离、普通账号隔离、局部读取失败/过时/恢复；[独立 UI 收据](verification/continuous-ui-2026-11-04.json)。来源候选等完整矩阵尚未通过，不据此勾选整个阶段。
 
+P7 已完成既有单机应用发布、数据备份/保留和 27+17 项公网回归；[上线收据](verification/continuous-cloud-2026-11-04.json)。用户开关仍关闭、自动预算 0；实际第三方/Native、线上视觉与完整阶段验收仍待完成。
+
 ## M5 — Extend the ecosystem
 
 - [ ] Add an optional Hermesh CLI bridge; keep its separate upstream implementation optional.
@@ -171,7 +173,7 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 用户选择期限、范围与到期任务策略；Go 管理页面与状态详情。
 - [x] 本机逐版本确认、取消申请、续期与撤销；Go/Worker 双向接纳。
 - [x] 主动 HTTPS 连接与持久单次投递；本地跨运行时及过期/幂等测试。
-- [ ] 本轮线上部署与 HTTPS 页面验收。
+- [x] 固定提交线上部署与 17 项 HTTPS API/页面交付检查；线上浏览器访问未获授权，视觉验收不标记通过。
 - [ ] 开机守护、身份凭据定期轮换、后台提醒与共享设备授权。
 
 ## M4.5 — Persistent secretary Alpha
