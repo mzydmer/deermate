@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-05",
+  "recorded_at_utc": "2026-11-05T15:33:06.022871+00:00",
+  "source_revision": "c893224471ab2adcf18f798089b8a78f9df03676",
+  "diagram_count": 6,
+  "offline_tests": 19,
+  "production_build_passed": true,
+  "svg_previews_inspected": [
+    "architecture",
+    "recovery"
+  ],
+  "public_diagram_checks": {
+    "passed": true,
+    "checks": [
+      "svg_hash_architecture",
+      "svg_hash_execution",
+      "svg_hash_recovery",
+      "svg_hash_memory",
+      "svg_hash_quickstart",
+      "svg_hash_authorization",
+      "rendered_figure_technical/architecture",
+      "rendered_figure_technical/orchestration",
+      "rendered_figure_technical/memory",
+      "rendered_figure_guide/quickstart",
+      "rendered_figure_guide/authorization"
+    ],
+    "svg_assets": 6,
+    "embedded_figures": 6
+  },
+  "public_account_read_checks": {
+    "passed": true,
+    "checked_at_utc": "2026-11-05T15:32:40.707909+00:00",
+    "checks": [
+      "trusted_https_ready",
+      "anonymous_account_denied",
+      "anonymous_docs_home",
+      "anonymous_docs_guide/overview",
+      "anonymous_docs_guide/quickstart",
+      "anonymous_docs_guide/conversations",
+      "anonymous_docs_guide/focus",
+      "anonymous_docs_guide/memory",
+      "anonymous_docs_guide/tools",
+      "anonymous_docs_guide/authorization",
+      "anonymous_docs_guide/continuous",
+      "anonymous_docs_guide/faq",
+      "anonymous_docs_technical/architecture",
+      "anonymous_docs_technical/orchestration",
+      "anonymous_docs_technical/memory",
+      "anonymous_docs_technical/evaluation",
+      "anonymous_docs_changelog",
+      "three_document_groups",
+      "published_changelog_content",
+      "updated_proxy_design_content",
+      "unknown_document_404",
+      "static_asset_83810f151003b8cd.css",
+      "static_asset_webpack-aa1ab1bd0bce76e0.js",
+      "static_asset_04b21444-cc05e27ce40fe401.js",
+      "static_asset_71172-82ef258bda61a580.js",
+      "static_asset_main-app-e03a730ff3b5c914.js",
+      "static_asset_layout-d88abb2fad21fd0e.js",
+      "static_asset_fcf0fb0f-5e8088f5db79feb2.js",
+      "static_asset_c2e6ce84-1e794205be2d1bd9.js",
+      "login_product_docs_entry",
+      "existing_password_login",
+      "existing_owner_admin",
+      "historical_threads_readable",
+      "models_readable",
+      "profile_readable",
+      "memories_readable",
+      "topics_readable",
+      "grants_readable",
+      "continuous_configuration_readable",
+      "owner_module_still_off",
+      "native_budget_still_zero",
+      "historical_data_and_configuration_except_early_profile_preserved",
+      "authenticated_workspace_docs_entry",
+      "chat_sidebar_docs_entry",
+      "agent_management_still_available"
+    ],
+    "historical_threads": 9,
+    "model_calls_started": 0,
+    "native_tasks_started": 0,
+    "scope": "Trusted HTTPS, public documentation/HTML/assets and authenticated original-account read checks. No browser visual acceptance."
+  },
+  "deployment": {
+    "passed": true,
+    "revision": "c893224471ab2adcf18f798089b8a78f9df03676",
+    "frontend_image": "sha256:3c4c8c8bd3782bb0afb35cb49d68ff74b72d3345aa4f7381fe702b8499131314",
+    "old_frontend_image": "sha256:13193af1f8fb877d8d6a8ff7579da1a22d6177ad0979c76be96ce345e946c986",
+    "verified_frontend_files": 2745,
+    "gateway_control_edge_nginx_images_unchanged": true,
+    "historical_rows_preserved": true,
+    "historical_counts": {
+      "users": 1,
+      "threads_meta": 9,
+      "runs": 19,
+      "mcp_tasks": 5
+    },
+    "consistent_db_backup_retained": true,
+    "original_image_and_configuration_retained": true,
+    "model_calls": 0,
+    "native_tasks": 0
+  },
+  "personal_profile_verification": {
+    "earlier_public_baseline_differed": true,
+    "current_database_matches_immediate_pre_switch_backup": true,
+    "rows_before": 1,
+    "rows_after": 1,
+    "settings_restored_or_overwritten": false
+  },
+  "limitations": [
+    "Browser control unavailable; no full live mobile/theme/keyboard visual acceptance claimed.",
+    "Parallel uncommitted design-system edits are excluded from this fixed-revision release."
+  ],
+  "archive": {
+    "sha256": "d49b7c991367a3d909a6691eb4de87194e3e437c69252e513617277125805ca7",
+    "bytes": 40016263,
+    "files": 2745
+  }
+}
