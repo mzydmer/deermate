@@ -582,7 +582,7 @@ export function ContinuousSecretary({
                 disabled={busy || readUnavailable}
                 onChange={(e) =>
                   void mutate("continuous-config", "PATCH", {
-                    enabled: true,
+                    enabled: config.data!.config.data.enabled === true,
                     native_budget: Number(e.target.value),
                     expected_revision: config.data!.config.revision,
                   })
@@ -651,12 +651,15 @@ export function ContinuousSecretary({
                 }
                 onClick={() =>
                   void mutate(`event-sources/${src.id}`, "PATCH", {
-                    enabled: src.state !== "enabled",
+                    enabled:
+                      src.state !== "enabled" ||
+                      config.data?.config.data.enabled !== true,
                     expected_revision: src.revision,
                   })
                 }
               >
-                {src.state === "enabled"
+                {src.state === "enabled" &&
+                config.data?.config.data.enabled === true
                   ? text("暂停来源", "Disable source")
                   : text("启用来源", "Enable source")}
               </button>
