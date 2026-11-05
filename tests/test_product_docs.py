@@ -13,6 +13,10 @@ def project(tmp_path):
     root = tmp_path / "repo"
     root.mkdir()
     shutil.copytree(docs.ROOT / docs.CONTENT, root / docs.CONTENT)
+    shutil.copytree(
+        docs.ROOT / "frontend/overlay/public/deermate/docs/diagrams",
+        root / "frontend/overlay/public/deermate/docs/diagrams",
+    )
     catalog = json.loads((root / docs.CONTENT / "catalog.json").read_text())
     for page in catalog:
         for source in page["sources"]:
@@ -95,3 +99,16 @@ def test_internal_change_requires_reasoned_note(project):
         "结论：无需更新客户文档\n理由：仅增加离线测试的故障样本，不改变任何用户操作、返回结果或技术方案。\n涉及文件：tests/internal.py\n"
     )
     docs.check_impact(paths, project)
+
+
+def test_missing_diagram_is_rejected(project):
+    (project / "frontend/overlay/public/deermate/docs/diagrams/architecture.svg").unlink()
+    with pytest.raises(ValueError, match="Missing diagram asset"):
+        docs.compile_docs(project)
+
+
+def test_active_svg_content_is_rejected(project):
+    path = project / "frontend/overlay/public/deermate/docs/diagrams/architecture.svg"
+    path.write_text(path.read_text().replace("</svg>", "<script>alert(1)</script></svg>"))
+    with pytest.raises(ValueError, match="Unsafe diagram SVG"):
+        docs.compile_docs(project)

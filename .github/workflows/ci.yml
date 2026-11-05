@@ -28,6 +28,7 @@ jobs:
           if [ -z "$DOCS_BASE" ] || [ "$DOCS_BASE" = "0000000000000000000000000000000000000000" ]; then
             DOCS_BASE=$(git hash-object -t tree /dev/null)
           fi
+          python scripts/product_doc_diagrams.py
           python scripts/product_docs.py --base "$DOCS_BASE"
 
   frontend-intents:

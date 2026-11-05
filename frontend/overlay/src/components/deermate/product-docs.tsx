@@ -26,6 +26,12 @@ import { DeerMark } from "./brand";
 import pages from "./product-docs.generated.json";
 
 const docComponents = toStreamdownComponents({
+  img: ({ src, alt }) => <span className="dm-docs-figure" tabIndex={0} role="region" aria-label={alt || "文档图示"}>
+    <a href={typeof src === "string" ? src : undefined} target="_blank" rel="noopener noreferrer" aria-label={`查看完整图：${alt}`}>
+      <img src={src} alt={alt} loading="lazy" />
+      <span className="dm-docs-figure-hint">查看完整图 ↗ · 小屏可横向滚动</span>
+    </a>
+  </span>,
   a: ({ href, children }) =>
     href?.startsWith("/docs/") ? (
       <Link href={href}>{children}</Link>

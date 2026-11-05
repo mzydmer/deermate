@@ -5,6 +5,7 @@ import datetime
 import json
 import re
 import subprocess
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,9 +40,36 @@ def compile_docs(root=ROOT):
             raise ValueError(f"Title mismatch: {slug}")
         if len(re.findall(r"^# ", markdown, re.M)) != 1:
             raise ValueError(f"Expected one document title: {slug}")
-        if re.search(r"^#{3,6} |<[^>]+>|!\[", markdown, re.M):
+        if re.search(r"^#{3,6} |<[^>]+>", markdown, re.M):
             raise ValueError(f"Use h2 sections, plain Markdown and no embedded HTML: {slug}")
-        for href in re.findall(r"\[[^\]]+\]\(([^)]+)\)", markdown):
+        for alt, href in re.findall(r"!\[([^\]]*)\]\(([^)]+)\)", markdown):
+            if not alt.strip() or not re.fullmatch(r"/deermate/docs/diagrams/[a-z-]+\.svg", href):
+                raise ValueError(f"Unsupported diagram image: {href}")
+            asset = root / "frontend/overlay/public" / href.lstrip("/")
+            if not asset.is_file() or asset.is_symlink():
+                raise ValueError(f"Missing diagram asset: {href}")
+            svg = ET.fromstring(asset.read_text())
+            safe_tags = {
+                "svg",
+                "title",
+                "desc",
+                "defs",
+                "marker",
+                "path",
+                "rect",
+                "text",
+                "g",
+                "polyline",
+            }
+            for element in svg.iter():
+                if element.tag.split("}")[-1] not in safe_tags or any(
+                    k.lower().startswith("on") or k.split("}")[-1] in {"href", "style"}
+                    for k in element.attrib
+                ):
+                    raise ValueError(f"Unsafe diagram SVG: {href}")
+            if not svg.findtext("{http://www.w3.org/2000/svg}desc"):
+                raise ValueError(f"Diagram requires a text description: {href}")
+        for href in re.findall(r"(?<!!)\[[^\]]+\]\(([^)]+)\)", markdown):
             if href.startswith("/docs/") and "#" not in href:
                 if href.removeprefix("/docs/") not in slugs:
                     raise ValueError(f"Broken documentation link in {slug}: {href}")

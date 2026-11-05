@@ -18,11 +18,12 @@
     "group": "guide",
     "title": "开始第一项工作",
     "description": "从交代目标，到检查结果与继续追问。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "使用指南",
     "sources": [
       "docs/chat-sessions.md",
-      "frontend/overlay/src/components/deermate/desk.tsx"
+      "frontend/overlay/src/components/deermate/desk.tsx",
+      "docs/diagrams/product/diagrams.json"
     ]
   },
   {
@@ -81,11 +82,12 @@
     "group": "guide",
     "title": "设备与 Agent 授权",
     "description": "理解配对、本机确认、执行就绪、续期与撤销。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "云端页面/API 已验收",
     "sources": [
       "docs/agent-authorizations.md",
-      "docs/verification/agent-authorization-cloud-2026-11-04.json"
+      "docs/verification/agent-authorization-cloud-2026-11-04.json",
+      "docs/diagrams/product/diagrams.json"
     ]
   },
   {
@@ -123,14 +125,15 @@
     "group": "technical",
     "title": "系统架构与设计边界",
     "description": "面向技术与研究读者的组件职责、数据路径和设计取舍。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "技术方案",
     "sources": [
       "docs/architecture.md",
       "docs/decisions/0007-go-control-plane.md",
       "docs/decisions/0015-continuous-agent-control-plane.md",
       "docs/verification/product-documentation-cloud-2026-11-04.json",
-      "scripts/ack_deploy.py"
+      "scripts/ack_deploy.py",
+      "docs/diagrams/product/diagrams.json"
     ]
   },
   {
@@ -138,7 +141,7 @@
     "group": "technical",
     "title": "持续协作与可靠执行",
     "description": "Router / Worker、原生会话连续性、发送屏障与不确定恢复。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "Alpha 方案",
     "sources": [
       "docs/specs/m4-continuous-agent.md",
@@ -146,7 +149,8 @@
       "docs/SPEC.md",
       "docs/specs/default-secretary-memory-settings.md",
       "src/deermate/continuous.py",
-      "src/deermate/continuous_middleware.py"
+      "src/deermate/continuous_middleware.py",
+      "docs/diagrams/product/diagrams.json"
     ]
   },
   {
@@ -154,13 +158,14 @@
     "group": "technical",
     "title": "记忆、上下文与来源治理",
     "description": "显式事实、有界检索、来源版本与遗忘屏障。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "技术方案",
     "sources": [
       "docs/specs/m4-memory-technical-design.md",
       "docs/personal-memory.md",
       "docs/continuous-secretary.md",
-      "docs/specs/default-secretary-memory-settings.md"
+      "docs/specs/default-secretary-memory-settings.md",
+      "docs/diagrams/product/diagrams.json"
     ]
   },
   {
@@ -181,14 +186,15 @@
     "group": "changelog",
     "title": "变更日志",
     "description": "查看产品变化、启用条件和交付范围。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "持续更新",
     "sources": [
       "docs/EVOLUTION.md",
       "docs/STATUS.md",
       "docs/verification/continuous-cloud-2026-11-04.json",
       "docs/verification/product-documentation-cloud-2026-11-04.json",
-      "docs/verification/default-secretary-memory-cloud-2026-11-04.json"
+      "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
+      "docs/diagrams/product/diagrams.json"
     ]
   }
 ]
