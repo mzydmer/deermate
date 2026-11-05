@@ -78,3 +78,6 @@ def test_actual_bundle_has_no_host_credentials(tmp_path, monkeypatch):
     assert control_secret in (output / "runtime.env").read_text()
     assert "INTERNAL_AUTH" not in control_secret
     assert "server control:8080;" in (output / "runtime/nginx.conf").read_text()
+    nginx = (output / "runtime/nginx.conf").read_text()
+    assert "location = /docs {\n            proxy_pass http://frontend_upstream;" in nginx
+    assert "location ^~ /docs/ {\n            proxy_pass http://frontend_upstream;" in nginx

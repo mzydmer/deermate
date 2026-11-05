@@ -19,7 +19,7 @@
 
 ## Meet your personal agent secretary
 
-[Product guide (Chinese)](docs/product/guide/overview.md) · [Technical design](docs/product/technical/architecture.md) · [Changelog](docs/product/changelog.md). The in-app Product docs entry opens `/docs`; this documentation center is a local change awaiting deployment. Future changes follow the [documentation policy](docs/DOCUMENTATION_POLICY.md).
+[Product guide (Chinese)](docs/product/guide/overview.md) · [Technical design](docs/product/technical/architecture.md) · [Changelog](docs/product/changelog.md). The in-app Product docs entry opens `/docs`; the documentation center is deployed to the existing cloud instance; see the [scoped rollout receipt](docs/verification/product-documentation-cloud-2026-11-04.json). Future changes follow the [documentation policy](docs/DOCUMENTATION_POLICY.md).
 
 You should be able to say:
 

@@ -10,7 +10,7 @@
 
 ## 你的私人 Agent 秘书
 
-[产品使用文档](docs/product/guide/overview.md) · [技术方案](docs/product/technical/architecture.md) · [变更日志](docs/product/changelog.md)。应用内「产品文档」进入 `/docs`；本次文档中心为本地变更，尚未发布。后续 Agent 遵守[文档更新约束](docs/DOCUMENTATION_POLICY.md)。
+[产品使用文档](docs/product/guide/overview.md) · [技术方案](docs/product/technical/architecture.md) · [变更日志](docs/product/changelog.md)。应用内「产品文档」进入 `/docs`；文档中心已发布到既有云端实例，交付与验证范围见[上线收据](docs/verification/product-documentation-cloud-2026-11-04.json)。后续 Agent 遵守[文档更新约束](docs/DOCUMENTATION_POLICY.md)。
 
 你只需要说：
 

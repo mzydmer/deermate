@@ -9,7 +9,8 @@
     "sources": [
       "docs/STATUS.md",
       "docs/SPEC.md",
-      "docs/verification/continuous-cloud-2026-11-04.json"
+      "docs/verification/continuous-cloud-2026-11-04.json",
+      "docs/verification/product-documentation-cloud-2026-11-04.json"
     ]
   },
   {
@@ -123,7 +124,9 @@
     "sources": [
       "docs/architecture.md",
       "docs/decisions/0007-go-control-plane.md",
-      "docs/decisions/0015-continuous-agent-control-plane.md"
+      "docs/decisions/0015-continuous-agent-control-plane.md",
+      "docs/verification/product-documentation-cloud-2026-11-04.json",
+      "scripts/ack_deploy.py"
     ]
   },
   {
@@ -177,7 +180,8 @@
     "sources": [
       "docs/EVOLUTION.md",
       "docs/STATUS.md",
-      "docs/verification/continuous-cloud-2026-11-04.json"
+      "docs/verification/continuous-cloud-2026-11-04.json",
+      "docs/verification/product-documentation-cloud-2026-11-04.json"
     ]
   }
 ]
