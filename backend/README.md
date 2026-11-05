@@ -62,6 +62,6 @@ Public registration, OAuth providers, PAT/API-key login, email changes, MFA, rec
 
 ## Continuous secretary Alpha
 
-Default off: `DEERMATE_CONTINUOUS_ENABLED=true` enables the installation capability; the owner separately opts in through `/api/me/continuous-config`. Go owns `/api/me/router`, `/api/me/work-orders` (actions/timeline/context/search), `/api/me/work-sources`, `/api/me/automation-rules` and `/api/me/work-decisions`. All mutations use owner/CSRF and revision/idempotency checks. The internal continuous plugin is blocked from public proxy access.
+Interactive secretary and explicitly requested work are available by default and inherit the conversation model. `DEERMATE_CONTINUOUS_ENABLED=false` is an operator kill switch; `/api/me/continuous-config` retains optional background/budget settings, without gating direct interaction. Go owns `/api/me/router`, `/api/me/work-orders` (actions/timeline/context/search), `/api/me/event-sources`, `/api/me/automation-rules` and `/api/me/agent-decisions`. All mutations use owner/CSRF and revision/idempotency checks. The internal continuous plugin is blocked from public proxy access.
 
 Optional fixed-repository ingestion uses `DEERMATE_GITHUB_REPOSITORY` and `DEERMATE_GITHUB_SECRET_HOME/github-read-token` (private read-only credential). Setup, supported model bounds, Worker capability, MCP profile, durable recovery and limits: [guide](../docs/continuous-secretary.md). New tables coexist with existing accounts and task journals; no historical chat import runs at startup.
