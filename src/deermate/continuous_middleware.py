@@ -12,7 +12,7 @@ from langchain_core.tools import tool
 from pydantic import BaseModel, ConfigDict, Field
 
 from .briefing import database, gate
-from .continuous import canonical_key, load
+from .continuous import canonical_key, check_background, load
 
 
 class RouterCommand(BaseModel):
@@ -86,13 +86,7 @@ def profile(runtime):
     with gate(owner) as (db, user):
         if op["data"]["_user_version"] != user["token_version"]:
             raise PermissionError("The model admission authorization changed")
-        settings = db.execute(
-            "SELECT data FROM deermate_work_records "
-            "WHERE owner=? AND kind='settings' AND id='settings'",
-            (owner,),
-        ).fetchone()
-        if not settings or not json.loads(settings[0]).get("enabled"):
-            raise PermissionError("Continuous work is disabled")
+        check_background(db, owner, op["data"])
     return op
 
 

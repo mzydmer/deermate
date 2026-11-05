@@ -1325,3 +1325,26 @@ body,
     font-size: 16px;
   }
 }
+
+/* Keep the selected settings panel usable below the desktop sidebar breakpoint. */
+@media (max-width: 767px) {
+  .dm-settings-dialog > .grid {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .dm-settings-dialog nav {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .dm-settings-dialog nav ul {
+    display: flex;
+    gap: var(--dm-space-2);
+  }
+  .dm-settings-dialog nav li {
+    flex-shrink: 0;
+    margin-block: 0;
+  }
+  .dm-settings-dialog nav button {
+    min-height: 44px;
+    white-space: nowrap;
+  }
+}

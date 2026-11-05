@@ -139,7 +139,7 @@ func (s *Server) workDecisionAction(w http.ResponseWriter, r *http.Request) {
 	respond(w, 200, workPublic(result))
 }
 func (s *Server) acceptWorkDecision(tx *sql.Tx, u User, d workRecord, project, grant string, automatic bool) (workRecord, error) {
-	if !s.cfg.ContinuousEnabled || !workEnabled(tx, u.ID) {
+	if !s.cfg.ContinuousEnabled || (automatic && !workEnabled(tx, u.ID)) {
 		return d, ErrDisabled
 	}
 	if d.State != "suggested" {

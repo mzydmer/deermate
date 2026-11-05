@@ -72,9 +72,9 @@ def test_capability_cannot_select_another_operation(ledger, change):
         continuous.load("alice", {"operation_id": "operation", "nonce": "opaque", **change})
 
 
-def test_revoked_version_and_disabled_cannot_admit_but_disabled_can_query(ledger):
+def test_revoked_version_and_paused_background_cannot_admit_but_can_query(ledger):
     path, put = ledger
-    operation(put)
+    operation(put, origin="event")
     put("settings", "settings", {"enabled": False})
     payload = {"operation_id": "operation", "nonce": "opaque"}
     assert continuous.load("alice", payload)["id"] == "operation"
@@ -335,7 +335,7 @@ def test_provider_body_cannot_override_output_ceiling(monkeypatch, extra):
 
 async def test_rejected_before_send_has_a_durable_read_only_receipt(ledger):
     _, put = ledger
-    operation(put)
+    operation(put, origin="event")
     put("settings", "settings", {"enabled": False})
     payload = {"operation_id": "operation", "nonce": "opaque"}
     ctx = context()
@@ -346,3 +346,43 @@ async def test_rejected_before_send_has_a_durable_read_only_receipt(ledger):
     put("settings", "settings", {"enabled": True})
     assert await continuous.query(payload, ctx) == first
     assert await continuous.perform(payload, ctx) == first
+
+
+@pytest.mark.parametrize("settings_present", [False, True])
+def test_default_interactive_admission_and_profile_need_no_enable(ledger, settings_present):
+    path, put = ledger
+    if settings_present:
+        put("settings", "settings", {"enabled": False})
+    else:
+        with sqlite3.connect(path) as db:
+            db.execute("DELETE FROM deermate_work_records WHERE kind='settings'")
+    operation(put, origin="user")
+    payload = {"operation_id": "operation", "nonce": "opaque"}
+    assert continuous.load("alice", payload, writing=True)["id"] == "operation"
+    message = {
+        "additional_kwargs": {
+            "deermate_continuous_operation": "operation",
+            "deermate_continuous_token": "opaque",
+        }
+    }
+    with sqlite3.connect(path) as db:
+        db.execute(
+            "INSERT INTO runs VALUES('run','alice','router',?,'{}',?)",
+            (
+                json.dumps({"input": {"messages": [message]}}),
+                continuous.canonical_key("alice", "router", "operation"),
+            ),
+        )
+    runtime = SimpleNamespace(context={"user_id": "alice", "run_id": "run"})
+    assert middleware.profile(runtime)["id"] == "operation"
+    for data in [
+        {"origin": "event"},
+        {"origin": "assessment"},
+        {"kind": "assessor"},
+        {"automatic": True},
+    ]:
+        operation(put, **data)
+        with pytest.raises(PermissionError):
+            continuous.load("alice", payload, writing=True)
+        with pytest.raises(PermissionError):
+            middleware.profile(runtime)

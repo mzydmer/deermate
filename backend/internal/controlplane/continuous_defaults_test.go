@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -56,6 +58,11 @@ func TestSecretaryInheritsConversationModelAndFreezesUnknownOperation(t *testing
 			catalog.Add(1)
 			respond(w, 200, map[string]any{"models": []any{map[string]any{"name": "first"}, map[string]any{"name": "preferred"}}})
 		case strings.HasSuffix(r.URL.Path, "/capabilities"):
+			cookie, err := r.Cookie("csrf_token")
+			if err != nil || cookie.Value == "" || r.Header.Get("X-CSRF-Token") != cookie.Value {
+				t.Fatal("background model capability check lost the runtime CSRF pair")
+			}
+
 			respond(w, 200, map[string]any{"contract_version": 1, "bounded": true})
 		case strings.HasSuffix(r.URL.Path, "/perform"):
 			perform.Add(1)
@@ -151,5 +158,56 @@ func TestLegacyPauseStillBlocksAutomaticButNotManualWork(t *testing.T) {
 	}
 	if workEnabled(s.Store.DB, u.ID) {
 		t.Fatal("manual work resumed background")
+	}
+}
+
+func TestManualSuggestionAcceptanceDoesNotResumePausedBackground(t *testing.T) {
+	s, u, b := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { t.Error("unexpected runtime execution") })
+	w := request(s, b, "PATCH", "/api/me/continuous-config", `{"enabled":false,"model":"fixture","native_budget":0,"expected_revision":1}`, map[string]string{"X-Expected-User-Id": u.ID})
+	requireStatus(t, w, 200)
+	err := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+		d := newWork(u.ID, "decision", "suggested", "", map[string]any{"goal": "An explicitly accepted task", "project": "demo", "grant_id": "grant"})
+		if e := workPut(tx, &d); e != nil {
+			return e
+		}
+		_, e := s.acceptWorkDecision(tx, u, d, "", "", false)
+		return e
+	})
+	if err != nil {
+		t.Fatal("manual acceptance blocked by background setup", err)
+	}
+	if workEnabled(s.Store.DB, u.ID) {
+		t.Fatal("manual acceptance resumed background")
+	}
+}
+
+func TestSourceOptInInheritsModelWithoutRestoringOldAutoBudget(t *testing.T) {
+	for _, fresh := range []bool{false, true} {
+		t.Run(map[bool]string{true: "fresh", false: "legacy-pause"}[fresh], func(t *testing.T) {
+			s, u, b := continuousFixture(t, func(w http.ResponseWriter, r *http.Request) { t.Error("source enable invoked execution") })
+			s.cfg.GitHubSecretHome = t.TempDir()
+			if e := os.WriteFile(filepath.Join(s.cfg.GitHubSecretHome, "github-read-token"), []byte("synthetic-only"), 0600); e != nil {
+				t.Fatal(e)
+			}
+			if fresh {
+				if _, e := s.Store.DB.Exec("DELETE FROM deermate_work_records WHERE kind='settings'"); e != nil {
+					t.Fatal(e)
+				}
+			} else {
+				response := request(s, b, "PATCH", "/api/me/continuous-config", `{"enabled":false,"model":"fixture","native_budget":2,"expected_revision":1}`, map[string]string{"X-Expected-User-Id": u.ID})
+				requireStatus(t, response, 200)
+			}
+			stale := request(s, b, "PATCH", "/api/me/event-sources/github", `{"enabled":true,"expected_revision":99}`, map[string]string{"X-Expected-User-Id": u.ID})
+			requireStatus(t, stale, 409)
+			if workEnabled(s.Store.DB, u.ID) {
+				t.Fatal("stale source write enabled background")
+			}
+			response := request(s, b, "PATCH", "/api/me/event-sources/github", `{"enabled":true,"expected_revision":0}`, map[string]string{"X-Expected-User-Id": u.ID})
+			requireStatus(t, response, 200)
+			settings, e := workGet(s.Store.DB, u.ID, "settings", "settings")
+			if e != nil || !workBool(settings, "enabled") || workInt(settings, "native_budget") != 0 || workString(settings, "model") != "fixture" {
+				t.Fatal("source opt-in restored stale budget or required a separate model", e)
+			}
+		})
 	}
 }

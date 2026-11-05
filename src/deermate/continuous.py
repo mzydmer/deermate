@@ -25,6 +25,19 @@ def record(db, owner, kind, identifier):
     return {**dict(row), "data": json.loads(row["data"])}
 
 
+def check_background(db, owner, data):
+    # Interactive admissions come from Go's default desk. Only source/automatic
+    # work depends on the legacy background pause; never resume it implicitly.
+    if (
+        data.get("automatic")
+        or data.get("kind") == "assessor"
+        or data.get("origin") in {"event", "assessment"}
+    ):
+        settings = record(db, owner, "settings", "settings")
+        if not settings["data"].get("enabled"):
+            raise PermissionError("Background work is paused")
+
+
 def load(owner, payload, *, writing=False):
     with gate(owner) as (db, user):
         op = record(db, owner, "operation", payload.get("operation_id"))
@@ -39,9 +52,7 @@ def load(owner, payload, *, writing=False):
         if writing:
             if op["state"] != "dispatching":
                 raise PermissionError("This operation may only be reconciled")
-            settings = record(db, owner, "settings", "settings")
-            if not settings["data"].get("enabled"):
-                raise PermissionError("Continuous work is disabled")
+            check_background(db, owner, data)
             if data["kind"] in {"execute", "followup", "cancel"}:
                 validate_native(db, owner, op)
             elif data["kind"] == "assessor":

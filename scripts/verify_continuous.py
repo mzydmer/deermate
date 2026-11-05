@@ -49,17 +49,9 @@ def verify(args):
             return result.json()
 
         cfg = api("GET", "continuous-config")
-        if not cfg["config"]["data"].get("enabled"):
-            api(
-                "PATCH",
-                "continuous-config",
-                {
-                    "enabled": True,
-                    "expected_revision": cfg["config"]["revision"],
-                    "model": "continuous-fixture",
-                    "native_budget": 0,
-                },
-            )
+        assert cfg["interactive_available"] and cfg["model_policy"] == "conversation-default"
+        background = cfg["config"]
+        checks.append("interactive_available_without_separate_setup")
         assert api("GET", "continuous-config")["config"]["data"]["native_budget"] == 0
         checks.append("default_zero_native_quota")
         thread = None
@@ -84,6 +76,8 @@ def verify(args):
             else:
                 raise AssertionError("The original Router operation did not settle")
         checks.append("two_router_turns_one_persistent_thread_and_idempotent_input")
+        assert api("GET", "continuous-config")["config"] == background
+        checks.append("explicit_input_does_not_resume_or_reconfigure_background")
         assert (
             client.post("/api/plugins/deermate.continuous/actions/perform", json={}).status_code
             == 403

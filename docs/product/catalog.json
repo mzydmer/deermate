@@ -140,7 +140,9 @@
       "docs/specs/m4-continuous-agent.md",
       "docs/specs/m4-continuous-agent-plan.md",
       "docs/SPEC.md",
-      "docs/specs/default-secretary-memory-settings.md"
+      "docs/specs/default-secretary-memory-settings.md",
+      "src/deermate/continuous.py",
+      "src/deermate/continuous_middleware.py"
     ]
   },
   {

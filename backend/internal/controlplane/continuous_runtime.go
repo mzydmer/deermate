@@ -163,6 +163,7 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 	resolvedModel := ""
 	if op.State == "prepared" && s.cfg.ContinuousEnabled && (workString(op, "kind") == "router" || workString(op, "kind") == "assessor") && workString(op, "model") == "" {
 		req, _ := http.NewRequestWithContext(context.WithValue(ctx, sessionKey{}, Session{User: u}), "GET", s.cfg.Origin, nil)
+		req.AddCookie(&http.Cookie{Name: "csrf_token", Value: opaque()})
 		resolvedModel, _ = s.defaultWorkModel(req)
 	}
 	perform := false
