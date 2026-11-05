@@ -1,14 +1,14 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-03 UTC（M4.4a–e 已升级既有新加坡云实例；公网接口及首页验收通过，临时部署 SSH 已撤销；原本地实例未升级）。历史见 [EVOLUTION.md](EVOLUTION.md)。这是版本化接续快照，不是自动监控服务。
+最后核对：2026-11-04（Agent 授权首期已部署既有新加坡实例；公网 API 验收通过，线上浏览器访问未获授权；原本地实例未升级）。历史见 [EVOLUTION.md](EVOLUTION.md)。这是版本化接续快照，不是自动监控服务。
 
 ## 当前工作 · 用户管理 Agent 授权
 
 已实现[授权模块](agent-authorizations.md)：Go `/admin/agents` 页面与 owner/CSRF 保护接口，用户明确选择期限/项目/操作和到期任务策略；一次性配对、逐版本本机确认、待确认续期取消、撤销及脱敏历史可用。新出站 HTTPS 连接器复用既有入口，不开放本机 Worker、不修改 sshd、不延长历史 SSH。Worker 在任务接纳和队列启动时重查本机确认与 90 秒双时钟观测，已投递操作不重放；页面的授权/连接/执行就绪分别展示。
 
-本地验证：Python **250 passed / 9 skipped**（包含真实 Go HTTP→连接器→Worker→离线 Native 修复与独立测试），Go mod/vet/race、无 CGO 与 Linux 构建、Ruff/wheel 通过；实际固定 Helm/Compose/单机/HTTPS 部署子集 **29 passed**。浏览器检查空、明确选择长期权限、提交后未生效、取消待确认与 390px 无横向溢出。见[本地收据](verification/agent-authorization-local-2026-11-03.json)。
+本地验证：Python **251 passed / 9 skipped**（固定 `5a1ed3a` 隔离目录，包含真实 Go HTTP→连接器→Worker→离线 Native 修复与独立测试；早期收据保留 250 项范围），Go mod/vet/race、无 CGO 与 Linux 构建、Ruff/wheel 通过；实际固定 Helm/Compose/单机/HTTPS 部署子集 **29 passed**。浏览器检查空、明确选择长期权限、提交后未生效、取消待确认与 390px 无横向溢出。见[本地收据](verification/agent-authorization-local-2026-11-03.json)。
 
-本节是实现/本地验收范围，线上发布尚待本轮后续记录；原过期授权不恢复。首期单设备 owner，后台站外提醒、开机服务、设备身份定期自动轮换、共享租户及完整原生登录/容量探测仍未实现；原生模型未用于本次验收。
+已将 Go/Gateway 固定部署为 `5a1ed3a`，五服务健康，原数据卷、账号、数据库备份和模型配置保留；旧授权导入为已过期历史，没有新权限激活。正常 HTTPS owner 登录及页面/CSRF/过期原因/旧对话接口 **17 项**通过；见[云端收据](verification/agent-authorization-cloud-2026-11-04.json)。线上浏览器地址访问被拒绝，未换浏览器或通过其他方式绕过；在线视觉验收不宣称通过。原过期授权不恢复。首期单设备 owner，后台站外提醒、开机服务、设备身份定期自动轮换、共享租户及完整原生登录/容量探测仍未实现；原生模型未用于本次验收。
 
 ## 前项交付 · 个人秘书首页闭环
 

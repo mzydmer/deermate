@@ -453,3 +453,10 @@ Go 在真实 run 成功接纳后核对固定 SQLite 中的 owner、interactive o
 用户要求从设计进入实现并上线。新增 Go 管理页/API、显式期限/范围、逐版本本机确认、取消待确认、撤销与状态观测；以主动出站 HTTPS 替代新增 SSH 账号/到期 timer 的产品化依赖，保留旧 SSH 方式与历史任务。Go 与 Worker 双向接纳、90 秒观测和单 owner 门禁在提示词外执行；过期队列不启动，在途 finish/stop 策略独立测试。见 [ADR 0014](decisions/0014-user-managed-agent-authorization.md)与[指南](agent-authorizations.md)。
 
 Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/wheel 和 29 项固定部署子集通过；真实 Go→连接器→Worker→离线 Native 的修复、验证、幂等与撤销通过，浏览器确认待本机状态、取消与 390px 布局。本条先记录本地验收；云端上线与旧过期记录导入在实际完成后另记，不能据此推断已恢复本机执行权限。
+
+
+## 2026-11-04 Agent 授权首期上线
+
+授权源码 `5a1ed3a` 已进入 main 并推送，云端 Go/Gateway 运行相同版本，五服务健康。原账号、数据卷、模型配置、SQLite 一致性备份与旧镜像保留；原家庭 SSH 记录只导入为已过期历史，未恢复 SSH 或新增执行授权。更新后的 Worker 必须声明 `local-grants-v1`，连接器在转发前复核能力与身份，拒绝旧 Worker 忽略授权标记的情况。固定源码最终 Python 251 passed / 9 skipped；线上 HTTPS owner 登录、管理 HTML、CSRF、到期原因及旧对话 API 共 17 项通过，见[收据](verification/agent-authorization-cloud-2026-11-04.json)。
+
+浏览器扩展上传受本地文件权限限制，未开启该权限；临时服务器限额编译随后停止，改通过同一 GitHub 仓库的部署专用分支传输已验收 binary/wheel/脚本，核对 archive/manifest SHA-256 后进行受控切换。binary 未进入 main。线上浏览器地址访问授权被拒绝，没有换浏览器或用其他途径绕过；本次不声称通过线上视觉验收，也不声称已经在真实设备启用新授权或调用原生模型。
