@@ -19,6 +19,8 @@
 
 ## Meet your personal agent secretary
 
+[Product guide (Chinese)](docs/product/guide/overview.md) · [Technical design](docs/product/technical/architecture.md) · [Changelog](docs/product/changelog.md). The in-app Product docs entry opens `/docs`; this documentation center is a local change awaiting deployment. Future changes follow the [documentation policy](docs/DOCUMENTATION_POLICY.md).
+
 You should be able to say:
 
 > “Watch this repository. When a reproducible bug arrives, ask Claude to propose a fix, let Codex implement it on my home machine, and have a separate agent review the patch. Bring me the result.”

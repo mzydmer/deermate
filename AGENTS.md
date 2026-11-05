@@ -5,6 +5,7 @@ This is the repository entry point for coding agents. Keep project knowledge in 
 ## Read before changing behavior
 
 1. Read [current status](docs/STATUS.md) for the implementation baseline, delivery state, evidence, and next task.
+   Read [documentation policy](docs/DOCUMENTATION_POLICY.md) for every change. This is a mandatory part of implementation and handoff, including changes that ultimately need no customer-facing prose update.
 2. Read the relevant requirements in [SPEC.md](docs/SPEC.md). Requirement IDs are stable.
 3. Read [architecture](docs/architecture.md), [security boundaries](docs/security.md), and the relevant [decisions](docs/decisions/README.md).
 4. Read the relevant source and tests. Check `git status`, the active branch, and recent commits before editing. A milestone or checkbox is not a substitute for implementation evidence.
@@ -67,6 +68,8 @@ Record commands actually run and their result. If evidence is historical, cite i
 Before claiming a merge, release, PR, remote connection, or passing CI, verify it. A connector or browser failure may block a publishing step without blocking local development. Preserve the work and report that specific delivery limitation; do not introduce an unnecessary approval loop.
 
 ## Documentation ownership
+
+- Every change must complete the impact review in [DOCUMENTATION_POLICY.md](docs/DOCUMENTATION_POLICY.md). Update affected `docs/product/` Markdown and the pending changelog for customer-visible changes; update technical articles for architectural/research changes. Pure internal changes need a reasoned `docs/change-notes/` record when public docs are unaffected. Regenerate with `python scripts/product_docs.py --write` and verify against the task base with `python scripts/product_docs.py --base <base>`. A generated JSON change alone never counts as a documentation update. Do not finish the task while this check fails.
 
 - `docs/SPEC.md`: product behavior and acceptance baseline.
 - `docs/STATUS.md`: one current handoff snapshot; replace outdated current-state facts.

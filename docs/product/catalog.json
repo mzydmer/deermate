@@ -1,0 +1,155 @@
+[
+  {
+    "slug": "guide/overview",
+    "group": "guide",
+    "title": "认识 DeerMate",
+    "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
+    "updated": "2026-11-04",
+    "status": "Alpha",
+    "sources": ["docs/STATUS.md", "docs/SPEC.md"]
+  },
+  {
+    "slug": "guide/quickstart",
+    "group": "guide",
+    "title": "开始第一项工作",
+    "description": "从交代目标，到检查结果与继续追问。",
+    "updated": "2026-11-04",
+    "status": "使用指南",
+    "sources": [
+      "docs/chat-sessions.md",
+      "frontend/overlay/src/components/deermate/desk.tsx"
+    ]
+  },
+  {
+    "slug": "guide/conversations",
+    "group": "guide",
+    "title": "对话与任务结果",
+    "description": "理解同一会话的连续追问、执行状态和独立验证。",
+    "updated": "2026-11-04",
+    "status": "使用指南",
+    "sources": [
+      "docs/chat-sessions.md",
+      "docs/codex-conversation.md",
+      "docs/SPEC.md"
+    ]
+  },
+  {
+    "slug": "guide/focus",
+    "group": "guide",
+    "title": "今日关注与跟进",
+    "description": "把历史对话加入关注，查看有来源的进展并跟进。",
+    "updated": "2026-11-04",
+    "status": "使用指南",
+    "sources": ["docs/personal-home.md"]
+  },
+  {
+    "slug": "guide/memory",
+    "group": "guide",
+    "title": "个人设置与记忆",
+    "description": "管理称呼、时区与长期事实，纠正或遗忘记录。",
+    "updated": "2026-11-04",
+    "status": "需本人开启",
+    "sources": ["docs/personal-memory.md"]
+  },
+  {
+    "slug": "guide/tools",
+    "group": "guide",
+    "title": "工具与数据连接",
+    "description": "使用公开搜索、网页读取以及已授权的数据连接。",
+    "updated": "2026-11-04",
+    "status": "使用指南",
+    "sources": ["docs/tools-and-connections.md"]
+  },
+  {
+    "slug": "guide/authorization",
+    "group": "guide",
+    "title": "设备与 Agent 授权",
+    "description": "理解配对、本机确认、执行就绪、续期与撤销。",
+    "updated": "2026-11-04",
+    "status": "本地验收",
+    "sources": ["docs/agent-authorizations.md"]
+  },
+  {
+    "slug": "guide/continuous",
+    "group": "guide",
+    "title": "持续秘书与工作",
+    "description": "在 Alpha 中持续跟进目标、观察来源和处理候选。",
+    "updated": "2026-11-04",
+    "status": "Alpha · 默认关闭",
+    "sources": ["docs/continuous-secretary.md", "docs/STATUS.md"]
+  },
+  {
+    "slug": "guide/faq",
+    "group": "guide",
+    "title": "常见问题",
+    "description": "处理连接异常、结果未知、执行受阻和内容失效。",
+    "updated": "2026-11-04",
+    "status": "使用指南",
+    "sources": [
+      "docs/SPEC.md",
+      "docs/STATUS.md",
+      "docs/continuous-secretary.md"
+    ]
+  },
+  {
+    "slug": "technical/architecture",
+    "group": "technical",
+    "title": "系统架构与设计边界",
+    "description": "面向技术与研究读者的组件职责、数据路径和设计取舍。",
+    "updated": "2026-11-04",
+    "status": "技术方案",
+    "sources": [
+      "docs/architecture.md",
+      "docs/decisions/0007-go-control-plane.md",
+      "docs/decisions/0015-continuous-agent-control-plane.md"
+    ]
+  },
+  {
+    "slug": "technical/orchestration",
+    "group": "technical",
+    "title": "持续协作与可靠执行",
+    "description": "Router / Worker、原生会话连续性、发送屏障与不确定恢复。",
+    "updated": "2026-11-04",
+    "status": "Alpha 方案",
+    "sources": [
+      "docs/specs/m4-continuous-agent.md",
+      "docs/specs/m4-continuous-agent-plan.md",
+      "docs/SPEC.md"
+    ]
+  },
+  {
+    "slug": "technical/memory",
+    "group": "technical",
+    "title": "记忆、上下文与来源治理",
+    "description": "显式事实、有界检索、来源版本与遗忘屏障。",
+    "updated": "2026-11-04",
+    "status": "技术方案",
+    "sources": [
+      "docs/specs/m4-memory-technical-design.md",
+      "docs/personal-memory.md",
+      "docs/continuous-secretary.md"
+    ]
+  },
+  {
+    "slug": "technical/evaluation",
+    "group": "technical",
+    "title": "研究问题与评估方法",
+    "description": "对照实验、消融设计、指标口径与可复现证据要求。",
+    "updated": "2026-11-04",
+    "status": "实验待开展",
+    "sources": [
+      "docs/specs/m4-continuous-agent-plan.md",
+      "docs/verification/continuous-secretary-2026-11-04.json",
+      "docs/STATUS.md"
+    ]
+  },
+  {
+    "slug": "changelog",
+    "group": "changelog",
+    "title": "变更日志",
+    "description": "查看产品变化、启用条件和交付范围。",
+    "updated": "2026-11-04",
+    "status": "持续更新",
+    "sources": ["docs/EVOLUTION.md", "docs/STATUS.md"]
+  }
+]

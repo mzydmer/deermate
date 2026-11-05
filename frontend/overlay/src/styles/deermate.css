@@ -1,4 +1,5 @@
 /* DeerMate product styles. Motion scale follows transitions.dev; see frontend/NOTICE.md. */
+@import "./product-docs.css";
 :root {
   --background: var(--dm-background);
   --foreground: var(--dm-foreground);

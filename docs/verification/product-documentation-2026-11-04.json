@@ -1,0 +1,140 @@
+{
+  "date": "2026-11-04",
+  "timezone": "America/Los_Angeles",
+  "base_commit": "274c1b2c9dfb260eb6d376c66ccb2c5a26c01fc4",
+  "delivery": {
+    "local_uncommitted": true,
+    "pushed": false,
+    "deployed": false,
+    "remote_ci_run": false,
+    "branch_protection_changed": false
+  },
+  "scope": {
+    "guides": 9,
+    "technical_articles": 4,
+    "changelogs": 1,
+    "entry": "/docs",
+    "interface_and_deployment_docs": false
+  },
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/product_docs.py --base HEAD",
+      "result": "passed"
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q tests/test_product_docs.py tests/test_frontend_overlay.py",
+      "result": "17 passed"
+    },
+    {
+      "command": ".venv/bin/python -m ruff check scripts/product_docs.py tests/test_product_docs.py",
+      "result": "passed"
+    },
+    {
+      "command": ".venv/bin/python scripts/sync_design_tokens.py --check",
+      "result": "passed"
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "cwd": ".deermate/docs-check/frontend",
+      "result": "passed"
+    },
+    {
+      "command": "SKIP_ENV_VALIDATION=1 NEXT_TELEMETRY_DISABLED=1 node node_modules/next/dist/bin/next build --webpack",
+      "cwd": ".deermate/docs-check/frontend",
+      "result": "passed on final overlay; all 178 upstream and product static pages generated"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "build_notes": [
+    "Pinned upstream a1b89d0432de4e45adc59f512cb25bb386ea1e51 with all patches and current overlay.",
+    "Bundled Node runtime; frozen pnpm lock, no dependency edits.",
+    "Upstream Nextra warned that Git timestamps are unavailable in the ignored build context. Build exited zero.",
+    "Final build repeated after adjusting the login entry position."
+  ],
+  "static_and_http": {
+    "article_html": 14,
+    "resolved_anchors": 86,
+    "routes": {
+      "/docs": 200,
+      "/docs/guide/overview": 200,
+      "/docs/guide/quickstart": 200,
+      "/docs/guide/conversations": 200,
+      "/docs/guide/focus": 200,
+      "/docs/guide/memory": 200,
+      "/docs/guide/tools": 200,
+      "/docs/guide/authorization": 200,
+      "/docs/guide/continuous": 200,
+      "/docs/guide/faq": 200,
+      "/docs/technical/architecture": 200,
+      "/docs/technical/orchestration": 200,
+      "/docs/technical/memory": 200,
+      "/docs/technical/evaluation": 200,
+      "/docs/changelog": 200,
+      "/docs/guide/does-not-exist": 404
+    }
+  },
+  "browser": {
+    "engine": "Existing Chrome via cua_repl",
+    "verified": [
+      "Public desktop /docs homepage visible without login",
+      "Navigation to /docs/technical/architecture",
+      "Article body, table and table of contents visible in actual page"
+    ],
+    "pending": [
+      "390/1280/1440 breakpoint matrix",
+      "Light/dark and reduced-motion matrix",
+      "Keyboard/focus path",
+      "Search match/no-match/clear interactions",
+      "Clipboard success/failure",
+      "Final anchor override and login-entry position visual recheck"
+    ],
+    "limitation": "Viewport set to 390x844 timed out; subsequent tab/state calls also timed out. No complete mobile or interaction acceptance claimed.",
+    "viewport_reset": "Cleanup reset also timed out; default viewport restoration is unconfirmed.",
+    "screenshots": "Desktop views were inspected inline before transport failure; no persistent screenshot exported."
+  },
+  "model_and_native": {
+    "product_model_calls": 0,
+    "native_tasks": 0,
+    "private_instance_changed": false
+  },
+  "reference": {
+    "url": "https://dianjin.fis.aliyuncs.com/docs",
+    "used": "Audience-based documentation organization only",
+    "workbench_detail": "Web fetch timed out; no claim of complete workbench inspection"
+  },
+  "source_sha256": {
+    ".github/workflows/ci.yml": "0b003f370b813a29e36ad23bd3c62e42832a00bea627a7cc772bfcd46716d054",
+    "AGENTS.md": "9b2b10c9af332ee1ae1ba68595d1c1c730c4468fcc34072d2bff409ca96062a5",
+    "docs/DOCUMENTATION_POLICY.md": "8d9b4d910a96a5b8392f5283e85e02c91b0729cb1d6ff319d11f8a42610e21a3",
+    "docs/product/catalog.json": "95208f8dd095cbdf5c204af1ecfdd5bd5cf145f142c5a0580819eee4405b1aed",
+    "docs/product/changelog.md": "b065dbd6f68289f37ba42d8d8ed8670dd268efedb036ca4dfb3266feb7bb0562",
+    "docs/product/guide/authorization.md": "ffc08daf28f6ff15b5a8d0a5d6ab14922948652b0040b3dc8a40de2cbe7f33e5",
+    "docs/product/guide/continuous.md": "dc953109a7ee1eb5774f7899c98a427fb0210838a1b63599cacbe90b0aa6be96",
+    "docs/product/guide/conversations.md": "7149ff0a1900e63643e6cc1d01d54359c15752e46604d0e2f26c09928d2bfe78",
+    "docs/product/guide/faq.md": "403199e4284f0bcfb9c2d732eca4915422354162bc3c9a460f7759f2fd5c3723",
+    "docs/product/guide/focus.md": "74595aec4921bb0983cbf2abcbc4b8a5ac8f7348b841f4060df046f7ee260a8c",
+    "docs/product/guide/memory.md": "fe3458935a8aef78f272ca27ee3227b87f160928e7cd4bc4044955bd4f21be1c",
+    "docs/product/guide/overview.md": "1aceddd64bfabc0a8cdc0aaab47f950b14fc2836c60d96013f132b7792747e59",
+    "docs/product/guide/quickstart.md": "556a6458f089a27899ebb2af4ca35704ad39220260f560512a55ccd400fe2bed",
+    "docs/product/guide/tools.md": "c280e41a693484f24dcb77c8d8b65aff8b0d0f1b22a6bae17ea557af6621fe7e",
+    "docs/product/technical/architecture.md": "546cde47bfaccc43598ef167c8963cd21e6511b3aee455a869a76f57bc71f32a",
+    "docs/product/technical/evaluation.md": "608bbb6ad6c56a1918d0f26457a18cb836c9c492de3bdc2841590ba21bb070de",
+    "docs/product/technical/memory.md": "9df3be1dc8957664f8e609b07ef2201e53c46e4b4a33164c13ae199a48e1c9c3",
+    "docs/product/technical/orchestration.md": "aa91a8797d5886bfcae2434d4fe828f446edceea2804e97e3dabbdb85d5f23a9",
+    "frontend/overlay/src/app/docs/[...slug]/page.tsx": "60b511b58e579383f36b21c20a8d51437bb232b9d20f565d29b5cfc18c606299",
+    "frontend/overlay/src/app/docs/layout.tsx": "2b96e9599f81d902982f18a4f11ca5c370e99a33cd58eb1b080d84c792b12246",
+    "frontend/overlay/src/app/docs/page.tsx": "b66f01fd4254d4b317852ad35001cd1398bf2b65012cffd5de193a1ad342e312",
+    "frontend/overlay/src/components/deermate/auth-frame.tsx": "aa9b46a1fefea184d75b04219122b0a16b578f880030c72a6af6a2034f06596c",
+    "frontend/overlay/src/components/deermate/desk.tsx": "e66e74dae90ec755dfa990787370731d4ae0054b315c31c43f69af26c50170ec",
+    "frontend/overlay/src/components/deermate/product-docs.generated.json": "8210da67b4f228bcd981fc62be394ad008905b6e682b87a3229beecd25b800d6",
+    "frontend/overlay/src/components/deermate/product-docs.tsx": "00d54ddc02ed1f7f95478e9d008dfa72685e401bfb1b1a30a41906937f5a65a1",
+    "frontend/overlay/src/components/workspace/workspace-header.tsx": "83a450f0b242a5cdf6259d24c6282276f61adff5b9ea1bd3b294d78a8c11628a",
+    "frontend/overlay/src/styles/product-docs.css": "0c6d5ad281407339667ea06f38f6ec6303d13e14b4089df681df7a2d28deeee8",
+    "scripts/product_docs.py": "bbeb9e5548186467e3e4172fc7068c8f1b475df3142272edbf5245c70ce12d44",
+    "tests/test_product_docs.py": "374301e0a8cdf39321848204498d8e72b0dbe944cebc7ca02113a0c22ce6ab2f"
+  },
+  "teardown": "Owned isolated preview server stopped; no private or cloud instance changed."
+}

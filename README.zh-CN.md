@@ -10,6 +10,8 @@
 
 ## 你的私人 Agent 秘书
 
+[产品使用文档](docs/product/guide/overview.md) · [技术方案](docs/product/technical/architecture.md) · [变更日志](docs/product/changelog.md)。应用内「产品文档」进入 `/docs`；本次文档中心为本地变更，尚未发布。后续 Agent 遵守[文档更新约束](docs/DOCUMENTATION_POLICY.md)。
+
 你只需要说：
 
 > “帮我盯这个仓库。有可复现的 bug，就让 Claude 出修复方案，让家里的 Codex 实现，再交给另一个 Agent 审核，最后带回结果。”

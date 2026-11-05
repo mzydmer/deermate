@@ -178,6 +178,7 @@ export function DeerMateDesk() {
           <span className="dm-muted">{text("总览", "Overview")}</span>
         </div>
         <div className="dm-topbar-right">
+          <Link href="/docs" className="dm-product-docs-link">{text("产品文档", "Product docs")}</Link>
           <span className={`dm-health ${health.isError ? "is-unknown" : ""}`}>
             <i />
             {health.isLoading

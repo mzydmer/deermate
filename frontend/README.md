@@ -4,6 +4,8 @@ All frontend work follows the repository [design.md](../design.md), including lo
 
 The product UI lives in `overlay/` and is applied to DeerFlow `a1b89d0` by [`frontend_overlay.py`](../scripts/frontend_overlay.py). `patches.json` verifies complete upstream file hashes before modifying integration points. Do not edit `.deermate/ack/deer-flow` or copy local credentials into the overlay. [ADR 0006](../docs/decisions/0006-frontend-overlay.md) explains the boundary; [NOTICE](NOTICE.md) records third-party provenance.
 
+The public `/docs` route contains the product guide, research-oriented technical design and changelog. Its only source is [`docs/product/`](../docs/product/guide/overview.md); regenerate the tracked frontend catalog with `python scripts/product_docs.py --write`, then verify `python scripts/product_docs.py --base <task-base>`. Read the mandatory [documentation policy](../docs/DOCUMENTATION_POLICY.md) on every change. Product docs are available from the login page, workspace header and sidebar without reading private runtime data.
+
 For an initialized local Docker profile:
 
 ```bash

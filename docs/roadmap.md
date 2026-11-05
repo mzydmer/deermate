@@ -154,6 +154,17 @@ P5 已补真实 Chrome 390/1280/1440px、浅深色、键盘/减少动态、工�
 
 Prioritize bounded SSH enrollment, worker contract review, and configured-model notification verification before expanding adapters. Do not mark a feature supported solely because the upstream project advertises the capability.
 
+## 产品文档中心
+
+- [x] 登录页与工作台提供「产品文档」入口，独立 `/docs` 分流使用指南、技术方案与变更日志。
+- [x] 版本化 Markdown 生成网页内容；检查目录、来源、链接及生成一致性。
+- [x] AGENTS 文档影响规则、PR 模板与本地/CI 文档门禁。
+- [x] 本地 TypeScript/生产构建、17 项文档/overlay 测试与静态文章/锚点检查。
+- [ ] 恢复浏览器后补响应式、主题、键盘、搜索、复制与错误路径验收。
+- [ ] 发布到实际实例，运行远端 CI，并将 product-docs 设为合并必需检查。
+
+详见[规格](specs/product-documentation.md)与[更新约束](DOCUMENTATION_POLICY.md)。
+
 
 ## Agent 授权产品化
 

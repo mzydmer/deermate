@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquarePlus } from "lucide-react";
+import { BookOpen, MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DeerMark } from "@/components/deermate/brand";
@@ -14,7 +14,7 @@ import { useWorkspaceSidebarExpanded } from "./workspace-sidebar-frame";
 import { WorkspaceSidebarTrigger } from "./workspace-sidebar-trigger";
 
 export function WorkspaceHeader({ className = "" }: { className?: string }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const pathname = usePathname();
   const expanded = useWorkspaceSidebarExpanded();
   return (
@@ -40,6 +40,14 @@ export function WorkspaceHeader({ className = "" }: { className?: string }) {
             <Link href="/workspace/chats/new">
               <MessageSquarePlus size={16} />
               <span>{t.sidebar.newChat}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Link href="/docs">
+              <BookOpen size={16} />
+              <span>{locale === "zh-CN" ? "产品文档" : "Product docs"}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

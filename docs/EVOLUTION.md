@@ -504,3 +504,13 @@ Python 250 passed / 9 skipped；Go mod/vet/race/无 CGO/Linux 构建、Ruff/whee
 Node 24 离线意图恢复 8 项、overlay 3 项、相关部署/前端子集 24 passed / 3 skipped、Ruff/token、完整 TypeScript/Next 生产构建通过。最终运行镜像 17 个 overlay 源文件逐一一致。验收前后 run=7、Native task=2、模型预算预留=5，没有新增模型或 Native 调用；Go/Worker 未修改，未重跑上轮完整套件。新增 CI job 尚未在远端运行。macOS 后续自动锁屏时通过浏览器视口能力继续；带原设备工具缩放的截图已排除，公开截图来自新建的正常标签页。
 
 [UI 收据](verification/continuous-ui-2026-11-04.json)与新截图保留实际范围。来源候选/凭据失效/背压的完整 UI 矩阵、真实 Provider/Codex/GitHub、云端及 R-EVAL 仍未完成。浏览器临时视口已恢复，2037 fixture 已停止且保留数据，个人 2026 与云端不变，未恢复旧 SSH 或新增真实设备权限。本轮未重试远端发布。
+
+## 2026-11-04 · 产品文档中心与强制文档影响检查
+
+按用户要求新增「产品文档」入口及独立 `/docs`：九篇客户使用指南、四篇技术与研究方案、一篇变更日志；暂不增加接口参考和部署指南。参考点金的读者分流方式，内容依据 DeerMate 现有实现与历史证据，明确 Alpha、默认关闭、本地验收和实验待开展边界。Markdown 为唯一正文源，目录生成阅读数据，支持搜索、章节目录、复制 Markdown 与相邻文章。
+
+新增 `docs/DOCUMENTATION_POLICY.md`，根 AGENTS、PR 模板和 CI 引用；代码变更缺少受影响文章与变更日志，或合格的无需更新判定时检查失败，生成文件本身不能满足门禁。CI 验证来源、链接和生成同步；分支保护配置与远端 CI 实际运行仍未执行。
+
+本地文档/overlay 17 项测试、Ruff、共享 token、TypeScript 和 Next 生产构建通过；静态检查 14 篇文章与 86 个本地锚点。真实 Chrome 仅确认桌面首页、技术文章与导航；手机视口设置后浏览器连接连续超时，手机、深色、搜索/复制交互及最终样式复验待补。记录在[文档收据](verification/product-documentation-2026-11-04.json)，不冒充全量浏览器通过。
+
+改动保留本地未提交状态，没有调用模型/Native、更新个人实例或云端。本条新增的评估方法不代表执行了新的比较实验，也不修改历史收据。

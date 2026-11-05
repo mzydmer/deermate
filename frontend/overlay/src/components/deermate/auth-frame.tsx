@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useI18n } from "@/core/i18n/hooks";
 import { BrandMotion, DeerMark } from "./brand";
 
@@ -47,7 +48,12 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
           {zh ? "由你部署，由你掌控。" : "Self-hosted. Yours to control."}
         </footer>
       </aside>
-      <main className="dm-auth-form">{children}</main>
+      <main className="dm-auth-form">
+        {children}
+        <Link className="dm-auth-docs-link" href="/docs">
+          {zh ? "产品文档" : "Product docs"}
+        </Link>
+      </main>
     </div>
   );
 }
