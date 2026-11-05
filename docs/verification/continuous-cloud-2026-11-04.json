@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-05T00:59:52.468357+00:00",
+  "scope": "M4.5 rollout to the existing Singapore single-host installation; trusted public HTTPS, original-account/data preservation and protected APIs/HTML; no live-browser visual or actual Router/provider/Native execution",
+  "application_source_revision": "274c1b2c9dfb260eb6d376c66ccb2c5a26c01fc4",
+  "published_code_merge": "4636d38d35ac9d6b901a21835c4c566029515864",
+  "upstream_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "archive_sha256": "67d2644a8bf6deda720f7e84f8c336a6425e244155fda59d4ac71dc555ad92ff",
+  "archive_bytes": 75230829,
+  "deployment_program_sha256": "e845258b974c4e64820368545a45fb4632939a412f5189476e40332d7f168807",
+  "local_release_layer_verification": {
+    "passed": true,
+    "frontend_files": 5160,
+    "frontend_login_status": 200,
+    "gateway_files": 32,
+    "binary_hash_matches": true,
+    "no_model_or_native_calls": true
+  },
+  "deployment": {
+    "revision": "274c1b2c9dfb260eb6d376c66ccb2c5a26c01fc4",
+    "history_rows_preserved": true,
+    "managed_model_bytes_preserved": true,
+    "lease_units_preserved": true,
+    "worker_permissions_expanded": false,
+    "operator_ssh_policy": "permanent restricted machine key explicitly authorized by user",
+    "model_calls": 0,
+    "native_tasks": 0,
+    "mcp_package_revision": "274c1b2c9dfb260eb6d376c66ccb2c5a26c01fc4",
+    "mcp_offline_prefetch": true,
+    "old_images": {
+      "gateway": "sha256:48ab895b2c10224406297ccc8bb1d95f50807fd85e8932d485d84f30b05f4577",
+      "frontend": "sha256:56205d5378060a851700a1b07e1f2c17fa8c0761e6922add88b0dfc859264486",
+      "control": "sha256:d9ec7cd187ec05a3f8c314611b43f08ea017d1e27863bf0660d854a2aca867dd"
+    },
+    "new_images": {
+      "gateway": "sha256:02092b9888f535ac1a04c77f824dbea0bb66917f39e33c48d9e025c40930af1e",
+      "frontend": "sha256:0417a435f4810abf5ee3e440106c83147162416915582112939dd2204b59a281",
+      "control": "sha256:fdd72c2efaaa7a2c5577a02f65c31492f96b5d36b658f14d0175577e300d46cb"
+    },
+    "historical_counts": {
+      "users": 1,
+      "threads_meta": 9,
+      "runs": 19,
+      "mcp_tasks": 5
+    },
+    "database_backup_quick_check": "ok",
+    "checkpoint": "ready",
+    "services": {
+      "gateway": {
+        "image": "sha256:02092b9888f535ac1a04c77f824dbea0bb66917f39e33c48d9e025c40930af1e",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false
+      },
+      "control": {
+        "image": "sha256:fdd72c2efaaa7a2c5577a02f65c31492f96b5d36b658f14d0175577e300d46cb",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false
+      },
+      "frontend": {
+        "image": "sha256:0417a435f4810abf5ee3e440106c83147162416915582112939dd2204b59a281",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false
+      },
+      "nginx": {
+        "image": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false
+      },
+      "edge": {
+        "image": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8",
+        "running": true,
+        "health": null,
+        "oom_killed": false
+      }
+    },
+    "backup_bytes": 28268135,
+    "consistent_database_backup_retained": true,
+    "configuration_seed_synchronized": true,
+    "operator_key": {
+      "persistent": true,
+      "options": "restrict",
+      "expiry": null,
+      "user_explicitly_requested": true
+    },
+    "first_apply_rollback_preserved": true,
+    "preparation_interruption_preserved": true,
+    "model_budget_reservations": 0,
+    "continuous_operations": 0,
+    "host_memory_observation": {
+      "MemTotal": "1651808 kB",
+      "MemAvailable": "730592 kB",
+      "SwapTotal": "0 kB",
+      "SwapFree": "0 kB"
+    }
+  },
+  "https": {
+    "passed": true,
+    "checked_at_utc": "2026-11-05T00:58:07.582823+00:00",
+    "checks": [
+      "trusted_https_ready",
+      "anonymous_identity_denied",
+      "anonymous_continuous_denied",
+      "existing_password_login",
+      "owner_is_admin",
+      "owned_chat_history_readable",
+      "models_readable",
+      "authorization_inventory_readable",
+      "personal_profile_readable",
+      "personal_memories_readable",
+      "attention_topics_readable",
+      "owner_and_historical_content_preserved",
+      "continuous_configuration_api",
+      "installation_module_available",
+      "owner_module_still_opt_in",
+      "automatic_native_budget_zero",
+      "source_not_configured",
+      "work_ledger_readable_without_fixtures",
+      "wrong_owner_rejected",
+      "csrf_required_for_config_write",
+      "raw_continuous_adapter_blocked",
+      "authenticated_workspace_served",
+      "agent_management_served",
+      "management_frame_protection",
+      "briefing_still_readable",
+      "unexpected_host_denied",
+      "secure_httponly_login_cookie"
+    ],
+    "source_revision": "274c1b2c9dfb260eb6d376c66ccb2c5a26c01fc4",
+    "historical_threads": 9,
+    "model_calls_started": 0,
+    "native_tasks_started": 0,
+    "certificate": {
+      "not_before": "Nov  3 18:42:03 2026 GMT",
+      "not_after": "Nov 10 10:42:02 2026 GMT",
+      "subject_alt_names": [
+        [
+          "IP Address",
+          "47.79.234.242"
+        ]
+      ]
+    },
+    "scope": "Trusted public HTTPS and original account/data/API/HTML; no live browser visual, real provider or device execution."
+  },
+  "authorization_regression": {
+    "passed": true,
+    "checks": [
+      "public_health",
+      "anonymous_inventory_rejected",
+      "existing_owner_login",
+      "owner_inventory",
+      "expired_history_imported",
+      "no_new_active_grants",
+      "native_readiness_not_invented",
+      "no_private_credentials_in_projection",
+      "management_page_served",
+      "page_security_headers",
+      "admin_navigation",
+      "session_bound_csrf_required",
+      "readonly_connection_check",
+      "expired_reason_visible",
+      "original_deadline_retained",
+      "checks_preserve_authorization_state",
+      "existing_conversation_api"
+    ],
+    "grant_count": 1,
+    "active_grants": 0,
+    "native_provider_calls": 0,
+    "device_pairings_created": 0,
+    "permissions_activated": 0,
+    "scope": "Normal HTTPS owner login, deployed Go authorization APIs and management HTML; no native execution"
+  },
+  "module_defaults": {
+    "installation_available": true,
+    "owner_enabled": false,
+    "native_auto_budget": 0,
+    "github_source_configured": false
+  },
+  "delivery": {
+    "code_push_verified": true,
+    "history_strategy": "Fast-forward remote main to a merge retaining 77c5c31 and all original local commits; no force push",
+    "unrelated_product_documentation_included": false,
+    "remote_ci_success_claimed": false,
+    "operator_keys": "User explicitly changed both machine deployment keys to permanent; repository-only write and existing-server admin/sudo; cloud restrict option; no automatic revocation",
+    "private_keys_or_runtime_secrets_committed": false
+  },
+  "failures_retained": [
+    {
+      "phase": "image preparation",
+      "result": "SSH transport closed before activation; original services remained healthy",
+      "recovery": "Retained original directory, minimized build contexts, detached preparation process"
+    },
+    {
+      "phase": "first activation",
+      "result": "Embedded YAML editor had an indentation error; original images/config automatically restored",
+      "database_restored": false,
+      "recovery": "Fixed and compiled all embedded programs, tested YAML editor, verified original image/config hashes, retained first backup/checkpoint and reapplied"
+    }
+  ],
+  "limits": [
+    "Actual model, Router quality, GitHub observe/acceptance and home Native execution not exercised",
+    "No active device grant was created; expired home link remains expired",
+    "Cloud browser visual acceptance not performed; local UI receipt remains independent",
+    "Single host memory snapshot is not a load or concurrency benchmark",
+    "Certificate chain/SAN/validity checked; no certificate-renewal event asserted",
+    "Root development checkout with concurrent product-doc work was not modified by the release integration"
+  ]
+}

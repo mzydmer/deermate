@@ -138,7 +138,7 @@ flowchart TD
     W --> C[Codex app-server]
     W --> R[Diff、独立测试与会话证据]
     R --> D
-    G -. M4.5提案 .-> P[持久 Router 与事件驱动工作]
+    G -. M4.5可选Alpha .-> P[持久 Router 与事件驱动工作]
     P -. 规划中 .-> A[Claude、DeepSeek、调研与桌面适配器]
     M -. 可选、规划中 .-> H[自托管 Hermesh 桥接]
 ```
@@ -203,7 +203,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 
 已交付 **M4.4c–e，今日关注与首页动作**，有本地验收及既有新加坡单机的云端首页/API 验收。[记忆指南](docs/personal-memory.md)说明存取与召回；[首页指南](docs/personal-home.md)说明关注历史对话、证据简报、只读跟进、原会话续接和可选目标建议。语义提取、自动归并及模型作业预算仍待开发。
 
-下一研究阶段 **M4.5，持久 Router/Worker 协作**处于待用户审核提案。用户管理的 Agent 授权另有[本地收据](docs/verification/agent-authorization-local-2026-11-03.json)。这些证据不表示 M4.5 已上线或已完成对比实验。
+**M4.5，持久 Router/Worker 协作**已实现默认关闭 Alpha，并部署到既有单机；[上线收据](docs/verification/continuous-cloud-2026-11-04.json)记录 27 项公网 HTTPS/账号/数据/API 与 17 项授权回归通过，原数据保留。用户开关仍关闭、自动额度为 0、GitHub 来源未配置；实际 Router/Provider/Native、完整 UI 和对比实验仍待验证。用户管理的 Agent 授权另有[本地收据](docs/verification/agent-authorization-local-2026-11-03.json)。
 
 | 阶段 | 交付内容 | 状态 |
 | --- | --- | --- |
@@ -215,7 +215,7 @@ Grok Bot、Muse 可以作为未来的外部客户端或协作者，但必须以�
 | M4.4a | 个人设置、显式记忆存取、范围内 FTS5 召回与聊天注入 | 已本地验收并部署云端，记忆默认关闭 |
 | M4.4b | 对话中的明确记忆指令、规范来源与失效控制 | 已本地验收并部署云端，无额外提取模型调用 |
 | M4.4c–e | 持久关注、任务证据、目标建议与首页动作接纳 | 云端首页/API 已验收；动作使用本地合成模型，新首页 Native 入口待真实验收 |
-| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | 默认关闭 Alpha，离线集成已验证；完整实机/UI 与对比实验待完成 |
+| M4.5 | 持久 Router、独立 Worker、事件直通、有界召回及执行接纳 | 默认关闭 Alpha，离线集成与云端 API 已验证；实际模型/Native、完整 UI 与对比实验待完成 |
 | M5 | 可选 Hermesh 桥接、桌面操作与生态扩展 | 规划中 |
 
 已验证真实 Codex 修复，独立执行测试通过并返回 diff；真实中断与继续也验证了同一原生会话的复用。离线协议测试覆盖幂等、重启恢复、输入、超时和权限拒绝。原生会话 ID 与策略快照保存在 SQLite；重启后运行中的任务需要显式恢复，不会自动重放。[本地验证与限制](docs/local-worker.md)。
