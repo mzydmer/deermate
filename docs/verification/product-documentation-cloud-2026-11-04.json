@@ -1,7 +1,7 @@
 {
   "date": "2026-11-04",
   "timezone": "America/Los_Angeles",
-  "recorded_at_utc": "2026-11-05T04:09:59.889205+00:00",
+  "recorded_at_utc": "2026-11-05T04:19:35.956058+00:00",
   "scope": "Product documentation cloud publication: frontend image and narrow public documentation proxy routes; backend and data retained.",
   "initial_publication": {
     "source_revision": "fb5dd73408d89c30db55479f723e28cc1b243c6d",
@@ -127,12 +127,135 @@
       "scope": "Trusted HTTPS, public documentation/HTML/assets and authenticated original-account read checks. No browser visual acceptance."
     }
   },
-  "final_content_rollout": "Pending the updated publication log artifact.",
+  "final_content_rollout": {
+    "passed": true,
+    "source_revision": "8aad210cf4470fccd784b0c1e33639d63ebc1718",
+    "archive_sha256": "8474b3bccadb19707b6b845a1ac4d9418fa59cc259d799b2b7876463d0ef40aa",
+    "archive_bytes": 40052179,
+    "server": {
+      "deployment": {
+        "passed": true,
+        "revision": "8aad210cf4470fccd784b0c1e33639d63ebc1718",
+        "frontend_image": "sha256:11664a31d7e0423c49cd9ae82d4c65901110b0832c74a29a6596ed3c26d107f2",
+        "old_frontend_image": "sha256:c8bc924f20085bf056ef22e71eb1edcf195066fcea1dd2d73584727984374e7f",
+        "verified_frontend_files": 2742,
+        "gateway_control_edge_nginx_images_unchanged": true,
+        "historical_rows_preserved": true,
+        "historical_counts": {
+          "users": 1,
+          "threads_meta": 9,
+          "runs": 19,
+          "mcp_tasks": 5
+        },
+        "consistent_db_backup_retained": true,
+        "original_image_and_configuration_retained": true,
+        "model_calls": 0,
+        "native_tasks": 0
+      },
+      "checkpoint": {
+        "revision": "8aad210cf4470fccd784b0c1e33639d63ebc1718",
+        "stage": "ready"
+      },
+      "services": {
+        "frontend": {
+          "image": "sha256:11664a31d7e0423c49cd9ae82d4c65901110b0832c74a29a6596ed3c26d107f2",
+          "running": true,
+          "health": "healthy",
+          "oom_killed": false
+        },
+        "gateway": {
+          "image": "sha256:02092b9888f535ac1a04c77f824dbea0bb66917f39e33c48d9e025c40930af1e",
+          "running": true,
+          "health": "healthy",
+          "oom_killed": false
+        },
+        "control": {
+          "image": "sha256:fdd72c2efaaa7a2c5577a02f65c31492f96b5d36b658f14d0175577e300d46cb",
+          "running": true,
+          "health": "healthy",
+          "oom_killed": false
+        },
+        "nginx": {
+          "image": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+          "running": true,
+          "health": "healthy",
+          "oom_killed": false
+        },
+        "edge": {
+          "image": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8",
+          "running": true,
+          "health": null,
+          "oom_killed": false
+        }
+      },
+      "nginx_configuration_sha256": "b0a403a535ab1ea365106803aa462f3965b1c04999bf7a49071b540435633d7c"
+    },
+    "public_checks": {
+      "passed": true,
+      "checked_at_utc": "2026-11-05T04:18:20.941057+00:00",
+      "checks": [
+        "trusted_https_ready",
+        "anonymous_account_denied",
+        "anonymous_docs_home",
+        "anonymous_docs_guide/overview",
+        "anonymous_docs_guide/quickstart",
+        "anonymous_docs_guide/conversations",
+        "anonymous_docs_guide/focus",
+        "anonymous_docs_guide/memory",
+        "anonymous_docs_guide/tools",
+        "anonymous_docs_guide/authorization",
+        "anonymous_docs_guide/continuous",
+        "anonymous_docs_guide/faq",
+        "anonymous_docs_technical/architecture",
+        "anonymous_docs_technical/orchestration",
+        "anonymous_docs_technical/memory",
+        "anonymous_docs_technical/evaluation",
+        "anonymous_docs_changelog",
+        "three_document_groups",
+        "published_changelog_content",
+        "updated_proxy_design_content",
+        "unknown_document_404",
+        "static_asset_68e9951944a23d8f.css",
+        "static_asset_webpack-c0b2bb1a5d05526b.js",
+        "static_asset_04b21444-cc05e27ce40fe401.js",
+        "static_asset_71172-82ef258bda61a580.js",
+        "static_asset_main-app-e03a730ff3b5c914.js",
+        "static_asset_layout-d88abb2fad21fd0e.js",
+        "static_asset_fcf0fb0f-5e8088f5db79feb2.js",
+        "static_asset_c2e6ce84-1e794205be2d1bd9.js",
+        "login_product_docs_entry",
+        "existing_password_login",
+        "existing_owner_admin",
+        "historical_threads_readable",
+        "models_readable",
+        "profile_readable",
+        "memories_readable",
+        "topics_readable",
+        "grants_readable",
+        "continuous_configuration_readable",
+        "owner_module_still_off",
+        "native_budget_still_zero",
+        "historical_data_and_configuration_preserved",
+        "authenticated_workspace_docs_entry",
+        "chat_sidebar_docs_entry",
+        "agent_management_still_available"
+      ],
+      "historical_threads": 9,
+      "model_calls_started": 0,
+      "native_tasks_started": 0,
+      "scope": "Trusted HTTPS, public documentation/HTML/assets and authenticated original-account read checks. No browser visual acceptance."
+    },
+    "article_count": 14,
+    "resolved_local_anchors": 86,
+    "published_changelog_confirmed": true,
+    "updated_proxy_design_confirmed": true
+  },
   "validation": {
     "offline_docs_and_actual_pinned_deployment_tests": 41,
     "passed": true,
     "typescript_and_next_build": true,
-    "browser_visual_complete": false
+    "browser_visual_complete": false,
+    "command": "DEERMATE_ACK_UPSTREAM=<pinned checkout> DEERMATE_HELM=<Helm 3> python -m pytest -q tests/test_ack_deploy.py tests/test_single_host.py tests/test_single_host_https.py tests/test_product_docs.py tests/test_frontend_overlay.py"
   },
   "limitations": [
     "Browser transport still timed out; no complete responsive/theme/keyboard/clipboard visual acceptance claimed.",
@@ -146,5 +269,15 @@
   "deployment_script_sha256": "8f82590176880c4256bac4b1ca1092d1e2eb050298e4c3c9808f0574e613cec7",
   "route_program_sha256": "f93f2b5a09aa53b0b81fb6815c555d9b186bf3872f896a1bdb6db2dec25967a6",
   "model_calls_started": 0,
-  "native_tasks_started": 0
+  "native_tasks_started": 0,
+  "verifier_sha256": "1b3ec2120d1a957992006d480997e6a6e7d888a0b1de1e3c80546df18ff8db87",
+  "delivery": {
+    "pushed": true,
+    "deployed": true,
+    "frontend_source_revision": "8aad210cf4470fccd784b0c1e33639d63ebc1718",
+    "go_gateway_application_revision": "274c1b2c9dfb260eb6d376c66ccb2c5a26c01fc4",
+    "original_machine_deployment_keys_retained": true,
+    "required_branch_checks_changed": false,
+    "browser_visual_complete": false
+  }
 }

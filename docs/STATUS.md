@@ -1,6 +1,6 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-04。远端 `main` 已纳入 `4636d38`，云端应用源码为 `274c1b2`。这是版本化接续快照；历史过程见 [EVOLUTION](EVOLUTION.md)，新一轮入口是 [M4.5 spec](specs/m4-continuous-agent.md)、[plan](specs/m4-continuous-agent-plan.md)和[使用指南](continuous-secretary.md)。
+最后核对：2026-11-04。远端 `main` 已纳入产品文档提交 `8aad210`；云端文档前端为 `8aad210`，Go/Gateway 应用源码仍为 `274c1b2`。这是版本化接续快照；历史过程见 [EVOLUTION](EVOLUTION.md)，新一轮入口是 [M4.5 spec](specs/m4-continuous-agent.md)、[plan](specs/m4-continuous-agent-plan.md)和[使用指南](continuous-secretary.md)。
 
 ## 产品文档中心 · 已推送并上线
 
@@ -10,7 +10,7 @@
 
 本地文档/overlay **17 项通过**，Ruff/token/TypeScript 与完整 Next 生产构建通过；14 篇文章的静态 HTML、文档链接和 86 个页内锚点通过检查。Chrome 实际确认了桌面首页、文章与导航；切换手机视口后浏览器连接连续超时，手机、深色、搜索/复制交互及最终样式的实际浏览器复验未完成。最终核对见[文档收据](verification/product-documentation-2026-11-04.json)。
 
-文档功能提交 `36e2684`，合并提交 `1783dd6`，首次上线前端源码 `fb5dd73`；最终内容版本见[上线收据](verification/product-documentation-cloud-2026-11-04.json)。43 项可信公网 HTTPS/文档/资源/原账号检查通过，9 个线程/19 个 run/5 个任务保留；41 项文档与实际固定 Helm/单机/HTTPS/overlay 回归通过。Go/Gateway/edge/nginx 镜像未变，只更新前端及 `/docs` 代理配置，数据库一致性备份、原镜像和配置保留。首次默认配置重载失败已核对回退，再使用实际 nginx 配置重载成功；原 `/docs` 后台路由也已修正，生成器纳入回归。浏览器矩阵待恢复连接后补验。本段不改变以下持续秘书的历史验收和接续事项。
+文档功能提交 `36e2684`，合并提交 `1783dd6`，首次上线前端源码 `fb5dd73`，最终文档前端为 `8aad210`；最终内容版本见[上线收据](verification/product-documentation-cloud-2026-11-04.json)。最终 45 项可信公网 HTTPS/文档/资源/原账号检查通过（包含正式发布日志与技术说明），9 个线程/19 个 run/5 个任务保留；41 项文档与实际固定 Helm/单机/HTTPS/overlay 回归通过。Go/Gateway/edge/nginx 镜像未变，只更新前端及 `/docs` 代理配置，数据库一致性备份、原镜像和配置保留。首次默认配置重载失败已核对回退，再使用实际 nginx 配置重载成功；原 `/docs` 后台路由也已修正，生成器纳入回归。浏览器矩阵待恢复连接后补验。本段不改变以下持续秘书的历史验收和接续事项。
 
 ## 当前工作 · M4.5 持续秘书 Alpha
 
