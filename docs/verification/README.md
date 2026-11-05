@@ -21,3 +21,5 @@ These receipts describe known test fixtures, not private user work or a producti
 Each receipt records the upstream commit/lock hash, verifier hash, DeerMate source/fixture hashes, relevant runtime versions, fixture task IDs, checks and limits. `deermate_source_sha256` hashes sorted `src/deermate/*.py` entries as filename, NUL, then file bytes. Compare hashes with the referenced versions before treating changed code as the same evidence. A later source change does not retroactively verify itself.
 
 Reproduction and interpretation: [combined demo](../demo.md), [DeerFlow setup](../deerflow.md), [verification spec](../specs/m2-gateway-verification.md), and [current status](../STATUS.md). The CI `deerflow-gateway` local/SSH matrix publishes its own receipts and HTML replays; a configured workflow is not evidence of a successful run until its actual result is checked. Older receipts retain their original source hashes and verification scope.
+
+- [默认秘书与记忆设置](default-secretary-memory-2026-11-04.json)：Go/Gateway Fake 默认入口与恢复、本人记忆设置和 390/1280px 浏览器验收；真实模型与云端另计。

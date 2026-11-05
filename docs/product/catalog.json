@@ -60,7 +60,8 @@
       "docs/personal-memory.md",
       "frontend/overlay/src/components/workspace/settings/memory-settings-page.tsx",
       "frontend/overlay/src/components/deermate/personal-memory.tsx",
-      "docs/specs/default-secretary-memory-settings.md"
+      "docs/specs/default-secretary-memory-settings.md",
+      "docs/verification/default-secretary-memory-2026-11-04.json"
     ]
   },
   {
@@ -98,7 +99,8 @@
       "docs/STATUS.md",
       "docs/verification/continuous-cloud-2026-11-04.json",
       "docs/specs/default-secretary-memory-settings.md",
-      "backend/internal/controlplane/continuous_defaults.go"
+      "backend/internal/controlplane/continuous_defaults.go",
+      "docs/verification/default-secretary-memory-2026-11-04.json"
     ]
   },
   {

@@ -190,3 +190,5 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 [Implementation plan](specs/m4-continuous-agent-plan.md) · [Usage](continuous-secretary.md) · [Current evidence](verification/continuous-secretary-2026-11-04.json).
 
 2026-11-04 用户要求取消秘书单独启用：交互与手动工作默认可用，沿用对话模型；设置集中管理本人记忆。见 [专项规格](specs/default-secretary-memory-settings.md)，实现/验收/发布在 STATUS 单独追踪，不改变既有后台/设备授权或整个 P7 验收状态。
+
+- [x] 默认秘书/手动工作沿用对话模型，设置复用本人记忆管理；独立本地 API 与浏览器通过，[专项收据](verification/default-secretary-memory-2026-11-04.json)。云端交付独立记录。

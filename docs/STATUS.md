@@ -6,7 +6,7 @@
 
 按用户新要求，秘书交互和手动工作默认可用，复用对话模型并在首次投递前冻结；无模型时等待，未知结果只核对原操作。旧背景停用不阻挡明确交互，也不会被交互自动恢复。来源、自动预算、设备授权仍独立检查。设置 → 记忆复用本人管理组件，首页提供快捷链接，记忆与采集选择保持。
 
-专项规格：[默认入口与记忆设置](specs/default-secretary-memory-settings.md)。Go 聚焦回归已通过；完整 Go 必需检查、部署契约、生产构建与浏览器验收进行中。此变更尚未部署，以下 `274c1b2` 默认关闭和产品文档发布记录为历史/独立交付事实。
+专项规格：[默认入口与记忆设置](specs/default-secretary-memory-settings.md)。本地验收已通过：Go mod/vet/race/无 CGO 构建；Python 274 passed / 11 skipped；固定 Gateway 中专项 16 passed / 2 项非本轮 Native 驱动 skipped；实际固定 Helm/单机/HTTPS/overlay/文档 41 项；8 项意图恢复；TypeScript/完整 Next 构建与 token/文档门禁。Chrome 实际验证 390/1280px、浅深色、键盘、默认入口对话和记忆保存/搜索/纠正/关闭后管理/遗忘。9 项 Go→Gateway Fake 验收包含默认模型、两轮同根及接纳后重启核对；没有真实模型或 Native 调用。见[专项收据](verification/default-secretary-memory-2026-11-04.json)。此变更尚未部署，以下 `274c1b2` 默认关闭和产品文档发布记录为历史/独立交付事实。
 
 ## 产品文档中心 · 已推送并上线
 
