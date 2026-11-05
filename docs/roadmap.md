@@ -201,3 +201,10 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 第一方产品页面与公共组件视觉迁移，前端构建前与 CI 静态门禁。
 - [x] 真实Go登录后的主要页面/交互状态矩阵，六宽度与浅深色；运行时使用合成数据，范围见2026-11-06验收。
 - [ ] 全面人工可访问性评审、真实运行时/供应方验收、远端必需检查及线上发布。
+
+## Workspace v2 · Product proposal（待用户审核）
+
+- [x] 编写助手首页、默认自然记忆和原话题延续的 [PRD](prd/workspace-assistant-v2.md)，配八张静态样式图。
+- [ ] 用户确认产品方向、默认策略与首发边界。
+- [ ] 审核后定稿技术 spec / ADR / plan，映射 WS2-01–21。
+- [ ] 实现与真实数据/模型/会话/迁移验收；本条不代表已开始开发或已上线。
