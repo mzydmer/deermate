@@ -213,6 +213,15 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         text=True,
     )
     documents = ack.post_render(yaml.safe_load_all(raw), settings)
+    nginx = next(
+        doc["data"]["nginx.conf"]
+        for doc in documents
+        if doc["kind"] == "ConfigMap" and "nginx.conf" in doc.get("data", {})
+    )
+    for route in ("location = /docs", "location ^~ /docs/"):
+        assert route + " {\n            proxy_pass http://frontend_upstream;" in nginx
+    for route in ("location /redoc", "location /openapi.json", "location /api/"):
+        assert route + " {\n            proxy_pass http://gateway_upstream;" in nginx
     deployments = [doc for doc in documents if doc["kind"] == "Deployment"]
     assert len(deployments) == 3
     assert not any(

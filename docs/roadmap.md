@@ -163,7 +163,8 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] AGENTS 文档影响规则、PR 模板与本地/CI 文档门禁。
 - [x] 本地 TypeScript/生产构建、17 项文档/overlay 测试与静态文章/锚点检查。
 - [ ] 恢复浏览器后补响应式、主题、键盘、搜索、复制与错误路径验收。
-- [ ] 发布到实际实例，运行远端 CI，并将 product-docs 设为合并必需检查。
+- [x] 发布到既有实例：文档前端及代理路由，43 项公网与原账号检查通过，41 项固定部署/文档回归通过。
+- [ ] 完成远端 CI 验收，并将 product-docs 设为合并必需检查。
 
 详见[规格](specs/product-documentation.md)与[更新约束](DOCUMENTATION_POLICY.md)。
 

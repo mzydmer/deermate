@@ -257,8 +257,26 @@ def values(settings):
     }
 
 
+def product_docs_nginx(config):
+    """Send only the public product-documentation routes to the frontend."""
+    pattern = r"(?ms)^        location /docs \{\n(?P<body>.*?)^        \}"
+    matches = list(re.finditer(pattern, config))
+    if len(matches) != 1:
+        raise DeploymentError("Pinned nginx documentation route changed.")
+    match = matches[0]
+    body = match["body"]
+    source = "proxy_pass http://gateway_upstream;"
+    if body.count(source) != 1 or body.count("proxy_pass") != 1:
+        raise DeploymentError("Pinned nginx documentation upstream changed.")
+    body = body.replace(source, "proxy_pass http://frontend_upstream;")
+    routes = "        location = /docs {\n" + body + "        }\n\n"
+    routes += "        location ^~ /docs/ {\n" + body + "        }"
+    return config[: match.start()] + routes + config[match.end() :]
+
+
 def control_nginx(config):
     """Route the management page to the same guarded Go service as API requests."""
+    config = product_docs_nginx(config)
     marker = "        location = /nginx-health {"
     if config.count(marker) != 1:
         raise DeploymentError("Pinned nginx management insertion point changed.")
