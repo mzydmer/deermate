@@ -6,7 +6,7 @@
 
 按用户新要求，秘书交互和手动工作默认可用，复用对话模型并在首次投递前冻结；无模型时等待，未知结果只核对原操作。旧背景停用不阻挡明确交互，也不会被交互自动恢复。来源、自动预算、设备授权仍独立检查。设置 → 记忆复用本人管理组件，首页提供快捷链接，记忆与采集选择保持。
 
-专项规格：[默认入口与记忆设置](specs/default-secretary-memory-settings.md)。本地验收已通过：Go mod/vet/race/无 CGO 构建；Python 274 passed / 11 skipped；固定 Gateway 中专项 16 passed / 2 项非本轮 Native 驱动 skipped；实际固定 Helm/单机/HTTPS/overlay/文档 41 项；8 项意图恢复；TypeScript/完整 Next 构建与 token/文档门禁。Chrome 实际验证 390/1280px、浅深色、键盘、默认入口对话和记忆保存/搜索/纠正/关闭后管理/遗忘。9 项 Go→Gateway Fake 验收包含默认模型、两轮同根及接纳后重启核对；没有真实模型或 Native 调用。见[专项收据](verification/default-secretary-memory-2026-11-04.json)。此变更尚未部署，以下 `274c1b2` 默认关闭和产品文档发布记录为历史/独立交付事实。
+专项规格：[默认入口与记忆设置](specs/default-secretary-memory-settings.md)。本地验收已通过：Go mod/vet/race/无 CGO 构建；Python 274 passed / 11 skipped；固定 Gateway 中专项 16 passed / 2 项非本轮 Native 驱动 skipped；实际固定 Helm/单机/HTTPS/overlay/文档 41 项；8 项意图恢复；TypeScript/完整 Next 构建与 token/文档门禁。Chrome 实际验证 390/1280px、浅深色、键盘、默认入口对话和记忆保存/搜索/纠正/关闭后管理/遗忘。9 项 Go→Gateway Fake 验收包含默认模型、两轮同根及接纳后重启核对；没有真实模型或 Native 调用。见[专项收据](verification/default-secretary-memory-2026-11-04.json)。此变更已推送并部署既有新加坡单机；28 项可信公网 HTTPS/账号/数据/API、46 项文档/页面/资源和 17 项授权回归通过，五服务健康。原 1 个账号、9 个线程、19 个 run、5 条任务及模型/个人资料/记忆/关注保留；交互默认可用，旧背景保持暂停、auto=0、来源未配置、无新增设备权限。备份与回退镜像保留，长期本机部署密钥按用户要求保留。见[上线收据](verification/default-secretary-memory-cloud-2026-11-04.json)。线上视觉、真实模型/Native/GitHub 与研究比较未在本轮执行。以下 `274c1b2` 默认关闭和产品文档单独发布记录为历史事实。
 
 ## 产品文档中心 · 已推送并上线
 
@@ -20,7 +20,7 @@
 
 ## 当前工作 · M4.5 持续秘书 Alpha
 
-用户已批准按 spec/plan 连续开发。以 `5a1ed3a` 为代码基线，`18f437e` 接受设计，`e172857` 加入第一轮实现；`b952ee9` 补齐恢复、来源、授权与负载修正，并加入可复现离线验收脚本。新模块默认关闭，原账号、聊天、记忆和原生绑定不自动迁移。
+用户已批准按 spec/plan 连续开发。以 `5a1ed3a` 为代码基线，`18f437e` 接受设计，`e172857` 加入第一轮实现；`b952ee9` 补齐恢复、来源、授权与负载修正，并加入可复现离线验收脚本。初始 Alpha 的模块默认关闭已由本页默认交互更新取代；原账号、聊天、记忆和原生绑定不自动迁移。
 
 已实现：
 
@@ -65,7 +65,7 @@
 | 一个对话一个 Native | 自动命名/改名、真实 Codex 多轮同根与独立验证已有历史收据。[会话指南](chat-sessions.md) |
 | 记忆与首页 | 显式事实、本人 FTS、遗忘屏障、来源撤销、确定性简报/关注与首页动作已实现；语义提取仍未实现。[记忆](personal-memory.md) / [首页](personal-home.md) |
 | 用户管理设备授权 | 配对、逐版本本机确认、期限/项目/操作/到期策略、续期取消、撤销与出站 HTTPS 已本地验收；Go/Gateway `5a1ed3a` 已部署，17 项 HTTPS/API 通过，线上视觉未验。[指南](agent-authorizations.md) / [本地](verification/agent-authorization-local-2026-11-03.json) / [云端](verification/agent-authorization-cloud-2026-11-04.json) |
-| 云端 | M4.4/授权首期保留，现已运行 `274c1b2` 持续秘书 Alpha；账号、9 个线程/19 个 run/5 个任务、模型文件、个人资料/记忆/关注及到期授权保留。用户开关默认关闭，auto=0，来源未配置。[最新上线](verification/continuous-cloud-2026-11-04.json) |
+| 云端 | 现运行 `161fd29` 默认秘书与记忆设置；原账号、9 个线程/19 个 run/5 个任务、模型文件、个人资料/记忆/关注及到期授权保留。交互默认可用，背景仍暂停，auto=0，来源未配置。[最新上线](verification/default-secretary-memory-cloud-2026-11-04.json) |
 | 家庭接入 | 历史反向 SSH 授权已于 2026-10-30 截止，不能复用；本机 Worker 可达不等于当前产品授权/新协议就绪 |
 | 本地 | 个人入口 `localhost:2026` 本轮未升级；原 API/负载用独立 2036，本轮 UI 用独立 `deermate-native-check`/2037、合成账号及隔离网络。验收前后 run=7、Native task=2、模型预留=5，零新增调用；fixture 现已停止并保留卷 |
 
