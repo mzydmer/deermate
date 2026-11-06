@@ -205,6 +205,7 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 ## Workspace v2 · Product proposal（待用户审核）
 
 - [x] 编写助手首页、默认自然记忆和原话题延续的 [PRD](prd/workspace-assistant-v2.md)，配八张静态样式图。
+- [x] 根据用户反馈完成页面文案审稿，同步八张图与 PRD v0.2；保留待审核状态。
 - [ ] 用户确认产品方向、默认策略与首发边界。
 - [ ] 审核后定稿技术 spec / ADR / plan，映射 WS2-01–21。
 - [ ] 实现与真实数据/模型/会话/迁移验收；本条不代表已开始开发或已上线。

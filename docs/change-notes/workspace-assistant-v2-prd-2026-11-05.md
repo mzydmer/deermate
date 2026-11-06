@@ -7,3 +7,5 @@
 涉及文件：docs/prd/ 的 PRD、示意 PNG/SVG、文档绘图源和离线 HTML；docs/STATUS.md、docs/EVOLUTION.md、docs/roadmap.md 只记录提案状态。没有修改 frontend/、backend/、src/、部署或运行配置。
 
 验证：完成后在 docs/prd/workspace-assistant-v2-validation.json 记录链接、图片、文档门禁和实际目视检查；不以样式图代替浏览器功能验收。
+
+2026-11-06 修订：按用户要求使用产品运营文案子 Agent，审阅八张图的全部界面文字并补齐异常、隐私控制文案，更新 PRD v0.2、阅读版、文案稿和绘图源。仍仅修改 docs/ 内设计文档与静态资产；没有修改运行页面、记忆默认或线上功能，因此现行客户指南与发布日志不变。

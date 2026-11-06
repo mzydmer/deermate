@@ -6,59 +6,59 @@
   "plates": [
     {
       "name": "01-home",
-      "title": "熟悉用户的助手首页",
+      "title": "助手首页",
       "width": 1440,
       "height": 1000,
-      "text_lines": 51
+      "text_lines": 50
     },
     {
       "name": "07-home-dark",
-      "title": "熟悉用户的助手首页",
+      "title": "助手首页",
       "width": 1440,
       "height": 1000,
-      "text_lines": 51
+      "text_lines": 50
     },
     {
       "name": "02-first-visit",
-      "title": "初次见面：没有记忆也不要求先配置",
+      "title": "首次进入",
       "width": 1440,
       "height": 1000,
       "text_lines": 25
     },
     {
       "name": "03-conversation",
-      "title": "连续对话与非阻断记忆反馈",
+      "title": "对话与记忆提示",
       "width": 1440,
       "height": 1000,
-      "text_lines": 44
+      "text_lines": 43
     },
     {
       "name": "04-memory",
-      "title": "我了解的你：可查看、纠正与遗忘",
+      "title": "关于你：查看、修改与忘记",
       "width": 1440,
       "height": 1000,
       "text_lines": 50
     },
     {
       "name": "05-mobile",
-      "title": "移动端：助手首页与连续对话",
+      "title": "手机：首页与对话",
       "width": 960,
       "height": 1060,
-      "text_lines": 33
+      "text_lines": 34
     },
     {
       "name": "06-states",
-      "title": "空、过期、离线、整理与暂停的关键状态",
+      "title": "空状态与异常状态",
       "width": 1440,
       "height": 1120,
-      "text_lines": 36
+      "text_lines": 32
     },
     {
       "name": "08-work",
-      "title": "我的工作：先回应，再核对执行证据",
+      "title": "我的工作与结果详情",
       "width": 1440,
       "height": 1000,
-      "text_lines": 52
+      "text_lines": 50
     }
   ]
 }
