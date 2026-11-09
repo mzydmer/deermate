@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "scope": "Real old-image Go/Gateway/DeerMem instance upgraded to V2, synthetic loopback account",
+  "original_password_login": true,
+  "owner_and_role_preserved": true,
+  "profile_and_explicit_pause_preserved": true,
+  "canonical_fact_and_source_preserved": true,
+  "attention_topic_preserved": true,
+  "new_pages_and_snapshot_readable": true,
+  "legacy_policy_not_silently_enabled": true,
+  "external_model_calls": 0,
+  "native_calls": 0
+}

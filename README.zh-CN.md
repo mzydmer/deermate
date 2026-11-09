@@ -6,9 +6,13 @@
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong> · <a href="LICENSE">MIT 开源</a> · Agent 系统研究 Alpha · Go 主后端</p>
 <p align="center"><a href="#research">研究方向</a> · <a href="docs/specs/m4-continuous-agent.md">Spec</a> · <a href="docs/specs/m4-continuous-agent-plan.md">实施与评估计划</a> · <a href="docs/STATUS.md">开发进度</a></p>
 
-> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-04。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。持久 Router/Worker 已有**Alpha 实现和离线集成验收**（新版交互默认可用，发布状态见当前状态），真实接入与对比实验另行验收。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
+> **当前阶段：私人 Agent 系统研究 Alpha，2026-11-09。** Go 控制端、真实 Codex 会话续接和个人记忆首页已有实现证据；用户管理的设备授权与出站 HTTPS 有独立本地验收。持久 Router/Worker 已有**Alpha 实现和离线集成验收**（新版交互默认可用，发布状态见当前状态），真实接入与对比实验另行验收。视频仍为概念预览。[当前状态](docs/STATUS.md) · [研究规格](docs/specs/m4-continuous-agent.md)。
 
 ## 你的私人 Agent 秘书
+
+新版工作台把入口分成「助手」「我的工作」「关于你」。正常聊天就能记下偏好，新账号默认开启；已有暂停选择保留。个人、项目和当前阶段分别使用，可查看原话、纠正、忘记，或者用临时对话。首页只显示有依据的近期事项，打开页面不派单。
+
+本地已通过 [16 项真实模型记忆闭环](docs/verification/workspace-v2-model-2026-11-09.json)和[同一 Codex 原生会话两轮验收](docs/verification/workspace-v2-native-2026-11-09.json)。两者是独立范围的检查，不代表云端到家庭设备的完整新演示，也不是科研收益证明；[实施与发布进度](docs/specs/workspace-assistant-v2-plan.md)分别记录。
 
 [产品使用文档](docs/product/guide/overview.md) · [技术方案](docs/product/technical/architecture.md) · [变更日志](docs/product/changelog.md)。应用内「产品文档」进入 `/docs`；文档中心已发布到既有云端实例，交付与验证范围见[上线收据](docs/verification/product-documentation-cloud-2026-11-04.json)。后续 Agent 遵守[文档更新约束](docs/DOCUMENTATION_POLICY.md)。
 

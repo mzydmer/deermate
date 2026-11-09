@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "real_native": "Codex",
+  "rounds": 2,
+  "same_native_root": true,
+  "same_workspace": true,
+  "independent_validation_exit_codes": [
+    0,
+    0
+  ],
+  "scope": "Direct isolated Worker/real Codex protocol; not a browser-to-native or cloud-to-home check",
+  "model": "gpt-6.1-sol",
+  "model_selection": "App-server catalog; access proven by both completed turns",
+  "official_protocol_reference": "https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server"
+}

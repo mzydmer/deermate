@@ -48,7 +48,10 @@ CREATE TABLE IF NOT EXISTS deermate_topic_memory (
  mode TEXT NOT NULL CHECK(mode IN ('temporary','excluded','normal')),
  operation_id TEXT NOT NULL DEFAULT '',revision INTEGER NOT NULL DEFAULT 1,
  PRIMARY KEY(owner,thread_id));`)
-	return err
+	if err != nil {
+		return err
+	}
+	return s.initializeMemoryScopes()
 }
 
 func topicMemoryMode(q memoryReader, owner, thread string) (string, error) {

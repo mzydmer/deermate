@@ -1,5 +1,10 @@
 # Security model proposal
 
+## 工作台 v2 记忆边界
+
+个人记忆只接纳可证明的本人完整输入，引用、外部事件、助手输出、认证材料和敏感反例不作为自动长期事实。项目标签是本人记忆范围，不授予项目或 Worker 权限。临时话题从创建前禁止长期记忆读取和写入；普通聊天记录另行保存。来源/账号/话题换代、暂停和遗忘在模型调用前及结果投递前复查，迟到结果不能跨屏障恢复旧事实。来源抽屉读取失败时遮住缓存正文。默认迁移不覆盖有明确选择的旧账号；云端到家庭的既有到期授权不随版本升级恢复。实现与限制见[工作台 v2 规格](specs/workspace-assistant-v2.md)。
+
+
 Status: Worker, MCP and enrolled direct SSH transport alpha. Bearer authentication, local Host/Origin checks, project admission, native sandbox policies and single-owner state remain in force. Broader deployment requirements below are not all implemented or independently audited. Updated: 2026-10-25. See [local limits](local-worker.md) and [SSH scope](ssh-worker.md).
 
 The stdio MCP bridge uses that same single owner's local bearer authority. It forwards to a fixed loopback endpoint with proxy discovery and redirects disabled, and does not add a public network listener, new grants, or direct database access. Run it only in a trusted DeerFlow process with deliberate access to the Worker token; its task tools can act on that owner's registered projects/tasks, while the additive connection check is read-only. Bounded summaries may still contain project content; no universal redaction is claimed. The operator-only live verifier may inspect its local Worker database read-only to cross-check request identity; this does not grant database access to MCP or public APIs. See [the setup and deployment limits](deerflow.md).

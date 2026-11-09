@@ -24,7 +24,7 @@ func suggestedQuestion(fact json.RawMessage) string {
 	if len(text) > 160 {
 		text = append(text[:160], []rune("…")...)
 	}
-	return "围绕你记录的目标“" + string(text) + "”，下一步有哪些值得研究的问题？"
+	return "关于“" + string(text) + "”，下一步可以先做哪几件事？"
 }
 
 func (s *Server) suggestionFact(r *http.Request, owner, id string, revision int64) (json.RawMessage, error) {
@@ -82,6 +82,11 @@ func (s *Server) briefingSuggestions(r *http.Request) ([]BriefingSuggestion, boo
 	}
 	for _, ref := range refs {
 		if ref.Category != "goal" || ref.Status != "active" || ref.Scope != "personal" {
+			continue
+		}
+		var dismissed bool
+		_ = s.Store.DB.QueryRow("SELECT dismissed FROM deermate_workspace_feedback WHERE owner=? AND id=?", u.ID, "suggest-"+ref.ID).Scan(&dismissed)
+		if dismissed {
 			continue
 		}
 		fact, err := s.suggestionFact(r, u.ID, ref.ID, ref.Revision)

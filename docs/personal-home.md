@@ -1,5 +1,7 @@
 # 今日关注与私人秘书首页
 
+> 2026-11-09 工作台 v2 已替代本页的旧默认、首页和采集交互。当前行为见[新版规格](specs/workspace-assistant-v2.md)、[记忆指南](product/guide/memory.md)与[首页指南](product/guide/focus.md)，交付状态见[STATUS](STATUS.md)。下文保留 M4.4 基础实现与历史验收说明，不能据此判断新版默认或发布状态。
+
 M4.4c–e：基于本人显式关注、真实任务记录和长期目标的首页闭环。Go 提供公开 API 与动作账本；内部 Python 适配固定 DeerFlow。完整目标见[记忆规格](specs/m4-personal-memory-briefing.md)，本次范围见[实施说明](specs/m4-personal-home-implementation.md)。
 
 ## 使用步骤

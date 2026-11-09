@@ -4,14 +4,16 @@
     "group": "guide",
     "title": "认识 DeerMate",
     "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
-    "updated": "2026-11-05",
+    "updated": "2026-11-09",
     "status": "Alpha",
     "sources": [
       "docs/STATUS.md",
       "docs/SPEC.md",
       "docs/verification/continuous-cloud-2026-11-04.json",
       "docs/verification/product-documentation-cloud-2026-11-04.json",
-      "design.md"
+      "design.md",
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
@@ -19,12 +21,14 @@
     "group": "guide",
     "title": "开始第一项工作",
     "description": "从交代目标，到检查结果与继续追问。",
-    "updated": "2026-11-05",
+    "updated": "2026-11-09",
     "status": "使用指南",
     "sources": [
       "docs/chat-sessions.md",
       "frontend/overlay/src/components/deermate/desk.tsx",
-      "docs/diagrams/product/diagrams.json"
+      "docs/diagrams/product/diagrams.json",
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
@@ -32,32 +36,36 @@
     "group": "guide",
     "title": "对话与任务结果",
     "description": "理解同一会话的连续追问、执行状态和独立验证。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-09",
     "status": "使用指南",
     "sources": [
       "docs/chat-sessions.md",
       "docs/codex-conversation.md",
-      "docs/SPEC.md"
+      "docs/SPEC.md",
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
     "slug": "guide/focus",
     "group": "guide",
-    "title": "今日关注与跟进",
-    "description": "把历史对话加入关注，查看有来源的进展并跟进。",
-    "updated": "2026-11-04",
+    "title": "助手首页与最近的事",
+    "description": "查看最近话题与有来源的进展，接着聊或稍后处理。",
+    "updated": "2026-11-09",
     "status": "使用指南",
     "sources": [
-      "docs/personal-home.md"
+      "docs/personal-home.md",
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
     "slug": "guide/memory",
     "group": "guide",
-    "title": "记忆管理",
+    "title": "关于你与记忆管理",
     "description": "管理称呼、时区与长期事实，纠正或遗忘记录。",
     "updated": "2026-11-09",
-    "status": "需本人开启",
+    "status": "新账号默认开启",
     "sources": [
       "docs/personal-memory.md",
       "frontend/overlay/src/components/workspace/settings/memory-settings-page.tsx",
@@ -65,7 +73,8 @@
       "docs/specs/default-secretary-memory-settings.md",
       "docs/verification/default-secretary-memory-2026-11-04.json",
       "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
-      "docs/specs/workspace-assistant-v2.md"
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
@@ -97,7 +106,7 @@
     "group": "guide",
     "title": "持续秘书与工作",
     "description": "在 Alpha 中持续跟进目标、观察来源和处理候选。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-09",
     "status": "Alpha · 默认可用",
     "sources": [
       "docs/continuous-secretary.md",
@@ -106,7 +115,9 @@
       "docs/specs/default-secretary-memory-settings.md",
       "backend/internal/controlplane/continuous_defaults.go",
       "docs/verification/default-secretary-memory-2026-11-04.json",
-      "docs/verification/default-secretary-memory-cloud-2026-11-04.json"
+      "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
@@ -114,12 +125,14 @@
     "group": "guide",
     "title": "常见问题",
     "description": "处理连接异常、结果未知、执行受阻和内容失效。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-09",
     "status": "使用指南",
     "sources": [
       "docs/SPEC.md",
       "docs/STATUS.md",
-      "docs/continuous-secretary.md"
+      "docs/continuous-secretary.md",
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
@@ -168,7 +181,8 @@
       "docs/continuous-secretary.md",
       "docs/specs/default-secretary-memory-settings.md",
       "docs/diagrams/product/diagrams.json",
-      "docs/specs/workspace-assistant-v2.md"
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   },
   {
@@ -199,7 +213,8 @@
       "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
       "docs/diagrams/product/diagrams.json",
       "design.md",
-      "docs/specs/workspace-assistant-v2.md"
+      "docs/specs/workspace-assistant-v2.md",
+      "docs/specs/workspace-assistant-v2-plan.md"
     ]
   }
 ]

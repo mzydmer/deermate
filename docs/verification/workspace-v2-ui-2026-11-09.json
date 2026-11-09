@@ -1,0 +1,160 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "real_go_dom_login"
+    },
+    {
+      "name": "workspace",
+      "width": 390,
+      "dark": false
+    },
+    {
+      "name": "work",
+      "width": 390,
+      "dark": false
+    },
+    {
+      "name": "memory",
+      "width": 390,
+      "dark": false
+    },
+    {
+      "name": "mobile_navigation_keyboard",
+      "width": 390,
+      "dark": false
+    },
+    {
+      "name": "workspace",
+      "width": 390,
+      "dark": true
+    },
+    {
+      "name": "work",
+      "width": 390,
+      "dark": true
+    },
+    {
+      "name": "memory",
+      "width": 390,
+      "dark": true
+    },
+    {
+      "name": "mobile_navigation_keyboard",
+      "width": 390,
+      "dark": true
+    },
+    {
+      "name": "workspace",
+      "width": 768,
+      "dark": false
+    },
+    {
+      "name": "work",
+      "width": 768,
+      "dark": false
+    },
+    {
+      "name": "memory",
+      "width": 768,
+      "dark": false
+    },
+    {
+      "name": "workspace",
+      "width": 768,
+      "dark": true
+    },
+    {
+      "name": "work",
+      "width": 768,
+      "dark": true
+    },
+    {
+      "name": "memory",
+      "width": 768,
+      "dark": true
+    },
+    {
+      "name": "workspace",
+      "width": 1280,
+      "dark": false
+    },
+    {
+      "name": "work",
+      "width": 1280,
+      "dark": false
+    },
+    {
+      "name": "memory",
+      "width": 1280,
+      "dark": false
+    },
+    {
+      "name": "workspace",
+      "width": 1280,
+      "dark": true
+    },
+    {
+      "name": "work",
+      "width": 1280,
+      "dark": true
+    },
+    {
+      "name": "memory",
+      "width": 1280,
+      "dark": true
+    },
+    {
+      "name": "workspace",
+      "width": 1440,
+      "dark": false
+    },
+    {
+      "name": "work",
+      "width": 1440,
+      "dark": false
+    },
+    {
+      "name": "memory",
+      "width": 1440,
+      "dark": false
+    },
+    {
+      "name": "workspace",
+      "width": 1440,
+      "dark": true
+    },
+    {
+      "name": "work",
+      "width": 1440,
+      "dark": true
+    },
+    {
+      "name": "memory",
+      "width": 1440,
+      "dark": true
+    },
+    {
+      "name": "failed_refresh_keeps_composer"
+    },
+    {
+      "name": "memory_source_keyboard_and_failure_mask"
+    },
+    {
+      "name": "memory_create_correct_forget"
+    },
+    {
+      "name": "temporary_creation_lost_ack_same_topic"
+    },
+    {
+      "name": "profile_name_timezone"
+    },
+    {
+      "name": "200_percent_equivalent_reflow"
+    }
+  ],
+  "failures": [],
+  "page_errors": [],
+  "model_submissions": 0,
+  "scope": "Real Go login/storage and production React/Gateway; synthetic owner. Read matrix, memory writes and empty temporary topics; no provider/native submission."
+}

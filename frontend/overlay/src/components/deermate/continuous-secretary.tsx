@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { fetch as authFetch } from "@/core/api/fetcher";
 import { getBackendBaseURL } from "@/core/config";
@@ -28,16 +28,18 @@ type Config = {
 };
 type Router = { session: RecordView; items: RecordView[] };
 const str = (v: RecordView, k: string) =>
-  typeof v.data[k] === "string" ? (v.data[k] as string) : "";
+  typeof v.data[k] === "string" ? v.data[k] : "";
 
 export function ContinuousSecretary({
   userId,
   zh,
   canRun,
+  workOnly = false,
 }: {
   userId: string;
   zh: boolean;
   canRun: boolean;
+  workOnly?: boolean;
 }) {
   const text = (cn: string, en: string) => (zh ? cn : en);
   const cache = useQueryClient();
@@ -47,6 +49,10 @@ export function ContinuousSecretary({
   const [grant, setGrant] = useState("");
   const [instruction, setInstruction] = useState("");
   const [selected, setSelected] = useState("");
+  const [workFilter, setWorkFilter] = useState("all");
+  useEffect(() => {
+    if (workOnly) setSelected(window.location.hash.slice(1));
+  }, [workOnly]);
   const [followups, setFollowups] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -212,8 +218,8 @@ export function ContinuousSecretary({
       aria-label={text("持续秘书", "Continuous secretary")}
     >
       <div className="dm-section-heading">
-        <h2>{text("秘书与工作", "Secretary & work")}</h2>
-        <Link href="/workspace?settings=memory">
+        <h2>{text("工作安排", "Work orders")}</h2>
+        <Link href="/workspace/memory">
           {text("记忆管理", "Manage memory")}
         </Link>
         <button
@@ -255,7 +261,7 @@ export function ContinuousSecretary({
           )}
         </p>
       )}
-      {enabled && (
+      {enabled && !workOnly && (
         <>
           <form
             className="dm-continuous-form"
@@ -387,187 +393,216 @@ export function ContinuousSecretary({
       {works.data?.items.length === 0 && (
         <p className="dm-muted">
           {text(
-            "还没有持续工作。已有聊天和任务仍可在下方查看。",
-            "No continuous work yet. Existing chats and tasks remain below.",
+            "还没有安排工作。回到助手，告诉我想做什么。",
+            "No work orders yet. Tell your assistant what you want to do.",
           )}
         </p>
       )}
+      <label>
+        {text("工作状态", "Work status")}
+        <select
+          value={workFilter}
+          onChange={(e) => setWorkFilter(e.target.value)}
+        >
+          <option value="all">{text("全部", "All")}</option>
+          <option value="attention">{text("待回应", "Needs attention")}</option>
+          <option value="active">{text("处理中", "Active")}</option>
+          <option value="ended">{text("已结束", "Ended")}</option>
+        </select>
+      </label>
       <ul className="dm-focus-list">
-        {works.data?.items.map((v) => (
-          <li key={v.id}>
-            <div className="dm-section-heading">
-              <button
-                className="dm-text-button"
-                aria-expanded={selected === v.id}
-                onClick={() => setSelected(selected === v.id ? "" : v.id)}
-              >
-                {str(v, "title") || text("未命名工作", "Untitled work")}
-              </button>
-              <span className="dm-small">
-                {status(v)}
-                {v.data.verified === true
-                  ? text(" · 验证通过", " · verified")
-                  : ""}
-              </span>
-            </div>
-            <p className="dm-small dm-muted">{str(v, "goal")}</p>
-            {v.data.has_update === true && (
-              <p className="dm-small">
-                {text(
-                  "关注的 Thread 有新上下文",
-                  "Subscribed thread has new context",
-                )}
-              </p>
-            )}
-            {current?.id === v.id && (
-              <div className="dm-work-detail">
-                <p>{str(v, "preview")}</p>
-                {str(v, "source_state") === "unavailable" && (
-                  <p className="dm-small dm-muted">
-                    {text(
-                      "来源暂不可读，已隐藏摘要。可继续处理已有工作的停止或关闭。",
-                      "Source unavailable; summaries are hidden. Existing work can still be stopped or closed.",
-                    )}
-                  </p>
-                )}
+        {works.data?.items
+          .filter(
+            (v) =>
+              workFilter === "all" ||
+              (workFilter === "attention"
+                ? ["input_required", "failed", "uncertain", "handoff"].includes(
+                    str(v, "stage"),
+                  )
+                : workFilter === "ended"
+                  ? v.state === "closed" ||
+                    ["completed", "cancelled"].includes(str(v, "stage"))
+                  : v.state === "active" &&
+                    !["completed", "cancelled"].includes(str(v, "stage"))),
+          )
+          .map((v) => (
+            <li key={v.id}>
+              <div className="dm-section-heading">
+                <button
+                  className="dm-text-button"
+                  aria-expanded={selected === v.id}
+                  onClick={() => setSelected(selected === v.id ? "" : v.id)}
+                >
+                  {str(v, "title") || text("未命名工作", "Untitled work")}
+                </button>
+                <span className="dm-small">
+                  {status(v)}
+                  {v.data.verified === true
+                    ? text(" · 验证通过", " · verified")
+                    : ""}
+                </span>
+              </div>
+              <p className="dm-small dm-muted">{str(v, "goal")}</p>
+              {v.data.has_update === true && (
                 <p className="dm-small">
-                  Codex · {str(v, "project")} ·{" "}
-                  {str(v, "incarnation") ? (
-                    <Link href={`/workspace/chats/${str(v, "thread_id")}`}>
-                      {text("打开执行对话", "Execution chat")}
-                    </Link>
-                  ) : (
-                    <span>
-                      {text(
-                        "接纳后可打开执行对话",
-                        "Execution chat appears after admission",
-                      )}
-                    </span>
+                  {text(
+                    "关注的 Thread 有新上下文",
+                    "Subscribed thread has new context",
                   )}
                 </p>
-                {str(v, "execution_reason") && (
-                  <p className="dm-small dm-muted">
-                    {text(
-                      "执行前需要有效、在线且支持持续任务协议的设备授权。",
-                      "Execution requires a current, reachable device grant with continuous-task protocol support.",
+              )}
+              {current?.id === v.id && (
+                <div className="dm-work-detail">
+                  <p>{str(v, "preview")}</p>
+                  {str(v, "source_state") === "unavailable" && (
+                    <p className="dm-small dm-muted">
+                      {text(
+                        "来源暂不可读，已隐藏摘要。可继续处理已有工作的停止或关闭。",
+                        "Source unavailable; summaries are hidden. Existing work can still be stopped or closed.",
+                      )}
+                    </p>
+                  )}
+                  <p className="dm-small">
+                    Codex · {str(v, "project")} ·{" "}
+                    {str(v, "incarnation") ? (
+                      <Link href={`/workspace/chats/${str(v, "thread_id")}`}>
+                        {text("打开执行对话", "Execution chat")}
+                      </Link>
+                    ) : (
+                      <span>
+                        {text(
+                          "接纳后可打开执行对话",
+                          "Execution chat appears after admission",
+                        )}
+                      </span>
                     )}
                   </p>
-                )}
-                <div className="dm-focus-actions">
-                  {(v.state === "active"
-                    ? ["execute", "pause", "cancel", "close", "reconcile"]
-                    : v.state === "paused"
-                      ? ["resume", "cancel", "close", "reconcile"]
-                      : ["reconcile"]
-                  ).map((action) => (
-                    <button
-                      key={action}
-                      className="dm-text-button"
-                      disabled={
-                        busy ||
-                        (readUnavailable && action !== "reconcile") ||
-                        (!enabled && action !== "reconcile") ||
-                        (action === "execute" && v.data.can_execute !== true) ||
-                        (action === "execute" &&
-                          !!str(v, "head") &&
-                          !followups[v.id]?.trim()) ||
-                        (action === "cancel" && v.data.can_cancel !== true) ||
-                        (action === "close" && !!v.data.active_operation)
-                      }
-                      onClick={() =>
-                        void mutate(
-                          `work-orders/${v.id}/actions`,
-                          "POST",
-                          {
-                            action:
-                              action === "execute" && str(v, "head")
-                                ? "followup"
-                                : action,
-                            text:
-                              action === "execute"
-                                ? followups[v.id] || str(v, "goal")
-                                : "",
-                            expected_revision: v.revision,
-                          },
-                          () => {
-                            if (action === "execute")
-                              setFollowups((drafts) => {
-                                if (drafts[v.id] !== followups[v.id])
-                                  return drafts;
-                                const next = { ...drafts };
-                                delete next[v.id];
-                                return next;
-                              });
-                          },
-                        )
-                      }
-                    >
-                      {
-                        {
-                          execute: str(v, "head")
-                            ? text("继续执行", "Continue")
-                            : text("开始执行", "Execute"),
-                          pause: text("暂停", "Pause"),
-                          resume: text("恢复", "Resume"),
-                          cancel: text("请求停止", "Request stop"),
-                          close: text("结束工作", "Close work"),
-                          reconcile: text("核对原结果", "Reconcile"),
-                        }[action]
-                      }
-                    </button>
-                  ))}
-                </div>
-                {v.state !== "closed" && (
-                  <label>
-                    {text("下一轮问题", "Next round")}
-                    <textarea
-                      value={followups[v.id] ?? ""}
-                      onChange={(e) =>
-                        setFollowups((drafts) => ({
-                          ...drafts,
-                          [v.id]: e.target.value,
-                        }))
-                      }
-                      placeholder={text(
-                        "填写下一步要求，再继续原会话。",
-                        "Describe the next step before continuing the same session.",
+                  {str(v, "execution_reason") && (
+                    <p className="dm-small dm-muted">
+                      {text(
+                        "执行前需要有效、在线且支持持续任务协议的设备授权。",
+                        "Execution requires a current, reachable device grant with continuous-task protocol support.",
                       )}
-                      maxLength={8000}
-                    />
-                  </label>
-                )}
-                <details>
-                  <summary>
-                    {text("回执与引用", "Receipts & references")}
-                  </summary>
-                  {timeline.isPending ? (
-                    <p role="status">
-                      {text("正在读取回执…", "Loading receipts…")}
                     </p>
-                  ) : timeline.isError ? (
-                    <p role="alert">
-                      {text("回执暂不可读", "Receipts unavailable")}
-                    </p>
-                  ) : (
-                    <ul>
-                      {timeline.data?.items.map((item) => (
-                        <li key={item.id}>
-                          <span>
-                            {item.kind} · {status(item)}
-                          </span>
-                          <code>{item.id}</code>
-                          {str(item, "preview") && (
-                            <p>{str(item, "preview")}</p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
                   )}
-                </details>
-              </div>
-            )}
-          </li>
-        ))}
+                  <div className="dm-focus-actions">
+                    {(v.state === "active"
+                      ? ["execute", "pause", "cancel", "close", "reconcile"]
+                      : v.state === "paused"
+                        ? ["resume", "cancel", "close", "reconcile"]
+                        : ["reconcile"]
+                    ).map((action) => (
+                      <button
+                        key={action}
+                        className="dm-text-button"
+                        disabled={
+                          busy ||
+                          (readUnavailable && action !== "reconcile") ||
+                          (!enabled && action !== "reconcile") ||
+                          (action === "execute" &&
+                            v.data.can_execute !== true) ||
+                          (action === "execute" &&
+                            !!str(v, "head") &&
+                            !followups[v.id]?.trim()) ||
+                          (action === "cancel" && v.data.can_cancel !== true) ||
+                          (action === "close" && !!v.data.active_operation)
+                        }
+                        onClick={() =>
+                          void mutate(
+                            `work-orders/${v.id}/actions`,
+                            "POST",
+                            {
+                              action:
+                                action === "execute" && str(v, "head")
+                                  ? "followup"
+                                  : action,
+                              text:
+                                action === "execute"
+                                  ? followups[v.id]?.length
+                                    ? followups[v.id]
+                                    : str(v, "goal")
+                                  : "",
+                              expected_revision: v.revision,
+                            },
+                            () => {
+                              if (action === "execute")
+                                setFollowups((drafts) => {
+                                  if (drafts[v.id] !== followups[v.id])
+                                    return drafts;
+                                  const next = { ...drafts };
+                                  delete next[v.id];
+                                  return next;
+                                });
+                            },
+                          )
+                        }
+                      >
+                        {
+                          {
+                            execute: str(v, "head")
+                              ? text("继续执行", "Continue")
+                              : text("开始执行", "Execute"),
+                            pause: text("暂停", "Pause"),
+                            resume: text("恢复", "Resume"),
+                            cancel: text("请求停止", "Request stop"),
+                            close: text("结束工作", "Close work"),
+                            reconcile: text("核对原结果", "Reconcile"),
+                          }[action]
+                        }
+                      </button>
+                    ))}
+                  </div>
+                  {v.state !== "closed" && (
+                    <label>
+                      {text("下一轮问题", "Next round")}
+                      <textarea
+                        value={followups[v.id] ?? ""}
+                        onChange={(e) =>
+                          setFollowups((drafts) => ({
+                            ...drafts,
+                            [v.id]: e.target.value,
+                          }))
+                        }
+                        placeholder={text(
+                          "填写下一步要求，再继续原会话。",
+                          "Describe the next step before continuing the same session.",
+                        )}
+                        maxLength={8000}
+                      />
+                    </label>
+                  )}
+                  <details>
+                    <summary>
+                      {text("回执与引用", "Receipts & references")}
+                    </summary>
+                    {timeline.isPending ? (
+                      <p role="status">
+                        {text("正在读取回执…", "Loading receipts…")}
+                      </p>
+                    ) : timeline.isError ? (
+                      <p role="alert">
+                        {text("回执暂不可读", "Receipts unavailable")}
+                      </p>
+                    ) : (
+                      <ul>
+                        {timeline.data?.items.map((item) => (
+                          <li key={item.id}>
+                            <span>
+                              {item.kind} · {status(item)}
+                            </span>
+                            <code>{item.id}</code>
+                            {str(item, "preview") && (
+                              <p>{str(item, "preview")}</p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </details>
+                </div>
+              )}
+            </li>
+          ))}
       </ul>
       {enabled && (
         <details className="dm-attention-management">
@@ -582,9 +617,9 @@ export function ContinuousSecretary({
                 disabled={busy || readUnavailable}
                 onChange={(e) =>
                   void mutate("continuous-config", "PATCH", {
-                    enabled: config.data!.config.data.enabled === true,
+                    enabled: config.data.config.data.enabled === true,
                     native_budget: Number(e.target.value),
-                    expected_revision: config.data!.config.revision,
+                    expected_revision: config.data.config.revision,
                   })
                 }
               >

@@ -188,7 +188,7 @@ def run(args):
         )
         owner = user["id"]
         profile = request("GET", "/api/me/personal-profile")
-        check("memory_default_off", not profile["memory_enabled"])
+        check("memory_default_on_v2", profile["memory_enabled"] and profile["auto_capture_enabled"])
         profile = request(
             "PATCH",
             "/api/me/personal-profile",
@@ -337,7 +337,7 @@ def run(args):
         # Actual run admission with an in-process Fake chat model. No provider
         # or native tools are available; only the run/model selection is fake.
         profile = request("GET", "/api/me/personal-profile")
-        check("capture_defaults_off", not profile["auto_capture_enabled"])
+        check("capture_remains_independent_of_memory_use", profile["auto_capture_enabled"])
         request(
             "PATCH",
             "/api/me/personal-profile",

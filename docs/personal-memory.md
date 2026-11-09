@@ -1,5 +1,7 @@
 # 个人记忆 · M4.4a / M4.4b
 
+> 2026-11-09 工作台 v2 已替代本页的旧默认、首页和采集交互。当前行为见[新版规格](specs/workspace-assistant-v2.md)、[记忆指南](product/guide/memory.md)与[首页指南](product/guide/focus.md)，交付状态见[STATUS](STATUS.md)。下文保留 M4.4 基础实现与历史验收说明，不能据此判断新版默认或发布状态。
+
 状态：基础阶段与明确记忆指令采集已于 2026-11-02 本地验收；2026-11-03 UTC 已部署既有新加坡单机，见[云端升级收据](verification/personal-home-cloud-2026-11-03.json)。原本地实例未升级。云端全部记忆/采集/目标建议开关保持默认关闭，不自动导入历史。完整目标见 [M4.4 spec](specs/m4-personal-memory-briefing.md)；本页描述个人事实存取、明确指令采集与召回；已接通的关注/简报和动作见[首页指南](personal-home.md)，语义提取仍待开发。
 
 ## 使用流程

@@ -1,5 +1,12 @@
 # Architecture proposal
 
+## 工作台 v2 的增量边界（2026-11-09）
+
+Go 继续独占公开认证、个人策略、话题策略、规范来源、事实引用、持久提取/历史作业、配额和首页快照。Python 内部复用 DeerMem 文件事务与 FTS5、既有对话模型的有界提取、最终 Router 的个人参考注入；工具与设备授权保持原边界。首页 GET 仅汇总已有记录，不调用模型。
+
+提取分为确定性快路径与受配额约束的模型作业。Go 在调用前持久预留身份/配额，Python 在持久调用标记后异步执行并缓存结果；未知调用只核对原缓存，禁止重新推理。模型输出需要原文证据、范围和当前来源/策略/遗忘版本复核，再交给既有单事实投递。临时话题在创建前写入负向策略，完整话题不读写长期记忆。详见[ADR 0016](decisions/0016-versioned-personal-memory-jobs.md)、[技术说明](product/technical/memory.md)与[专项规格](specs/workspace-assistant-v2.md)。
+
+
 Status: M1 Worker, M2 MCP/enrolled SSH and an approved temporary cloud-to-home link implemented; broader distributed routing remains a proposal. Updated: 2026-10-28. See [local](local-worker.md), [DeerFlow](deerflow.md) and [SSH](ssh-worker.md) guides for runnable scope and evidence.
 
 ## Product boundary

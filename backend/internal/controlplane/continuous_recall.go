@@ -238,6 +238,7 @@ func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 		workError(w, e)
 		return
 	}
+	s.captureRouterMemory(r.Context(), owner, out)
 	respond(w, 200, workPublic(out))
 }
 func enqueueRouter(tx *sql.Tx, u User, key, text, origin, work string) (workRecord, error) {
@@ -264,6 +265,14 @@ func enqueueRouter(tx *sql.Tx, u User, key, text, origin, work string) (workReco
 		return workRecord{}, ErrConflict
 	}
 	v := newWork(u.ID, "inbox", "pending", "router", map[string]any{"text": safeWorkText(text, 4000), "origin": origin, "work_id": work, "_user_version": u.Version, "_request_hash": workHash([]any{text, origin, work})})
+	if origin == "user" && len(text) <= 4000 && text == workString(v, "text") && automaticMemorySafe(text) {
+		if p, err := readProfile(tx, u.ID); err == nil && p.AutoCaptureEnabled {
+			v.Data["_memory_eligible"] = true
+			v.Data["_memory_thread"] = workString(router, "thread_id")
+			v.Data["_memory_policy"] = p.PolicyRevision
+			v.Data["_memory_deleted"] = p.DeletionRevision
+		}
+	}
 	if e = workPut(tx, &v); e != nil {
 		return v, e
 	}

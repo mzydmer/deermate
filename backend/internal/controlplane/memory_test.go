@@ -48,6 +48,7 @@ func TestPersonalProfileOptimisticUpdateAndIdentity(t *testing.T) {
 	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", body, headers), 409)
 	requireStatus(t, request(server, b, "PATCH", "/api/me/personal-profile", `{"timezone":"Local","expected_revision":1}`, headers), 422)
 	requireStatus(t, request(server, b, "POST", "/api/plugins/deermate.memory/actions/apply", `{}`, headers), 403)
+	requireStatus(t, request(server, b, "POST", "/api/plugins/deermate.memory/actions/extract", `{}`, headers), 403)
 	requireStatus(t, request(server, b, "GET", "/api/memory", "", headers), 403)
 }
 

@@ -386,3 +386,27 @@ def test_default_interactive_admission_and_profile_need_no_enable(ledger, settin
             continuous.load("alice", payload, writing=True)
         with pytest.raises(PermissionError):
             middleware.profile(runtime)
+
+
+def test_final_router_prompt_includes_personal_memory_only_for_direct_user(ledger, monkeypatch):
+    from deermate import memory
+
+    _, put = ledger
+    calls = []
+
+    class Memory:
+        def context(self, owner, message, **kwargs):
+            calls.append((owner, message, kwargs))
+            return "personal preference reference"
+
+    monkeypatch.setattr(memory, "runtime_memory", lambda: Memory())
+    monkeypatch.setattr(middleware, "bounded_model", lambda _: object())
+    monkeypatch.setattr(middleware, "claim_model", lambda _: None)
+    request = SimpleNamespace(override=lambda **kwargs: kwargs)
+    for kind, origin in [("router", "user"), ("router", "event"), ("assessor", "assessment")]:
+        op = operation(put, kind, origin=origin, message="hello")
+        value = middleware.restricted(request, op)
+        assert ("personal preference reference" in value["system_message"].content) == (
+            kind == "router" and origin == "user"
+        )
+    assert len(calls) == 1 and calls[0][2]["global_session"] is True

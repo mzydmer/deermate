@@ -6,8 +6,10 @@ The shared local SQLite write reservation fences provider I/O against concurrent
 Go corrections/revocations; no model call is made while that reservation is held.
 """
 
+import asyncio
 import hashlib
 import json
+import re
 import sqlite3
 import threading
 import time
@@ -19,6 +21,36 @@ AGENT = "deermate-personal"
 
 class MemoryUnavailable(RuntimeError):
     pass
+
+
+def inbox_source(db, owner, source):
+    """Validate complete Go-admitted owner text, never a background event."""
+    record = db.execute(
+        "SELECT data FROM deermate_work_records WHERE owner=? AND kind='inbox' AND id=?",
+        (owner, source["message_id"]),
+    ).fetchone()
+    router = db.execute(
+        "SELECT data FROM deermate_work_records WHERE owner=? AND kind='router' AND id='router'",
+        (owner,),
+    ).fetchone()
+    if not record or not router:
+        raise PermissionError("The Inbox source is unavailable")
+    data, session = json.loads(record[0]), json.loads(router[0])
+    text = data.get("text")
+    if (
+        source["run_id"] != "inbox:" + source["message_id"]
+        or data.get("origin") != "user"
+        or data.get("_memory_eligible") is not True
+        or not session.get("thread_id")
+        or source["thread_id"] != session["thread_id"]
+        or source["incarnation"] != session["thread_id"]
+        or data.get("_memory_thread") != session["thread_id"]
+        or not isinstance(text, str)
+        or len(text.encode()) > 4000
+        or hashlib.sha256(text.encode()).hexdigest() != source["message_hash"]
+    ):
+        raise PermissionError("The Inbox source changed")
+    return text
 
 
 class PersonalMemory:
@@ -87,15 +119,28 @@ class PersonalMemory:
             ).fetchone()
             if ref is None:
                 raise PermissionError("The fact reference is unavailable")
-            if ref["scope"] != "personal":
+            deleting = job["kind"] == "delete"
+            if (
+                not deleting
+                and ref["scope"] != "personal"
+                and not ref["scope"].startswith(("project:", "topic:"))
+            ):
                 raise PermissionError("This memory scope is not supported by this adapter")
+            if (
+                not deleting
+                and ref["scope"].startswith("project:")
+                and not db.execute(
+                    "SELECT 1 FROM deermate_memory_projects WHERE owner=? AND id=?",
+                    (owner, ref["scope"][len("project:") :]),
+                ).fetchone()
+            ):
+                raise PermissionError("The owner-local project scope is unavailable")
             if job["kind"] not in {"create", "update", "delete"}:
                 raise PermissionError("This adapter accepts only explicit single-fact operations")
             source = db.execute(
                 "SELECT * FROM deermate_memory_sources WHERE operation_id=? AND owner=?",
                 (operation_id, owner),
             ).fetchone()
-            deleting = job["kind"] == "delete"
             if not deleting and (
                 profile["policy_revision"] != job["policy_revision"]
                 or ref["status"] not in {"pending", "updating"}
@@ -158,7 +203,9 @@ class PersonalMemory:
             saved = self._fact(owner, ref["id"])
             return {"revision": saved["revision"], "category": saved["category"]}
 
-    def read(self, owner: str, ids: list[str], query: str = "", *, context=False) -> dict:
+    def read(
+        self, owner: str, ids: list[str], query: str = "", *, context=False, scopes=None
+    ) -> dict:
         """Restrict candidate IDs before FTS ranking, then read canonical facts.
 
         Management can inspect existing memory while personalization is off.
@@ -178,11 +225,19 @@ class PersonalMemory:
                 return {"items": [], "revision": profile["revision"]}
             refs = db.execute(
                 "SELECT * FROM deermate_memory_refs WHERE owner=? AND status='active' "
-                "AND scope='personal' AND id IN (SELECT value FROM json_each(?)) "
+                "AND (?=0 OR (scope IN (SELECT value FROM json_each(?)) "
+                "AND (expires_at=0 OR expires_at>?))) "
+                "AND id IN (SELECT value FROM json_each(?)) "
                 "AND NOT EXISTS (SELECT 1 FROM deermate_memory_barriers b "
                 "WHERE b.owner=deermate_memory_refs.owner AND b.fact_id=deermate_memory_refs.id) "
                 "ORDER BY updated_at DESC,id LIMIT 2000",
-                (owner, json.dumps(ids)),
+                (
+                    owner,
+                    int(context),
+                    json.dumps(scopes or ["personal"]),
+                    int(time.time()),
+                    json.dumps(ids),
+                ),
             ).fetchall()
             sources = self._sources(db, owner, [r["source_id"] for r in refs])
             by_id = {r["id"]: r for r in refs if sources.get(r["source_id"], True)}
@@ -217,6 +272,7 @@ class PersonalMemory:
                         "source_id": by_id[key]["source_id"],
                         "scope": by_id[key]["scope"],
                         "updated_at": by_id[key]["updated_at"],
+                        "expires_at": by_id[key]["expires_at"],
                         "source": sources.get(by_id[key]["source_id"]),
                     }
                 )
@@ -238,6 +294,18 @@ class PersonalMemory:
         if not admitted:
             return {}
         result = {row["operation_id"]: False for row in admitted}
+        for row in admitted:
+            if row["run_id"].startswith("inbox:") and not row["invalidated_at"]:
+                try:
+                    inbox_source(db, owner, row)
+                    result[row["operation_id"]] = {
+                        "kind": "inbox",
+                        "thread_id": row["thread_id"],
+                        "message_id": row["message_id"],
+                        "observed_at": row["observed_at"],
+                    }
+                except (PermissionError, ValueError, KeyError, TypeError):
+                    pass
         rows = db.execute(
             "SELECT s.*,r.kwargs_json,t.incarnation AS current_incarnation "
             "FROM deermate_memory_sources s "
@@ -246,6 +314,7 @@ class PersonalMemory:
             "WHERE s.owner=? AND s.operation_id IN (SELECT value FROM json_each(?)) "
             "AND r.evidence_origin='interactive' AND r.origin_kind IS NULL "
             "AND r.operation_kind='run' AND t.project_id IS NULL "
+            "AND coalesce(json_extract(t.metadata_json,'$.deerflow_archived'),0)=0 "
             "AND coalesce(t.incarnation,'')=s.incarnation AND s.invalidated_at=0 "
             "AND NOT EXISTS (SELECT 1 FROM runs e WHERE e.thread_id=r.thread_id "
             "AND e.user_id=r.user_id AND json_extract(e.metadata_json,'$.replay_kind')='edit' "
@@ -304,16 +373,70 @@ class PersonalMemory:
         ).fetchone()
         return mode is not None and mode[0] == "temporary"
 
-    def context(self, owner: str, query: str, *, thread: str | None = None) -> str:
+    @staticmethod
+    def _scopes(db, owner, thread, query):
+        allowed = ["personal"]
+        if thread:
+            allowed.append("topic:" + thread)
+        projects = db.execute(
+            "SELECT id,label FROM deermate_memory_projects WHERE owner=? LIMIT 100", (owner,)
+        ).fetchall()
+        matches = [
+            p["id"]
+            for p in projects
+            if re.search(
+                r"(?<![a-zA-Z0-9_-])" + re.escape(p["label"]) + r"(?![a-zA-Z0-9_-])", query, re.I
+            )
+        ]
+        if matches:
+            allowed.extend("project:" + key for key in matches[:3])
+            if thread and len(matches) == 1:
+                db.execute(
+                    "INSERT INTO deermate_memory_project_topics(owner,thread_id,project_id) "
+                    "VALUES(?,?,?) ON CONFLICT(owner,thread_id) "
+                    "DO UPDATE SET project_id=excluded.project_id",
+                    (owner, thread, matches[0]),
+                )
+            elif thread:
+                db.execute(
+                    "DELETE FROM deermate_memory_project_topics WHERE owner=? AND thread_id=?",
+                    (owner, thread),
+                )
+        elif thread:
+            named = re.match(
+                r"^([a-zA-Z][a-zA-Z0-9_-]{1,39})\s*(?:项目)?(?:的)?(?:主后端|控制端|后端|前端|worker)",
+                query,
+                re.I,
+            )
+            if named and named[1].casefold() not in {p["label"].casefold() for p in projects}:
+                db.execute(
+                    "DELETE FROM deermate_memory_project_topics WHERE owner=? AND thread_id=?",
+                    (owner, thread),
+                )
+                return allowed
+            bound = db.execute(
+                "SELECT project_id FROM deermate_memory_project_topics "
+                "WHERE owner=? AND thread_id=?",
+                (owner, thread),
+            ).fetchone()
+            if bound:
+                allowed.append("project:" + bound[0])
+        return allowed
+
+    def context(
+        self, owner: str, query: str, *, thread: str | None = None, global_session=False
+    ) -> str:
         with self.gate(owner) as (db, profile):
             if not profile["memory_enabled"] or self._temporary(db, owner, thread):
                 return ""
+            scopes = self._scopes(db, owner, None if global_session else thread, query)
             ids = [
                 r[0]
                 for r in db.execute(
                     "SELECT id FROM deermate_memory_refs WHERE owner=? AND status='active' "
-                    "AND scope='personal' LIMIT 2000",
-                    (owner,),
+                    "AND scope IN (SELECT value FROM json_each(?)) "
+                    "AND (expires_at=0 OR expires_at>?) LIMIT 2000",
+                    (owner, json.dumps(scopes), int(time.time())),
                 )
             ]
             policy = (profile["policy_revision"], profile["deletion_revision"])
@@ -326,21 +449,27 @@ class PersonalMemory:
                     (owner,),
                 )
             ]
-        result = self.read(owner, ids, query[:512], context=True)
+        result = self.read(owner, ids, query[:512], context=True, scopes=scopes)
         stable = self.read(owner, preferences, context=True)
         selected = {item["id"]: item for item in stable["items"] + result["items"]}
         with self.gate(owner) as (db, profile):
-            if not profile["memory_enabled"] or self._temporary(db, owner, thread) or policy != (
-                profile["policy_revision"],
-                profile["deletion_revision"],
+            if (
+                not profile["memory_enabled"]
+                or self._temporary(db, owner, thread)
+                or policy
+                != (
+                    profile["policy_revision"],
+                    profile["deletion_revision"],
+                )
             ):
                 return ""
             current = {
                 (r[0], r[1])
                 for r in db.execute(
                     "SELECT id,revision FROM deermate_memory_refs WHERE owner=? "
-                    "AND status='active' AND id IN (SELECT value FROM json_each(?))",
-                    (owner, json.dumps(list(selected))),
+                    "AND status='active' AND (expires_at=0 OR expires_at>?) "
+                    "AND id IN (SELECT value FROM json_each(?))",
+                    (owner, int(time.time()), json.dumps(list(selected))),
                 )
             }
             sources = self._sources(db, owner, [item["source_id"] for item in selected.values()])
@@ -349,12 +478,20 @@ class PersonalMemory:
                 for key, item in selected.items()
                 if (key, item["revision"]) in current and sources.get(item["source_id"], True)
             }
+            if thread:
+                db.executemany(
+                    "INSERT INTO deermate_memory_usage(owner,fact_id,thread_id,last_used) "
+                    "VALUES(?,?,?,?) "
+                    "ON CONFLICT(owner,fact_id,thread_id) DO UPDATE "
+                    "SET last_used=excluded.last_used",
+                    [(owner, key, thread, int(time.time())) for key in selected],
+                )
         from deerflow.agents.memory.backends.deermem.deermem.core.prompt import (
             format_memory_for_injection,
         )
 
         facts = [
-            dict(fact, content=f"[{fact['id']}] {fact['content']}", confidence=1.0)
+            dict(fact, content=f"[{fact['id']}; {fact['scope']}] {fact['content']}", confidence=1.0)
             for fact in selected.values()
         ]
         if not facts:
@@ -455,6 +592,44 @@ async def read_action(payload, context):
     )
 
 
+_extraction_tasks = set()
+_extraction_slots = asyncio.Semaphore(2)
+
+
+async def extract_action(payload, context):
+    import asyncio
+
+    from .memory_extraction import extract, valid_job
+
+    owner, job_id = _owner(context), payload.get("job_id")
+    memory = runtime_memory()
+    with memory.gate(owner) as (db, profile):
+        job = db.execute(
+            "SELECT * FROM deermate_memory_jobs WHERE id=? AND owner=?", (job_id, owner)
+        ).fetchone()
+        valid_job(memory, db, owner, profile, job)
+        if job["provider_state"] != "reserved":
+            return {"known": job["provider_state"] == "completed", "state": job["provider_state"]}
+
+    # The pinned plugin HTTP deadline is 30s. Do not tie a durably admitted
+    # provider call to that request's cancellation. Go reconciles the SQL receipt;
+    # a Gateway restart leaves calling/unknown and never restarts the model.
+    async def run():
+        async with _extraction_slots:
+            return await extract(owner, job_id)
+
+    task = asyncio.create_task(run(), name="deermate-memory-extraction")
+    _extraction_tasks.add(task)
+
+    def settled(completed):
+        _extraction_tasks.discard(completed)
+        if not completed.cancelled():
+            completed.exception()  # Drain safely; no provider text enters logs.
+
+    task.add_done_callback(settled)
+    return {"known": False, "state": "scheduled"}
+
+
 def _owner(context):
     p = context.principal
     if not p.user_id or p.is_internal:
@@ -470,7 +645,11 @@ def install(registry, config):
             namespace="deermate.memory",
             title="Personal memory",
             enabled=True,
-            backend=(BackendAction("apply", apply_action), BackendAction("read", read_action)),
+            backend=(
+                BackendAction("apply", apply_action),
+                BackendAction("read", read_action),
+                BackendAction("extract", extract_action),
+            ),
         )
     ):
         raise RuntimeError("Pinned DeerFlow memory plugin support is required")

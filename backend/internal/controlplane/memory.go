@@ -12,6 +12,12 @@ import (
 
 func (s *Server) memoryRoutes() {
 	s.workspaceMemoryRoutes()
+	s.mux.HandleFunc("GET /api/me/workspace-snapshot", s.protected(false, s.workspaceSnapshot))
+	s.mux.HandleFunc("POST /api/me/workspace-feedback", s.protected(false, s.workspaceFeedback))
+	s.mux.HandleFunc("GET /api/me/memory-activity", s.protected(false, s.memoryActivity))
+	s.mux.HandleFunc("GET /api/me/memories/{id}/source", s.protected(false, s.memorySource))
+	s.mux.HandleFunc("GET /api/me/memory-history", s.protected(false, s.memoryHistory))
+	s.mux.HandleFunc("POST /api/me/memory-history", s.protected(false, s.memoryHistory))
 	for _, method := range []string{"GET", "PATCH"} {
 		s.mux.HandleFunc(method+" /api/me/personal-profile", s.protected(false, s.personalProfile))
 	}

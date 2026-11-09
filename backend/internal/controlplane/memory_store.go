@@ -36,6 +36,8 @@ type MemoryReference struct {
 	Status   string `json:"status"`
 	Revision int64  `json:"revision"`
 	Updated  int64  `json:"updated_at"`
+	Slot     string `json:"slot,omitempty"`
+	Expires  int64  `json:"expires_at,omitempty"`
 }
 
 type MemoryOperation struct {
@@ -58,7 +60,7 @@ CREATE TABLE IF NOT EXISTS deermate_personal_profiles (
 CREATE TABLE IF NOT EXISTS deermate_memory_refs (
  id TEXT PRIMARY KEY, owner TEXT NOT NULL REFERENCES users(id), category TEXT NOT NULL, scope TEXT NOT NULL DEFAULT 'personal',
  source_id TEXT NOT NULL, status TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0,
- content_hash TEXT NOT NULL, updated_at INTEGER NOT NULL);
+ content_hash TEXT NOT NULL, updated_at INTEGER NOT NULL,slot TEXT NOT NULL DEFAULT '',expires_at INTEGER NOT NULL DEFAULT 0);
 CREATE INDEX IF NOT EXISTS deermate_memory_owner ON deermate_memory_refs(owner,status,updated_at);
 CREATE TABLE IF NOT EXISTS deermate_memory_operations (
  id TEXT PRIMARY KEY, owner TEXT NOT NULL REFERENCES users(id), fact_id TEXT NOT NULL REFERENCES deermate_memory_refs(id),
@@ -139,7 +141,7 @@ func validMemoryText(text string) bool {
 			return false
 		}
 	}
-	return true
+	return !memorySecretPattern.MatchString(text)
 }
 
 func (s *Store) UpdatePersonalProfile(ctx context.Context, p PersonalProfile, expected int64) (PersonalProfile, error) {
@@ -184,6 +186,9 @@ func (s *Store) UpdatePersonalProfile(ctx context.Context, p PersonalProfile, ex
 		if err == nil {
 			_, err = tx.Exec(`UPDATE deermate_memory_operations SET status='invalidated',payload='' WHERE owner=? AND kind!='delete' AND status IN ('pending','processing','uncertain')`, p.Owner)
 		}
+		if err == nil {
+			_, err = tx.Exec(`UPDATE deermate_memory_jobs SET status='invalidated',result='' WHERE owner=? AND status NOT IN ('completed','invalidated','failed')`, p.Owner)
+		}
 		if err != nil {
 			return p, err
 		}
@@ -193,14 +198,14 @@ func (s *Store) UpdatePersonalProfile(ctx context.Context, p PersonalProfile, ex
 
 func scanMemoryRef(row scanner) (MemoryReference, error) {
 	var m MemoryReference
-	err := row.Scan(&m.ID, &m.Owner, &m.Category, &m.Scope, &m.Source, &m.Status, &m.Revision, &m.Updated)
+	err := row.Scan(&m.ID, &m.Owner, &m.Category, &m.Scope, &m.Source, &m.Status, &m.Revision, &m.Updated, &m.Slot, &m.Expires)
 	if errors.Is(err, sql.ErrNoRows) {
 		err = ErrNotFound
 	}
 	return m, err
 }
 
-const memoryRefColumns = "id,owner,category,scope,source_id,status,revision,updated_at"
+const memoryRefColumns = "id,owner,category,scope,source_id,status,revision,updated_at,slot,expires_at"
 
 func (s *Store) MemoryReferences(owner string) ([]MemoryReference, error) {
 	rows, err := s.DB.Query("SELECT "+memoryRefColumns+" FROM deermate_memory_refs WHERE owner=? AND status!='deleted' ORDER BY updated_at DESC,id LIMIT 2000", owner)
@@ -243,6 +248,10 @@ type memoryMutation struct {
 	Content          string `json:"content"`
 	Category         string `json:"category"`
 	ExpectedRevision int64  `json:"expected_revision"`
+	Scope            string `json:"scope,omitempty"`
+	Project          string `json:"project,omitempty"`
+	Thread           string `json:"thread_id,omitempty"`
+	Slot             string `json:"slot,omitempty"`
 }
 
 const memoryOperationColumns = "id,owner,fact_id,kind,status,policy_revision,deletion_revision,payload"
@@ -283,6 +292,13 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 	if _, err = tx.Exec("INSERT OR IGNORE INTO deermate_personal_profiles(owner) VALUES(?)", owner); err != nil {
 		return empty, err
 	}
+	var disabled, setup bool
+	if err = tx.QueryRow("SELECT disabled,needs_setup FROM users WHERE id=?", owner).Scan(&disabled, &setup); err != nil {
+		return empty, err
+	}
+	if disabled || setup {
+		return empty, ErrDisabled
+	}
 	var previousHash string
 	err = tx.QueryRow("SELECT request_hash FROM deermate_memory_operations WHERE id=? AND owner=?", key, owner).Scan(&previousHash)
 	if err == nil {
@@ -298,7 +314,21 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 	if err != nil {
 		return empty, err
 	}
+	scope, err := resolveMemoryScope(tx, owner, body, source)
+	if err != nil {
+		return empty, err
+	}
+	if body.Slot != "" && !resourceID.MatchString(body.Slot) {
+		return empty, ErrCredentials
+	}
+	expires := int64(0)
+	if strings.HasPrefix(scope, "topic:") || (source != nil && scope == "personal" && body.Category == "context") {
+		expires = time.Now().Add(30 * 24 * time.Hour).Unix()
+	}
 	if source != nil {
+		if strings.HasPrefix(scope, "topic:") && memoryStageEnded(tx, source.Owner, source.Thread, source.Observed) {
+			return empty, ErrConflict
+		}
 		if !p.AutoCaptureEnabled || !captureAllowed(tx, owner, source.Thread) || p.PolicyRevision != source.Policy || p.DeletionRevision != source.Deleted || !verifyCapture(tx, source) {
 			return empty, ErrConflict
 		}
@@ -315,6 +345,15 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 		if !p.MemoryEnabled && source == nil {
 			return empty, ErrDisabled
 		}
+		if body.Slot != "" {
+			var busy int
+			if err = tx.QueryRow("SELECT count(*) FROM deermate_memory_refs WHERE owner=? AND scope=? AND slot=? AND status IN ('pending','active','updating')", owner, scope, body.Slot).Scan(&busy); err != nil {
+				return empty, err
+			}
+			if busy != 0 {
+				return empty, ErrConflict
+			}
+		}
 		var count int
 		err = tx.QueryRow("SELECT count(*) FROM deermate_memory_refs WHERE owner=? AND status!='deleted'", owner).Scan(&count)
 		if err != nil {
@@ -324,7 +363,7 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 			return empty, ErrConflict
 		}
 		var duplicate int
-		err = tx.QueryRow("SELECT count(*) FROM deermate_memory_refs WHERE owner=? AND scope='personal' AND category=? AND content_hash=? AND status IN ('pending','active','updating')", owner, body.Category, digest(strings.TrimSpace(body.Content))).Scan(&duplicate)
+		err = tx.QueryRow("SELECT count(*) FROM deermate_memory_refs WHERE owner=? AND scope=? AND category=? AND content_hash=? AND status IN ('pending','active','updating')", owner, scope, body.Category, digest(strings.TrimSpace(body.Content))).Scan(&duplicate)
 		if err != nil {
 			return empty, err
 		}
@@ -332,11 +371,14 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 			return empty, ErrConflict
 		}
 		id = "mem_" + key[:32]
-		_, err = tx.Exec(`INSERT INTO deermate_memory_refs(id,owner,category,source_id,status,content_hash,updated_at) VALUES(?,?,?,?,?,?,?)`, id, owner, body.Category, key, "pending", digest(strings.TrimSpace(body.Content)), time.Now().Unix())
+		_, err = tx.Exec(`INSERT INTO deermate_memory_refs(id,owner,category,scope,slot,expires_at,source_id,status,content_hash,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)`, id, owner, body.Category, scope, body.Slot, expires, key, "pending", digest(strings.TrimSpace(body.Content)), time.Now().Unix())
 	} else {
 		ref, e := scanMemoryRef(tx.QueryRow("SELECT "+memoryRefColumns+" FROM deermate_memory_refs WHERE id=? AND owner=?", id, owner))
 		if e != nil {
 			return empty, e
+		}
+		if body.Scope != "" && scope != ref.Scope {
+			return empty, ErrConflict
 		}
 		if ref.Revision != body.ExpectedRevision || (kind == "update" && ref.Status != "active") {
 			return empty, ErrConflict
@@ -350,6 +392,9 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 			return empty, ErrConflict
 		}
 		if kind == "delete" {
+			if _, err = tx.Exec("DELETE FROM deermate_memory_usage WHERE owner=? AND fact_id=?", owner, id); err != nil {
+				return empty, err
+			}
 			p.DeletionRevision++
 			_, err = tx.Exec("UPDATE deermate_personal_profiles SET deletion_revision=? WHERE owner=?", p.DeletionRevision, owner)
 			if err == nil {
@@ -379,6 +424,14 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 		return empty, err
 	}
 	if source != nil {
+		// This admitted correction itself advanced the deletion fence. Its new
+		// provenance belongs to that resulting version, never the old snapshot.
+		if source.Job != "" {
+			if _, err = tx.Exec("UPDATE deermate_memory_jobs SET deletion_revision=? WHERE id=? AND owner=? AND message_hash=? AND deletion_revision=?", p.DeletionRevision, source.Job, owner, source.Hash, source.Deleted); err != nil {
+				return empty, err
+			}
+		}
+		source.Deleted = p.DeletionRevision
 		_, err = tx.Exec(`INSERT INTO deermate_memory_sources(operation_id,owner,thread_id,run_id,message_id,message_hash,incarnation,policy_revision,deletion_revision,observed_at,admitted_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)`, op.ID, owner, source.Thread, source.Run, source.Message, source.Hash, source.Incarnation, source.Policy, source.Deleted, source.Observed, time.Now().Unix())
 		if err != nil {
 			return empty, err
@@ -468,7 +521,7 @@ func (s *Store) finishMemory(ctx context.Context, op MemoryOperation, revision i
 			}
 			var payload memoryMutation
 			_ = json.Unmarshal([]byte(op.Payload), &payload)
-			_, err = tx.Exec("UPDATE deermate_memory_refs SET status=?,revision=?,category=?,source_id=?,content_hash=?,updated_at=? WHERE owner=? AND id=?", state, revision, category, op.ID, digest(strings.TrimSpace(payload.Content)), time.Now().Unix(), op.Owner, op.FactID)
+			_, err = tx.Exec("UPDATE deermate_memory_refs SET status=?,revision=?,category=?,source_id=?,content_hash=?,updated_at=?,expires_at=CASE WHEN scope LIKE 'topic:%' AND ?!='delete' THEN ? ELSE expires_at END WHERE owner=? AND id=?", state, revision, category, op.ID, digest(strings.TrimSpace(payload.Content)), time.Now().Unix(), op.Kind, time.Now().Add(30*24*time.Hour).Unix(), op.Owner, op.FactID)
 			if err == nil {
 				_, err = tx.Exec("UPDATE deermate_memory_operations SET status='completed',payload='' WHERE id=?", op.ID)
 			}
@@ -490,5 +543,9 @@ func invalidateCaptured(tx *sql.Tx, owner string, deleted int64) error {
 	_, err = tx.Exec(`UPDATE deermate_memory_operations SET status='invalidated',payload='' WHERE id IN
  (SELECT operation_id FROM deermate_memory_sources WHERE owner=? AND deletion_revision!=?)
  AND status IN ('pending','processing','uncertain')`, owner, deleted)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(`UPDATE deermate_memory_jobs SET status='invalidated',result='' WHERE owner=? AND deletion_revision!=? AND status NOT IN ('completed','invalidated','failed')`, owner, deleted)
 	return err
 }

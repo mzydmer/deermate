@@ -61,3 +61,9 @@ The isolated fixture uses the production React bundle and real Go login/profile/
 4. Inspect synthetic screenshots and the JSON results, then stop the fixture. Credentials remain in its ignored private owner file; do not commit it.
 
 The viewport/theme matrix covers login, workspace, task filters/evidence, all settings sections, draft-only chat, authenticated management and authorization pages. The state suite covers profile validation, memory create/search/correction/forget, loading/empty/failure and six task-detail states. Keyboard focus restoration waits for the actual close lifecycle rather than relying on a screenshot or a fixed delay.
+
+## Assistant workspace v2
+
+`workspace-assistant.tsx`, `workspace-work.tsx` and `workspace-memory.tsx` implement `/workspace`, `/workspace/work` and `/workspace/memory`. The sidebar keeps primary destinations and recent chats; advanced tools/projects remain under More. All visual values come from design.md. Mobile collapses recent focus by default so the one composer remains visible. Timestamps follow the personal profile timezone.
+
+Run `verify_workspace_v2.cjs` with `DEERMATE_URL` pointing to an isolated loopback instance and `DEERMATE_OUTPUT` containing its private `owner.json` marked `synthetic_owner`. The verifier refuses non-loopback origins, uses real Go login/storage and production React, blocks provider/native submissions, and writes an actual UI receipt. Its 2x-density/640px check is a reflow equivalent, not proof of a native browser zoom shortcut. Actual provider and Native evidence are separate receipts.

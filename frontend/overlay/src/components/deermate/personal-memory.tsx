@@ -6,6 +6,8 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { fetch as authFetch } from "@/core/api/fetcher";
 import { getBackendBaseURL } from "@/core/config";
 
+import { MemorySource, scopeLabel } from "./workspace-memory";
+
 type Profile = {
   owner: string;
   display_name: string;
@@ -23,8 +25,9 @@ type Fact = {
   source_id: string;
   scope: string;
   updated_at: number;
+  expires_at?: number;
   source?: {
-    kind: "chat";
+    kind: "chat" | "inbox";
     thread_id: string;
     run_id: string;
     message_id: string;
@@ -48,6 +51,14 @@ function invalidateHome(
     (old: object | undefined) => (old ? { ...old, suggestions: [] } : old),
   );
   void cache.invalidateQueries({ queryKey: ["deermate", "briefing", user] });
+  for (const key of [
+    "workspace-snapshot",
+    "workspace-memory-summary",
+    "memory-activity",
+    "memory-source",
+  ]) {
+    void cache.invalidateQueries({ queryKey: [key, user] });
+  }
 }
 
 async function personalAPI<T>(
@@ -167,6 +178,8 @@ export function PersonalMemoryPanel({
   const cache = useQueryClient();
   const profile = useProfile(userId);
   const [open, setOpen] = useState(embedded);
+  const [source, setSource] = useState("");
+  const [scopeFilter, setScopeFilter] = useState("all");
   const [query, setQuery] = useState("");
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(0);
@@ -300,11 +313,16 @@ export function PersonalMemoryPanel({
         </p>
       )}
       {profile.data && (
-        <ProfileForm
-          key={`${userId}-${profile.data.revision}`}
-          profile={profile.data}
-          zh={zh}
-        />
+        <details className="dm-memory-settings">
+          <summary>
+            {t("记忆设置与个人资料", "Memory settings and profile")}
+          </summary>
+          <ProfileForm
+            key={`${userId}-${profile.data.revision}`}
+            profile={profile.data}
+            zh={zh}
+          />
+        </details>
       )}
       {profile.data && (
         <>
@@ -319,8 +337,8 @@ export function PersonalMemoryPanel({
           </div>
           <p className="dm-muted">
             {t(
-              "保存你希望在其他对话中继续使用的偏好、目标或背景。这里只使用你主动保存或明确要求记住的内容。",
-              "Save preferences, goals or context for other conversations. Only facts you save or explicitly ask to remember are used.",
+              "你在聊天里提到的偏好和要求，会在这里留下记录。不对的地方可以直接改。",
+              "Preferences and requirements from your chats appear here. Correct anything that is wrong.",
             )}
           </p>
           <form
@@ -359,48 +377,73 @@ export function PersonalMemoryPanel({
                 : t("还没有已生效的记忆。", "No active memories yet.")}
             </p>
           )}
+          <label className="dm-memory-scope-filter">
+            {t("适用范围", "Scope")}
+            <select
+              value={scopeFilter}
+              onChange={(e) => setScopeFilter(e.target.value)}
+            >
+              <option value="all">{t("全部", "All")}</option>
+              <option value="personal">
+                {t("个人偏好与背景", "Personal")}
+              </option>
+              <option value="project:">
+                {t("项目要求", "Project requirements")}
+              </option>
+              <option value="topic:">{t("近期话题", "Recent topics")}</option>
+            </select>
+          </label>
           <ul className="dm-memory-list">
-            {data?.items.map((fact) => (
-              <li key={fact.id}>
-                <p>{fact.content}</p>
-                <span className="dm-small dm-muted">
-                  {fact.source ? (
-                    <a
-                      href={`/workspace/chats/${encodeURIComponent(fact.source.thread_id)}`}
+            {data?.items
+              .filter(
+                (fact) =>
+                  scopeFilter === "all" || fact.scope.startsWith(scopeFilter),
+              )
+              .map((fact) => (
+                <li key={fact.id}>
+                  <p>{fact.content}</p>
+                  <span className="dm-small dm-muted">
+                    {scopeLabel(fact.scope, zh)} ·{" "}
+                    <button
+                      className="dm-text-button"
+                      onClick={() => setSource(fact.id)}
                     >
-                      {t(
-                        "来自你的明确记忆指令 · 查看原对话",
-                        "From your memory request · Open conversation",
+                      {t("查看来源与用途", "Source and usage")}
+                    </button>{" "}
+                    · {t("版本", "Version")} {fact.revision}
+                    {!!fact.expires_at &&
+                      fact.expires_at < Date.now() / 1000 && (
+                        <span>
+                          {t(
+                            " · 已过期，不用于回答",
+                            " · Expired; excluded from answers",
+                          )}
+                        </span>
                       )}
-                    </a>
-                  ) : (
-                    t("你主动保存", "Saved by you")
-                  )}{" "}
-                  · {t("版本", "Version")} {fact.revision}
-                </span>
-                <div className="dm-memory-actions">
-                  <button
-                    className="dm-button"
-                    disabled={busy || !!pending.current}
-                    onClick={() => {
-                      setEditing(fact);
-                      setContent(fact.content);
-                      setCategory(fact.category);
-                      document.getElementById("dm-memory-content")?.focus();
-                    }}
-                  >
-                    {t("纠正", "Correct")}
-                  </button>
-                  <button
-                    className="dm-button"
-                    disabled={busy || !!pending.current}
-                    onClick={() => void mutate("DELETE", fact)}
-                  >
-                    {t("忘记", "Forget")}
-                  </button>
-                </div>
-              </li>
-            ))}
+                  </span>
+                  <div className="dm-memory-actions">
+                    <button
+                      className="dm-button"
+                      disabled={busy || !!pending.current}
+                      onClick={() => {
+                        setEditing(fact);
+                        setContent(fact.content);
+                        setCategory(fact.category);
+                        document.getElementById("dm-memory-content")?.focus();
+                      }}
+                    >
+                      {t("纠正", "Correct")}
+                    </button>
+                    <button
+                      className="dm-button"
+                      disabled={busy || !!pending.current}
+                      onClick={() => void mutate("DELETE", fact)}
+                    >
+                      {t("忘记", "Forget")}
+                    </button>
+                  </div>
+                </li>
+              ))}
             {data?.references
               .filter((ref) => ref.status !== "active")
               .map((ref) => (
@@ -521,6 +564,14 @@ export function PersonalMemoryPanel({
               )}
             </div>
           </form>
+          {source && (
+            <MemorySource
+              userId={userId}
+              factId={source}
+              zh={zh}
+              onClose={() => setSource("")}
+            />
+          )}
           {error && <p role="alert">{error}</p>}
           {operation && (
             <p role="status">
@@ -548,7 +599,7 @@ export function PersonalMemoryPanel({
       className="dm-memory"
       onToggle={(event) => setOpen(event.currentTarget.open)}
     >
-      <summary>{t("个人设置与记忆", "Personal settings & memory")}</summary>
+      <summary>{t("关于你", "About you")}</summary>
       {contentView}
     </details>
   );
@@ -636,27 +687,30 @@ function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
           disabled={busy}
           onChange={(e) => setEnabled(e.target.checked)}
         />
-        {t("开启个人记忆", "Enable personal memory")}
+        {t("回答时使用已有记忆", "Use saved memory in answers")}
       </label>
       <p className="dm-muted">
         {t(
-          "开启后，在新对话中使用你保存的记忆。关闭后停止使用，已有记忆仍可纠正或忘记。不会自动导入历史聊天。",
-          "Use saved facts in new conversations. Turning this off stops personalization; existing facts remain manageable. No history is imported automatically.",
+          "关闭后，回答不再使用这里的内容；查看、纠正和忘记仍然可用。",
+          "Turning this off excludes saved facts from answers. You can still view, correct and forget them.",
         )}
       </p>
       <label className="dm-memory-check">
         <input
           type="checkbox"
           checked={capture}
-          disabled={busy || !enabled}
+          disabled={busy}
           onChange={(e) => setCapture(e.target.checked)}
         />
-        {t("从对话保存明确记忆", "Save explicit memory requests from chats")}
+        {t(
+          "自动整理聊天中的偏好与要求",
+          "Automatically capture preferences and requirements",
+        )}
       </label>
       <p className="dm-muted">
         {t(
-          "例如「请记住：我偏好简洁的中文回答。」。只处理新发出的明确个人记忆指令，保留原对话入口；不扫描历史、不推断兴趣、不额外调用模型。",
-          'For example: "Remember: I prefer concise answers." Only new, explicit personal memory requests are saved with a source link. No history scan, inferred interests or extra model calls.',
+          "不用说“请记住”。比如“以后回答先给结论”，正常说就好。密码和验证码等认证信息不会保存；关闭后停止新增，已有记忆仍保留。",
+          "No special phrase is required. Authentication secrets are excluded. Pausing stops new capture and keeps existing facts.",
         )}
       </p>
       <label className="dm-memory-check">

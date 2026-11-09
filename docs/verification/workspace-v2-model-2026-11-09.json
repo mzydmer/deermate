@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "checks": [
+    "configured_model_available",
+    "versioned_defaults_enabled",
+    "ordinary_expression_canonical_write",
+    "new_conversation_real_answer_uses_memory",
+    "correction_preserves_fact_and_advances_revision",
+    "corrected_preference_used_in_real_answer",
+    "source_and_context_usage_visible",
+    "temporary_topic_real_answer_excludes_memory",
+    "whole_temporary_topic_never_captures",
+    "paused_capture_keeps_management_and_old_facts",
+    "forget_removes_canonical_fact",
+    "forgotten_fact_not_in_real_answer",
+    "home_inbox_has_distinct_canonical_source",
+    "final_router_prompt_real_answer_uses_memory",
+    "bounded_real_provider_extraction_completed",
+    "home_snapshot_has_at_most_three_items"
+  ],
+  "ordinary_runs": 11,
+  "model_kind": "real configured provider",
+  "native_calls": 0,
+  "scope": "Loopback synthetic account; no production data or Worker grants.",
+  "provider_jobs_reserved": 3,
+  "earlier_known_failed_job_replayed": false,
+  "earlier_unknown_job_replayed": false,
+  "unknown_job_invalidated_by_later_correction": true
+}

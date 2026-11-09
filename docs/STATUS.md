@@ -8,13 +8,19 @@
 
 新增 `design-system` CI、前端 overlay 构建前门禁与反例测试；AGENTS、PR模板和前端说明要求每次 UI 变更遵循规范。门禁检查生成漂移、引用、独立颜色、字号/圆角/阴影、空间值与内联样式；不能代替设计评审、键盘和完整浏览器验收。本轮按2026-11-09用户要求仅交付main，不部署线上；远端分支保护尚未配置。19项设计/overlay回归、8项意图恢复、Ruff、TypeScript/最终Next生产构建、Go mod/vet/race/无CGO构建与文档门禁通过。原Chrome基线为30项公共组件/Go外壳和20项React文档路由检查。2026-11-06补齐真实Go登录、生产React与合成运行时的169项页面矩阵和16项交互状态检查，六宽度/浅深色、页面错误0、模型执行请求0；已修正平板设置分栏、当前导航可见性、侧栏token与手机浮层关闭命中区。记忆与资料写入使用独立本地SQLite；运行时为合成数据，不能替代真实Gateway/模型/Native验证。见[登录后验收](verification/design-authenticated-2026-11-06.json)。验证结果与范围见[专项记录](verification/design-system-2026-11-05.json)。
 
-## 2026-11-09 · 私人助手工作台 v2（实现中）
+## 2026-11-09 · 私人助手工作台 v2（本地验收中）
 
-用户已批准修订后的 [PRD](prd/workspace-assistant-v2.md) 和文案，并要求先对齐最新 main 的 design.md，再连续实现和部署。独立分支 feat/workspace-v2-20261109，原 main 工作区保持不动；两份 PRD 提交已接入，文档冲突保留两侧记录。
+用户已批准按最新 main 的 design.md 对齐设计，连续实现、本地验收后推送并部署。独立工作区 deermate-workspace-v2-20261109，基线 780173a，原 main 工作区保持不动。S0/S1 已提交 35f9005；后续实现和发布以[计划](specs/workspace-assistant-v2-plan.md)区分。
 
-S0：八张静态图直接读取当前规范中的颜色、主按钮前景和文字行高，已重绘并逐张目视检查。S1：Go 新账号默认记忆、旧关闭保守迁移、显式 owner 升级、自动整理/已有记忆使用分开；话题级临时模式在运行时创建前保留，重复请求只核对同一个话题，按规范运行记录检查注入。
+已接入普通表达快路径、本人私有项目/话题范围、阶段有效期、同槽位更正、来源及用途、自然最近指代遗忘、持久模型整理和调用/删除屏障。一般整理每天最多四次，快路径分开调度；供应方回执未知不重发。规范来源覆盖普通 interactive run 与 Go 接纳的完整本人 Inbox；最终 Router 重新加入个人参考，背景 Assessor 不继承。最近七天/最多十话题/每话题五消息的整理可停止与撤销，历史不覆盖当前偏好。
 
-当前 Go 控制后端全包测试通过，固定 DeerMem/真实 Agent 组装中的 26 项测试通过（其中模型为 Fake，不是供应方调用）；普通开发环境 16 项通过、2 项需固定运行时而跳过，后者已在固定环境补跑。下一步 S2 普通表达、范围和持久整理作业；新产品 UI、本地完整部署与真实模型/Native、推送和线上升级尚未完成。云端只读 SSH 检查确认五服务健康，未部署、未新增权限。Docker 已启动。
+新版助手首页、我的工作、关于你和来源抽屉已实现。首页确定性读取最多三项，已读、当地次日暂缓和不再提醒持久保存；单一输入与本人目标建议沿用原 Router/intent。临时话题在创建前写入禁止读写策略，未确认发送在当前浏览器会话保留原操作编号。
+
+当前本地检查：Go mod/vet/race 与 Linux/macOS 无 CGO 构建；Python 292 passed / 12 skipped，固定 DeerFlow 专项 59 passed；真实固定 Helm/Compose/文档等契约 59 passed；Ruff/wheel、TypeScript/Next 与设计/token/产品文档/图示门禁。离线 Go→Gateway 43 项和基础专项 45 项通过。独立 Docker localhost:2036 健康，原 localhost:2026 实例未修改。
+
+真实供应方完成 16 项记忆闭环；独立 Worker→Codex 完成同根两轮与每轮独立验证。浏览器 Chrome 33 项、四屏宽/浅深色/键盘/2×等效重排通过，页面脚本错误和模型投递均为零。旧镜像实例升级保留原密码、资料、暂停、规范事实与关注，新增默认没有覆盖旧选择。见[模型](verification/workspace-v2-model-2026-11-09.json)、[Native](verification/workspace-v2-native-2026-11-09.json)、[UI](verification/workspace-v2-ui-2026-11-09.json)及[升级](verification/workspace-v2-upgrade-2026-11-09.json)。
+
+下一步：推送并核对远端，备份既有云端后升级和公网验收。尚未执行远端推送或云端变更；线上仍是之前版本。不恢复家庭 Agent 旧授权；独立 Native 验收不等同于完整浏览器→家庭设备验收，研究比较尚未开展。
 
 ## 当前变更 · 默认秘书与记忆设置
 
@@ -77,7 +83,7 @@ S0：八张静态图直接读取当前规范中的颜色、主按钮前景和文
 | Go 主/管理/登录/API | 保留现有账号 UUID/密码/偏好、会话撤销、CSRF、角色和最后管理员保护；内部 Python 仍为 DeerFlow/Worker/MCP |
 | 工具与连接 | 公开搜索/网页读取及工具检查页已有云端证据；私人账户连接需独立服务/授权。[指南](tools-and-connections.md) |
 | 一个对话一个 Native | 自动命名/改名、真实 Codex 多轮同根与独立验证已有历史收据。[会话指南](chat-sessions.md) |
-| 记忆与首页 | 显式事实、本人 FTS、遗忘屏障、来源撤销、确定性简报/关注与首页动作已实现；语义提取仍未实现。[记忆](personal-memory.md) / [首页](personal-home.md) |
+| 记忆与首页 | 显式事实、本人 FTS、遗忘屏障、来源撤销、确定性简报/关注与首页动作已实现；本轮 v2 已增加有界语义提取，本地证据见前文。[记忆](personal-memory.md) / [首页](personal-home.md) |
 | 用户管理设备授权 | 配对、逐版本本机确认、期限/项目/操作/到期策略、续期取消、撤销与出站 HTTPS 已本地验收；Go/Gateway `5a1ed3a` 已部署，17 项 HTTPS/API 通过，线上视觉未验。[指南](agent-authorizations.md) / [本地](verification/agent-authorization-local-2026-11-03.json) / [云端](verification/agent-authorization-cloud-2026-11-04.json) |
 | 云端 | 现运行 `161fd29` 默认秘书与记忆设置；原账号、9 个线程/19 个 run/5 个任务、模型文件、个人资料/记忆/关注及到期授权保留。交互默认可用，背景仍暂停，auto=0，来源未配置。[最新上线](verification/default-secretary-memory-cloud-2026-11-04.json) |
 | 家庭接入 | 历史反向 SSH 授权已于 2026-10-30 截止，不能复用；本机 Worker 可达不等于当前产品授权/新协议就绪 |

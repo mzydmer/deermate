@@ -22,9 +22,14 @@ def memory(tmp_path):
         Path(__file__).parents[1] / "backend/internal/controlplane/memory_store.go"
     ).read_text()
     ddl = re.search(r"s.DB.Exec\(`(.*?)`\)", source, re.S).group(1)
+    scopes_source = (
+        Path(__file__).parents[1] / "backend/internal/controlplane/memory_scopes.go"
+    ).read_text()
+    scopes_ddl = re.search(r"s.DB.Exec\(`(.*?)`\)", scopes_source, re.S).group(1)
     with sqlite3.connect(database) as db:
         db.execute("CREATE TABLE users(id TEXT PRIMARY KEY,disabled INTEGER,needs_setup INTEGER)")
         db.executescript(ddl)
+        db.executescript(scopes_ddl)
         for owner in ["alice", "bob"]:
             db.execute("INSERT INTO users VALUES(?,0,0)", (owner,))
             db.execute(
@@ -230,8 +235,11 @@ def test_real_agent_assembly_recalls_only_current_owner_enabled_memory(
         db.execute("CREATE TABLE runs(run_id TEXT PRIMARY KEY,user_id TEXT,thread_id TEXT)")
         db.executemany(
             "INSERT INTO runs VALUES(?,?,?)",
-            [("alice-run", "alice", "new-chat"), ("bob-run", "bob", "other-chat"),
-             ("temporary-run", "alice", "private-chat")],
+            [
+                ("alice-run", "alice", "new-chat"),
+                ("bob-run", "bob", "other-chat"),
+                ("temporary-run", "alice", "private-chat"),
+            ],
         )
         db.execute(
             "CREATE TABLE deermate_topic_memory(owner TEXT,thread_id TEXT,mode TEXT,"
@@ -265,8 +273,12 @@ def test_real_agent_assembly_recalls_only_current_owner_enabled_memory(
     for context in [
         {"user_id": "alice", "thread_id": "new-chat"},
         {"user_id": "bob", "run_id": "alice-run"},
-        {"user_id": "alice", "thread_id": "new-chat", "run_id": "temporary-run",
-         "memory_mode": "normal"},
+        {
+            "user_id": "alice",
+            "thread_id": "new-chat",
+            "run_id": "temporary-run",
+            "memory_mode": "normal",
+        },
     ]:
         graph.invoke({"messages": [{"role": "user", "content": question}]}, context=context)
         assert "控制端使用 Go" not in seen[-1]
@@ -320,6 +332,51 @@ def test_unknown_project_scope_cannot_fall_back_to_personal_memory(memory):
         memory.apply("alice", "project")
     assert memory.read("alice", [fact])["items"] == []
     assert memory.context("alice", "Go") == ""
+
+
+def save_scoped(memory, key, scope, content):
+    fact = admit(memory, key, content=content)
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_memory_refs SET scope=? WHERE id=?", (scope, fact))
+    finish(memory, key, memory.apply("alice", key))
+    return fact
+
+
+def test_projects_are_filtered_before_search_and_reused_only_in_their_topic(memory):
+    with sqlite3.connect(memory.database) as db:
+        db.executemany(
+            "INSERT INTO deermate_memory_projects VALUES('alice',?,?)",
+            [("project-a", "ProjectA"), ("project-b", "ProjectB")],
+        )
+    a = save_scoped(memory, "a-backend", "project:project-a", "ProjectA 后端使用 Go")
+    b = save_scoped(memory, "b-backend", "project:project-b", "ProjectB 后端使用 Rust")
+    with sqlite3.connect(memory.database) as db:
+        db.execute("CREATE TABLE deermate_topic_memory(owner TEXT,thread_id TEXT,mode TEXT)")
+    context = memory.context("alice", "ProjectA 后端应该用什么", thread="a-chat")
+    assert a in context and b not in context
+    assert a in memory.context("alice", "继续聊后端", thread="a-chat")
+    assert memory.context("alice", "后端应该用什么", thread="unbound-chat") == ""
+    assert memory.context("bob", "ProjectA 后端应该用什么") == ""
+    context = memory.context("alice", "ProjectB 后端应该用什么", thread="a-chat")
+    assert b in context and a not in context
+    # An explicitly named new project must clear the old operational binding.
+    assert memory.context("alice", "NewProject 后端应该用什么", thread="a-chat") == ""
+    assert memory.context("alice", "继续聊后端", thread="a-chat") == ""
+
+
+def test_stage_memory_is_topic_bound_expires_and_remains_manageable(memory):
+    fact = save_scoped(memory, "stage", "topic:prd-chat", "这次只做 PRD，不写代码")
+    with sqlite3.connect(memory.database) as db:
+        db.execute("CREATE TABLE deermate_topic_memory(owner TEXT,thread_id TEXT,mode TEXT)")
+        db.execute(
+            "UPDATE deermate_memory_refs SET expires_at=? WHERE id=?", (int(time.time()) + 60, fact)
+        )
+    assert fact in memory.context("alice", "PRD", thread="prd-chat")
+    assert memory.context("alice", "PRD", thread="coding-chat") == ""
+    with sqlite3.connect(memory.database) as db:
+        db.execute("UPDATE deermate_memory_refs SET expires_at=1 WHERE id=?", (fact,))
+    assert memory.context("alice", "PRD", thread="prd-chat") == ""
+    assert memory.read("alice", [fact])["items"][0]["id"] == fact
 
 
 def test_shared_summary_without_source_lineage_is_never_injected(memory):
@@ -419,6 +476,7 @@ def test_captured_source_roundtrip_and_reference(memory):
         "UPDATE runs SET user_id='bob'",
         "UPDATE threads_meta SET incarnation='new-generation'",
         "UPDATE threads_meta SET project_id='new-project'",
+        "UPDATE threads_meta SET metadata_json='{\"deerflow_archived\":true}'",
         "UPDATE runs SET kwargs_json='{}'",
     ],
 )

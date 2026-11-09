@@ -453,7 +453,6 @@ body,
   color: inherit;
   cursor: pointer;
   animation: dm-arrive var(--duration-slow) var(--ease-smooth-out) both;
-  animation-delay: calc(var(--dm-index, 0) * var(--duration-stagger));
 }
 .dm-task-row:hover {
   background: var(--accent);
@@ -1439,4 +1438,313 @@ body,
     min-height: 44px;
     white-space: nowrap;
   }
+}
+
+/* Assistant workspace v2. Geometry follows the approved PRD; visual values
+   inherit the current design.md recipes and generated tokens. */
+.dm-assistant {
+  min-height: 100%;
+  overflow-y: auto;
+}
+.dm-assistant-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--ds-spacing-xl);
+  padding: var(--ds-spacing-xl) var(--ds-spacing-lg);
+  align-items: start;
+}
+.dm-assistant-main,
+.dm-assistant-aside,
+.dm-assistant-conversation {
+  min-width: 0;
+}
+.dm-assistant-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-spacing-lg);
+}
+.dm-assistant-greeting h1,
+.dm-assistant-memory-page h1,
+.dm-assistant-work-page h1 {
+  font-size: var(--ds-typography-display-md-fontSize);
+  line-height: var(--ds-typography-display-md-lineHeight);
+  font-weight: var(--ds-typography-display-md-fontWeight);
+  letter-spacing: var(--ds-tracking-cjk);
+}
+.dm-assistant :is(h2, h3) {
+  font-size: var(--ds-typography-body-md-fontSize);
+  line-height: var(--ds-typography-body-md-lineHeight);
+  font-weight: var(--ds-typography-body-md-strong-fontWeight);
+  letter-spacing: var(--ds-tracking-cjk);
+}
+.dm-assistant p {
+  line-height: var(--ds-typography-body-sm-lineHeight);
+}
+.dm-assistant-greeting {
+  display: grid;
+  gap: var(--ds-spacing-xs);
+}
+.dm-assistant-greeting > p:last-child {
+  margin-top: var(--ds-spacing-xs);
+}
+.dm-assistant-focus > ul,
+.dm-assistant-messages,
+.dm-assistant-memory-summary,
+.dm-work-record-list {
+  display: grid;
+  gap: var(--ds-spacing-sm);
+  list-style: none;
+  padding: var(--ds-spacing-none);
+  margin: var(--ds-spacing-sm) var(--ds-spacing-none);
+}
+.dm-focus-card {
+  display: grid;
+  gap: var(--ds-spacing-sm);
+}
+.dm-assistant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-spacing-sm);
+}
+.dm-assistant :is(a, button) svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.dm-assistant :is(.ds-app-button-primary, .ds-app-button-secondary) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.dm-assistant-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-spacing-sm);
+}
+.dm-assistant-composer {
+  display: grid;
+  gap: var(--ds-spacing-sm);
+}
+.dm-assistant-composer label {
+  font-size: var(--ds-typography-body-sm-fontSize);
+  font-weight: var(--ds-typography-body-sm-strong-fontWeight);
+}
+.dm-assistant-composer textarea {
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+  background: var(--ds-colors-canvas);
+  color: var(--ds-colors-ink);
+  border: var(--ds-borders-thin) solid var(--ds-colors-control-border);
+  border-radius: var(--ds-rounded-md);
+  padding: var(--ds-spacing-sm);
+}
+.dm-assistant-composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-spacing-md);
+}
+.dm-assistant-messages:empty {
+  display: none;
+}
+.dm-assistant-messages li {
+  display: grid;
+  gap: var(--ds-spacing-sm);
+  padding-block: var(--ds-spacing-md);
+  border-bottom: var(--ds-borders-thin) solid var(--ds-colors-hairline);
+  overflow-wrap: anywhere;
+}
+.dm-assistant-user {
+  background: var(--ds-colors-canvas-soft);
+  border-radius: var(--ds-rounded-md);
+  padding: var(--ds-spacing-md);
+}
+.dm-assistant-reply {
+  padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+}
+.dm-assistant-messages p {
+  white-space: pre-wrap;
+}
+.dm-assistant-aside {
+  display: grid;
+  gap: var(--ds-spacing-lg);
+}
+.dm-assistant-aside .ds-app-card {
+  display: grid;
+  gap: var(--ds-spacing-sm);
+}
+.dm-assistant-memory-summary > li {
+  border-top: var(--ds-borders-thin) solid var(--ds-colors-hairline);
+  padding-block: var(--ds-spacing-sm);
+  overflow-wrap: anywhere;
+}
+.dm-assistant-history {
+  padding: var(--ds-spacing-md);
+}
+.dm-assistant-memory-page,
+.dm-assistant-work-page {
+  display: grid;
+  gap: var(--ds-spacing-lg);
+  padding: var(--ds-spacing-xl) var(--ds-spacing-lg);
+  min-width: 0;
+}
+.dm-assistant-memory-page .dm-memory {
+  border: none;
+  padding: var(--ds-spacing-none);
+}
+.dm-memory-settings {
+  border-bottom: var(--ds-borders-thin) solid var(--ds-colors-hairline);
+  padding-bottom: var(--ds-spacing-md);
+}
+.dm-memory-settings summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.dm-memory-settings summary::before {
+  content: "+";
+  margin-right: var(--ds-spacing-sm);
+}
+.dm-memory-settings[open] summary::before {
+  content: "−";
+}
+.dm-memory-settings .dm-memory-form {
+  max-width: 720px;
+}
+.dm-memory-scope-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-spacing-sm);
+  margin-block: var(--ds-spacing-md);
+}
+.dm-memory-source {
+  width: 384px;
+  max-width: 100vw;
+  overflow-y: auto;
+}
+.dm-memory-source-body {
+  display: grid;
+  gap: var(--ds-spacing-md);
+  padding: var(--ds-spacing-lg);
+  overflow-wrap: anywhere;
+}
+.dm-memory-source-body blockquote {
+  border-left: var(--ds-borders-thin) solid var(--ds-colors-hairline-strong);
+  padding-left: var(--ds-spacing-md);
+  white-space: pre-wrap;
+}
+.dm-memory-activity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-spacing-sm);
+  color: var(--ds-colors-body);
+  font-size: var(--ds-typography-body-sm-fontSize);
+  padding-block: var(--ds-spacing-xs);
+}
+.dm-chat-memory-banner {
+  flex-shrink: 0;
+  padding-inline: var(--ds-spacing-md);
+  font-size: var(--ds-typography-body-sm-fontSize);
+}
+.dm-work-record-list > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-spacing-md);
+  min-width: 0;
+}
+.dm-work-record-list > li > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.dm-assistant .dm-continuous {
+  padding: var(--ds-spacing-none);
+  border: none;
+}
+.dm-assistant :is(button, a, input, select, summary) {
+  min-height: 44px;
+}
+.dm-assistant :is(a, button) {
+  align-content: center;
+}
+@media (width < 1200px) {
+  .dm-assistant-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dm-assistant-aside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (width < 600px) {
+  .dm-assistant-grid,
+  .dm-assistant-memory-page,
+  .dm-assistant-work-page {
+    padding: var(--ds-spacing-lg) var(--ds-spacing-md);
+    gap: var(--ds-spacing-lg);
+  }
+  .dm-assistant-composer-footer {
+    flex-wrap: wrap;
+  }
+  .dm-work-record-list > li {
+    align-items: start;
+    flex-direction: column;
+  }
+  .dm-assistant .dm-section-heading {
+    flex-wrap: wrap;
+  }
+}
+.dm-assistant-recent-conversation:has(ol:empty) {
+  display: none;
+}
+.dm-assistant-recent-conversation summary {
+  cursor: pointer;
+  color: var(--ds-colors-body);
+}
+.dm-goal-suggestions {
+  display: grid;
+  gap: var(--ds-spacing-md);
+}
+.dm-sidebar-more summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+  color: var(--ds-colors-body);
+  font-size: var(--ds-typography-body-sm-fontSize);
+}
+[data-collapsible="icon"] .dm-sidebar-more {
+  display: none;
+}
+.dm-workspace [data-slot="sidebar-trigger"] {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+.dm-assistant-new :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-spacing-xs);
+}
+.dm-memory-source :is(a, button) {
+  min-height: 44px;
+  min-width: 44px;
+}
+.dm-focus-card > .dm-section-heading {
+  margin: var(--ds-spacing-none);
+}
+.dm-focus-time {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-spacing-xxs);
+  white-space: nowrap;
+}
+.dm-focus-toggle {
+  font: inherit;
+  text-align: start;
 }

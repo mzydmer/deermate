@@ -19,6 +19,9 @@ type memoryCapture struct {
 	Owner, Thread, Run, Message, Hash, Incarnation string
 	Content, Category                              string
 	Policy, Deleted, Observed, Invalidated         int64
+	Candidates                                     []memoryCandidate
+	Job                                            string
+	Historical                                     bool
 }
 
 type captureMessage struct {
@@ -152,11 +155,14 @@ func (s *Server) prepareMemoryCapture(r *http.Request) *http.Request {
 	if !ok {
 		return r
 	}
-	content, category, ok := explicitMemory(text)
-	if !ok {
+	candidates := naturalMemories(text)
+	if len(candidates) == 0 && !memoryMayExtract(text) {
 		return r
 	}
-	capture := memoryCapture{Owner: p.Owner, Thread: parts[2], Message: id, Hash: digest(text), Content: content, Category: category, Policy: p.PolicyRevision, Deleted: p.DeletionRevision, Observed: time.Now().Unix()}
+	capture := memoryCapture{Owner: p.Owner, Thread: parts[2], Message: id, Hash: digest(text), Candidates: candidates, Policy: p.PolicyRevision, Deleted: p.DeletionRevision, Observed: time.Now().Unix()}
+	if len(candidates) > 0 {
+		capture.Content, capture.Category = candidates[0].Content, candidates[0].Category
+	}
 	return r.WithContext(context.WithValue(r.Context(), memoryCaptureKey{}, capture))
 }
 
@@ -194,8 +200,12 @@ func (s *Server) captureMemoryResponse(response *http.Response) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	operation, err := s.Store.admitMemory(ctx, capture.Owner, "create", "", memoryMutation{OperationID: "chat-" + digest(capture.Owner + "\x00" + capture.Thread + "\x00" + capture.Message + "\x00" + capture.Hash)[:58], Content: capture.Content, Category: capture.Category}, &capture)
-	if err == nil {
+	for i, candidate := range capture.Candidates {
+		operation, err := s.Store.admitNaturalMemory(ctx, capture, candidate, i)
+		if err != nil {
+			continue
+		}
+		capture.Deleted = max(capture.Deleted, operation.DeletionRevision)
 		state := "queued"
 		if operation.Status == "completed" {
 			state = "completed"
@@ -203,6 +213,12 @@ func (s *Server) captureMemoryResponse(response *http.Response) {
 			state = "ignored"
 		}
 		response.Header.Set("X-Deermate-Memory-Status", state)
+		response.Header.Set("X-Deermate-Memory-Operation", operation.ID)
+	}
+	if _, err := s.Store.enqueueMemoryExtraction(ctx, capture); err == nil {
+		if response.Header.Get("X-Deermate-Memory-Status") == "" {
+			response.Header.Set("X-Deermate-Memory-Status", "queued")
+		}
 	}
 }
 
@@ -212,11 +228,16 @@ func verifyCapture(q memoryReader, capture *memoryCapture) bool {
 	if capture.Invalidated != 0 {
 		return false
 	}
+	if strings.HasPrefix(capture.Run, "inbox:") {
+		_, ok := inboxMemoryInput(q, capture)
+		return ok
+	}
 	var kwargs string
 	var incarnation sql.NullString
 	err := q.QueryRow(`SELECT r.kwargs_json,t.incarnation FROM runs r JOIN threads_meta t ON t.thread_id=r.thread_id
 WHERE r.run_id=? AND r.thread_id=? AND r.user_id=? AND t.user_id=?
 AND CAST(strftime('%s',r.created_at) AS INTEGER)>=? AND r.evidence_origin='interactive' AND r.origin_kind IS NULL AND r.operation_kind='run' AND t.project_id IS NULL
+AND coalesce(json_extract(t.metadata_json,'$.deerflow_archived'),0)=0
 AND NOT EXISTS (SELECT 1 FROM runs e WHERE e.thread_id=r.thread_id AND e.user_id=r.user_id
 AND json_extract(e.metadata_json,'$.replay_kind')='edit' AND json_extract(e.metadata_json,'$.regenerate_from_run_id')=r.run_id)`, capture.Run, capture.Thread, capture.Owner, capture.Owner, capture.Observed-1).Scan(&kwargs, &incarnation)
 	if err != nil || !incarnation.Valid || incarnation.String == "" {
@@ -237,6 +258,32 @@ AND json_extract(e.metadata_json,'$.replay_kind')='edit' AND json_extract(e.meta
 	}
 	capture.Incarnation = incarnation.String
 	return true
+}
+
+// Inbox sources are Go-owned user submissions, not Gateway runs or event text.
+// The complete, untruncated input must have passed admission at submission time.
+func inboxMemoryInput(q memoryReader, source *memoryCapture) (string, bool) {
+	id := strings.TrimPrefix(source.Run, "inbox:")
+	v, err := workGet(q, source.Owner, "inbox", id)
+	if err != nil || !workBool(v, "_memory_eligible") || workString(v, "origin") != "user" || id != source.Message {
+		return "", false
+	}
+	router, err := workGet(q, source.Owner, "router", "router")
+	thread := workString(router, "thread_id")
+	text := workString(v, "text")
+	if err != nil || thread == "" || thread != source.Thread || workString(v, "_memory_thread") != thread || (source.Incarnation != "" && source.Incarnation != thread) || digest(text) != source.Hash || !automaticMemorySafe(text) || len(text) > 4000 {
+		return "", false
+	}
+	source.Incarnation = thread
+	return text, true
+}
+
+func (s *Server) captureRouterMemory(ctx context.Context, owner string, v workRecord) {
+	if !workBool(v, "_memory_eligible") {
+		return
+	}
+	c := memoryCapture{Owner: owner, Thread: workString(v, "_memory_thread"), Run: "inbox:" + v.ID, Message: v.ID, Hash: digest(workString(v, "text")), Incarnation: workString(v, "_memory_thread"), Policy: workInt(v, "_memory_policy"), Deleted: workInt(v, "_memory_deleted"), Observed: v.Created / 1000}
+	_, _ = s.Store.enqueueMemoryExtraction(ctx, c)
 }
 
 func captureSource(q memoryReader, operation string) (*memoryCapture, error) {

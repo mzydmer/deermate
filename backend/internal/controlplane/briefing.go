@@ -247,6 +247,21 @@ func (s *Store) updateTopic(ctx context.Context, owner, id, action, title, goal 
 		t.Status = "paused"
 	case "complete":
 		t.Status = "completed"
+		if _, err = tx.Exec("INSERT INTO deermate_memory_stage_ends(owner,thread_id,observed_at) VALUES(?,?,?) ON CONFLICT(owner,thread_id) DO UPDATE SET observed_at=excluded.observed_at", owner, t.Thread, time.Now().Unix()); err != nil {
+			return empty, err
+		}
+		if _, err = tx.Exec("UPDATE deermate_memory_operations SET status='invalidated',payload='' WHERE owner=? AND kind!='delete' AND status IN('pending','processing','uncertain') AND fact_id IN(SELECT id FROM deermate_memory_refs WHERE owner=? AND scope=?)", owner, owner, "topic:"+t.Thread); err != nil {
+			return empty, err
+		}
+		if _, err = tx.Exec("UPDATE deermate_memory_refs SET status='interrupted' WHERE owner=? AND scope=? AND status IN('pending','updating')", owner, "topic:"+t.Thread); err != nil {
+			return empty, err
+		}
+		if _, err = tx.Exec("UPDATE deermate_memory_jobs SET status='invalidated',result='' WHERE owner=? AND thread_id=? AND status NOT IN('completed','invalidated','failed')", owner, t.Thread); err != nil {
+			return empty, err
+		}
+		if _, err = tx.Exec("UPDATE deermate_memory_refs SET expires_at=? WHERE owner=? AND scope=?", time.Now().Unix(), owner, "topic:"+t.Thread); err != nil {
+			return empty, err
+		}
 	case "remove":
 		t.Status = "removed"
 		t.Title = ""

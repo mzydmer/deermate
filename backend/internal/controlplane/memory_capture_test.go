@@ -13,7 +13,7 @@ import (
 
 func captureTables(t *testing.T, s *Store) {
 	t.Helper()
-	_, err := s.DB.Exec(`CREATE TABLE IF NOT EXISTS threads_meta(thread_id TEXT PRIMARY KEY,user_id TEXT,incarnation TEXT,project_id TEXT);
+	_, err := s.DB.Exec(`CREATE TABLE IF NOT EXISTS threads_meta(thread_id TEXT PRIMARY KEY,user_id TEXT,incarnation TEXT,project_id TEXT,metadata_json TEXT DEFAULT '{}');
 CREATE TABLE IF NOT EXISTS runs(run_id TEXT PRIMARY KEY,thread_id TEXT,user_id TEXT,evidence_origin TEXT,origin_kind TEXT,operation_kind TEXT,kwargs_json TEXT,created_at TEXT,metadata_json TEXT DEFAULT '{}');`)
 	if err != nil {
 		t.Fatal(err)
@@ -93,7 +93,7 @@ func TestCapturedMemoryHasAtomicSourceAndIdempotentOriginalIntent(t *testing.T) 
 }
 
 func TestCaptureRefusesUntrustedOriginOwnershipProjectAndHistoricalReplay(t *testing.T) {
-	for _, variant := range []string{"owner", "origin", "project", "message", "incarnation", "old-run", "no-consent"} {
+	for _, variant := range []string{"owner", "origin", "project", "message", "incarnation", "old-run", "no-consent", "archived"} {
 		t.Run(variant, func(t *testing.T) {
 			s := testStore(t)
 			u := account(t, s, "capture@example.com", "admin")
@@ -107,6 +107,8 @@ func TestCaptureRefusesUntrustedOriginOwnershipProjectAndHistoricalReplay(t *tes
 				s.DB.Exec("UPDATE threads_meta SET project_id='project-one'")
 			case "message":
 				c.Hash = digest("another body")
+			case "archived":
+				s.DB.Exec(`UPDATE threads_meta SET metadata_json='{"deerflow_archived":true}'`)
 			case "incarnation":
 				s.DB.Exec("UPDATE threads_meta SET incarnation=NULL")
 			case "old-run":

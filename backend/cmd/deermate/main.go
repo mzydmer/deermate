@@ -70,6 +70,8 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 	go handler.RunMemoryQueue(ctx)
+	go handler.RunMemoryExtractionQueue(ctx)
+	go handler.RunMemoryHistoryQueue(ctx)
 	go handler.RunContinuousQueue(ctx)
 	done := make(chan struct{})
 	go func() {
