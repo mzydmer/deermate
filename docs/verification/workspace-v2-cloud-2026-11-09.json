@@ -110,11 +110,6 @@
   "consistent_backup_and_old_images_retained": true,
   "database_backup_quick_check": "ok",
   "installed_artifacts_match": true,
-  "new_images": {
-    "gateway": "sha256:99a12c549c22ba180a68706656fde0332c18469b5d2597228606778081ab8ea7",
-    "control": "sha256:25231d6b5fa86c9c05c7dc47ead99415be9a6bb9d8a112ea2b0c6a6d807f1ed1",
-    "frontend": "sha256:069dc52e5fce609a67de111812e7ec3859f9f3889f336660d93d7e40993f168b"
-  },
   "ci": {
     "revision": "595f6548ef58ca39d6b6d4ecc74df821c1983831",
     "workflow_run": 42675088795,
@@ -165,5 +160,186 @@
     "scope": "Remote GitHub Actions checks; does not replace local real-provider/Native evidence."
   },
   "local_real_provider_native_receipts_separate": true,
-  "scope": "Existing single-host Compose upgrade, original owner trusted HTTPS login/API and production browser. Owner explicitly adopts V2 defaults; bounded recent-history processing may run. No synthetic production fact, no restored cloud-to-home grant, no cloud Native test."
+  "scope": "Existing single-host Compose upgrade, original owner trusted HTTPS login/API and production browser. Owner explicitly adopts V2 defaults; bounded recent-history processing may run. No synthetic production fact, no restored cloud-to-home grant, no cloud Native test.",
+  "frontend_documentation_revision": "bfa91aa55fff07e10161c39b42e73455e3d91581",
+  "application_rollout_images": {
+    "gateway": "sha256:99a12c549c22ba180a68706656fde0332c18469b5d2597228606778081ab8ea7",
+    "control": "sha256:25231d6b5fa86c9c05c7dc47ead99415be9a6bb9d8a112ea2b0c6a6d807f1ed1",
+    "frontend": "sha256:069dc52e5fce609a67de111812e7ec3859f9f3889f336660d93d7e40993f168b"
+  },
+  "final_images": {
+    "gateway": "sha256:99a12c549c22ba180a68706656fde0332c18469b5d2597228606778081ab8ea7",
+    "control": "sha256:25231d6b5fa86c9c05c7dc47ead99415be9a6bb9d8a112ea2b0c6a6d807f1ed1",
+    "frontend": "sha256:56a85f0ba66c0caef7f8bc205ab2735667f7219eb2a298de1f9cb2452829591d"
+  },
+  "frontend_documentation_rollout": {
+    "passed": true,
+    "application_revision": "595f6548ef58ca39d6b6d4ecc74df821c1983831",
+    "documentation_revision": "bfa91aa55fff07e10161c39b42e73455e3d91581",
+    "frontend_image": "sha256:56a85f0ba66c0caef7f8bc205ab2735667f7219eb2a298de1f9cb2452829591d",
+    "old_frontend_image": "sha256:069dc52e5fce609a67de111812e7ec3859f9f3889f336660d93d7e40993f168b",
+    "verified_files": 2822,
+    "gateway_control_nginx_edge_images_unchanged": true,
+    "historical_rows_and_grants_preserved": true,
+    "database_backup_quick_check": "ok",
+    "old_configuration_and_image_retained": true,
+    "no_backend_restart": true,
+    "scope": "Documentation JSON and production frontend rebuild only; bounded history may continue independently.",
+    "public": {
+      "passed": true,
+      "checks": [
+        "trusted_https_original_password_login",
+        "approved_owner_defaults_still_enabled",
+        "page:/docs",
+        "page:/docs/guide/overview",
+        "page:/docs/guide/quickstart",
+        "page:/docs/guide/conversations",
+        "page:/docs/guide/focus",
+        "page:/docs/guide/memory",
+        "page:/docs/guide/tools",
+        "page:/docs/guide/authorization",
+        "page:/docs/guide/continuous",
+        "page:/docs/guide/faq",
+        "page:/docs/technical/architecture",
+        "page:/docs/technical/orchestration",
+        "page:/docs/technical/memory",
+        "page:/docs/technical/evaluation",
+        "page:/docs/changelog",
+        "all_referenced_script_style_font_assets",
+        "read:/workspace",
+        "read:/workspace/work",
+        "read:/workspace/memory",
+        "read:/api/me/workspace-snapshot",
+        "read:/api/agent-authorizations"
+      ],
+      "article_count": 14,
+      "referenced_assets_checked": 20,
+      "owner_defaults_preserved": true,
+      "history_observation": {
+        "status": "completed",
+        "topics": 1,
+        "total": 0,
+        "settled": 0
+      },
+      "new_model_or_native_requests": 0,
+      "scope": "Trusted HTTPS original login, updated published documentation, all referenced JS/CSS/font assets, workspace/API reads. Background history is independent."
+    },
+    "final_browser": {
+      "passed": true,
+      "checks": [
+        "real_original_account_dom_login",
+        {
+          "path": "/workspace",
+          "width": 390,
+          "dark": false
+        },
+        {
+          "path": "/workspace/work",
+          "width": 390,
+          "dark": false
+        },
+        {
+          "path": "/workspace/memory",
+          "width": 390,
+          "dark": false
+        },
+        {
+          "path": "/workspace",
+          "width": 390,
+          "dark": true
+        },
+        {
+          "path": "/workspace/work",
+          "width": 390,
+          "dark": true
+        },
+        {
+          "path": "/workspace/memory",
+          "width": 390,
+          "dark": true
+        },
+        {
+          "path": "/workspace",
+          "width": 1280,
+          "dark": false
+        },
+        {
+          "path": "/workspace/work",
+          "width": 1280,
+          "dark": false
+        },
+        {
+          "path": "/workspace/memory",
+          "width": 1280,
+          "dark": false
+        },
+        {
+          "path": "/workspace",
+          "width": 1280,
+          "dark": true
+        },
+        {
+          "path": "/workspace/work",
+          "width": 1280,
+          "dark": true
+        },
+        {
+          "path": "/workspace/memory",
+          "width": 1280,
+          "dark": true
+        }
+      ],
+      "page_errors": [],
+      "model_submissions": 0,
+      "scope": "Trusted production HTTPS, original owner DOM login and 12 route/viewport/theme checks; read-only, no provider/Native submission."
+    },
+    "ci": {
+      "revision": "bfa91aa55fff07e10161c39b42e73455e3d91581",
+      "workflow_run": 42677284119,
+      "url": "https://github.com/mzydmer/deermate/actions/runs/42677284119",
+      "all_jobs_passed": true,
+      "jobs": [
+        {
+          "name": "design-system",
+          "conclusion": "success"
+        },
+        {
+          "name": "deerflow-gateway (local)",
+          "conclusion": "success"
+        },
+        {
+          "name": "ack-package",
+          "conclusion": "success"
+        },
+        {
+          "name": "worker (ubuntu-latest, 3.11)",
+          "conclusion": "success"
+        },
+        {
+          "name": "frontend-intents",
+          "conclusion": "success"
+        },
+        {
+          "name": "product-docs",
+          "conclusion": "success"
+        },
+        {
+          "name": "deerflow-gateway (ssh)",
+          "conclusion": "success"
+        },
+        {
+          "name": "deerflow-contract",
+          "conclusion": "success"
+        },
+        {
+          "name": "worker (macos-latest, 3.12)",
+          "conclusion": "success"
+        },
+        {
+          "name": "go-control",
+          "conclusion": "success"
+        }
+      ]
+    }
+  }
 }
