@@ -1,0 +1,49 @@
+{
+  "revision": "595f6548ef58ca39d6b6d4ecc74df821c1983831",
+  "workflow_run": 42675088795,
+  "url": "https://github.com/mzydmer/deermate/actions/runs/42675088795",
+  "all_jobs_passed": true,
+  "jobs": [
+    {
+      "name": "worker (macos-latest, 3.12)",
+      "conclusion": "success"
+    },
+    {
+      "name": "product-docs",
+      "conclusion": "success"
+    },
+    {
+      "name": "frontend-intents",
+      "conclusion": "success"
+    },
+    {
+      "name": "design-system",
+      "conclusion": "success"
+    },
+    {
+      "name": "deerflow-gateway (ssh)",
+      "conclusion": "success"
+    },
+    {
+      "name": "worker (ubuntu-latest, 3.11)",
+      "conclusion": "success"
+    },
+    {
+      "name": "deerflow-contract",
+      "conclusion": "success"
+    },
+    {
+      "name": "ack-package",
+      "conclusion": "success"
+    },
+    {
+      "name": "go-control",
+      "conclusion": "success"
+    },
+    {
+      "name": "deerflow-gateway (local)",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "Remote GitHub Actions checks; does not replace local real-provider/Native evidence."
+}

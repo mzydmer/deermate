@@ -25,3 +25,7 @@ Reproduction and interpretation: [combined demo](../demo.md), [DeerFlow setup](.
 - [默认秘书与记忆设置](default-secretary-memory-2026-11-04.json)：Go/Gateway Fake 默认入口与恢复、本人记忆设置和 390/1280px 浏览器验收；真实模型与云端另计。
 
 - [默认秘书与记忆设置上线](default-secretary-memory-cloud-2026-11-04.json)：`161fd29`，28 项 HTTPS/API、46 项文档/资源及 17 项授权回归；无真实模型或 Native 调用。
+
+- [Workspace v2 local model](workspace-v2-model-2026-11-09.json), [Native](workspace-v2-native-2026-11-09.json), [UI](workspace-v2-ui-2026-11-09.json), [old-image upgrade](workspace-v2-upgrade-2026-11-09.json): distinct real integration scopes.
+- [Workspace v2 cloud](workspace-v2-cloud-2026-11-09.json): original-account trusted HTTPS/API and production browser, data/credential/grant preservation, backup and explicit owner adoption. No new cloud-to-home execution claim.
+- [Workspace v2 remote CI](workspace-v2-ci-2026-11-09.json): ten jobs passed for application revision 595f654; later documentation commits are separate.

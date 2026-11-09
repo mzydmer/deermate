@@ -12,7 +12,7 @@
 
 新版工作台把入口分成「助手」「我的工作」「关于你」。正常聊天就能记下偏好，新账号默认开启；已有暂停选择保留。个人、项目和当前阶段分别使用，可查看原话、纠正、忘记，或者用临时对话。首页只显示有依据的近期事项，打开页面不派单。
 
-本地已通过 [16 项真实模型记忆闭环](docs/verification/workspace-v2-model-2026-11-09.json)和[同一 Codex 原生会话两轮验收](docs/verification/workspace-v2-native-2026-11-09.json)。两者是独立范围的检查，不代表云端到家庭设备的完整新演示，也不是科研收益证明；[实施与发布进度](docs/specs/workspace-assistant-v2-plan.md)分别记录。
+本地已通过 [16 项真实模型记忆闭环](docs/verification/workspace-v2-model-2026-11-09.json)和[同一 Codex 原生会话两轮验收](docs/verification/workspace-v2-native-2026-11-09.json)。工作台已部署既有云端实例，原账号与历史保留（[上线收据](docs/verification/workspace-v2-cloud-2026-11-09.json)）。上述模型与 Native 是独立范围的检查，不代表云端到家庭设备的完整新演示，也不是科研收益证明；[实施与发布进度](docs/specs/workspace-assistant-v2-plan.md)分别记录。
 
 [产品使用文档](docs/product/guide/overview.md) · [技术方案](docs/product/technical/architecture.md) · [变更日志](docs/product/changelog.md)。应用内「产品文档」进入 `/docs`；文档中心已发布到既有云端实例，交付与验证范围见[上线收据](docs/verification/product-documentation-cloud-2026-11-04.json)。后续 Agent 遵守[文档更新约束](docs/DOCUMENTATION_POLICY.md)。
 

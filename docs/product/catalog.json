@@ -13,7 +13,9 @@
       "docs/verification/product-documentation-cloud-2026-11-04.json",
       "design.md",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -28,7 +30,9 @@
       "frontend/overlay/src/components/deermate/desk.tsx",
       "docs/diagrams/product/diagrams.json",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -43,7 +47,9 @@
       "docs/codex-conversation.md",
       "docs/SPEC.md",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -56,7 +62,9 @@
     "sources": [
       "docs/personal-home.md",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -74,7 +82,9 @@
       "docs/verification/default-secretary-memory-2026-11-04.json",
       "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -117,7 +127,9 @@
       "docs/verification/default-secretary-memory-2026-11-04.json",
       "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -132,7 +144,9 @@
       "docs/STATUS.md",
       "docs/continuous-secretary.md",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -182,7 +196,9 @@
       "docs/specs/default-secretary-memory-settings.md",
       "docs/diagrams/product/diagrams.json",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   },
   {
@@ -214,7 +230,9 @@
       "docs/diagrams/product/diagrams.json",
       "design.md",
       "docs/specs/workspace-assistant-v2.md",
-      "docs/specs/workspace-assistant-v2-plan.md"
+      "docs/specs/workspace-assistant-v2-plan.md",
+      "docs/verification/workspace-v2-cloud-2026-11-09.json",
+      "docs/verification/workspace-v2-model-2026-11-09.json"
     ]
   }
 ]

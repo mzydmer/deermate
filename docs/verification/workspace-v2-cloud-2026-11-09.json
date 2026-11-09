@@ -1,0 +1,169 @@
+{
+  "passed": true,
+  "application_revision": "595f6548ef58ca39d6b6d4ecc74df821c1983831",
+  "origin": "https://47.79.234.242",
+  "public_checks": [
+    "trusted_public_https",
+    "original_password_login",
+    "original_owner_and_role",
+    "historical_thread_ids",
+    "managed_model_catalog",
+    "legacy_profile_preserved",
+    "page:/workspace",
+    "production_assets",
+    "page:/workspace/work",
+    "page:/workspace/memory",
+    "page:/docs",
+    "page:/docs/guide/memory",
+    "page:/docs/guide/focus",
+    "api:workspace-snapshot",
+    "api:memory-history",
+    "api:memories",
+    "api:memory-activity",
+    "bounded_home_snapshot",
+    "owner_mismatch_rejected",
+    "missing_csrf_rejected",
+    "authorized_owner_default_adoption",
+    "existing_device_authorizations_readable"
+  ],
+  "browser": {
+    "passed": true,
+    "checks": [
+      "real_original_account_dom_login",
+      {
+        "path": "/workspace",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "path": "/workspace/work",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "path": "/workspace/memory",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "path": "/workspace",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "path": "/workspace/work",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "path": "/workspace/memory",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "path": "/workspace",
+        "width": 1280,
+        "dark": false
+      },
+      {
+        "path": "/workspace/work",
+        "width": 1280,
+        "dark": false
+      },
+      {
+        "path": "/workspace/memory",
+        "width": 1280,
+        "dark": false
+      },
+      {
+        "path": "/workspace",
+        "width": 1280,
+        "dark": true
+      },
+      {
+        "path": "/workspace/work",
+        "width": 1280,
+        "dark": true
+      },
+      {
+        "path": "/workspace/memory",
+        "width": 1280,
+        "dark": true
+      }
+    ],
+    "page_errors": [],
+    "model_submissions": 0,
+    "scope": "Trusted production HTTPS, original owner DOM login and 12 route/viewport/theme checks; read-only, no provider/Native submission."
+  },
+  "original_password_login": true,
+  "historical_counts": {
+    "users": 1,
+    "threads_meta": 9,
+    "runs": 19,
+    "mcp_tasks": 5
+  },
+  "old_column_values_preserved_before_exposure": true,
+  "managed_model_journal_stage_and_grant_bytes_preserved": true,
+  "owner_policy_origin": "owner_approved_v2",
+  "other_existing_users_not_opted_in": true,
+  "worker_permissions_expanded": false,
+  "consistent_backup_and_old_images_retained": true,
+  "database_backup_quick_check": "ok",
+  "installed_artifacts_match": true,
+  "new_images": {
+    "gateway": "sha256:99a12c549c22ba180a68706656fde0332c18469b5d2597228606778081ab8ea7",
+    "control": "sha256:25231d6b5fa86c9c05c7dc47ead99415be9a6bb9d8a112ea2b0c6a6d807f1ed1",
+    "frontend": "sha256:069dc52e5fce609a67de111812e7ec3859f9f3889f336660d93d7e40993f168b"
+  },
+  "ci": {
+    "revision": "595f6548ef58ca39d6b6d4ecc74df821c1983831",
+    "workflow_run": 42675088795,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/42675088795",
+    "all_jobs_passed": true,
+    "jobs": [
+      {
+        "name": "worker (macos-latest, 3.12)",
+        "conclusion": "success"
+      },
+      {
+        "name": "product-docs",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend-intents",
+        "conclusion": "success"
+      },
+      {
+        "name": "design-system",
+        "conclusion": "success"
+      },
+      {
+        "name": "deerflow-gateway (ssh)",
+        "conclusion": "success"
+      },
+      {
+        "name": "worker (ubuntu-latest, 3.11)",
+        "conclusion": "success"
+      },
+      {
+        "name": "deerflow-contract",
+        "conclusion": "success"
+      },
+      {
+        "name": "ack-package",
+        "conclusion": "success"
+      },
+      {
+        "name": "go-control",
+        "conclusion": "success"
+      },
+      {
+        "name": "deerflow-gateway (local)",
+        "conclusion": "success"
+      }
+    ],
+    "scope": "Remote GitHub Actions checks; does not replace local real-provider/Native evidence."
+  },
+  "local_real_provider_native_receipts_separate": true,
+  "scope": "Existing single-host Compose upgrade, original owner trusted HTTPS login/API and production browser. Owner explicitly adopts V2 defaults; bounded recent-history processing may run. No synthetic production fact, no restored cloud-to-home grant, no cloud Native test."
+}

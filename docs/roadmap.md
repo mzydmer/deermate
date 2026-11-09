@@ -208,7 +208,7 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 根据用户反馈完成文案审稿；当前 PRD v0.3 已对齐最新设计规范。
 - [x] 用户于 2026-11-09 确认连续开发、本地验收后推送并部署。
 - [x] 定稿技术 spec / ADR 0016 / plan，映射 WS2-01–21。
-- [ ] 完整交付与云端验收；已通过的本地范围见下列专项记录。
+- [x] 工作台 v2 的本地交付与既有云端验收；真实接入范围见下列专项收据。
 
 ### 工作台 v2 实现与验收（2026-11-09）
 
@@ -218,4 +218,4 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 单输入助手首页、我的工作、关于你、来源抽屉与有依据的最多三项快照。
 - [x] 真实供应方记忆闭环 16 项，独立真实 Codex 同根两轮；范围见专项收据。
 - [x] 最终浏览器矩阵 33 项、旧镜像升级保留与本地全部门禁。
-- [ ] 远端推送和云端发布；以实际公网验收记录为准。
+- [x] 应用 595f654 推送与既有云端升级，22 项 API、13 项浏览器及原账号/数据保留通过；见上线收据。
