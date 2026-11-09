@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install 'PyYAML>=6.0.2,<7' 'pytest>=8,<10'
+      - run: python -m pip install -e '.[dev]'
       - run: python scripts/design_gate.py
       - run: python -m pytest -q tests/test_design_system.py
 
