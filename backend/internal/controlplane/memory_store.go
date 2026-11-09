@@ -23,6 +23,8 @@ type PersonalProfile struct {
 	Revision           int64  `json:"revision"`
 	PolicyRevision     int64  `json:"policy_revision"`
 	DeletionRevision   int64  `json:"deletion_revision"`
+	PolicyOrigin       string `json:"policy_origin"`
+	PolicyVersion      int    `json:"policy_version"`
 }
 
 type MemoryReference struct {
@@ -100,15 +102,18 @@ CREATE INDEX IF NOT EXISTS deermate_memory_source_budget ON deermate_memory_sour
 	if !found {
 		_, err = s.DB.Exec("ALTER TABLE deermate_personal_profiles ADD COLUMN auto_capture_enabled INTEGER NOT NULL DEFAULT 0")
 	}
-	return err
+	if err != nil {
+		return err
+	}
+	return s.initializeWorkspaceMemory()
 }
 
 type memoryReader interface{ QueryRow(string, ...any) *sql.Row }
 
 func readProfile(q memoryReader, owner string) (PersonalProfile, error) {
 	p := PersonalProfile{Owner: owner, Timezone: "UTC"}
-	err := q.QueryRow(`SELECT display_name,timezone,memory_enabled,auto_capture_enabled,proactive_enabled,revision,policy_revision,deletion_revision
-FROM deermate_personal_profiles WHERE owner=?`, owner).Scan(&p.DisplayName, &p.Timezone, &p.MemoryEnabled, &p.AutoCaptureEnabled, &p.ProactiveEnabled, &p.Revision, &p.PolicyRevision, &p.DeletionRevision)
+	err := q.QueryRow(`SELECT display_name,timezone,memory_enabled,auto_capture_enabled,proactive_enabled,revision,policy_revision,deletion_revision,policy_origin,policy_version
+FROM deermate_personal_profiles WHERE owner=?`, owner).Scan(&p.DisplayName, &p.Timezone, &p.MemoryEnabled, &p.AutoCaptureEnabled, &p.ProactiveEnabled, &p.Revision, &p.PolicyRevision, &p.DeletionRevision, &p.PolicyOrigin, &p.PolicyVersion)
 	if errors.Is(err, sql.ErrNoRows) {
 		err = nil
 	}
@@ -162,11 +167,14 @@ func (s *Store) UpdatePersonalProfile(ctx context.Context, p PersonalProfile, ex
 	p.Revision = current.Revision + 1
 	p.DeletionRevision = current.DeletionRevision
 	p.PolicyRevision = current.PolicyRevision
-	policyChanged := current.MemoryEnabled != p.MemoryEnabled || current.AutoCaptureEnabled != p.AutoCaptureEnabled || current.ProactiveEnabled != p.ProactiveEnabled
+	if p.PolicyOrigin == "" {
+		p.PolicyOrigin, p.PolicyVersion = current.PolicyOrigin, current.PolicyVersion
+	}
+	policyChanged := current.MemoryEnabled != p.MemoryEnabled || current.AutoCaptureEnabled != p.AutoCaptureEnabled || current.ProactiveEnabled != p.ProactiveEnabled || current.PolicyOrigin != p.PolicyOrigin || current.PolicyVersion != p.PolicyVersion
 	if policyChanged {
 		p.PolicyRevision++
 	}
-	_, err = tx.Exec(`UPDATE deermate_personal_profiles SET display_name=?,timezone=?,memory_enabled=?,auto_capture_enabled=?,proactive_enabled=?,revision=?,policy_revision=? WHERE owner=?`, strings.TrimSpace(p.DisplayName), p.Timezone, p.MemoryEnabled, p.AutoCaptureEnabled, p.ProactiveEnabled, p.Revision, p.PolicyRevision, p.Owner)
+	_, err = tx.Exec(`UPDATE deermate_personal_profiles SET display_name=?,timezone=?,memory_enabled=?,auto_capture_enabled=?,proactive_enabled=?,revision=?,policy_revision=?,policy_origin=?,policy_version=? WHERE owner=?`, strings.TrimSpace(p.DisplayName), p.Timezone, p.MemoryEnabled, p.AutoCaptureEnabled, p.ProactiveEnabled, p.Revision, p.PolicyRevision, p.PolicyOrigin, p.PolicyVersion, p.Owner)
 	if err != nil {
 		return p, err
 	}
@@ -291,7 +299,7 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 		return empty, err
 	}
 	if source != nil {
-		if !p.MemoryEnabled || !p.AutoCaptureEnabled || p.PolicyRevision != source.Policy || p.DeletionRevision != source.Deleted || !verifyCapture(tx, source) {
+		if !p.AutoCaptureEnabled || !captureAllowed(tx, owner, source.Thread) || p.PolicyRevision != source.Policy || p.DeletionRevision != source.Deleted || !verifyCapture(tx, source) {
 			return empty, ErrConflict
 		}
 		var daily, instance int
@@ -304,7 +312,7 @@ func (s *Store) admitMemory(ctx context.Context, owner, kind, id string, body me
 		}
 	}
 	if kind == "create" {
-		if !p.MemoryEnabled {
+		if !p.MemoryEnabled && source == nil {
 			return empty, ErrDisabled
 		}
 		var count int

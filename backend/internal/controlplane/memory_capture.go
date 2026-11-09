@@ -117,7 +117,7 @@ func (s *Server) prepareMemoryCapture(r *http.Request) *http.Request {
 		return r
 	}
 	p, err := s.Store.PersonalProfile(sessionOf(r).User.ID)
-	if err != nil || !p.MemoryEnabled || !p.AutoCaptureEnabled {
+	if err != nil || !p.AutoCaptureEnabled || !captureAllowed(s.Store.DB, p.Owner, parts[2]) {
 		return r
 	}
 	data, restored, ok := peekBody(r.Body, 64<<10)

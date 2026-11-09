@@ -37,7 +37,7 @@ func TestPersonalProfileOptimisticUpdateAndIdentity(t *testing.T) {
 	requireStatus(t, request(server, b, "GET", "/api/me/personal-profile", "", map[string]string{"X-Expected-User-Id": "another-user"}), 409)
 	var p PersonalProfile
 	_ = json.Unmarshal(w.Body.Bytes(), &p)
-	if p.MemoryEnabled || p.Owner != u.ID || p.Revision != 0 {
+	if !p.MemoryEnabled || !p.AutoCaptureEnabled || p.PolicyOrigin != "product_default_v2" || p.Owner != u.ID || p.Revision != 0 {
 		t.Fatal(p)
 	}
 	body := `{"display_name":"小林","timezone":"America/Los_Angeles","memory_enabled":true,"expected_revision":0}`
@@ -85,6 +85,11 @@ func TestMemoryAdmissionIdempotencyOwnershipAndSecretExclusion(t *testing.T) {
 	other := account(t, s, "other@example.com", "admin")
 	ctx := context.Background()
 	body := memoryMutation{OperationID: "save-1", Content: "控制端使用 Go", Category: "preference"}
+	p, _ := s.PersonalProfile(u.ID)
+	p.MemoryEnabled, p.AutoCaptureEnabled, p.PolicyOrigin = false, false, "user_choice"
+	if _, err := s.UpdatePersonalProfile(ctx, p, p.Revision); err != nil {
+		t.Fatal(err)
+	}
 	if _, err := s.AdmitMemory(ctx, u.ID, "create", "", body); !errors.Is(err, ErrDisabled) {
 		t.Fatal(err)
 	}

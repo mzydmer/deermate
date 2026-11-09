@@ -1,7 +1,9 @@
 {
-  "status": "Proposed, documentation-only",
+  "status": "Approved design reference; implementation tracked separately",
   "data": "Synthetic; not screenshots of the live product",
   "font": "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+  "design_source": "design.md",
+  "design_sha256": "d1b39f83e8f98e75377934e9063ff298b4118d0277b05cd42321104c8c6ecc5c",
   "renderer": "@napi-rs/canvas; native drawing, no browser",
   "plates": [
     {

@@ -56,7 +56,7 @@
     "group": "guide",
     "title": "记忆管理",
     "description": "管理称呼、时区与长期事实，纠正或遗忘记录。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-09",
     "status": "需本人开启",
     "sources": [
       "docs/personal-memory.md",
@@ -64,7 +64,8 @@
       "frontend/overlay/src/components/deermate/personal-memory.tsx",
       "docs/specs/default-secretary-memory-settings.md",
       "docs/verification/default-secretary-memory-2026-11-04.json",
-      "docs/verification/default-secretary-memory-cloud-2026-11-04.json"
+      "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
+      "docs/specs/workspace-assistant-v2.md"
     ]
   },
   {
@@ -159,14 +160,15 @@
     "group": "technical",
     "title": "记忆、上下文与来源治理",
     "description": "显式事实、有界检索、来源版本与遗忘屏障。",
-    "updated": "2026-11-05",
+    "updated": "2026-11-09",
     "status": "技术方案",
     "sources": [
       "docs/specs/m4-memory-technical-design.md",
       "docs/personal-memory.md",
       "docs/continuous-secretary.md",
       "docs/specs/default-secretary-memory-settings.md",
-      "docs/diagrams/product/diagrams.json"
+      "docs/diagrams/product/diagrams.json",
+      "docs/specs/workspace-assistant-v2.md"
     ]
   },
   {
@@ -187,7 +189,7 @@
     "group": "changelog",
     "title": "变更日志",
     "description": "查看产品变化、启用条件和交付范围。",
-    "updated": "2026-11-05",
+    "updated": "2026-11-09",
     "status": "持续更新",
     "sources": [
       "docs/EVOLUTION.md",
@@ -196,7 +198,8 @@
       "docs/verification/product-documentation-cloud-2026-11-04.json",
       "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
       "docs/diagrams/product/diagrams.json",
-      "design.md"
+      "design.md",
+      "docs/specs/workspace-assistant-v2.md"
     ]
   }
 ]

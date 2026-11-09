@@ -91,11 +91,15 @@ class PersonalMemory:
                 raise PermissionError("This memory scope is not supported by this adapter")
             if job["kind"] not in {"create", "update", "delete"}:
                 raise PermissionError("This adapter accepts only explicit single-fact operations")
+            source = db.execute(
+                "SELECT * FROM deermate_memory_sources WHERE operation_id=? AND owner=?",
+                (operation_id, owner),
+            ).fetchone()
             deleting = job["kind"] == "delete"
             if not deleting and (
                 profile["policy_revision"] != job["policy_revision"]
                 or ref["status"] not in {"pending", "updating"}
-                or (job["kind"] == "create" and not profile["memory_enabled"])
+                or (job["kind"] == "create" and not profile["memory_enabled"] and source is None)
             ):
                 raise PermissionError("Personal memory policy changed")
             barrier = db.execute(
@@ -104,10 +108,6 @@ class PersonalMemory:
             ).fetchone()
             if barrier and not deleting:
                 raise PermissionError("This fact was forgotten")
-            source = db.execute(
-                "SELECT * FROM deermate_memory_sources WHERE operation_id=? AND owner=?",
-                (operation_id, owner),
-            ).fetchone()
             if source is not None and not deleting:
                 if (
                     profile["policy_revision"] != source["policy_revision"]
@@ -294,9 +294,19 @@ class PersonalMemory:
             )
         return result
 
-    def context(self, owner: str, query: str) -> str:
+    @staticmethod
+    def _temporary(db, owner, thread):
+        if not thread:
+            return False
+        mode = db.execute(
+            "SELECT mode FROM deermate_topic_memory WHERE owner=? AND thread_id=?",
+            (owner, thread),
+        ).fetchone()
+        return mode is not None and mode[0] == "temporary"
+
+    def context(self, owner: str, query: str, *, thread: str | None = None) -> str:
         with self.gate(owner) as (db, profile):
-            if not profile["memory_enabled"]:
+            if not profile["memory_enabled"] or self._temporary(db, owner, thread):
                 return ""
             ids = [
                 r[0]
@@ -320,7 +330,7 @@ class PersonalMemory:
         stable = self.read(owner, preferences, context=True)
         selected = {item["id"]: item for item in stable["items"] + result["items"]}
         with self.gate(owner) as (db, profile):
-            if not profile["memory_enabled"] or policy != (
+            if not profile["memory_enabled"] or self._temporary(db, owner, thread) or policy != (
                 profile["policy_revision"],
                 profile["deletion_revision"],
             ):

@@ -329,6 +329,9 @@ func (s *Store) CreateUser(ctx context.Context, email, password, role, actor str
 	if err != nil {
 		return zero, err
 	}
+	if _, err = tx.Exec(`INSERT INTO deermate_personal_profiles(owner,memory_enabled,auto_capture_enabled,proactive_enabled,policy_origin,policy_version) VALUES(?,1,1,1,'product_default_v2',2)`, id); err != nil {
+		return zero, err
+	}
 	if err = auditTx(tx, actor, "user.create", id); err != nil {
 		return zero, err
 	}

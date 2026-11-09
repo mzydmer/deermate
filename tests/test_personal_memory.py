@@ -108,6 +108,24 @@ def test_lost_ack_reconciles_same_fact_and_revision(memory):
     assert [f["id"] for f in data["facts"]] == [fact]
 
 
+def test_temporary_topic_never_receives_existing_memory_across_turns(memory):
+    fact = admit(memory, "temporary-scope", content="以后回答先给结论")
+    finish(memory, "temporary-scope", memory.apply("alice", "temporary-scope"))
+    with sqlite3.connect(memory.database) as db:
+        db.execute(
+            "CREATE TABLE deermate_topic_memory(owner TEXT,thread_id TEXT,mode TEXT,"
+            "PRIMARY KEY(owner,thread_id))"
+        )
+        db.execute("INSERT INTO deermate_topic_memory VALUES('alice','private-chat','temporary')")
+    for message in ["我喜欢怎样的回答？", "先说结论", "继续上一个问题"]:
+        assert memory.context("alice", message, thread="private-chat") == ""
+    assert fact in memory.context("alice", "结论", thread="ordinary-chat")
+    # A different owner's topic must never change this owner's context policy.
+    with sqlite3.connect(memory.database) as db:
+        db.execute("INSERT INTO deermate_topic_memory VALUES('bob','ordinary-chat','temporary')")
+    assert fact in memory.context("alice", "结论", thread="ordinary-chat")
+
+
 def test_owner_isolation_and_allowlist_precedes_limit(memory):
     for index in range(15):
         key = "match" + str(index)
@@ -208,6 +226,18 @@ def test_real_agent_assembly_recalls_only_current_owner_enabled_memory(
     fact = admit(memory, "model-fact", "控制端使用 Go，Worker 保留 Python")
     finish(memory, "model-fact", memory.apply("alice", "model-fact"))
     monkeypatch.setattr(module, "runtime_memory", lambda: memory)
+    with sqlite3.connect(memory.database) as db:
+        db.execute("CREATE TABLE runs(run_id TEXT PRIMARY KEY,user_id TEXT,thread_id TEXT)")
+        db.executemany(
+            "INSERT INTO runs VALUES(?,?,?)",
+            [("alice-run", "alice", "new-chat"), ("bob-run", "bob", "other-chat"),
+             ("temporary-run", "alice", "private-chat")],
+        )
+        db.execute(
+            "CREATE TABLE deermate_topic_memory(owner TEXT,thread_id TEXT,mode TEXT,"
+            "PRIMARY KEY(owner,thread_id))"
+        )
+        db.execute("INSERT INTO deermate_topic_memory VALUES('alice','private-chat','temporary')")
     seen = []
 
     class InspectMiddleware(PersonalMemoryMiddleware):
@@ -224,19 +254,27 @@ def test_real_agent_assembly_recalls_only_current_owner_enabled_memory(
     )
     graph.invoke(
         {"messages": [{"role": "user", "content": question}]},
-        context={"user_id": "alice", "thread_id": "new-chat"},
+        context={"user_id": "alice", "thread_id": "new-chat", "run_id": "alice-run"},
     )
     assert "控制端使用 Go" in seen[-1] and fact in seen[-1]
     graph.invoke(
         {"messages": [{"role": "user", "content": "控制端应该用什么？"}]},
-        context={"user_id": "bob", "thread_id": "other-chat"},
+        context={"user_id": "bob", "thread_id": "other-chat", "run_id": "bob-run"},
     )
     assert "控制端使用 Go" not in seen[-1]
+    for context in [
+        {"user_id": "alice", "thread_id": "new-chat"},
+        {"user_id": "bob", "run_id": "alice-run"},
+        {"user_id": "alice", "thread_id": "new-chat", "run_id": "temporary-run",
+         "memory_mode": "normal"},
+    ]:
+        graph.invoke({"messages": [{"role": "user", "content": question}]}, context=context)
+        assert "控制端使用 Go" not in seen[-1]
     with sqlite3.connect(memory.database) as db:
         db.execute("UPDATE deermate_personal_profiles SET memory_enabled=0 WHERE owner='alice'")
     graph.invoke(
         {"messages": [{"role": "user", "content": "控制端应该用什么？"}]},
-        context={"user_id": "alice", "thread_id": "another-chat"},
+        context={"user_id": "alice", "thread_id": "new-chat", "run_id": "alice-run"},
     )
     assert "控制端使用 Go" not in seen[-1]
 

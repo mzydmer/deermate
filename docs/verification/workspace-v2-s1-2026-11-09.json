@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-09",
+  "stage": "S0 / S1",
+  "base_revision": "780173a",
+  "scope": "Design alignment and server-side memory policy/temporary-topic rules; product UI and full deployment remain pending",
+  "passed": {
+    "go_mod_verify": true,
+    "go_vet": true,
+    "go_race_all_packages": true,
+    "go_static_build": true,
+    "pinned_deermem_agent_tests": 26,
+    "standard_python_selected_tests": 16,
+    "standard_python_skipped_pinned_runtime_modules": 2,
+    "ruff_selected": true,
+    "design_gate": true,
+    "product_docs_against_780173a": true
+  },
+  "model_kind": "FakeListChatModel for agent assembly; no live provider/native call",
+  "cloud": "Read-only SSH using existing pinned host and approved permanent key; five services healthy; no change",
+  "deployment_complete": false,
+  "next": "S2: ordinary expressions, scoped facts and bounded durable extraction jobs"
+}

@@ -33,7 +33,20 @@ class PersonalMemoryMiddleware(AgentMiddleware):
         if not isinstance(content, str):
             return ""
         try:
-            return runtime_memory().context(owner, content[:512])
+            memory = runtime_memory()
+            # Resolve the actual persisted run, never a client-supplied thread or
+            # memory-mode flag. Missing canonical identity fails closed.
+            run_id = (request.runtime.context or {}).get("run_id")
+            if not run_id:
+                return ""
+            with memory.gate(owner) as (db, _):
+                run = db.execute(
+                    "SELECT thread_id FROM runs WHERE user_id=? AND run_id=?", (owner, run_id)
+                ).fetchone()
+                if run is None:
+                    return ""
+                thread = run[0]
+            return memory.context(owner, content[:512], thread=thread)
         except (PermissionError, sqlite3.OperationalError):
             # Missing Go profile/schema is disabled, never a default-user bucket.
             return ""

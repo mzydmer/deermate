@@ -11,6 +11,7 @@ import (
 )
 
 func (s *Server) memoryRoutes() {
+	s.workspaceMemoryRoutes()
 	for _, method := range []string{"GET", "PATCH"} {
 		s.mux.HandleFunc(method+" /api/me/personal-profile", s.protected(false, s.personalProfile))
 	}
@@ -98,6 +99,9 @@ func (s *Server) personalProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		if body.ProactiveEnabled != nil {
 			p.ProactiveEnabled = *body.ProactiveEnabled
+		}
+		if body.MemoryEnabled != nil || body.AutoCaptureEnabled != nil || body.ProactiveEnabled != nil {
+			p.PolicyOrigin, p.PolicyVersion = "user_choice", 2
 		}
 		p, err = s.Store.UpdatePersonalProfile(r.Context(), p, body.ExpectedRevision)
 		if err != nil {
