@@ -9,6 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def apply(frontend: Path):
+    # Enforce the same design contract before every local/CI/container build.
+    if __package__:
+        from .design_gate import check
+    else:
+        from design_gate import check
+
+    check()
     patches = json.loads((ROOT / "frontend/patches.json").read_text())
     staged = []
     for patch in patches:

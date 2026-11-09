@@ -837,6 +837,6 @@ hover使用配方状态，active按下反馈与持久selected区分。focus-visi
 
 运行 `.venv/bin/python scripts/sync_design_tokens.py` 生成资产，运行 `.venv/bin/python scripts/design_gate.py` 检查。CI的design-system任务必须通过；远端受保护分支需将该任务配置为必需检查才有服务器端强制效果。AGENTS与PR模板要求每次前端变更阅读本文件。
 
-第一方CSS、Go内嵌CSS和工具扩展CSS不得硬编码颜色、字号、圆角、阴影和空间值；使用生成变量。TSX禁止任意视觉值和新增颜色体系；仅允许运动所需的动态自定义属性。宽高、Grid、媒体查询、品牌光学尺寸等几何例外由implementation.cssExceptions约束。固定上游使用共享语义桥接和统一组件外壳；第三方代码高亮/用户内容不作为第一方UI样式放行依据。
+第一方CSS、Go内嵌CSS和工具扩展CSS不得硬编码颜色、字号、圆角、阴影和空间值；使用生成变量。TSX禁止任意视觉值和新增颜色体系；仅允许运动所需的动态自定义属性。现有任务列表仅允许 `--dm-index: Math.min(index, 5)` 的动态自定义属性用于既有列表错开；其余内联视觉样式拒绝。宽高、Grid、媒体查询、品牌光学尺寸等几何例外由implementation.cssExceptions约束。固定上游使用共享语义桥接和统一组件外壳；第三方代码高亮/用户内容不作为第一方UI样式放行依据。
 
 自动检查不能判断完整视觉效果，PR仍需附受影响页面及实测范围。设计变更修改本文件并说明理由，不能通过更新违例基线绕过；不建立无限增长的旧违例白名单。

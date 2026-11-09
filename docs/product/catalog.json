@@ -4,13 +4,14 @@
     "group": "guide",
     "title": "认识 DeerMate",
     "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-05",
     "status": "Alpha",
     "sources": [
       "docs/STATUS.md",
       "docs/SPEC.md",
       "docs/verification/continuous-cloud-2026-11-04.json",
-      "docs/verification/product-documentation-cloud-2026-11-04.json"
+      "docs/verification/product-documentation-cloud-2026-11-04.json",
+      "design.md"
     ]
   },
   {
@@ -194,7 +195,8 @@
       "docs/verification/continuous-cloud-2026-11-04.json",
       "docs/verification/product-documentation-cloud-2026-11-04.json",
       "docs/verification/default-secretary-memory-cloud-2026-11-04.json",
-      "docs/diagrams/product/diagrams.json"
+      "docs/diagrams/product/diagrams.json",
+      "design.md"
     ]
   }
 ]

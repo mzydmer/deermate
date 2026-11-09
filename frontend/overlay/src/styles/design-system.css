@@ -1,0 +1,179 @@
+/* Shared product primitives. Tokens and recipes are generated from design.md. */
+:root {
+  --radius-sm: var(--ds-rounded-md);
+  --radius-md: var(--ds-rounded-md);
+  --radius-lg: var(--ds-rounded-lg);
+  --radius-xl: var(--ds-rounded-lg);
+}
+body {
+  font-family: var(--dm-font-sans);
+  font-size: var(--ds-typography-body-sm-fontSize);
+  line-height: var(--ds-typography-body-sm-lineHeight);
+}
+::selection {
+  background: var(--ds-colors-selection-bg);
+  color: var(--ds-colors-selection-fg);
+}
+:root [data-slot="button"] {
+  border-radius: var(--ds-rounded-md);
+  min-height: var(--ds-sizes-control-md);
+  font-size: var(--ds-typography-button-md-fontSize);
+  line-height: var(--ds-typography-button-md-lineHeight);
+  font-weight: var(--ds-typography-button-md-fontWeight);
+  padding-inline: var(--ds-spacing-md);
+  gap: var(--ds-spacing-xs);
+  box-shadow: var(--ds-shadows-level-0);
+  transition-property: background-color, border-color, color, opacity;
+}
+:root [data-slot="button"][data-size="sm"],
+:root [data-slot="button"][data-size="icon-sm"] {
+  min-height: var(--ds-sizes-control-sm);
+  height: var(--ds-sizes-control-sm);
+}
+:root [data-slot="button"][data-size="lg"] {
+  min-height: var(--ds-sizes-control-lg);
+  height: var(--ds-sizes-control-lg);
+}
+:root [data-slot="button"][data-size^="icon"] {
+  padding: var(--ds-spacing-none);
+}
+:root [data-slot="button"][data-variant="outline"] {
+  border-color: var(--ds-colors-control-border);
+}
+:root [data-slot="button"][data-variant="default"] {
+  background: var(--ds-colors-primary);
+  color: var(--ds-colors-on-primary);
+}
+:root [data-slot="button"][data-variant="default"]:active {
+  background: var(--ds-colors-primary-active);
+}
+:root [data-slot="button"][data-variant="link"] {
+  color: var(--ds-colors-link-deep);
+  text-decoration: underline;
+}
+:root [data-slot="input"],
+:root [data-slot="select-trigger"],
+:root [data-slot="textarea"] {
+  border-radius: var(--ds-rounded-md);
+  border-color: var(--ds-colors-control-border);
+  background: var(--ds-colors-canvas);
+  color: var(--ds-colors-ink);
+  font-size: var(--ds-typography-body-sm-fontSize);
+  line-height: var(--ds-typography-body-sm-lineHeight);
+  min-height: var(--ds-sizes-control-md);
+  box-shadow: var(--ds-shadows-level-0);
+}
+:root [data-slot="input"]::placeholder,
+:root [data-slot="textarea"]::placeholder {
+  color: var(--ds-colors-mute);
+}
+:root [aria-invalid="true"] {
+  border-color: var(--ds-colors-error-deep);
+}
+:root [data-slot="card"] {
+  border-radius: var(--ds-rounded-md);
+  box-shadow: var(--ds-shadows-level-0);
+  border-color: var(--ds-colors-hairline);
+}
+:root [data-slot="dialog-content"],
+:root [data-slot="sheet-content"] {
+  border-radius: var(--ds-rounded-lg);
+  background: var(--ds-colors-canvas);
+  color: var(--ds-colors-ink);
+  border-color: var(--ds-colors-hairline);
+  padding: var(--ds-spacing-lg);
+  gap: var(--ds-spacing-lg);
+}
+:root [data-slot="dialog-content"] {
+  box-shadow: var(--ds-shadows-level-5);
+}
+:root [data-slot="sheet-content"] {
+  box-shadow: var(--ds-shadows-level-4);
+}
+:root [data-slot="dropdown-menu-content"],
+:root [data-slot="popover-content"],
+:root [data-slot="select-content"] {
+  background: var(--ds-colors-canvas);
+  color: var(--ds-colors-ink);
+  border-color: var(--ds-colors-hairline);
+  border-radius: var(--ds-rounded-md);
+  box-shadow: var(--ds-shadows-level-3);
+}
+:root [data-slot="badge"] {
+  border-radius: var(--ds-rounded-xs);
+  font-size: var(--ds-typography-caption-fontSize);
+}
+:root [data-slot="table-head"] {
+  background: var(--ds-colors-canvas-soft);
+  font-weight: var(--ds-typography-body-sm-strong-fontWeight);
+}
+:root [data-slot="table-cell"],
+:root [data-slot="table-head"] {
+  padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+}
+:root [data-slot="table-row"] {
+  height: var(--ds-sizes-table-row);
+  border-color: var(--ds-colors-hairline);
+}
+:root [data-slot="sidebar-menu-button"] {
+  border-radius: var(--ds-rounded-md);
+}
+:root
+  :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus-color);
+  outline-offset: var(--ds-focus-offset);
+}
+:root :is(button, input, select, textarea):disabled {
+  opacity: var(--ds-opacity-disabled);
+}
+:root :is(h1, h2, h3) {
+  letter-spacing: var(--ds-tracking-cjk);
+}
+@media (hover: hover) {
+  :root [data-slot="button"][data-variant="default"]:hover {
+    background: var(--ds-colors-primary-hover);
+  }
+  :root
+    [data-slot="button"]:is(
+      [data-variant="outline"],
+      [data-variant="secondary"],
+      [data-variant="ghost"]
+    ):hover {
+    background: var(--ds-colors-canvas-soft-2);
+  }
+}
+@media (width < 600px) {
+  :root [data-slot="button"],
+  :root [data-slot="input"],
+  :root [data-slot="select-trigger"] {
+    min-height: var(--ds-sizes-touch);
+  }
+  :root [data-slot="input"],
+  :root [data-slot="textarea"],
+  :root [data-slot="select-trigger"] {
+    font-size: var(--ds-typography-body-md-fontSize);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root [data-slot] {
+    animation-duration: 0s;
+    transition-duration: 0s;
+  }
+}
+
+/* Close controls must provide a complete hit area, not just a tall narrow icon. */
+:root :is([data-slot="dialog-content"], [data-slot="sheet-content"]) > button {
+  display: grid;
+  place-items: center;
+  width: var(--ds-sizes-control-sm);
+  height: var(--ds-sizes-control-sm);
+  padding: var(--ds-spacing-none);
+}
+@media (width < 600px) {
+  :root
+    :is([data-slot="dialog-content"], [data-slot="sheet-content"])
+    > button {
+    min-width: var(--ds-sizes-touch);
+    min-height: var(--ds-sizes-touch);
+  }
+}

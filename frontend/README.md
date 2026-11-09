@@ -1,6 +1,6 @@
 # DeerMate workspace source
 
-All frontend work follows the repository [design.md](../design.md), including login, settings and the Go management page. Canonical neutral light/dark tokens live in `overlay/src/styles/design-tokens.css`; run `python scripts/sync_design_tokens.py --check` at the repository root. Go embeds a generated copy of the same CSS. Update the guide and tokens together when changing the visual language.
+All frontend work follows the repository [design.md](../design.md), including login, settings and the Go management page. Canonical tokens and component recipes live in the YAML frontmatter of `design.md`; CSS is generated into `overlay/src/styles/design-tokens.css`; run `python scripts/design_gate.py` and `python scripts/sync_design_tokens.py --check` at the repository root. Go embeds a generated copy of the same CSS. Update the guide and tokens together when changing the visual language.
 
 The product UI lives in `overlay/` and is applied to DeerFlow `a1b89d0` by [`frontend_overlay.py`](../scripts/frontend_overlay.py). `patches.json` verifies complete upstream file hashes before modifying integration points. Do not edit `.deermate/ack/deer-flow` or copy local credentials into the overlay. [ADR 0006](../docs/decisions/0006-frontend-overlay.md) explains the boundary; [NOTICE](NOTICE.md) records third-party provenance.
 
@@ -50,3 +50,14 @@ The [personal home](../docs/personal-home.md) keeps explicit attention topics be
 Follow-up drafts stay with their work. Continuing an existing native session requires an explicit next question. `continuous-intents.ts` retains the original request body and operation ID after an ambiguous response, including an execute-to-followup projection change. This in-memory protection ends when the component unmounts; after reload, inspect the authoritative original operation. Run its offline regression with Node 24+: `node scripts/verify_continuous_intents.mjs` from the repository root (also included in CI).
 
 The [2026-11-04 UI receipt](../docs/verification/continuous-ui-2026-11-04.json) records actual Chrome 390/1280/1440px viewports, light/dark, keyboard and reduced-motion checks, work-specific drafts, ordinary-member isolation, and temporary nginx read faults followed by recovery. Eight state cards are presentation-only samples from [`continuous_fixture_ui.py`](../tests/continuous_fixture_ui.py), not execution/cancellation evidence. That script accepts an owner ID on stdin only inside a disposable single-user offline fixture, with no active Native task or usable grant. Do not run it in a personal deployment. The UI pass adds zero model runs or Native tasks. Real-source candidate acceptance and the remaining full CONT-16 matrix stay separate.
+
+## Authenticated visual acceptance
+
+The isolated fixture uses the production React bundle and real Go login/profile/authorization APIs, with synthetic loopback runtime data. It never loads a personal database or provider credentials and rejects run submissions. The browser scripts require its marker before login or mutations. This tests UI behavior; it does not prove real Gateway, provider or Native compatibility.
+
+1. Build the current overlay with the pinned upstream integration patches and build Go control. The fixture uses `.deermate/design-system-20261105/frontend` and `.deermate/design-system-20261105/control`.
+2. Run `python scripts/design_visual_fixture.py`. It refuses an existing `.deermate/design-auth-20261106` output directory and binds only loopback ports 3300–3303. Preserve or move earlier receipts before a fresh run.
+3. Set `DEERMATE_PLAYWRIGHT_MODULE` and, where needed, `DEERMATE_BROWSER_EXECUTABLE`; run `node scripts/verify_authenticated_design.cjs` and `node scripts/verify_design_states.cjs`. Default URL is the fixture on port 3300.
+4. Inspect synthetic screenshots and the JSON results, then stop the fixture. Credentials remain in its ignored private owner file; do not commit it.
+
+The viewport/theme matrix covers login, workspace, task filters/evidence, all settings sections, draft-only chat, authenticated management and authorization pages. The state suite covers profile validation, memory create/search/correction/forget, loading/empty/failure and six task-detail states. Keyboard focus restoration waits for the actual close lifecycle rather than relying on a screenshot or a fixed delay.

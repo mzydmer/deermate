@@ -1,0 +1,139 @@
+const fs = require("fs");
+const path = require("path");
+const { chromium } = require(
+  process.env.DEERMATE_PLAYWRIGHT_MODULE || "playwright",
+);
+(async () => {
+  const root = path.resolve(__dirname, "..");
+  fs.mkdirSync(path.join(root, ".deermate/design-system-20261105"), {
+    recursive: true,
+  });
+  const browser = await chromium.launch({
+    ...(process.env.DEERMATE_CHROME_PATH
+      ? { executablePath: process.env.DEERMATE_CHROME_PATH }
+      : {}),
+    headless: true,
+  });
+  const checks = [];
+  for (const width of [390, 600, 960, 1200, 1440])
+    for (const dark of [false, true]) {
+      const page = await browser.newPage({
+        viewport: { width, height: 900 },
+        reducedMotion: "reduce",
+      });
+      const css =
+        fs.readFileSync(
+          path.join(root, "frontend/overlay/src/styles/design-tokens.css"),
+          "utf8",
+        ) +
+        "\n" +
+        fs.readFileSync(
+          path.join(root, "frontend/overlay/src/styles/design-components.css"),
+          "utf8",
+        ) +
+        "\n" +
+        fs.readFileSync(
+          path.join(root, "frontend/overlay/src/styles/design-system.css"),
+          "utf8",
+        );
+      await page.setContent(
+        `<html class="${dark ? "dark" : ""}" lang="zh-CN"><style>${css}</style><main><h1>组件验收</h1><button data-slot="button" data-variant="default">主要操作</button><input data-slot="input" aria-label="名称"><div class="ds-app-card">内容</div><div class="ds-app-badge" data-design-variant="success">已完成</div></main></html>`,
+      );
+      const values = await page.evaluate(() => {
+        const button = document.querySelector("button"),
+          input = document.querySelector("input"),
+          card = document.querySelector(".ds-app-card");
+        return {
+          radius: getComputedStyle(button).borderRadius,
+          height: button.getBoundingClientRect().height,
+          inputHeight: input.getBoundingClientRect().height,
+          background: getComputedStyle(button).backgroundColor,
+          cardShadow: getComputedStyle(card).boxShadow,
+          overflow: document.documentElement.scrollWidth > innerWidth,
+          success: getComputedStyle(document.documentElement)
+            .getPropertyValue("--dm-success")
+            .trim(),
+        };
+      });
+      if (
+        values.radius !== "8px" ||
+        values.height < 40 ||
+        values.inputHeight < 40 ||
+        values.cardShadow !== "none" ||
+        values.overflow
+      )
+        throw Error(JSON.stringify({ width, dark, values }));
+      await page.keyboard.press("Tab");
+      const focus = await page
+        .locator("button")
+        .evaluate((e) => getComputedStyle(e).outlineStyle);
+      if (focus !== "solid") throw Error("No visible keyboard focus");
+      checks.push({
+        surface: "shared-primitives",
+        width,
+        dark,
+        values,
+        keyboardFocus: true,
+      });
+      // Render the actual management HTML and actual CSS, with scripts disabled: visual shell only.
+      for (const name of ["admin", "authorizations"]) {
+        let html = fs
+          .readFileSync(
+            path.join(root, `backend/internal/controlplane/${name}.html`),
+            "utf8",
+          )
+          .replace(/<script[\s\S]*?<\/script>/g, "")
+          .replace(
+            "/* DEERMATE_DESIGN_TOKENS */",
+            fs.readFileSync(
+              path.join(
+                root,
+                "backend/internal/controlplane/design-tokens.css",
+              ),
+              "utf8",
+            ),
+          );
+        await page.setContent(html);
+        if (dark)
+          await page.locator("html").evaluate((e) => e.classList.add("dark"));
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        );
+        if (overflow) throw Error(`${name} overflow ${width}`);
+        checks.push({
+          surface: name,
+          width,
+          dark,
+          overflow: false,
+          scope: "actual HTML/CSS; scripts disabled, no account/API data",
+        });
+        if (width === 390 || width === 1440)
+          await page.screenshot({
+            path: path.join(
+              root,
+              `.deermate/design-system-20261105/${name}-${width}-${dark ? "dark" : "light"}.png`,
+            ),
+            fullPage: true,
+          });
+      }
+      await page.close();
+    }
+  fs.writeFileSync(
+    path.join(root, ".deermate/design-system-20261105/browser.json"),
+    JSON.stringify(
+      {
+        checks,
+        passed: checks.length,
+        scope:
+          "Headless Chrome local shared primitives and actual Go HTML/CSS shells. No authenticated workflow or model call.",
+      },
+      null,
+      2,
+    ),
+  );
+  await browser.close();
+  console.log(`PASS ${checks.length} theme/viewport checks`);
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

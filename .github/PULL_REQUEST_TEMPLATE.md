@@ -21,3 +21,10 @@ Reference affected FR/NFR or feature-spec criteria. For meaningful behavior chan
 - [ ] Regenerated the documentation catalog and passed `python scripts/product_docs.py --base <task-base>`.
 
 Affected articles or no-update record:
+
+## Design contract
+
+- [ ] For UI changes, read design.md and reuse app/marketing recipes within their scope.
+- [ ] Run python scripts/design_gate.py; include affected pages, themes and responsive checks.
+- [ ] Update design.md for intended token changes, regenerate assets, and explain the reason.
+- [ ] Report visual/keyboard limitations separately; passing the static gate is not browser acceptance.

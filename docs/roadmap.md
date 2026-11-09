@@ -194,3 +194,10 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 默认秘书/手动工作沿用对话模型，设置复用本人记忆管理；独立本地 API 与浏览器通过，[专项收据](verification/default-secretary-memory-2026-11-04.json)。云端交付独立记录。
 
 默认交互与记忆设置已上线 `161fd29`，28+46+17 项公网回归通过；[上线收据](verification/default-secretary-memory-cloud-2026-11-04.json)。不据此标记真实闭环或 R-EVAL 完成。
+
+### 设计系统门禁 · 2026-11-05
+
+- [x] design.md 机器可读 tokens、产品/营销配方与共享生成资产。
+- [x] 第一方产品页面与公共组件视觉迁移，前端构建前与 CI 静态门禁。
+- [x] 真实Go登录后的主要页面/交互状态矩阵，六宽度与浅深色；运行时使用合成数据，范围见2026-11-06验收。
+- [ ] 全面人工可访问性评审、真实运行时/供应方验收、远端必需检查及线上发布。

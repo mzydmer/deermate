@@ -1,0 +1,966 @@
+{
+  "date": "2026-11-06",
+  "state": "locally verified; not deployed",
+  "source_base": "d2c95781109d2a86e064303e0d850e75d62061ed",
+  "source_state": "working tree including the pending design-system refactor",
+  "environment": {
+    "frontend": "actual production Next bundle; all overlay files and pinned patches match current source",
+    "authentication_and_control": "actual Go service with fresh synthetic SQLite and private fixture owner",
+    "runtime": "loopback synthetic HTTP provider; no real Gateway/Native/provider compatibility claim",
+    "viewports": [
+      390,
+      600,
+      800,
+      960,
+      1200,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "reduced_motion": true
+  },
+  "result": {
+    "authenticated_matrix_passed": 169,
+    "interactive_states_passed": 16,
+    "total": 185,
+    "failures": 0,
+    "page_errors": 0,
+    "model_run_attempts": 0,
+    "runtime_run_posts": 0
+  },
+  "fixes": [
+    "Tablet settings explicitly use one grid column below 960px",
+    "Current settings navigation has aria-current, scrolls into view on open/selection and uses neutral selected background",
+    "Expanded/collapsed/mobile sidebar widths use canonical tokens",
+    "Modal/drawer close controls have 44x44px minimum hit areas on mobile"
+  ],
+  "test_harness_corrections": [
+    "Focus assertion waits for Radix close/focus lifecycle",
+    "Synthetic managed-model and channel endpoints return their declared response shapes",
+    "Bootstrap clears initialization cookies before testing interactive login"
+  ],
+  "matrix": {
+    "checks": [
+      "real_go_owner_login",
+      {
+        "name": "workspace",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_account",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_appearance",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_models",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_users",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_notification",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_channels",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_subagents",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "settings_about",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "admin",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "authorizations",
+        "width": 390,
+        "dark": false
+      },
+      {
+        "name": "workspace",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_account",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_appearance",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_models",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_users",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_notification",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_channels",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_subagents",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "settings_about",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "admin",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "authorizations",
+        "width": 390,
+        "dark": true
+      },
+      {
+        "name": "workspace",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_account",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_appearance",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_models",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_users",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_notification",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_channels",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_subagents",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "settings_about",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "admin",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "authorizations",
+        "width": 600,
+        "dark": false
+      },
+      {
+        "name": "workspace",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_account",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_appearance",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_models",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_users",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_notification",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_channels",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_subagents",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "settings_about",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "admin",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "authorizations",
+        "width": 600,
+        "dark": true
+      },
+      {
+        "name": "workspace",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_account",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_appearance",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_models",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_users",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_notification",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_channels",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_subagents",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "settings_about",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "admin",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "authorizations",
+        "width": 800,
+        "dark": false
+      },
+      {
+        "name": "workspace",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_account",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_appearance",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_models",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_users",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_notification",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_channels",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_subagents",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "settings_about",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "admin",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "authorizations",
+        "width": 800,
+        "dark": true
+      },
+      {
+        "name": "workspace",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_account",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_appearance",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_models",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_users",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_notification",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_channels",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_subagents",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "settings_about",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "admin",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "authorizations",
+        "width": 960,
+        "dark": false
+      },
+      {
+        "name": "workspace",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_account",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_appearance",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_models",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_users",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_notification",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_channels",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_subagents",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "settings_about",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "admin",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "authorizations",
+        "width": 960,
+        "dark": true
+      },
+      {
+        "name": "workspace",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_account",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_appearance",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_models",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_users",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_notification",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_channels",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_subagents",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "settings_about",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "admin",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "authorizations",
+        "width": 1200,
+        "dark": false
+      },
+      {
+        "name": "workspace",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_account",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_appearance",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_models",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_users",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_notification",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_channels",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_subagents",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "settings_about",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "admin",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "authorizations",
+        "width": 1200,
+        "dark": true
+      },
+      {
+        "name": "workspace",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_account",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_appearance",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_models",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_users",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_notification",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_channels",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_subagents",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "settings_about",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "admin",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "authorizations",
+        "width": 1440,
+        "dark": false
+      },
+      {
+        "name": "workspace",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "task_filters_and_evidence",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "memory_settings_layout",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_account",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_appearance",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_models",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_users",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_notification",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_channels",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_subagents",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "settings_about",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "chat_draft_only",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "admin",
+        "width": 1440,
+        "dark": true
+      },
+      {
+        "name": "authorizations",
+        "width": 1440,
+        "dark": true
+      }
+    ],
+    "failures": [],
+    "errors": [],
+    "runAttempts": 0,
+    "scope": "Actual Go login/production React/Go pages; synthetic loopback runtime for visual states. No real model/native execution."
+  },
+  "states": {
+    "checks": [
+      "settings_keyboard_focus_stays_in_modal",
+      "inline_invalid_timezone_error",
+      "profile_saved_through_real_go",
+      "memory_create_visible",
+      "memory_search_empty_state",
+      "memory_correction_visible",
+      "forget_remains_usable_after_memory_disabled",
+      "task_loading_state",
+      "task_empty_state",
+      "task_error_state",
+      "detail_completed_and_focus_restore",
+      "detail_failed_and_focus_restore",
+      "detail_working_and_focus_restore",
+      "detail_input_required_and_focus_restore",
+      "detail_submitted_and_focus_restore",
+      "detail_cancelled_and_focus_restore"
+    ],
+    "errors": [],
+    "runAttempts": 0,
+    "scope": "Real Go profile/memory admission and browser UI; synthetic memory provider/runtime; no model or Native calls."
+  },
+  "retained_checks": {
+    "design_gate": "passed",
+    "token_sync": "passed",
+    "pytest_design_overlay": 19,
+    "ruff": "passed",
+    "production_build": "passed; build-auth-accepted.log; complete 178-page build and typecheck",
+    "product_documentation_impact": "passed against HEAD"
+  },
+  "screenshots": [
+    "docs/assets/design-auth-settings-tablet-2026-11-06.png",
+    "docs/assets/design-auth-detail-mobile-2026-11-06.png"
+  ],
+  "limits": [
+    "No production/cloud rollout in this task",
+    "No real provider or Native execution",
+    "No blanket accessibility certification or claim about all third-party extension dialogs",
+    "Remote required-status branch protection remains unconfigured"
+  ],
+  "source_sha256": {
+    "backend/internal/controlplane/admin.html": "8553aaee50d02c3ea1e2b3c635c56f0bded5b6b7bd32ba3052a3af07685a61f2",
+    "backend/internal/controlplane/authorizations.html": "cb5fbbb220afa83201c026516107873992d0436390d87c551095ba253f078e79",
+    "frontend/overlay/src/app/docs/[...slug]/page.tsx": "60b511b58e579383f36b21c20a8d51437bb232b9d20f565d29b5cfc18c606299",
+    "frontend/overlay/src/app/docs/layout.tsx": "2b96e9599f81d902982f18a4f11ca5c370e99a33cd58eb1b080d84c792b12246",
+    "frontend/overlay/src/app/docs/page.tsx": "b66f01fd4254d4b317852ad35001cd1398bf2b65012cffd5de193a1ad342e312",
+    "frontend/overlay/src/app/page.tsx": "85a97010c64e520a2c8f1c502e3242e080ddc53382770a9e6b70918fa5070fe8",
+    "frontend/overlay/src/app/workspace/page.tsx": "af0da81e1e0a1ff1c67fb9176bc4b0140430cd05d78e50b8466519b823e6822f",
+    "frontend/overlay/src/components/deermate/auth-frame.tsx": "aa9b46a1fefea184d75b04219122b0a16b578f880030c72a6af6a2034f06596c",
+    "frontend/overlay/src/components/deermate/brand.tsx": "7074aaee5d73d123bc4f6838f787ea350cd0c06a825f5d8f726de19c316122b7",
+    "frontend/overlay/src/components/deermate/continuous-intents.ts": "a80b56cfb724e0cd1650dc39cca7a45842e8cf74c7d3f35a6f1cb89ba23a0be6",
+    "frontend/overlay/src/components/deermate/continuous-secretary.tsx": "b2c36ba5d5f5029666f7b2769671369913b0b600fac68d6eadf5aef988984a49",
+    "frontend/overlay/src/components/deermate/desk.tsx": "e0de493f12437f8f1dd4aee126438f570bbf69ca4b30921dbe955f7d9588e2f4",
+    "frontend/overlay/src/components/deermate/motion-tabs.tsx": "298c0869110778bc65a774a0ba99d760cba98ef74da19cdfe6a22b86ce842151",
+    "frontend/overlay/src/components/deermate/personal-home.tsx": "a0aa2298f7ce5b3ce44ccff4df6ea63c9c43d4bf130d3abcba5ab751bdc00e76",
+    "frontend/overlay/src/components/deermate/personal-memory.tsx": "32ed3e52341599e2c3b0e078ee21f9fd0e572a118d91f0b741387bb60ef47888",
+    "frontend/overlay/src/components/deermate/product-docs.tsx": "6b9fc06a25941a433df33389615cd17aa6282c1618fdd76987ea3c9f43660cdf",
+    "frontend/overlay/src/components/deermate/task-detail.tsx": "4802347daf3e2c7a19a46ca382986d842972aed6c50b62c6dce6b51f7999806d",
+    "frontend/overlay/src/components/workspace/settings/memory-settings-page.tsx": "32370c0ee7405dd9736770d2933cb1b26a3063c6e804318bb9ec63fe5c70750e",
+    "frontend/overlay/src/components/workspace/welcome.tsx": "bbda07f06f735b929c7b1358d1e4831ee90357e80d0c0d3b20437b73779f06f9",
+    "frontend/overlay/src/components/workspace/workspace-header.tsx": "83a450f0b242a5cdf6259d24c6282276f61adff5b9ea1bd3b294d78a8c11628a",
+    "frontend/overlay/src/styles/deermate.css": "dbf310db9dcef06c769080147d2d30396647ce60aa07d84f7f2d864c36563237",
+    "frontend/overlay/src/styles/design-components.css": "33856fec48e2b2b0f54f8e1f9d93d51d5de863af77c6f8cfe0e1e1842dcd6f80",
+    "frontend/overlay/src/styles/design-system.css": "25e68115e8faa00737fbb69c66bf312231c79c7ab5c630291ccf5459ac7a83ce",
+    "frontend/overlay/src/styles/design-tokens.css": "3583ffe83ebe120698849dabf653183831893c00f254981b64e8fad03764f046",
+    "frontend/overlay/src/styles/product-docs.css": "3867c322e7e71d85f7dfee45ba0510214ad2eb9464ef8c038ccb23b29e13d4e0",
+    "src/deermate/tooling_ui/index.mjs": "152448a72d9526a2279e3be87785a9faea5d516a718011479f152ab61d962c99",
+    "frontend/patches.json": "c5063c902035f8604dbe9eeab0bab19f18480404e41c20bbcec8796fd12c0ce2",
+    "scripts/verify_authenticated_design.cjs": "2ed590ea1f2866ed638391c9cdcddd428b20601b89ed640f1307efbe9b23fef8",
+    "scripts/verify_design_states.cjs": "04ae3f6f77093cfb43fb07c20efa31c127125acd0265ccd86ea1a82d8fe3e7d8",
+    "scripts/design_visual_fixture.py": "b0a75c5c8a6856a790ecc02497c61507ae79e77932e677975d0fe0bcc18a81ca"
+  }
+}

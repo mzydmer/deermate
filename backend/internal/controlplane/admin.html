@@ -26,34 +26,37 @@
     }
     body {
       margin: 0;
-      font: 14px/1.6 var(--dm-font-sans);
+      font: var(--ds-typography-body-sm-fontSize)/var(
+          --ds-typography-body-sm-lineHeight
+        )
+        var(--dm-font-sans);
       color: var(--dm-foreground);
       background: var(--dm-background);
     }
     main {
-      max-width: 1200px;
+      max-width: none;
       margin: auto;
-      padding: 40px 32px;
+      padding: var(--ds-spacing-lg);
     }
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: var(--ds-spacing-md);
     }
     a {
       color: var(--dm-info);
       text-underline-offset: 3px;
     }
     h1 {
-      font-size: 32px;
-      line-height: 1.25;
-      letter-spacing: -0.7px;
+      font-size: var(--ds-typography-display-md-fontSize);
+      line-height: var(--ds-typography-display-md-lineHeight);
+      letter-spacing: var(--ds-tracking-cjk);
       font-weight: 600;
     }
     h2 {
-      font-size: 20px;
-      line-height: 1.4;
+      font-size: var(--ds-typography-display-sm-fontSize);
+      line-height: var(--ds-typography-display-sm-lineHeight);
       font-weight: 600;
     }
     .muted {
@@ -62,29 +65,29 @@
     section {
       background: var(--dm-background);
       border: 1px solid var(--dm-border);
-      border-radius: var(--dm-radius-md);
-      padding: 24px;
-      margin: 24px 0;
+      border-radius: var(--ds-rounded-md);
+      padding: var(--ds-spacing-lg);
+      margin: var(--ds-spacing-lg) 0;
     }
     form {
       display: flex;
-      gap: 12px;
+      gap: var(--ds-spacing-sm);
       flex-wrap: wrap;
       align-items: end;
     }
     label {
       display: grid;
-      gap: 8px;
-      font-size: 12px;
+      gap: var(--ds-spacing-xs);
+      font-size: var(--ds-typography-caption-fontSize);
     }
     input,
     select,
     button {
       font: inherit;
       min-height: var(--dm-control-height);
-      padding: 7px 12px;
+      padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
       border: 1px solid var(--dm-border-strong);
-      border-radius: var(--dm-radius-sm);
+      border-radius: var(--ds-rounded-md);
       color: var(--dm-foreground);
       background: var(--dm-background);
     }
@@ -109,28 +112,28 @@
       cursor: wait;
     }
     :is(button, a, input, select, summary):focus-visible {
-      outline: 2px solid var(--dm-focus);
-      outline-offset: 3px;
+      outline: var(--ds-focus-width) solid var(--dm-focus);
+      outline-offset: var(--ds-focus-offset);
     }
     table {
       border-collapse: collapse;
       width: 100%;
-      font-size: 14px;
+      font-size: var(--ds-typography-body-sm-fontSize);
     }
     th,
     td {
       text-align: left;
-      padding: 16px 8px;
+      padding: var(--ds-spacing-sm) var(--ds-spacing-md);
       border-bottom: 1px solid var(--dm-border);
     }
     th {
       color: var(--dm-muted);
-      font-size: 12px;
+      font-size: var(--ds-typography-caption-fontSize);
       font-weight: 500;
     }
     td.actions {
       display: flex;
-      gap: 8px;
+      gap: var(--ds-spacing-xs);
       flex-wrap: wrap;
     }
     #message {
@@ -144,22 +147,22 @@
       overflow: auto;
     }
     details {
-      margin-top: 24px;
+      margin-top: var(--ds-spacing-lg);
     }
     summary {
       cursor: pointer;
     }
     dialog {
-      width: min(440px, calc(100vw - 40px));
-      padding: 24px;
+      width: min(var(--ds-sizes-modal), calc(100vw - 32px));
+      padding: var(--ds-spacing-lg);
       background: var(--dm-background);
       color: var(--dm-foreground);
       border: 1px solid var(--dm-border-strong);
-      border-radius: var(--dm-radius-lg);
-      box-shadow: 0 16px 48px #0003;
+      border-radius: var(--ds-rounded-lg);
+      box-shadow: var(--ds-shadows-level-5);
     }
     dialog::backdrop {
-      background: #0006;
+      background: var(--ds-colors-backdrop);
     }
     dialog form,
     dialog label {
@@ -169,18 +172,18 @@
     dialog .dialog-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
+      gap: var(--ds-spacing-xs);
+      margin-top: var(--ds-spacing-md);
     }
-    @media (max-width: 600px) {
+    @media (width < 600px) {
       main {
-        padding: 24px 20px;
+        padding: var(--ds-spacing-lg) var(--ds-spacing-md);
       }
       section {
-        padding: 16px;
+        padding: var(--ds-spacing-md);
       }
       h1 {
-        font-size: 24px;
+        font-size: var(--ds-typography-display-md-fontSize);
       }
       input,
       select,
@@ -189,7 +192,7 @@
       }
       input,
       select {
-        font-size: 16px;
+        font-size: var(--ds-typography-body-md-fontSize);
       }
       form,
       form label {
@@ -203,7 +206,10 @@
         <p class="muted">DEERMATE / ADMINISTRATION</p>
         <h1>管理工作台</h1>
       </div>
-      <div><a href="/admin/agents">Agent 授权</a> · <a href="/workspace">返回工作区 →</a></div>
+      <div>
+        <a href="/admin/agents">Agent 授权</a> ·
+        <a href="/workspace">返回工作区 →</a>
+      </div>
     </header>
     <p class="muted">
       管理成员、角色和访问权限。普通成员可以查看自己的会话，管理员可以分派和执行任务。
