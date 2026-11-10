@@ -122,4 +122,4 @@ DeerMem owns personal fact files and FTS5 through the internal runtime
 | 画板、来源和导出合同 | [素材说明](assets/readme-tech-v3/README.md) |
 | 实际本地验证范围 | [设计验收记录](readme-tech-v3-validation.json) |
 
-视觉稿由专门的 UI 设计子 Agent 制作，主 Agent 负责技术语义、浏览器复核和媒体导出。方案保存在独立分支 `design/readme-tech-20261110`，未发布为 main 或线上产品的新版本。
+视觉稿由专门的 UI 设计子 Agent 制作，主 Agent 负责技术语义、浏览器复核和媒体导出。方案制作于独立分支 `design/readme-tech-20261110`，设计提交为 `6414ecb`；按用户后续要求随交付记录合入 main。根 README 与线上产品尚未替换，设计验收记录保留为合入前的快照。
