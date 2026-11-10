@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "source_base": "860390c4b7d20e5bbae4c1ebc967ad482bc2fa71",
+  "capture_date": "2026-11-10",
+  "source": "Running local Workspace v2 production build",
+  "sample_data": true,
+  "actual_ui_and_persisted_memory_correction": true,
+  "empty_temporary_chat_created": true,
+  "model_submissions": 0,
+  "native_tasks": 0,
+  "page_errors": [],
+  "synthetic_demo_account_disabled_after_capture": true,
+  "video": {
+    "codec": "H.264",
+    "pixel_format": "yuv420p",
+    "width": 1280,
+    "fps": 24,
+    "audio": false,
+    "decoded_without_errors": true
+  },
+  "gif": {
+    "width": 960,
+    "fps": 8,
+    "seconds": 7,
+    "decoded_without_errors": true
+  },
+  "files": {
+    "workspace.png": {
+      "bytes": 92733,
+      "sha256": "0214a231947aa09c0e11433d400ac175b04436c6cfedf0b0013fe08cb9513d4d"
+    },
+    "memory-mobile.png": {
+      "bytes": 40744,
+      "sha256": "62b669dd454bd0ecb3e77a1590d2b7939d01ab9ed988d01f8efe8bef50be9220"
+    },
+    "workspace-preview.gif": {
+      "bytes": 311185,
+      "sha256": "9993d4aa7fbee05ed8101dee39b1dbe9821548427e65161134cd782eebea55d6"
+    },
+    "workspace-tour.mp4": {
+      "bytes": 294390,
+      "sha256": "555bc1ccc94428e6a37bf6d71c4cb6a09af7c04ada74e9f7bebfd1fb1c1d3007"
+    }
+  },
+  "scope": "Local production UI, sample manual facts and one real followed topic. Memory correction persists through Go and DeerMem; empty temporary topic created. No model, Native run, or production account.",
+  "browser_playback": {
+    "width": 1280,
+    "height": 800,
+    "duration_seconds": 22.041667,
+    "ended": true,
+    "error": null
+  },
+  "markdown_preview": [
+    {
+      "lang": "en",
+      "width": 1280,
+      "local_media_loaded": true,
+      "no_horizontal_overflow": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "local_media_loaded": true,
+      "no_horizontal_overflow": true
+    },
+    {
+      "lang": "zh",
+      "width": 1280,
+      "local_media_loaded": true,
+      "no_horizontal_overflow": true
+    },
+    {
+      "lang": "zh",
+      "width": 390,
+      "local_media_loaded": true,
+      "no_horizontal_overflow": true
+    }
+  ],
+  "video_frames_visually_reviewed_seconds": [
+    8,
+    13,
+    20
+  ],
+  "local_link_paths_checked": 4,
+  "readme_bytes": {
+    "README.md": {
+      "before": 31404,
+      "after": 8513
+    },
+    "README.zh-CN.md": {
+      "before": 25556,
+      "after": 7828
+    }
+  }
+}

@@ -1,5 +1,7 @@
 # Retained verification evidence
 
+- [README media](readme-media-2026-11-10.json): actual local Workspace v2 UI, sample account and persisted memory correction, empty temporary topic, zero model/Native work. Presentation evidence, not a new execution or production acceptance.
+
 These receipts describe known test fixtures, not private user work or a production audit. Never commit credentials, prompts, raw traces, databases, host paths or screenshots here.
 
 | Receipt | Scope |
