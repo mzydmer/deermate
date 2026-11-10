@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeerMate — Architecture-led README / visual study v3</title>
+  <link rel="stylesheet" href="../../frontend/overlay/src/styles/design-tokens.css" />
+  <link rel="stylesheet" href="assets/readme-tech-v3/review.css" />
+</head>
+<body>
+  <div id="export-root" hidden></div>
+  <div id="review-shell">
+    <header class="review-header">
+      <a class="review-brand" href="#hero"><span id="header-mark"></span> DeerMate <span class="slash">/</span><span class="review-kicker">README DESIGN STUDY</span></a>
+      <nav aria-label="方案导航"><a href="#architecture">系统架构</a><a href="#film">概念片</a><a href="#storyboard">分镜</a><span class="edition">V3 · 2026.11</span></nav>
+    </header>
+
+    <main>
+      <section class="hero-section" id="hero" aria-label="README 主视觉设计">
+        <div id="hero-stage" class="art-stage hero-stage"></div>
+        <div class="mobile-hero"><p class="eyebrow">PERSONAL AGENT CONTROL PLANE</p><h1>Your agents.<br>One control plane.</h1><p>把 Agent 连成系统，<br>把控制权留在你手里。</p><div id="mobile-hero-art"></div><div class="mobile-hero-meta">Go × DeerFlow × Python <span>MIT · Self-hosted · Alpha</span></div></div>
+        <div class="hero-caption"><span><b>01 / BRAND</b> 主视觉从界面截图转向系统本身</span><span>Architecture concept · Illustrative flow</span></div>
+      </section>
+
+      <section class="intro editorial-section">
+        <div class="section-label">THE IDEA</div>
+        <div class="intro-copy"><h2>让架构成为第一眼。</h2><p>一个持续响应的 Router，一组独立执行的 Worker。请求穿过明确的接纳边界，工作留在自己的机器，记忆与证据把每一轮连起来。</p><p class="quiet">科技感来自系统如何运转：信号的分叉、权限的边界、会话的延续，以及可检查的结果。</p></div>
+      </section>
+
+      <section class="principles editorial-section" aria-label="四个技术原则">
+        <article><span class="principle-index">01</span><div class="principle-icon" data-icon="routing"></div><h3>Persistent routing</h3><p>协调与长任务分开，秘书持续接待下一件事。</p></article>
+        <article><span class="principle-index">02</span><div class="principle-icon" data-icon="session"></div><h3>Native continuity</h3><p>同一话题接回同一个原生根与工作区。</p></article>
+        <article><span class="principle-index">03</span><div class="principle-icon" data-icon="scope"></div><h3>Scoped authority</h3><p>范围、预算和操作身份在接纳时检查。</p></article>
+        <article><span class="principle-index">04</span><div class="principle-icon" data-icon="memory"></div><h3>Traceable memory</h3><p>从规范来源到事实，再进入允许的上下文。</p></article>
+      </section>
+
+      <section class="architecture-section" id="architecture">
+        <div class="section-heading"><div><div class="section-label">02 / SYSTEM</div><h2>每条线，都有职责。</h2></div><p>控制面、协调层与执行端分开。<br>个人记忆与工作证据各有自己的生命周期。</p></div>
+        <div id="architecture-stage" class="art-stage architecture-stage"></div>
+        <div class="architecture-notes"><p><strong>Go 接纳，Router 协调。</strong>路由提议不等于执行授权；已关联事件经 Go 校验后回到原工作脉络。</p><p><strong>你的机器，原生会话。</strong>HTTPS / SSH 连接受信任端点；这不是云端不可读的端到端加密声明。</p></div>
+      </section>
+
+      <section class="film-section" id="film">
+        <div class="section-heading"><div><div class="section-label">03 / ARCHITECTURE FILM</div><h2>From intent to evidence.</h2></div><p>36 秒架构演绎。<br>让读者看见一次意图如何成为受控、持续、可检查的工作。</p></div>
+        <div id="film-stage" class="art-stage film-stage" role="img" aria-label="36 秒架构概念片：意图、接纳、并行工作、原生会话、记忆和证据"></div>
+        <div class="film-controls">
+          <button id="play" type="button" aria-label="播放架构概念片"><span class="play-symbol">▶</span><span id="play-label">播放概念片</span></button>
+          <input id="timeline" type="range" min="0" max="36" step="0.05" value="0" aria-label="概念片时间轴" />
+          <output id="timecode" for="timeline">00:00 / 00:36</output>
+          <label class="reduce-motion"><input type="checkbox" id="reduce-motion" />减少动态</label>
+        </div>
+        <div class="chapter-nav" aria-label="选择概念片分镜"></div>
+        <p class="film-disclosure">架构概念与示意对象。不是实时任务录像，也不表示所有规划扩展已经接入。</p>
+      </section>
+
+      <section class="storyboard-section" id="storyboard">
+        <div class="section-heading"><div><div class="section-label">04 / STORYBOARD</div><h2>讲机制，不拍表单。</h2></div><p>用同一套视觉语言，<br>从品牌主视觉延伸到完整技术叙事。</p></div>
+        <div id="storyboard-stage" class="art-stage storyboard-stage"></div>
+        <div id="mobile-storyboard" class="mobile-storyboard"></div>
+      </section>
+
+      <section class="research editorial-section">
+        <div class="section-label">RESEARCH, MADE VISIBLE</div>
+        <div><h2>把技术理念变成可识别的设计。</h2><div class="research-rows"><div><b>Routing</b><span>前台响应与长任务并行，哪些事件需要再次路由？</span><code>Router / Worker</code></div><div><b>Continuity</b><span>断线之后，怎样找回原会话而不重复副作用？</span><code>op-id / native root</code></div><div><b>Context</b><span>私人记忆怎样带着来源进入上下文，并能退出？</span><code>source / scope / barrier</code></div></div><p class="quiet">DSH Super-agent 提供 Router/Worker 思路启发；DeerMate 的实现重点是个人设备、Go 接纳、会话身份和证据边界。对照研究与收益指标另行评估。</p></div>
+      </section>
+
+      <footer class="review-footer"><span>DeerMate / Architecture-led README direction</span><span>设计提案 · 主 README 与线上产品尚未替换</span><a href="readme-tech-v3.md">阅读完整方案 ↗</a></footer>
+    </main>
+  </div>
+  <script src="assets/readme-tech-v3/visuals.js"></script>
+</body>
+</html>

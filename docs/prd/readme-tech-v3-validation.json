@@ -1,0 +1,251 @@
+{
+  "kind": "design proposal verification",
+  "date": "2026-11-10T16:00:38.041201+00:00",
+  "base": "9ed993adbbf513a759ed1afab245f2963ff84aa2",
+  "branch": "design/readme-tech-20261110",
+  "scope": "Architecture-led README proposal; illustrative media; no product release",
+  "browser": {
+    "engine": "local Google Chrome via Playwright",
+    "exports": {
+      "passed": true,
+      "checks": [
+        {
+          "mode": "hero",
+          "width": 1600,
+          "height": 960
+        },
+        {
+          "mode": "architecture",
+          "width": 1600,
+          "height": 1216
+        },
+        {
+          "mode": "storyboard",
+          "width": 1800,
+          "height": 1195
+        },
+        {
+          "mode": "review",
+          "width": 1440,
+          "no_horizontal_overflow": true
+        },
+        {
+          "mode": "review",
+          "width": 390,
+          "no_horizontal_overflow": true
+        },
+        {
+          "mode": "keyboard_play_pause"
+        },
+        {
+          "mode": "keyboard_timeline"
+        },
+        {
+          "mode": "reduced_motion_control"
+        }
+      ],
+      "page_errors": [],
+      "external_requests": 0
+    },
+    "interactions": {
+      "passed": true,
+      "checks": [
+        "paused_by_default",
+        "keyboard_space_starts_playback",
+        "keyboard_space_pauses_playback",
+        "keyboard_range_home_end",
+        "chapter_selection",
+        "deterministic_frames",
+        "reduced_motion_fixes_signal_positions",
+        "stops_at_36_seconds",
+        "no_page_overflow_1440",
+        "no_page_overflow_900",
+        "no_page_overflow_390",
+        "mobile_art_and_contained_architecture_scroll",
+        "system_reduced_motion_preference"
+      ],
+      "page_errors": [],
+      "external_requests": []
+    }
+  },
+  "media": {
+    "frames": 864,
+    "fps": 24,
+    "width": 1280,
+    "height": 720,
+    "duration_seconds": 36,
+    "method": "deterministic frame export",
+    "page_errors": [],
+    "video": {
+      "ffmpeg_version": "7.1 built with Apple clang version 13.0.0 (clang-1300.0.29.30)",
+      "codec": "h264",
+      "pix_fmt": "yuv420p(progressive)",
+      "fps": 24.0,
+      "source_size": [
+        1280,
+        720
+      ],
+      "size": [
+        1280,
+        720
+      ],
+      "rotate": 0,
+      "duration": 36.0
+    },
+    "decoded_frames": 864,
+    "gif": {
+      "frames": 60,
+      "duration_ms": 6000,
+      "size": [
+        960,
+        540
+      ]
+    }
+  },
+  "static_assets": [
+    {
+      "svg": "architecture.svg",
+      "safe_local_vector": true,
+      "matches_current_renderer": true
+    },
+    {
+      "svg": "film-cover.svg",
+      "safe_local_vector": true,
+      "matches_current_renderer": true
+    },
+    {
+      "svg": "hero.svg",
+      "safe_local_vector": true,
+      "matches_current_renderer": true
+    },
+    {
+      "svg": "storyboard.svg",
+      "safe_local_vector": true,
+      "matches_current_renderer": true
+    },
+    {
+      "png": "hero",
+      "dimensions": [
+        1600,
+        960
+      ],
+      "decodes": true
+    },
+    {
+      "png": "architecture",
+      "dimensions": [
+        1600,
+        1216
+      ],
+      "decodes": true
+    },
+    {
+      "png": "storyboard",
+      "dimensions": [
+        1800,
+        1195
+      ],
+      "decodes": true
+    },
+    {
+      "png": "film-cover",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "decodes": true
+    }
+  ],
+  "relative_links_checked": 189,
+  "manual_visual_review": [
+    "Hero: dimensional own DeerMark core; Router, Worker, sourced memory and evidence are distinguishable.",
+    "Architecture: Go admission, authorized device, original native root, separate memory/evidence and labelled planned adapters.",
+    "Storyboard and decoded MP4 contact sheet: six narrative beats; all titles fit; illustrative label is visible.",
+    "1440px desktop and 390px mobile: separate hero layout; contained architecture scroll; six mobile storyboard entries."
+  ],
+  "gates": {
+    "product_docs_write": "passed",
+    "product_docs_base_9ed993a": "passed",
+    "design_gate": "passed; current product UI/token consistency only, not an automatic audit of the marketing illustration",
+    "sync_design_tokens": "passed",
+    "product_doc_diagrams": "passed",
+    "git_diff_check": "passed"
+  },
+  "boundaries": {
+    "main_readme_changed": false,
+    "runtime_code_changed": false,
+    "model_calls": 0,
+    "native_calls": 0,
+    "cloud_changes": false,
+    "published": false,
+    "planned_adapters_claimed_available": false,
+    "comparative_research_claimed_complete": false
+  },
+  "artifacts": [
+    {
+      "path": "docs/prd/assets/readme-tech-v3/README.md",
+      "bytes": 3450,
+      "sha256": "14e83025e9d9a0d0af58f5bfaa5cb1add1dcb2633c05f103692d5796295833a5"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/architecture.png",
+      "bytes": 407501,
+      "sha256": "fd2597136d60c063e79c97b19f6db5576c476772fb70191523c87562030013f9"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/architecture.svg",
+      "bytes": 11629,
+      "sha256": "83e50f6dd9bef1151414edf4438a59cbbdc067a0d967a753efad0f9170941c03"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/concept-film.mp4",
+      "bytes": 545759,
+      "sha256": "cf59057038488bd14097d3e39da903d73efccb7e91c848f636919c74693b5cb5"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/concept-preview.gif",
+      "bytes": 473860,
+      "sha256": "01573340eb060234a92da75a6d2c7433b5a3b3c49367e9000e2ce38c70850aff"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/film-cover.png",
+      "bytes": 260951,
+      "sha256": "fbedf696e4e8fd3800758e2d995f48cabafec4dc126d9e461235079146446cad"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/film-cover.svg",
+      "bytes": 12255,
+      "sha256": "d658db42de04de999ebb14aad9132ef6e792c94eb60666a2f95f53bb5467570d"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/hero.png",
+      "bytes": 438104,
+      "sha256": "3625befe04eca19dab06331b25dc28700910e7e4d1e883fd82064cef73533d55"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/hero.svg",
+      "bytes": 14683,
+      "sha256": "066a5ab71822954fc2986d328b7522d326583df1278e9515977745b8d3fea762"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/review.css",
+      "bytes": 10689,
+      "sha256": "e43b27cdfb0d36bbcc9d3a782580e6848783da988dd3d0ffd5581004b17c0cdc"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/storyboard.png",
+      "bytes": 432677,
+      "sha256": "2848376a9c749f06d73360ad723f99610be0e721eb34040d489edd509790a108"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/storyboard.svg",
+      "bytes": 52193,
+      "sha256": "f117abeb055bad607d0a7ad5811a02c89a97313d7d420522a269bb86f1146050"
+    },
+    {
+      "path": "docs/prd/assets/readme-tech-v3/visuals.js",
+      "bytes": 31803,
+      "sha256": "d9974d7dc6f63c6f1127dd1a582162839de1ca6558df83cd0efe6fe38cbbb827"
+    }
+  ]
+}

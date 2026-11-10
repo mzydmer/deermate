@@ -1,6 +1,12 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-10。本轮 README/媒体基线为 main `860390c`；线上应用源码 595f654、发布文档 bfa91aa 保持不变。原应用与部署证据保留在后文，入口为[实施规格](specs/workspace-assistant-v2.md)和[计划](specs/workspace-assistant-v2-plan.md)。
+最后核对：2026-11-10。当前 README 基线为 main `9ed993a`；本轮在独立分支制作技术品牌视觉方案，尚未替换主 README。线上应用源码 595f654、发布文档 bfa91aa 保持不变。原应用与部署证据保留在后文，入口为[实施规格](specs/workspace-assistant-v2.md)和[计划](specs/workspace-assistant-v2-plan.md)。
+
+## 2026-11-10 · README 技术品牌方案（本地设计交付）
+
+用户反馈操作录屏和朴素头图无法体现项目特点，要求先出架构与技术理念方案，再由专门 UI 设计子 Agent 美化。已完成[方案](prd/readme-tech-v3.md)、[README 骨架](prd/readme-tech-v3-outline.md)、[高保真预览](prd/readme-tech-v3-review.html)、原创矢量主视觉/架构/分镜，以及 36 秒架构概念片与 6 秒 GIF。深色控制空间、蓝青执行信号和紫色来源记忆强调 Go 接纳、持续 Router/Worker、原生会话连续性及独立证据；规划适配器明确分区。
+
+交付在 `design/readme-tech-20261110`，不是 main 或线上新版本。预览默认暂停，含键盘、时间轴、减少动态与手机排版；本地浏览器和媒体验证见[设计记录](prd/readme-tech-v3-validation.json)。这轮没有模型、Native 或生产操作。下一步按这套视觉语言接入正式中英文 README；此前真实操作素材保留为补充资料。
 
 ## 2026-11-10 · README 与操作演示
 
