@@ -60,12 +60,33 @@
     "first_apply_rolled_back_before_public_exposure": true,
     "upstream_terminal_seals_recovered_by_old_runtime": 17,
     "business_run_fields_preserved": true,
-    "second_apply_full_old_column_comparison_passed": true
+    "second_apply_full_old_column_comparison_passed": true,
+    "initial_ssh_disconnect_reconciled_before_retry": true,
+    "initial_browser_connection_closed": true,
+    "final_browser_navigation_retries": 0,
+    "grant_entities_compared_to_both_consistent_backups": true
   },
   "limits": [
     "No real model or Native acceptance; no device authorization change",
     "Private account, database, configuration and screenshots remain outside Git",
-    "The first main CI failed on an immediate focus assertion; strict lifecycle polling passed in the subsequent full main run",
-    "Product documentation snapshot synchronization is recorded separately after activation"
-  ]
+    "The first main CI failed on an immediate focus assertion; strict lifecycle polling passed in the subsequent full main run"
+  ],
+  "documentation_release": {
+    "revision": "69bf1ce8667537e0bfed6544fe556fea9e5602ec",
+    "frontend_image": "sha256:23f294a667ce1e18ae9478018d0c04b2fe0e94582ee0ba1065fad3b9305e6295",
+    "verified_files": 2869,
+    "database_backup_quick_check": "ok",
+    "backend_images_preserved": true,
+    "historical_rows_and_grants_preserved": true,
+    "public_checks": 24,
+    "articles": 4,
+    "assets": 20,
+    "browser_page_checks": 8,
+    "browser_page_errors": 0,
+    "ci": {
+      "run_id": 43393059728,
+      "jobs": 12,
+      "all_success": true
+    }
+  }
 }
