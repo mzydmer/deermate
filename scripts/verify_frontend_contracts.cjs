@@ -53,6 +53,25 @@ assert(
     await p.getByLabel("Password", { exact: true }).fill(owner.password);
     await p.locator("button[type=submit]").click();
     await p.waitForURL((u) => u.pathname === "/workspace");
+    const me = await (await p.request.get(base + "/api/v1/auth/me")).json();
+    const csrf = (await auth.cookies()).find(
+      (c) => c.name === "csrf_token",
+    ).value;
+    const temporary = await p.request.post(base + "/api/me/temporary-topics", {
+      headers: { "X-CSRF-Token": csrf, "X-Expected-User-Id": me.id },
+      data: { operation_id: require("node:crypto").randomUUID() },
+    });
+    assert.equal(temporary.status(), 200);
+    const temporaryThread = (await temporary.json()).thread_id;
+    assert(temporaryThread);
+    assert.equal(
+      (
+        await (
+          await p.request.get(base + "/api/me/topic-memory/" + temporaryThread)
+        ).json()
+      ).mode,
+      "temporary",
+    );
     const storage = await auth.storageState();
     await auth.close();
     checks.push("real_go_login");
@@ -207,6 +226,7 @@ assert(
           ["work", "/workspace/work"],
           ["memory", "/workspace/memory"],
           ["chat", "/workspace/chats/new"],
+          ["chat-existing", "/workspace/chats/" + temporaryThread],
           ["docs", "/docs"],
           ["article", "/docs/guide/quickstart"],
           ["admin", "/admin"],
@@ -216,19 +236,40 @@ assert(
             name,
             page,
             async () => {
+              const historyResponse =
+                name === "chat-existing"
+                  ? page.waitForResponse((r) =>
+                      new URL(r.url()).pathname.endsWith(
+                        "/" + temporaryThread + "/messages/page",
+                      ),
+                    )
+                  : null;
               await page.goto(base + route);
+              if (historyResponse) {
+                const response = await historyResponse;
+                assert.equal(response.status(), 200);
+                assert.deepEqual(await response.json(), {
+                  data: [],
+                  has_more: false,
+                  next_before_seq: null,
+                });
+              }
               if (name === "home")
                 await page.getByTestId("message-input").waitFor();
               if (name === "work")
                 await page.getByTestId("work-record-row").first().waitFor();
               if (name === "memory")
                 await page.getByTestId("memory-content").waitFor();
-              if (name === "chat")
+              if (name.startsWith("chat"))
                 await page.locator("textarea[name=message]").waitFor();
               await page.waitForTimeout(250);
               await geometry(page);
               await contrast(page);
-              if (["home", "work", "memory", "chat"].includes(name)) {
+              if (
+                ["home", "work", "memory", "chat", "chat-existing"].includes(
+                  name,
+                )
+              ) {
                 const side = page.locator("[data-sidebar=sidebar]").first();
                 if (width < 600)
                   assert.equal(
@@ -243,7 +284,7 @@ assert(
                   assert.equal(Math.round(box.width), width < 960 ? 64 : 240);
                 }
               }
-              if (name === "home" || name === "chat") {
+              if (name === "home" || name.startsWith("chat")) {
                 const input =
                   name === "home"
                     ? page.getByTestId("message-input")
@@ -253,7 +294,7 @@ assert(
                   name: "Send",
                   exact: true,
                 });
-                if (name === "chat") {
+                if (name.startsWith("chat")) {
                   assert(await send.isDisabled(), "empty chat cannot submit");
                   const shape = await send.evaluate((e) => ({
                     width: e.getBoundingClientRect().width,
@@ -266,7 +307,7 @@ assert(
                     "send stays circular",
                   );
                 }
-                if (name === "chat")
+                if (name.startsWith("chat"))
                   assert.equal(
                     Math.round(
                       (await page.getByTestId("chat-topbar").boundingBox())
@@ -284,6 +325,49 @@ assert(
                   );
                 }
 
+                async function checkComposerFooter() {
+                  if (name !== "chat-existing") return;
+                  await page
+                    .getByTestId("chat-memory-banner")
+                    .getByRole("status")
+                    .waitFor();
+                  assert(
+                    await page.evaluate(
+                      () =>
+                        document.documentElement.scrollHeight <= innerHeight,
+                    ),
+                    "temporary banner must not push the composer below viewport",
+                  );
+                  const footer = page.getByText(
+                    "DeerFlow is AI and can make mistakes",
+                    { exact: true },
+                  );
+                  const bounds = await footer.boundingBox();
+                  const form = await input
+                    .locator("xpath=ancestor::form")
+                    .boundingBox();
+                  assert(
+                    bounds && form,
+                    "conversation composer and disclaimer visible",
+                  );
+                  assert(
+                    bounds.y >= form.y + form.height + 7.9,
+                    "disclaimer has normal-flow spacing below input",
+                  );
+                  assert(
+                    bounds.y + bounds.height <= 900 - 15.9,
+                    "whole disclaimer has bottom breathing room",
+                  );
+                  assert(
+                    form.y >= 64 && form.y + form.height < 900,
+                    "composer remains in viewport",
+                  );
+                  assert.equal(
+                    await footer.evaluate((e) => getComputedStyle(e).position),
+                    "static",
+                  );
+                }
+                await checkComposerFooter();
                 assert.equal(
                   await input.evaluate((e) => getComputedStyle(e).resize),
                   "none",
@@ -295,10 +379,11 @@ assert(
                   await input.evaluate((e) => e.clientHeight < 400),
                   "composer bounded height",
                 );
-                if (name === "chat")
+                if (name.startsWith("chat"))
                   assert(await send.isEnabled(), "draft enables submit");
+                await checkComposerFooter();
                 await input.fill("");
-                if (name === "chat") assert(await send.isDisabled());
+                if (name.startsWith("chat")) assert(await send.isDisabled());
               }
               if (width < 600) {
                 const undersized = await page

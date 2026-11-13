@@ -42,7 +42,7 @@
     "group": "guide",
     "title": "对话与任务结果",
     "description": "理解同一会话的连续追问、执行状态和独立验证。",
-    "updated": "2026-11-12",
+    "updated": "2026-11-13",
     "status": "使用指南",
     "sources": [
       "docs/chat-sessions.md",
