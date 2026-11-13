@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-13",
+  "scope": "Live original-account workflow and layout review; no Native execution authority change",
+  "real_model": {
+    "submissions": 2,
+    "temporary_topics_created": 1,
+    "run_completion_statuses": [
+      "success",
+      "success"
+    ],
+    "tool_results": [
+      "deermate_check_worker_connection",
+      "list_background_tasks",
+      "web_fetch"
+    ],
+    "stream_refresh_duplicate_submissions": 0,
+    "terminal_command_executed": false,
+    "native_submissions": 0,
+    "worker_check": {
+      "status": "blocked",
+      "error_code": "authorization_selection_required",
+      "existing_grant_status": "expired",
+      "execution_readiness": "not_checked"
+    },
+    "public_web_read": {
+      "passed": true,
+      "tool": "web_fetch",
+      "table_rendered": true
+    }
+  },
+  "memory": {
+    "passed": true,
+    "synthetic_fact_count": 1,
+    "corrected_revision": 2,
+    "source_panel_checked": true,
+    "cancel_forget_preserved_fact": true,
+    "confirmed_forget_removed_fact": true,
+    "remaining_synthetic_active_facts": 0,
+    "personal_preferences_preserved": true,
+    "deletion_barrier_advanced": true
+  },
+  "live_read_only_ui": {
+    "passed": true,
+    "checks": 6,
+    "widths": [
+      390,
+      768,
+      1440
+    ],
+    "themes": [
+      "dark"
+    ],
+    "page_errors": 0,
+    "mutations": 0
+  },
+  "layout_regression": {
+    "reported_mobile_height": 1036,
+    "viewport_height": 1000,
+    "fixed_composer_footer_flow": true,
+    "fixed_banner_height_allocation": true,
+    "browser_contracts": 113,
+    "failures": 0,
+    "page_errors": 0,
+    "model_submissions": 0,
+    "widths": [
+      390,
+      768,
+      1024,
+      1280,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ]
+  },
+  "local_checks": {
+    "production_build": true,
+    "lint": true,
+    "typecheck": true,
+    "design_token_gates": true,
+    "focused_python_tests_after_main_merge": 63,
+    "locked_preparation_matches_tested_frontend": true
+  },
+  "limits": [
+    "Model completion is not terminal execution or Native success",
+    "Device grant was not renewed and no permissions were changed",
+    "Raw prompts, responses, screenshots, credentials and databases remain private"
+  ],
+  "release": {
+    "merged_pr": 11,
+    "main_merge": "7a33bf0c22b792c4843e7162ce65ffb5223ccb99",
+    "frontend_revision": "6946183acbd6ce5f02e1991d0e99de12a87f9f32",
+    "frontend_image": "sha256:ceb125a759ff3294926c956ac13b460c764a14ea4dcc3973d79020db628b81d8",
+    "ci_run": 43399022656,
+    "ci_successful_jobs": 12,
+    "verified_files": 2965,
+    "database_backup_quick_check": "ok",
+    "historical_rows_and_grants_preserved": true,
+    "backend_images_preserved": true,
+    "public_https_checks": 26,
+    "live_conversation_layout_checks": 6
+  },
+  "followup_mobile_toolbar": "Tokens compaction implemented on separate branch; validation and release pending"
+}

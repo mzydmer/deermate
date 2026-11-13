@@ -263,7 +263,7 @@ class Runtime(BaseHTTPRequestHandler):
                 "scheduled_tasks": {"available": False, "running": False},
             }
         elif path == "/api/models":
-            out = {"models": [], "token_usage": {"enabled": False}}
+            out = {"models": [], "token_usage": {"enabled": True}}
         elif path == "/api/mcp/config":
             out = {"mcp_servers": {}}
         elif path.endswith("/threads/search"):
