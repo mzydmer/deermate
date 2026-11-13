@@ -4,7 +4,7 @@
     "group": "guide",
     "title": "认识 DeerMate",
     "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
-    "updated": "2026-11-12",
+    "updated": "2026-11-13",
     "status": "Alpha",
     "sources": [
       "docs/STATUS.md",
@@ -16,7 +16,8 @@
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
       "docs/verification/workspace-v2-model-2026-11-09.json",
-      "docs/specs/frontend-overhaul.md"
+      "docs/specs/frontend-overhaul.md",
+      "docs/verification/frontend-overhaul-cloud-2026-11-13.json"
     ]
   },
   {
@@ -159,7 +160,7 @@
     "group": "technical",
     "title": "系统架构与设计边界",
     "description": "面向技术与研究读者的组件职责、数据路径和设计取舍。",
-    "updated": "2026-11-12",
+    "updated": "2026-11-13",
     "status": "技术方案",
     "sources": [
       "docs/architecture.md",
@@ -175,7 +176,8 @@
       "docs/verification/observability-2026-11-12.json",
       "docs/verification/observability-cloud-2026-11-12.json",
       "design.md",
-      "docs/specs/frontend-overhaul.md"
+      "docs/specs/frontend-overhaul.md",
+      "docs/verification/frontend-overhaul-cloud-2026-11-13.json"
     ]
   },
   {
@@ -232,7 +234,7 @@
     "group": "changelog",
     "title": "变更日志",
     "description": "查看产品变化、启用条件和交付范围。",
-    "updated": "2026-11-12",
+    "updated": "2026-11-13",
     "status": "持续更新",
     "sources": [
       "docs/EVOLUTION.md",
@@ -252,7 +254,8 @@
       "backend/internal/observability/telemetry.go",
       "docs/verification/observability-2026-11-12.json",
       "docs/verification/observability-cloud-2026-11-12.json",
-      "docs/specs/frontend-overhaul.md"
+      "docs/specs/frontend-overhaul.md",
+      "docs/verification/frontend-overhaul-cloud-2026-11-13.json"
     ]
   }
 ]

@@ -209,7 +209,7 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] P3–P4：工作台/记忆/对话/设置/登录/文档迁移与文件拆分；Go 和 tooling 生成配方对齐。
 - [x] P5：原生控件与视觉分层门禁、1100 行 CSS 预算、反例、全部浏览器 verifier、五宽度双主题与组件截图比较。
 
-[专项规格](specs/frontend-overhaul.md) / [PR #10](https://github.com/mzydmer/deermate/pull/10)。本地合成验收完成；保留上节对全面可访问性、真实运行时和发布的独立限制。
+[专项规格](specs/frontend-overhaul.md) / [PR #10](https://github.com/mzydmer/deermate/pull/10)。本地合成验收完成；2026-11-13 按用户后续授权合入 main 并升级既有实例，实际 HTTPS/页面与保留验证通过。全面可访问性及新的真实模型/Native 验收仍独立。
 
 ## Workspace v2 · 已批准并实施
 

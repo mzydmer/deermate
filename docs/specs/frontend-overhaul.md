@@ -1,6 +1,6 @@
 # Frontend component overhaul
 
-- Status: implemented and locally accepted; PR #10, no main merge or deployment.
+- Status: PR #10 merged; application 06f09d5 deployed with real HTTPS/read-only browser acceptance on 2026-11-13.
 - Requirement: NFR-008; all API, permission and recovery contracts retained.
 - Tracking: https://github.com/mzydmer/deermate/issues/2
 - Base: 66d3088; upstream a1b89d0432de4e45adc59f512cb25bb386ea1e51.
@@ -12,7 +12,7 @@ Native controls and page-specific CSS bypass the existing design recipes. Build 
 
 ## Scope and contract
 
-React overlay, login, documents, Go management/authorization and tooling UI. Wrap existing shadcn/Radix; no upstream primitive replacement, lockfile change or new npm dependencies. Features retain endpoint paths, request bodies, operation IDs, uncertainty journals, source/deletion barriers, temporary-topic policy and server permissions/revisions. No real-provider/Native invocation, personal data, main merge or deployment.
+React overlay, login, documents, Go management/authorization and tooling UI. Wrap existing shadcn/Radix; no upstream primitive replacement, lockfile change or new npm dependencies. Features retain endpoint paths, request bodies, operation IDs, uncertainty journals, source/deletion barriers, temporary-topic policy and server permissions/revisions. Local behavioral acceptance uses synthetic data only; no real-provider or Native invocation. The user subsequently authorized main merge and the existing-instance rollout; production validation reads original-account metadata and keeps private data outside Git.
 
 ## Layers and acceptance
 

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-13",
+  "passed": true,
+  "application_revision": "06f09d5e26ca7aea69971d5b07fee8c42cce8012",
+  "merged_pr": 10,
+  "origin": "https://47.79.234.242",
+  "ci": {
+    "revision": "85f768e051f3f751586390d90f36bf667c0bb00f",
+    "run_id": 43389712764,
+    "jobs": 12,
+    "all_success": true
+  },
+  "release": {
+    "old_images": {
+      "gateway": "sha256:ca574c36a8e1dbe1492c2ce4a7767210e6227164a74788a7d9bb364ff7d19600",
+      "control": "sha256:ca3ba9d79f1d908de61e410da7fdfe50f82b4f3376d1af5156a5502b479204df",
+      "frontend": "sha256:c50f04cdf75b106a9391dac74e0dbece75b4dfc8b77c506a30f15e98c077ec4e",
+      "nginx": "sha256:e5d468e3bd68b4134c47dc03a09eddde323f73324be24617abf53bc92565e197",
+      "edge": "sha256:5e5286cb37d44086d651a5363f05f43a692ce4d649d88fb1bd844579f45fa9e8"
+    },
+    "new_images": {
+      "gateway": "sha256:c9895c1e84530c156b60cfbb5ca5d5d618d489b00fced5a1ed9df696b29cce79",
+      "control": "sha256:8f43c329150828fff0db8ce66c39c9b96de910545f776e18c280e95a61630ec8",
+      "frontend": "sha256:64148e9c239ef4104394081ee0308ffe8ff4f9b0fadd13f3c14c756fff066a3f"
+    },
+    "database_backup_quick_check": "ok",
+    "existing_column_values_preserved": true,
+    "model_runtime_and_grant_files_preserved": true,
+    "verified_frontend_files": 2965,
+    "nginx_edge_images_preserved": true,
+    "historical_counts": {
+      "users": 1,
+      "threads_meta": 14,
+      "runs": 36,
+      "mcp_tasks": 5
+    }
+  },
+  "public_https": {
+    "checks": 26,
+    "historical_threads": 14,
+    "model_submissions": 0,
+    "native_submissions": 0
+  },
+  "public_browser": {
+    "page_checks": 24,
+    "widths": [
+      390,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "page_errors": 0,
+    "model_submissions": 0,
+    "native_submissions": 0
+  },
+  "recovery": {
+    "first_apply_rolled_back_before_public_exposure": true,
+    "upstream_terminal_seals_recovered_by_old_runtime": 17,
+    "business_run_fields_preserved": true,
+    "second_apply_full_old_column_comparison_passed": true
+  },
+  "limits": [
+    "No real model or Native acceptance; no device authorization change",
+    "Private account, database, configuration and screenshots remain outside Git",
+    "The first main CI failed on an immediate focus assertion; strict lifecycle polling passed in the subsequent full main run",
+    "Product documentation snapshot synchronization is recorded separately after activation"
+  ]
+}
