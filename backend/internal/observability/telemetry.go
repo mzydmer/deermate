@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -137,32 +136,6 @@ func Start(ctx context.Context, name string, refs map[string]string) (context.Co
 	return ctx, span
 }
 
-// Transport never records URLs, query strings, bodies, headers or exception text.
-type Transport struct{ Base http.RoundTripper }
-
-func (t Transport) RoundTrip(r *http.Request) (*http.Response, error) {
-	ctx, span := Start(r.Context(), "http.client", nil)
-	defer span.End()
-	req := r.Clone(ctx)
-	Inject(ctx, req.Header)
-	span.SetAttributes(attribute.String("http.request.method", Method(r.Method)))
-	base := t.Base
-	if base == nil {
-		base = http.DefaultTransport
-	}
-	response, err := base.RoundTrip(req)
-	if response != nil {
-		span.SetAttributes(attribute.Int("http.response.status_code", response.StatusCode))
-		if response.StatusCode >= 500 {
-			span.SetStatus(codes.Error, "")
-		}
-	}
-	if err != nil {
-		span.SetAttributes(attribute.String("error.type", "transport_error"))
-		span.SetStatus(codes.Error, "")
-	}
-	return response, err
-}
 func Setup(ctx context.Context) func(context.Context) error {
 	noop := func(context.Context) error { return nil }
 	if os.Getenv("DEERMATE_TELEMETRY_ENABLED") != "true" {

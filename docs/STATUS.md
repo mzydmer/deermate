@@ -2,6 +2,14 @@
 
 最后核对：2026-11-12。标准 OpenTelemetry 核心与独立 ARMS 配置已合入 main，应用 `ce7ce59` 的 11 个远端 CI job 全部通过，既有新加坡实例已升级并启用遥测。20 项可信公网 HTTPS/API 检查、原账号和历史数据核对、两轮同秘书会话的真实模型调用通过；两轮 Trace 均已在 ARMS 查询到。四服务执行树使用此前合成协议数据单独验证，未恢复过期家庭设备权限。正文与上线证据见下文。
 
+## 2026-11-12 · 流式 HTTP 计时修复（发布中）
+
+页面实测发现一次 42.44 秒请求的出站 http.client 只记了 41.28 毫秒，原因是 Transport.RoundTrip 在响应头返回时结束 Span。新增真实 SSE 回归先验证旧实现失败，修复后由响应体 EOF、读取失败、关闭或上下文取消中的首个终止事件结束一次；不预读/缓存正文，保留 n/error、HTTP 错误状态和升级响应的 io.Writer，关闭追踪时原样返回 body。
+
+Go mod verify、vet、全包 race 和本机/Linux 无 CGO 构建通过；源码、部署与 ARMS 复验分开记录，尚未切换本次控制面版本。只需升级 Go 控制面，不重建前端或修改 Python/MCP/设备权限。MCP 预检缺少服务端 Span 和真实家庭执行授权仍是独立未验收事项，本次不据计时修复宣称它们已通过。
+
+文档影响说明见 [变更记录](change-notes/http-stream-span-lifetime-2026-11-12.md)，生命周期合同见 OBS-10，运维判读见 [调用链指南](observability.md)。
+
 ## 2026-11-12 · 可选调用链与 ARMS 已上线
 
 按用户要求将开源核心与厂商接入分开。Go/Python 使用标准 OTel API/SDK 与 OTLP/HTTP，默认关闭，核心没有阿里云 SDK 或接入地址；ARMS 样例、预检与接收/索引操作说明位于独立部署目录。规格、实现、验收和下一步分别见[实施规格](specs/vendor-neutral-observability.md)、[ADR 0017](decisions/0017-vendor-neutral-observability.md)、[运行手册](observability.md)与[脱敏收据](verification/observability-2026-11-12.json)。
