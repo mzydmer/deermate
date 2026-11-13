@@ -84,7 +84,7 @@ func (s *Server) authorizationRoutes() {
 	s.mux.HandleFunc("GET /admin/agents", s.protected(true, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
-		_, _ = w.Write(bytes.Replace(authorizationsHTML, []byte("/* DEERMATE_DESIGN_TOKENS */"), designTokens, 1))
+		_, _ = w.Write(bytes.Replace(authorizationsHTML, []byte("/* DEERMATE_DESIGN_TOKENS */"), designCSS, 1))
 	}))
 	s.mux.HandleFunc("GET /api/agent-authorizations", s.protected(true, s.agentInventory))
 	s.mux.HandleFunc("POST /api/device-pairings", s.protected(true, s.agentPairStart))

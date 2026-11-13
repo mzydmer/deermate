@@ -21,6 +21,21 @@
   </script>
   <style>
     /* DEERMATE_DESIGN_TOKENS */
+    main > header {
+      height: var(--ds-sizes-nav);
+      margin-top: calc(-1 * var(--dm-page-gutter));
+      margin-inline: calc(-1 * var(--dm-page-gutter));
+      padding-inline: var(--dm-page-gutter);
+      margin-bottom: var(--ds-spacing-lg);
+      background: var(--ds-colors-canvas);
+      border-bottom: var(--ds-borders-thin) solid var(--ds-colors-hairline);
+    }
+    .ds-app-badge { display: inline-flex; align-items: center; }
+    .ds-app-card { margin-block: var(--ds-spacing-md); }
+    table thead { background: var(--ds-colors-canvas-soft); }
+    table th { font-size: var(--ds-typography-body-sm-strong-fontSize); font-weight: var(--ds-typography-body-sm-strong-fontWeight); }
+    table tr { height: var(--ds-sizes-table-row); }
+
     * {
       box-sizing: border-box;
     }
@@ -33,6 +48,7 @@
       color: var(--dm-foreground);
       background: var(--dm-background);
     }
+    body { --dm-page-gutter: var(--ds-spacing-lg); background: var(--ds-colors-canvas-soft); }
     main {
       max-width: none;
       margin: auto;
@@ -108,15 +124,16 @@
       border-color: var(--dm-primary);
     }
     button:disabled {
-      opacity: 0.5;
+      opacity: var(--ds-opacity-disabled);
       cursor: wait;
     }
-    :is(button, a, input, select, summary):focus-visible {
+    :is(button, a, input, select, summary, [tabindex]):focus-visible {
       outline: var(--ds-focus-width) solid var(--dm-focus);
       outline-offset: var(--ds-focus-offset);
     }
     table {
       border-collapse: collapse;
+      min-width: var(--ds-sizes-form);
       width: 100%;
       font-size: var(--ds-typography-body-sm-fontSize);
     }
@@ -131,6 +148,7 @@
       font-size: var(--ds-typography-caption-fontSize);
       font-weight: 500;
     }
+    td.actions button { white-space: nowrap; }
     td.actions {
       display: flex;
       gap: var(--ds-spacing-xs);
@@ -176,8 +194,9 @@
       margin-top: var(--ds-spacing-md);
     }
     @media (width < 600px) {
+      body { --dm-page-gutter: var(--ds-spacing-md); }
       main {
-        padding: var(--ds-spacing-lg) var(--ds-spacing-md);
+        padding: var(--ds-spacing-md);
       }
       section {
         padding: var(--ds-spacing-md);
@@ -203,14 +222,15 @@
   <main>
     <header>
       <div>
-        <p class="muted">DEERMATE / ADMINISTRATION</p>
-        <h1>管理工作台</h1>
+        <a href="/workspace">DeerMate</a>
+
       </div>
       <div>
         <a href="/admin/agents">Agent 授权</a> ·
         <a href="/workspace">返回工作区 →</a>
       </div>
     </header>
+    <h1>管理工作台</h1>
     <p class="muted">
       管理成员、角色和访问权限。普通成员可以查看自己的会话，管理员可以分派和执行任务。
     </p>
@@ -233,20 +253,20 @@
             required
             autocomplete="new-password" /></label
         ><label
-          >角色<select name="system_role">
+          >角色<select class="ds-app-input" name="system_role">
             <option value="user">普通用户</option>
             <option value="admin">管理员</option>
           </select></label
-        ><button class="primary">创建账号</button>
+        ><button class="primary ds-app-button-primary">创建账号</button>
       </form>
     </section>
     <section>
       <header>
         <h2>账号与权限</h2>
-        <button id="refresh">刷新</button>
+        <button class="ds-app-button-secondary" id="refresh">刷新</button>
       </header>
-      <div class="scroll">
-        <table>
+      <div class="scroll" tabindex="0" role="region" aria-label="账号与管理记录表">
+        <table class="ds-app-table">
           <thead>
             <tr>
               <th>邮箱</th>
@@ -265,8 +285,8 @@
     <details>
       <summary>最近的管理记录</summary>
       <section>
-        <div class="scroll">
-          <table>
+        <div class="scroll" tabindex="0" role="region" aria-label="账号与管理记录表">
+          <table class="ds-app-table">
             <thead>
               <tr>
                 <th>时间</th>
@@ -295,8 +315,8 @@
           autofocus
       /></label>
       <div class="dialog-actions">
-        <button value="cancel" formnovalidate>取消</button>
-        <button value="save" class="primary">保存密码</button>
+        <button class="ds-app-button-secondary" value="cancel" formnovalidate>取消</button>
+        <button value="save" class="primary ds-app-button-primary">保存密码</button>
       </div>
     </form>
   </dialog>
@@ -335,6 +355,7 @@
       const userID = td.parentElement.dataset.userId;
       const b = document.createElement("button");
       b.textContent = text;
+      b.classList.add("ds-app-button-secondary");
       b.onclick = async () => {
         b.disabled = true;
         try {
