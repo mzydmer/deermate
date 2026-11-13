@@ -93,7 +93,12 @@
         "CLIENT",
         "PRODUCER"
       ],
-      "native_execution_requested": false
+      "native_execution_requested": false,
+      "actual_usage_example": {
+        "second_round_input_tokens": 793,
+        "second_round_output_tokens": 29,
+        "source": "Actual ARMS model span attributes from provider response"
+      }
     },
     "synthetic_execution_diagnostic": {
       "scope": "Re-export of earlier verified two-round synthetic fixture; original timestamps and IDs preserved; no business/model/native replay",
@@ -126,5 +131,89 @@
       1280
     ],
     "page_errors": 0
-  }
+  },
+  "documentation_release": {
+    "documentation_revision": "73040b48e3bc7cb072bba877743065508e28be26",
+    "frontend_image": "sha256:c50f04cdf75b106a9391dac74e0dbece75b4dfc8b77c506a30f15e98c077ec4e",
+    "verified_files": 2823,
+    "gateway_control_nginx_edge_images_unchanged": true,
+    "historical_rows_and_grants_preserved": true,
+    "no_backend_restart": true,
+    "public_checks": 23,
+    "public_articles": 14,
+    "public_assets": 20,
+    "browser_checks": 6,
+    "browser_page_errors": 0,
+    "ci": {
+      "revision": "73040b48e3bc7cb072bba877743065508e28be26",
+      "run_id": 43361864073,
+      "all_success": true,
+      "jobs": [
+        {
+          "id": 131679760243,
+          "name": "worker (macos-latest, 3.12)",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679761825,
+          "name": "product-docs",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679762312,
+          "name": "observability",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679762673,
+          "name": "design-system",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679794219,
+          "name": "ack-package",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679797345,
+          "name": "deerflow-contract",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679807524,
+          "name": "deerflow-gateway (ssh)",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679809685,
+          "name": "frontend-intents",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679809775,
+          "name": "go-control",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679814408,
+          "name": "worker (ubuntu-latest, 3.11)",
+          "conclusion": "success"
+        },
+        {
+          "id": 131679815600,
+          "name": "deerflow-gateway (local)",
+          "conclusion": "success"
+        }
+      ],
+      "rerun": {
+        "original_job_id": 131677007723,
+        "test": "test_malformed_json_fails_without_hanging",
+        "failure": "PermissionError in owned subprocess group cleanup on macOS",
+        "source_changed": false,
+        "local_iterations_passed": 100,
+        "rerun_passed": true
+      }
+    }
+  },
+  "delivery_state": "Application and documentation released and accepted; handoff metadata does not change deployed source"
 }
