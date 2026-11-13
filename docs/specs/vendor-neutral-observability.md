@@ -72,3 +72,6 @@ Codex 先使用 app-server 的真实 session/turn/item 生命周期建立跨度�
 [脱敏收据](../verification/observability-2026-11-12.json)记录实际 protobuf 父链、两轮/同原生根、隐私标记和源码哈希。OBS-01～08 在标明的本地合成模型/原生协议范围内通过；OBS-09 的配置、预检与接收/索引分离已实现，真实 ARMS 接收及查询尚未执行。324 项常规与 76 项固定运行时、Go/实际 Helm/Compose 和文档门禁通过；不将这些结果外推成真实供应方、SSH 全量复验或云端发布。
 
 后续已按用户要求发布：ce7ce59 的 11 项远端 CI 全通过（包含完整 Gateway local/SSH 与固定镜像检查），既有实例的 20 项可信 HTTPS/API 检查通过，原账号与历史数据保留。服务器 probe、两轮真实模型 Trace 和单独标记的合成四服务树均已在 ARMS 核验；见[云端收据](../verification/observability-cloud-2026-11-12.json)。前段“尚未执行”保留为本地收据当时的范围，现有线上状态以本段和 STATUS 为准。
+
+
+OBS-10 后续验收：真实 SSE 回归检出旧代码在响应头结束跨度，修复通过所有终止分支及完整 Go race。bc69dab 已升级既有控制面，真实页面的 ARMS 查询中客户端 18.60 秒、Gateway 18.51 秒，完整响应体计时通过。详见[专项收据](../verification/http-stream-timing-2026-11-12.json)；不外推为新的家庭设备或 MCP 服务端验收。

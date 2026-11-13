@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-12",
+  "passed": true,
+  "scope": "Go HTTP stream timing fix; actual production page and ARMS query; no new native execution",
+  "source_revision": "bc69dabdcfa64d31ea5b8de68c6823037fc22cf6",
+  "ci": {
+    "run_id": 43381618750,
+    "jobs": 11,
+    "all_success": true,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/43381618750"
+  },
+  "local_validation": [
+    "Real SSE regression failed on old implementation, passed after the fix",
+    "Go mod verify, vet and full race suite passed",
+    "CGO-disabled host/Linux builds passed; clean VCS revision in shipped binary",
+    "Actual pinned Helm/Compose/HTTPS contracts: 24 passed",
+    "Response EOF/read error/close/cancellation/deadline/concurrent completion, HTTP errors, duplex interface and disabled tracing covered"
+  ],
+  "release": {
+    "control_image": "sha256:ca3ba9d79f1d908de61e410da7fdfe50f82b4f3376d1af5156a5502b479204df",
+    "old_control_image": "sha256:dea942da667e426cb16737ba37a1bcdaed9a5f350999c411876bacd8cbbf7d90",
+    "binary_sha256": "d95b33f0ae5100c8137bd8162d6584b041fae4642207761392a5c7686717780d",
+    "database_backup_quick_check": "ok",
+    "existing_values_preserved": true,
+    "model_runtime_and_grant_files_preserved": true,
+    "gateway_frontend_edge_nginx_images_preserved": true,
+    "gateway_and_frontend_not_restarted": true,
+    "running_service_version_verified": true
+  },
+  "public_acceptance": {
+    "checks": 20,
+    "original_password_login": true,
+    "historical_threads_preserved_before_model_test": 13
+  },
+  "real_page": {
+    "elapsed_ms": 19512,
+    "page_errors": 0,
+    "provider_calls": 1,
+    "native_execution_requested": false,
+    "topic_memory_mode": "temporary"
+  },
+  "arms": {
+    "trace_id": "5909596c62a19300cd85e02238536cb9",
+    "indexed_verified": true,
+    "span_count": 5,
+    "service_count": 2,
+    "client_seconds": 18.6,
+    "gateway_server_seconds": 18.51,
+    "model_seconds": 17.53,
+    "input_tokens": 7099,
+    "output_tokens": 337,
+    "screenshot_sha256": "60483ba53ae6c05b6bc320c31d03d80672efece342d657b2b5210e024eec1d74"
+  },
+  "comparison": {
+    "previous_observation_client_ms": 41.28,
+    "previous_observation_total_seconds": 42.44,
+    "different_requests_and_workloads": true,
+    "purpose": "Verify full stream duration coverage, not a performance benchmark"
+  },
+  "limits": [
+    "MCP server-span gap and fresh cloud-to-home Codex acceptance remain separate pending work",
+    "No claim that all ARMS anomaly diagnostics were resolved",
+    "Private endpoints, write credentials, raw model output and browser profile remain outside Git"
+  ]
+}
