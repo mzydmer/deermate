@@ -65,6 +65,9 @@ def test_actual_bundle_has_no_host_credentials(tmp_path, monkeypatch):
     (tmp_path / "credentials/model-key").write_text("never-copy-test-model-secret")
     output = tmp_path / "bundle"
     single_host.prepare(images, output, "budget-test", 12027)
+    assert json.loads((output / "bundle.json").read_text())["upstream_pin"] == (
+        single_host.ack.read_revision()
+    )
     content = "\n".join(p.read_text() for p in output.rglob("*") if p.is_file())
     assert "never-copy-test-model-secret" not in content
     assert "DEERMATE_LOCAL_VERIFICATION_KEY" not in content

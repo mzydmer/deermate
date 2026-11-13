@@ -25,8 +25,12 @@ import yaml
 from deermate.remote_config import SSHWorker
 from deermate.tooling import runtime_config
 
+if __package__:
+    from .deerflow_lock import IMAGE_LABEL, DeerFlowLockError, read_revision, verify_checkout
+else:
+    from deerflow_lock import IMAGE_LABEL, DeerFlowLockError, read_revision, verify_checkout
+
 ROOT = Path(__file__).resolve().parents[1]
-PIN = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
 DEFAULT_CONFIG = ROOT / ".deermate/ack/config.yaml"
 CHART = "deploy/helm/deer-flow"
 NAME = re.compile(r"[a-z][a-z0-9-]{0,39}\Z")
@@ -301,6 +305,7 @@ def control_nginx(config):
 
 def post_render(documents, settings, rollout="review"):
     """Add narrow deployment hooks and fail closed on unexpected chart output."""
+    revision = read_revision()
     documents = copy.deepcopy([doc for doc in documents if doc])
     gateway = []
     for doc in documents:
@@ -346,6 +351,9 @@ def post_render(documents, settings, rollout="review"):
         if component not in {"gateway", "frontend", "nginx"}:
             raise DeploymentError("Unexpected deployment in the quick profile.")
         pod = doc["spec"]["template"]["spec"]
+        doc["spec"]["template"]["metadata"].setdefault("annotations", {})[
+            "deermate.io/deerflow-commit"
+        ] = revision
         pod["automountServiceAccountToken"] = False
         pod.setdefault("nodeSelector", {})["kubernetes.io/arch"] = settings["platform"].split("/")[
             1
@@ -520,10 +528,15 @@ def post_render(documents, settings, rollout="review"):
                 "data": {"controller.toml": controller(settings)},
             }
         )
+    for document in documents:
+        document["metadata"].setdefault("annotations", {})[
+            "deermate.io/deerflow-commit"
+        ] = revision
     return documents
 
 
 def prepare(work):
+    revision = read_revision()
     checkout = work / "deer-flow"
     if not checkout.exists():
         command(["git", "init", "--quiet", checkout])
@@ -538,20 +551,21 @@ def prepare(work):
                 "https://github.com/bytedance/deer-flow.git",
             ]
         )
-        (checkout / ".git/deermate-pin").write_text(PIN)
+        (checkout / ".git/deermate-pin").write_text(revision)
     try:
-        head = command(["git", "-C", checkout, "rev-parse", "HEAD"], quiet=True).strip()
+        command(["git", "-C", checkout, "rev-parse", "HEAD"], quiet=True)
     except DeploymentError:
         if not (checkout / ".git/deermate-pin").exists():
             raise DeploymentError(
                 "Incomplete unmanaged checkout; choose a fresh workspace."
             ) from None
-        command(["git", "-C", checkout, "fetch", "--depth=1", "origin", PIN])
-        command(["git", "-C", checkout, "checkout", "--detach", PIN])
-        head = PIN
-    dirty = command(["git", "-C", checkout, "status", "--porcelain"], capture=True)
-    if head != PIN or dirty:
-        raise DeploymentError("Deployment checkout must be clean at the pinned DeerFlow commit.")
+        command(["git", "-C", checkout, "fetch", "--depth=1", "origin", revision])
+        command(["git", "-C", checkout, "checkout", "--detach", revision])
+    try:
+        actual = verify_checkout(checkout, revision=revision)
+    except DeerFlowLockError as error:
+        raise DeploymentError(str(error)) from error
+    print(f"DeerFlow upstream commit: {actual}", file=sys.stderr)
     return checkout
 
 
@@ -783,14 +797,15 @@ def build(settings, config_path, push, frontend_only=False):
     else:
         from frontend_overlay import apply as apply_frontend
 
+    checkout = prepare(config_path.parent)
+    revision = verify_checkout(checkout)
     check_design_tokens()
     if not frontend_only:
         build_control(settings, push)
-    checkout = prepare(config_path.parent)
     with tempfile.TemporaryDirectory(prefix="ack-build-", dir=config_path.parent) as temp:
         context = Path(temp)
         # Only committed upstream files enter the build context, never operator state.
-        archive = subprocess.check_output(["git", "-C", str(checkout), "archive", PIN])
+        archive = subprocess.check_output(["git", "-C", str(checkout), "archive", revision])
         with tarfile.open(fileobj=io.BytesIO(archive)) as source:
             source.extractall(context, filter="data")
         apply_frontend(context / "frontend")
@@ -823,6 +838,8 @@ def build(settings, config_path, push, frontend_only=False):
                 dockerfile,
                 "--tag",
                 f"{settings['registry']}/deermate-{name}:{settings['tag']}",
+                "--label",
+                f"{IMAGE_LABEL}={revision}",
                 output,
             ]
             if target:
@@ -849,6 +866,24 @@ def build(settings, config_path, push, frontend_only=False):
                     context,
                 ]
             )
+    built_names = ["frontend"] if frontend_only else [
+        "control", "gateway", "frontend", "nginx", "tools"
+    ]
+    private_write(
+        config_path.parent / "build-receipt.json",
+        json.dumps(
+            {
+                "upstream_commit": revision,
+                "platform": settings["platform"],
+                "pushed": push,
+                "images": {
+                    name: f"{settings['registry']}/deermate-{name}:{settings['tag']}"
+                    for name in built_names
+                },
+            },
+            indent=2,
+        ) + "\n",
+    )
     print("Images pushed." if push else "Images loaded locally; use build --push for ACR.")
 
 
@@ -990,7 +1025,7 @@ def main():
             )
     except (DeploymentError, OSError, ValueError) as error:
         # Validation errors can contain user input; do not dump pydantic values.
-        if isinstance(error, DeploymentError):
+        if isinstance(error, (DeploymentError, DeerFlowLockError)):
             print(f"Deployment error: {error}", file=sys.stderr)
         else:
             print(

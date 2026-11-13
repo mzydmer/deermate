@@ -26,6 +26,8 @@ User instruction supersedes the earlier architecture's recommendation to defer K
 
 This package does not create/bill a cluster, claim actual ACK installation, configure NAT/reverse tunnels, deploy a desktop Worker in Kubernetes, or establish a real-model/chat/SSH acceptance result merely by starting the UI.
 
+Update 2026-11-13 (NFR-010 / Issue #9): the exact upstream commit is read from `deploy/deerflow.lock` by every build and verification entry point. Invalid locks fail before fetch/build; existing checkout mismatches report expected/actual and preserve local state. Rendered annotations, image labels and receipts expose the selected revision. See [version input and rollback](../deerflow-version.md); the historical evidence below keeps its original SHA.
+
 ## Recorded evidence
 
 Local: 14 deployment tests including both actual pinned Chart modes; ordinary suite 86 passed/6 skipped; generated configuration accepted by the pinned upstream AppConfig; Helm 3.19.0 real post-renderer output checked. Linux CI [40266316155](https://github.com/mzydmer/deermate/actions/runs/40266316155), commit `ca23f2c`, built all four amd64 images and passed non-root Gateway readiness/authentication/MCP/SSH/credential-copy probes. All six CI jobs passed. See [retained artifact-derived evidence](../verification/ack-package-2026-10-25.json) and [STATUS](../STATUS.md). ARM image builds, ACR push, actual Kubernetes installation, frontend login, real model and home SSH remain unverified.

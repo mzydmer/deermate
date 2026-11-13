@@ -9,7 +9,13 @@ from pathlib import Path
 
 import httpx
 import yaml
-from ack_deploy import COPY_CREDENTIALS, app_config, command, load
+
+if __package__:
+    from .ack_deploy import COPY_CREDENTIALS, app_config, command, load
+    from .deerflow_lock import IMAGE_LABEL, DeerFlowLockError, read_revision
+else:
+    from ack_deploy import COPY_CREDENTIALS, app_config, command, load
+    from deerflow_lock import IMAGE_LABEL, DeerFlowLockError, read_revision
 
 
 def probe_frontend(image, gateway):
@@ -62,6 +68,20 @@ for attempt in range(90):
 
 
 def run(image, settings, receipt, frontend_image=None):
+    revision = read_revision()
+    for candidate in (image, frontend_image):
+        if candidate is None:
+            continue
+        actual = command(
+            ["docker", "image", "inspect", "--format", "{{json .Config.Labels}}", candidate],
+            capture=True,
+        )
+        actual = (json.loads(actual) or {}).get(IMAGE_LABEL, "<missing>")
+        if actual != revision:
+            raise DeerFlowLockError(
+                f"DeerFlow image mismatch; expected: {revision}; actual: {actual}."
+            )
+    print(f"DeerFlow upstream commit: {revision}", flush=True)
     with tempfile.TemporaryDirectory(prefix="ack-image-") as temp:
         directory = Path(temp)
         directory.chmod(0o755)
@@ -182,6 +202,7 @@ def run(image, settings, receipt, frontend_image=None):
                 json.dumps(
                     {
                         "passed": True,
+                        "upstream_commit": revision,
                         "image_id": digest,
                         "packages": packages,
                         "uid": 1000,

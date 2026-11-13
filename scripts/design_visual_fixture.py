@@ -20,6 +20,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import httpx
+from deerflow_lock import read_revision, verify_checkout
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -33,23 +34,13 @@ parser.add_argument(
     "--dev", action="store_true", help="Use the same fixture with Next dev for local iteration"
 )
 args = parser.parse_args()
+read_revision()
 if bool(args.gateway_python) != bool(args.gateway_checkout):
     parser.error("Supply both frozen Gateway Python and checkout for offline capture tests")
 capture = bool(args.gateway_python)
 if capture:
-    pinned = subprocess.run(
-        ["git", "-C", str(args.gateway_checkout), "rev-parse", "HEAD"],
-        text=True,
-        capture_output=True,
-        check=True,
-    ).stdout.strip()
-    if pinned != "a1b89d0432de4e45adc59f512cb25bb386ea1e51":
-        parser.error("Capture tests require the pinned Gateway checkout")
-    subprocess.run(
-        ["git", "-C", str(args.gateway_checkout), "diff", "--exit-code", "HEAD", "--", "backend"],
-        check=True,
-        stdout=subprocess.DEVNULL,
-    )
+    pinned = verify_checkout(args.gateway_checkout, paths=("backend",))
+    print(f"DeerFlow upstream commit: {pinned}", flush=True)
 
 
 def request_stop(signum, frame):

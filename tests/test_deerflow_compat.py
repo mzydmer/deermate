@@ -4,7 +4,6 @@ import asyncio
 import importlib.util
 import json
 import os
-import subprocess
 import sys
 from dataclasses import asdict
 from pathlib import Path
@@ -14,30 +13,13 @@ import pytest
 from mcp_helpers import mcp_session
 from ssh_helpers import ssh_worker as ssh_worker
 
-DEERFLOW_COMMIT = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+from scripts.deerflow_lock import verify_checkout
 
 
 def load_driver(checkout: Path, monkeypatch):
-    head = subprocess.check_output(
-        ["git", "-C", str(checkout), "rev-parse", "HEAD"], text=True
-    ).strip()
-    assert head == DEERFLOW_COMMIT, "Use the documented pinned DeerFlow checkout"
     source_root = "backend/packages/harness/deerflow"
     files = ["constants.py", "mcp/tasks/models.py", "mcp/tasks/ordinary.py"]
-    subprocess.run(
-        [
-            "git",
-            "-C",
-            str(checkout),
-            "diff",
-            "--exit-code",
-            head,
-            "--",
-            *(f"{source_root}/{file}" for file in files),
-        ],
-        check=True,
-        capture_output=True,
-    )
+    verify_checkout(checkout, paths=tuple(f"{source_root}/{file}" for file in files))
     # Isolate these pure upstream contract modules from harness/model/provider
     # bootstrap. No copied parser, fake driver or installed DeerFlow is used.
     for name in ["deerflow", "deerflow.mcp", "deerflow.mcp.tasks"]:

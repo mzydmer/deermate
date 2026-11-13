@@ -1,6 +1,6 @@
 # 在阿里云 ACK 快速部署 DeerMate
 
-默认拓扑：**ACK 上的页面 → Go 主服务/登录/管理 API → 内部 DeerFlow → Python MCP → SSH → 家中 Worker / Codex**。先安装云端界面，再启用 Worker 注册。复用固定上游 `a1b89d0` 的官方 Helm Chart、前端和后端 Dockerfile；Go 镜像独立构建；DeerFlow 与 Worker/MCP/SSH 保留 Python。
+默认拓扑：**ACK 上的页面 → Go 主服务/登录/管理 API → 内部 DeerFlow → Python MCP → SSH → 家中 Worker / Codex**。先安装云端界面，再启用 Worker 注册。复用 [deploy/deerflow.lock](../deploy/deerflow.lock) 固定的官方 Helm Chart、前端和后端 Dockerfile；Go 镜像独立构建；DeerFlow 与 Worker/MCP/SSH 保留 Python。构建、渲染、CI 和 Gateway 验证共用此锁，升级与回退见[版本锁规范](deerflow-version.md)。
 
 本包提供可执行脚本与验证，不代表已经部署到你的 ACK。没有创建集群、连接私人设备或调用真实模型。
 

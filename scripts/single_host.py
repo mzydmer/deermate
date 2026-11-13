@@ -81,6 +81,7 @@ def prepare(images, output, project, port):
     if output.exists():
         raise ack.DeploymentError("Output already exists; preserve its secrets and data.")
     checkout = ack.prepare(images.parent)
+    revision = ack.verify_checkout(checkout)
     ack.check_helm()
     output.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     with tempfile.TemporaryDirectory(dir=output.parent, prefix="single-host-") as temp:
@@ -141,7 +142,7 @@ def prepare(images, output, project, port):
             work / "bundle.json",
             json.dumps(
                 {
-                    "upstream_pin": ack.PIN,
+                    "upstream_pin": revision,
                     "project": project,
                     "port": port,
                     "worker_enabled": False,
@@ -169,7 +170,11 @@ def main():
     try:
         prepare(args.images_config.absolute(), args.output.absolute(), args.project, args.port)
     except (ack.DeploymentError, OSError, ValueError) as error:
-        message = str(error) if isinstance(error, ack.DeploymentError) else type(error).__name__
+        message = (
+            str(error)
+            if isinstance(error, (ack.DeploymentError, ack.DeerFlowLockError))
+            else type(error).__name__
+        )
         parser.exit(1, f"Bundle preparation failed: {message}\n")
 
 

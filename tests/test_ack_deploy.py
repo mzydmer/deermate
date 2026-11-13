@@ -195,7 +195,7 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
     if not checkout or not helm:
         pytest.skip("Set DEERMATE_ACK_UPSTREAM and DEERMATE_HELM for actual-chart checks")
     head = subprocess.check_output(["git", "-C", checkout, "rev-parse", "HEAD"], text=True).strip()
-    assert head == ack.PIN
+    assert head == ack.read_revision()
     settings["worker"]["enabled"] = enabled
     values = tmp_path / "values.json"
     values.write_text(json.dumps(ack.values(settings)))
@@ -213,6 +213,12 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         text=True,
     )
     documents = ack.post_render(yaml.safe_load_all(raw), settings)
+    for document in documents:
+        assert document["metadata"]["annotations"]["deermate.io/deerflow-commit"] == head
+        if document["kind"] == "Deployment":
+            assert document["spec"]["template"]["metadata"]["annotations"][
+                "deermate.io/deerflow-commit"
+            ] == head
     nginx = next(
         doc["data"]["nginx.conf"]
         for doc in documents
