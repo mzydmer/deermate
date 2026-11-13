@@ -2,6 +2,8 @@ function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
   if (className) node.className = className;
+  if (tag === "button") node.classList.add("ds-app-button-secondary");
+  if (tag === "input" || tag === "select") node.classList.add("ds-app-input");
   return node;
 }
 
@@ -50,16 +52,17 @@ export default {
         let disposed = false;
         const zh = context.locale === "zh-CN";
         const text = (cn, en) => (zh ? cn : en);
-        const page = element("div", undefined, "dm-tools-page");
+        const page = element("div", undefined, "dm-tools-page ds-app-panel");
         const style = element("style");
         style.textContent = `
         .dm-tools-page{font-family:var(--dm-font-sans);color:var(--dm-foreground);font-size: var(--ds-typography-body-sm-fontSize);line-height:1.6}
         .dm-tools-page h2{font-size: var(--ds-typography-display-sm-fontSize);font-weight:600;margin:var(--ds-spacing-lg) 0 var(--ds-spacing-sm)}
         .dm-tools-page p{margin:var(--ds-spacing-xxs) 0 var(--ds-spacing-md);color:var(--dm-muted)}
         .dm-tools-page button,.dm-tools-page a{border:1px solid var(--dm-border-strong);background:var(--dm-background);color:var(--dm-foreground);border-radius: var(--ds-rounded-md);min-height:var(--ds-sizes-control-md);padding:var(--ds-spacing-xs) var(--ds-spacing-sm);font-size: var(--ds-typography-body-sm-fontSize);cursor:pointer;text-decoration:none;display:inline-block}
-        .dm-tools-page button:disabled{opacity:.5;cursor:wait}
+        .dm-tools-page button:disabled{opacity:var(--ds-opacity-disabled);cursor:wait}
         .dm-tools-page :focus-visible{outline:var(--ds-focus-width) solid var(--dm-focus);outline-offset: var(--ds-focus-offset)}
         .dm-tools-page .row{border-top:1px solid var(--dm-border);padding:var(--ds-spacing-md) 0;display:flex;align-items:center;justify-content:space-between;gap:var(--ds-spacing-md);flex-wrap:wrap}
+        .dm-tools-page .ds-app-badge{display:inline-flex;align-items:center}
         .dm-tools-page .meta{font-size: var(--ds-typography-caption-fontSize);color:var(--dm-muted);overflow-wrap:anywhere}
         .dm-tools-page .result{flex-basis:100%;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--dm-font-mono);font-size: var(--ds-typography-caption-fontSize)}
         .dm-tools-page .note{padding:var(--ds-spacing-md);border:1px solid var(--dm-border);background:var(--dm-surface);border-radius: var(--ds-rounded-md);margin-top:var(--ds-spacing-lg)}
@@ -75,6 +78,7 @@ export default {
           ),
         );
         const refresh = element("button", text("刷新状态", "Refresh status"));
+        refresh.className = "ds-app-button-secondary";
         refresh.type = "button";
         const content = element("div");
         const status = element("p");
@@ -127,13 +131,7 @@ export default {
               const row = element("div", undefined, "row");
               row.append(
                 element("strong", tool.name),
-                element(
-                  "span",
-                  tool.status === "loaded"
-                    ? text("已加载", "Loaded")
-                    : text("加载失败", "Unavailable"),
-                  "meta",
-                ),
+                (()=>{const known=tool.status==="loaded"||["failed","error"].includes(tool.status);const label=tool.status==="loaded"?text("已加载","Loaded"):known?text("加载失败","Unavailable"):(tool.status||text("未检查","Not checked"));const badge=element("span",(tool.status==="loaded"?"✓ ":known?"! ":"? ")+label,"ds-app-badge");badge.dataset.designVariant=tool.status==="loaded"?"success":known?"error":"default";return badge;})(),
               );
               content.append(row);
             }

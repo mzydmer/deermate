@@ -202,6 +202,15 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 真实Go登录后的主要页面/交互状态矩阵，六宽度与浅深色；运行时使用合成数据，范围见2026-11-06验收。
 - [ ] 全面人工可访问性评审、真实运行时/供应方验收、远端必需检查及线上发布。
 
+### 组件化前端 · 2026-11-12
+
+- [x] P0：文件盘点、固定上游归档和无 Docker 的本地迭代入口。
+- [x] P1–P2：YAML 语义主题、类型化组件、DOM 测试、陈列页、响应式壳/Composer/Inspector。
+- [x] P3–P4：工作台/记忆/对话/设置/登录/文档迁移与文件拆分；Go 和 tooling 生成配方对齐。
+- [x] P5：原生控件与视觉分层门禁、1100 行 CSS 预算、反例、全部浏览器 verifier、五宽度双主题与组件截图比较。
+
+[专项规格](specs/frontend-overhaul.md) / [PR #10](https://github.com/mzydmer/deermate/pull/10)。本地合成验收完成；保留上节对全面可访问性、真实运行时和发布的独立限制。
+
 ## Workspace v2 · 已批准并实施
 
 - [x] 编写助手首页、默认自然记忆和原话题延续的 [PRD](prd/workspace-assistant-v2.md)，配八张静态样式图。

@@ -1,170 +1,46 @@
 "use client";
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { Brain, MoreHorizontal } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import { fetch as authFetch } from "@/core/api/fetcher";
-import { getBackendBaseURL } from "@/core/config";
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import {
+  Empty,
+  ErrorBanner,
+  SectionHeader,
+  Skeleton,
+} from "@/components/deermate/ui";
+import {
+  Button,
+  ConfirmDialog,
+  Disclosure,
+  DisclosureTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Field,
+  IconButton,
+  Input,
+  Select,
+  Text,
+  Textarea,
+} from "@/components/deermate/ui";
 
+import {
+  type Fact,
+  invalidateHome,
+  type MemoryPage,
+  type Operation,
+  personalAPI,
+  type Reference,
+  useProfile,
+} from "./memory/model";
+import { ProfileForm } from "./memory/profile-form";
+import { StatusBadge } from "./ui";
 import { MemorySource, scopeLabel } from "./workspace-memory";
-
-type Profile = {
-  owner: string;
-  display_name: string;
-  timezone: string;
-  memory_enabled: boolean;
-  auto_capture_enabled: boolean;
-  proactive_enabled: boolean;
-  revision: number;
-};
-type Fact = {
-  id: string;
-  content: string;
-  category: string;
-  revision: number;
-  source_id: string;
-  scope: string;
-  updated_at: number;
-  expires_at?: number;
-  source?: {
-    kind: "chat" | "inbox";
-    thread_id: string;
-    run_id: string;
-    message_id: string;
-    observed_at: number;
-  } | null;
-};
-type Reference = { id: string; status: string; revision: number };
-type Operation = { id: string; status: string; fact_id: string };
-type MemoryPage = {
-  items: Fact[];
-  references: Reference[];
-  total_active: number;
-};
-
-function invalidateHome(
-  cache: ReturnType<typeof useQueryClient>,
-  user: string,
-) {
-  cache.setQueryData(
-    ["deermate", "briefing", user],
-    (old: object | undefined) => (old ? { ...old, suggestions: [] } : old),
-  );
-  void cache.invalidateQueries({ queryKey: ["deermate", "briefing", user] });
-  for (const key of [
-    "workspace-snapshot",
-    "workspace-memory-summary",
-    "memory-activity",
-    "memory-source",
-  ]) {
-    void cache.invalidateQueries({ queryKey: [key, user] });
-  }
-}
-
-async function personalAPI<T>(
-  path: string,
-  userId: string,
-  init?: RequestInit,
-): Promise<T> {
-  const response = await authFetch(`${getBackendBaseURL()}/api/me/${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Expected-User-Id": userId,
-    },
-  });
-  if (!response.ok) {
-    if (response.status === 409) throw new Error("conflict");
-    if (response.status === 422) throw new Error("invalid");
-    throw new Error("unavailable");
-  }
-  try {
-    return (await response.json()) as T;
-  } catch {
-    throw new Error("unavailable");
-  }
-}
-
-function useProfile(userId: string) {
-  return useQuery({
-    queryKey: ["deermate", "personal-profile", userId],
-    queryFn: ({ signal }) =>
-      personalAPI<Profile>("personal-profile", userId, { signal }),
-    enabled: !!userId,
-    gcTime: 0,
-    retry: 1,
-  });
-}
-
-export function PersonalGreeting({
-  userId,
-  zh,
-}: {
-  userId: string;
-  zh: boolean;
-}) {
-  const profile = useProfile(userId);
-  const [now, setNow] = useState<Date | null>(null);
-  useEffect(() => {
-    setNow(new Date());
-    const timer = window.setInterval(() => setNow(new Date()), 60000);
-    return () => window.clearInterval(timer);
-  }, []);
-  let greeting = zh ? "你好" : "Hello";
-  let date = "";
-  if (now) {
-    // Match the server briefing calendar, including an unsaved UTC profile.
-    let timezone = profile.data?.timezone ?? "UTC";
-    let fallback = false;
-    try {
-      new Intl.DateTimeFormat("en", { timeZone: timezone });
-    } catch {
-      timezone = "UTC";
-      fallback = true;
-    }
-    const hour = Number(
-      new Intl.DateTimeFormat("en-GB", {
-        timeZone: timezone,
-        hour: "2-digit",
-        hourCycle: "h23",
-      }).format(now),
-    );
-    greeting =
-      hour >= 5 && hour < 12
-        ? zh
-          ? "上午好"
-          : "Good morning"
-        : hour >= 12 && hour < 18
-          ? zh
-            ? "下午好"
-            : "Good afternoon"
-          : zh
-            ? "晚上好"
-            : "Good evening";
-    date = new Intl.DateTimeFormat(zh ? "zh-CN" : "en-US", {
-      timeZone: timezone,
-      month: "long",
-      day: "numeric",
-      weekday: "long",
-    }).format(now);
-    if (fallback) date += " · UTC";
-  }
-  return (
-    <>
-      <h1>
-        {greeting}
-        {profile.data?.display_name
-          ? `${zh ? "，" : ", "}${profile.data.display_name}`
-          : ""}
-        {zh ? "。" : "."}
-      </h1>
-      <p className="dm-muted">
-        {date || (zh ? "你的私人秘书工作台" : "Your personal secretary")}
-      </p>
-    </>
-  );
-}
-
+export { PersonalGreeting } from "./memory/greeting";
+export { personalAPI } from "./memory/model";
 export function PersonalMemoryPanel({
   userId,
   zh,
@@ -174,7 +50,6 @@ export function PersonalMemoryPanel({
   zh: boolean;
   embedded?: boolean;
 }) {
-  const t = (cn: string, en: string) => (zh ? cn : en);
   const cache = useQueryClient();
   const profile = useProfile(userId);
   const [open, setOpen] = useState(embedded);
@@ -185,6 +60,13 @@ export function PersonalMemoryPanel({
   const [page, setPage] = useState(0);
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("preference");
+  const actionOpener = useRef<HTMLButtonElement | null>(null);
+  const memoryList = useRef<HTMLUListElement | null>(null);
+  const restoreActionFocus = () => {
+    if (actionOpener.current?.isConnected) actionOpener.current.focus();
+    else memoryList.current?.focus();
+  };
+  const [forget, setForget] = useState<Fact | Reference | null>(null);
   const [editing, setEditing] = useState<Fact | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -280,18 +162,18 @@ export function PersonalMemoryPanel({
       if (reason !== "unavailable") pending.current = null;
       setError(
         reason === "conflict"
-          ? t(
-              "记录或设置已变化，请刷新后核对。",
-              "The record or settings changed. Refresh to reconcile.",
+          ? dmCopy(
+              zh,
+              "personal-memory.the.record.or.settings.changed.refresh.to.reconc.4ebd9a",
             )
           : reason === "invalid"
-            ? t(
-                "请检查输入；不要保存密码、密钥或验证码。",
-                "Check the input. Do not save passwords, keys or verification codes.",
+            ? dmCopy(
+                zh,
+                "personal-memory.check.the.input.do.not.save.passwords.keys.or.ve.0bf0d0",
               )
-            : t(
-                "连接暂不可用。再次点击会核对同一次保存。",
-                "Connection unavailable. Retry will reconcile the same operation.",
+            : dmCopy(
+                zh,
+                "personal-memory.connection.unavailable.retry.will.reconcile.the..659c57",
               ),
       );
     } finally {
@@ -301,47 +183,78 @@ export function PersonalMemoryPanel({
 
   const contentView = (
     <>
+      <ConfirmDialog
+        restoreFocus={restoreActionFocus}
+        open={!!forget}
+        onOpenChange={(v) => {
+          if (!v) setForget(null);
+        }}
+        title={dmCopy(zh, "personal-memory.forget.58fda9")}
+        description={dmCopy(zh, "common.forget.warning")}
+        confirmLabel={dmCopy(zh, "personal-memory.forget.58fda9")}
+        cancelLabel={dmCopy(zh, "common.cancel")}
+        busy={busy}
+        onConfirm={() => {
+          if (forget) void mutate("DELETE", forget).then(() => setForget(null));
+        }}
+      />
       {profile.isLoading && (
-        <p role="status">{t("正在读取设置…", "Loading settings…")}</p>
+        <Skeleton
+          label={dmCopy(zh, "personal-memory.loading.settings..f0a02f")}
+        />
       )}
       {profile.isError && (
-        <p role="alert">
-          {t("设置暂不可用。", "Settings unavailable.")}{" "}
-          <button className="dm-button" onClick={() => void profile.refetch()}>
-            {t("重试", "Retry")}
-          </button>
-        </p>
+        <ErrorBanner role="alert">
+          {dmCopy(zh, "personal-memory.settings.unavailable..0c0d78")}{" "}
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => void profile.refetch()}
+          >
+            {dmCopy(zh, "personal-memory.retry.2cd694")}
+          </Button>
+        </ErrorBanner>
       )}
       {profile.data && (
-        <details className="dm-memory-settings">
-          <summary>
-            {t("记忆设置与个人资料", "Memory settings and profile")}
-          </summary>
+        <Disclosure
+          data-testid="memory-settings"
+          className="dm-memory-settings"
+        >
+          <DisclosureTrigger>
+            {dmCopy(zh, "personal-memory.memory.settings.and.profile.ff721e")}
+          </DisclosureTrigger>
           <ProfileForm
             key={`${userId}-${profile.data.revision}`}
             profile={profile.data}
             zh={zh}
           />
-        </details>
+        </Disclosure>
       )}
       {profile.data && (
         <>
-          <div className="dm-section-heading">
-            <h2>{t("我记住的事", "What I remember")}</h2>
-            <button
-              className="dm-button"
+          <div data-testid="section-heading" className="dm-section-heading">
+            <SectionHeader
+              icon={Brain}
+              title={
+                <>{dmCopy(zh, "personal-memory.what.i.remember.2fa10c")}</>
+              }
+            />
+            <Button
+              variant="secondary"
+              type="button"
               onClick={() => void records.refetch()}
             >
-              {t("刷新", "Refresh")}
-            </button>
+              {dmCopy(zh, "personal-memory.refresh.140abb")}
+            </Button>
           </div>
-          <p className="dm-muted">
-            {t(
-              "你在聊天里提到的偏好和要求，会在这里留下记录。不对的地方可以直接改。",
-              "Preferences and requirements from your chats appear here. Correct anything that is wrong.",
+          <Text as="p" tone="muted" className="">
+            {dmCopy(
+              zh,
+              "personal-memory.preferences.and.requirements.from.your.chats.app.dba997",
             )}
-          </p>
+          </Text>
           <form
+            data-testid="memory-form"
             className="dm-memory-form"
             onSubmit={(e) => {
               e.preventDefault();
@@ -349,51 +262,70 @@ export function PersonalMemoryPanel({
               setPage(0);
             }}
           >
-            <label>
-              {t("搜索记忆", "Search memory")}
-              <input
+            <Field>
+              {dmCopy(zh, "personal-memory.search.memory.0a3d11")}
+              <Input
                 value={searchText}
                 maxLength={128}
                 onChange={(e) => setSearchText(e.target.value)}
               />
-            </label>
-            <button className="dm-button">{t("搜索", "Search")}</button>
+            </Field>
+            <Button variant="secondary" type="submit">
+              {dmCopy(zh, "personal-memory.search.b3c8cd")}
+            </Button>
           </form>
           {records.isLoading && (
-            <p role="status">{t("正在读取记忆…", "Loading memory…")}</p>
+            <Skeleton
+              label={dmCopy(zh, "personal-memory.loading.memory..0539a4")}
+            />
           )}
           {records.isError && (
-            <p role="alert">
-              {t(
-                "记忆暂不可用，已保存的资料仍保留。",
-                "Memory unavailable. Saved records are preserved.",
+            <ErrorBanner role="alert">
+              {dmCopy(
+                zh,
+                "personal-memory.memory.unavailable.saved.records.are.preserved..8ab154",
               )}
-            </p>
+            </ErrorBanner>
           )}
           {data?.items.length === 0 && (
-            <p className="dm-muted">
-              {query
-                ? t("没有匹配的记忆。", "No matching facts.")
-                : t("还没有已生效的记忆。", "No active memories yet.")}
-            </p>
+            <Empty
+              title={
+                query
+                  ? dmCopy(zh, "personal-memory.no.matching.facts..fd1b58")
+                  : dmCopy(zh, "personal-memory.no.active.memories.yet..09a057")
+              }
+            />
           )}
-          <label className="dm-memory-scope-filter">
-            {t("适用范围", "Scope")}
-            <select
+          <Field
+            data-testid="memory-scope-filter"
+            className="dm-memory-scope-filter"
+          >
+            {dmCopy(zh, "personal-memory.scope.3ec802")}
+            <Select
               value={scopeFilter}
               onChange={(e) => setScopeFilter(e.target.value)}
             >
-              <option value="all">{t("全部", "All")}</option>
+              <option value="all">
+                {dmCopy(zh, "personal-memory.all.bafb97")}
+              </option>
               <option value="personal">
-                {t("个人偏好与背景", "Personal")}
+                {dmCopy(zh, "personal-memory.personal.ec8620")}
               </option>
               <option value="project:">
-                {t("项目要求", "Project requirements")}
+                {dmCopy(zh, "personal-memory.project.requirements.779053")}
               </option>
-              <option value="topic:">{t("近期话题", "Recent topics")}</option>
-            </select>
-          </label>
-          <ul className="dm-memory-list">
+              <option value="topic:">
+                {dmCopy(zh, "personal-memory.recent.topics.d6a015")}
+              </option>
+            </Select>
+          </Field>
+          <ul
+            ref={memoryList}
+            tabIndex={-1}
+            aria-label={dmCopy(zh, "personal-memory.what.i.remember.2fa10c")}
+            data-testid="memory-list"
+            className="dm-memory-list"
+          >
             {data?.items
               .filter(
                 (fact) =>
@@ -402,46 +334,71 @@ export function PersonalMemoryPanel({
               .map((fact) => (
                 <li key={fact.id}>
                   <p>{fact.content}</p>
-                  <span className="dm-small dm-muted">
+                  <Text as="span" size="caption" tone="muted" className="">
                     {scopeLabel(fact.scope, zh)} ·{" "}
-                    <button
-                      className="dm-text-button"
-                      onClick={() => setSource(fact.id)}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      onClick={(event) => {
+                        actionOpener.current = event.currentTarget;
+                        setSource(fact.id);
+                      }}
                     >
-                      {t("查看来源与用途", "Source and usage")}
-                    </button>{" "}
-                    · {t("版本", "Version")} {fact.revision}
+                      {dmCopy(zh, "personal-memory.source.and.usage.f96741")}
+                    </Button>{" "}
+                    · {dmCopy(zh, "personal-memory.version.6145b7")}{" "}
+                    {fact.revision}
                     {!!fact.expires_at &&
                       fact.expires_at < Date.now() / 1000 && (
                         <span>
-                          {t(
-                            " · 已过期，不用于回答",
-                            " · Expired; excluded from answers",
+                          {dmCopy(
+                            zh,
+                            "personal-memory..expired.excluded.from.answers.6a8dc2",
                           )}
                         </span>
                       )}
-                  </span>
-                  <div className="dm-memory-actions">
-                    <button
-                      className="dm-button"
-                      disabled={busy || !!pending.current}
-                      onClick={() => {
-                        setEditing(fact);
-                        setContent(fact.content);
-                        setCategory(fact.category);
-                        document.getElementById("dm-memory-content")?.focus();
-                      }}
-                    >
-                      {t("纠正", "Correct")}
-                    </button>
-                    <button
-                      className="dm-button"
-                      disabled={busy || !!pending.current}
-                      onClick={() => void mutate("DELETE", fact)}
-                    >
-                      {t("忘记", "Forget")}
-                    </button>
-                  </div>
+                  </Text>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <IconButton
+                        onFocus={(event) => {
+                          actionOpener.current = event.currentTarget;
+                        }}
+                        label={dmCopy(zh, "common.more")}
+                        icon={<MoreHorizontal className="size-4" />}
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onSelect={() => setSource(fact.id)}>
+                        {dmCopy(zh, "personal-memory.source.and.usage.f96741")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        disabled={busy || !!pending.current}
+                        onSelect={() => {
+                          setEditing(fact);
+                          setContent(fact.content);
+                          setCategory(fact.category);
+                          setTimeout(
+                            () =>
+                              document
+                                .getElementById("dm-memory-content")
+                                ?.focus(),
+                            0,
+                          );
+                        }}
+                      >
+                        {dmCopy(zh, "personal-memory.correct.463a2f")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        disabled={busy || !!pending.current}
+                        variant="destructive"
+                        onSelect={() => setForget(fact)}
+                      >
+                        {dmCopy(zh, "personal-memory.forget.58fda9")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </li>
               ))}
             {data?.references
@@ -450,64 +407,69 @@ export function PersonalMemoryPanel({
                 <li key={ref.id}>
                   <p>
                     {ref.status === "suppressed"
-                      ? t(
-                          "已停止使用，等待清理",
-                          "No longer used; cleanup pending",
+                      ? dmCopy(
+                          zh,
+                          "personal-memory.no.longer.used.cleanup.pending.ed4546",
                         )
                       : ref.status === "source_unavailable"
-                        ? t(
-                            "来源已不可用，已停止使用这条记忆",
-                            "Source unavailable; this memory is no longer used",
+                        ? dmCopy(
+                            zh,
+                            "personal-memory.source.unavailable.this.memory.is.no.longer.used.0d377d",
                           )
-                        : t(
-                            "这条记忆的更新尚未完成",
-                            "This memory update is not complete",
+                        : dmCopy(
+                            zh,
+                            "personal-memory.this.memory.update.is.not.complete.0a7f86",
                           )}
                   </p>
-                  <button
-                    className="dm-button"
+                  <Button
+                    variant="secondary"
+                    type="button"
                     disabled={busy || !!pending.current}
-                    onClick={() => void mutate("DELETE", ref)}
+                    onClick={() => setForget(ref)}
                   >
-                    {t("忘记并清理", "Forget and clean up")}
-                  </button>
+                    {dmCopy(zh, "personal-memory.forget.and.clean.up.32c0e8")}
+                  </Button>
                 </li>
               ))}
           </ul>
           {!query && data && data.total_active > 50 && (
-            <div className="dm-memory-actions">
-              <button
-                className="dm-button"
+            <div data-testid="memory-actions" className="dm-memory-actions">
+              <Button
+                variant="secondary"
+                type="button"
                 disabled={page === 0}
                 onClick={() => setPage(page - 1)}
               >
-                {t("上一页", "Previous")}
-              </button>
+                {dmCopy(zh, "personal-memory.previous.2149c1")}
+              </Button>
               <span>
                 {page + 1} / {Math.ceil(data.total_active / 50)}
               </span>
-              <button
-                className="dm-button"
+              <Button
+                variant="secondary"
+                type="button"
                 disabled={(page + 1) * 50 >= data.total_active}
                 onClick={() => setPage(page + 1)}
               >
-                {t("下一页", "Next")}
-              </button>
+                {dmCopy(zh, "personal-memory.next.bbe67f")}
+              </Button>
             </div>
           )}
           <form
+            data-testid="memory-form"
             className="dm-memory-form"
             onSubmit={(event) => {
               event.preventDefault();
               void mutate(editing ? "PATCH" : "POST", editing ?? undefined);
             }}
           >
-            <label htmlFor="dm-memory-content">
+            <Field htmlFor="dm-memory-content">
               {editing
-                ? t("纠正这条记忆", "Correct this fact")
-                : t("告诉我需要记住什么", "What should I remember?")}
-            </label>
-            <textarea
+                ? dmCopy(zh, "personal-memory.correct.this.fact.47fc62")
+                : dmCopy(zh, "personal-memory.what.should.i.remember..46dfc5")}
+            </Field>
+            <Textarea
+              data-testid="memory-content"
               id="dm-memory-content"
               value={content}
               maxLength={1000}
@@ -517,26 +479,34 @@ export function PersonalMemoryPanel({
                 (!editing && !profile.data.memory_enabled)
               }
               onChange={(e) => setContent(e.target.value)}
-              placeholder={t(
-                "例如：回复请使用中文，先给结论。",
-                "Example: Lead with the conclusion in your replies.",
+              placeholder={dmCopy(
+                zh,
+                "personal-memory.example.lead.with.the.conclusion.in.your.replies.72152c",
               )}
             />
-            <label>
-              {t("类型", "Type")}
-              <select
+            <Field>
+              {dmCopy(zh, "personal-memory.type.e1031f")}
+              <Select
                 value={category}
                 disabled={busy || !!pending.current}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="preference">{t("偏好", "Preference")}</option>
-                <option value="goal">{t("目标", "Goal")}</option>
-                <option value="context">{t("背景", "Context")}</option>
-              </select>
-            </label>
-            <div className="dm-memory-actions">
-              <button
-                className="dm-button"
+                <option value="preference">
+                  {dmCopy(zh, "personal-memory.preference.e60ed5")}
+                </option>
+                <option value="goal">
+                  {dmCopy(zh, "personal-memory.goal.e359c7")}
+                </option>
+                <option value="context">
+                  {dmCopy(zh, "personal-memory.context.3c6367")}
+                </option>
+              </Select>
+            </Field>
+            <div data-testid="memory-actions" className="dm-memory-actions">
+              <Button
+                loading={busy}
+                variant="primary"
+                type="submit"
                 disabled={
                   busy ||
                   (!content.trim() && !pending.current) ||
@@ -544,196 +514,60 @@ export function PersonalMemoryPanel({
                 }
               >
                 {busy
-                  ? t("保存中…", "Saving…")
+                  ? dmCopy(zh, "personal-memory.saving..4c8592")
                   : pending.current
-                    ? t("核对上次保存", "Reconcile previous save")
-                    : t("保存记忆", "Save memory")}
-              </button>
+                    ? dmCopy(
+                        zh,
+                        "personal-memory.reconcile.previous.save.ba5580",
+                      )
+                    : dmCopy(zh, "personal-memory.save.memory.ef7ff2")}
+              </Button>
               {editing && (
-                <button
+                <Button
+                  variant="secondary"
                   type="button"
-                  className="dm-button"
                   disabled={busy || !!pending.current}
                   onClick={() => {
                     setEditing(null);
                     setContent("");
                   }}
                 >
-                  {t("取消纠正", "Cancel correction")}
-                </button>
+                  {dmCopy(zh, "personal-memory.cancel.correction.bd2221")}
+                </Button>
               )}
             </div>
           </form>
           {source && (
             <MemorySource
+              restoreFocus={restoreActionFocus}
               userId={userId}
               factId={source}
               zh={zh}
               onClose={() => setSource("")}
             />
           )}
-          {error && <p role="alert">{error}</p>}
+          {error && <ErrorBanner role="alert">{error}</ErrorBanner>}
           {operation && (
-            <p role="status">
-              {operation.status === "completed"
-                ? t("记忆已更新。", "Memory updated.")
-                : operation.status === "invalidated"
-                  ? t(
-                      "设置或来源已变化，旧更新已停止。",
-                      "Settings or sources changed. The old update was stopped.",
-                    )
-                  : t(
-                      "更新已登记，正在后台核对。无需重复提交。",
-                      "Update recorded; reconciling in the background. No resubmission is needed.",
-                    )}
-            </p>
+            <StatusBadge domain="memory" status={operation.status} />
           )}
         </>
       )}
     </>
   );
   return embedded ? (
-    <section className="dm-memory">{contentView}</section>
+    <section data-testid="memory" className="dm-memory">
+      {contentView}
+    </section>
   ) : (
-    <details
+    <Disclosure
+      data-testid="memory"
       className="dm-memory"
       onToggle={(event) => setOpen(event.currentTarget.open)}
     >
-      <summary>{t("关于你", "About you")}</summary>
+      <DisclosureTrigger>
+        {dmCopy(zh, "personal-memory.about.you.38ca3c")}
+      </DisclosureTrigger>
       {contentView}
-    </details>
-  );
-}
-
-function ProfileForm({ profile, zh }: { profile: Profile; zh: boolean }) {
-  const t = (cn: string, en: string) => (zh ? cn : en);
-  const cache = useQueryClient();
-  const [name, setName] = useState(profile.display_name);
-  const [zone, setZone] = useState(profile.timezone);
-  const [enabled, setEnabled] = useState(profile.memory_enabled);
-  const [capture, setCapture] = useState(profile.auto_capture_enabled);
-  const [suggest, setSuggest] = useState(profile.proactive_enabled);
-  const [busy, setBusy] = useState(false);
-  const [feedback, setFeedback] = useState("");
-  async function save(event: FormEvent) {
-    event.preventDefault();
-    setBusy(true);
-    setFeedback("");
-    try {
-      await personalAPI<Profile>("personal-profile", profile.owner, {
-        method: "PATCH",
-        body: JSON.stringify({
-          display_name: name.trim(),
-          timezone: zone.trim(),
-          memory_enabled: enabled,
-          auto_capture_enabled: capture,
-          proactive_enabled: suggest,
-          expected_revision: profile.revision,
-        }),
-      });
-      invalidateHome(cache, profile.owner);
-      await cache.invalidateQueries({
-        queryKey: ["deermate", "personal-profile", profile.owner],
-      });
-      await cache.invalidateQueries({
-        queryKey: ["deermate", "personal-memory", profile.owner],
-      });
-    } catch {
-      setFeedback(
-        t(
-          "设置未保存。请检查时区或刷新后重试。",
-          "Settings were not saved. Check the timezone or refresh and retry.",
-        ),
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <form className="dm-memory-form" onSubmit={(event) => void save(event)}>
-      <label>
-        {t("希望我怎么称呼你", "What should I call you?")}
-        <input
-          value={name}
-          maxLength={80}
-          disabled={busy}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <label>
-        {t("时区", "Timezone")}
-        <input
-          value={zone}
-          maxLength={80}
-          disabled={busy}
-          onChange={(e) => setZone(e.target.value)}
-          placeholder="Asia/Shanghai"
-        />
-      </label>
-      <button
-        type="button"
-        className="dm-button"
-        onClick={() =>
-          setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
-        }
-        disabled={busy}
-      >
-        {t("使用设备时区", "Use device timezone")}
-      </button>
-      <label className="dm-memory-check">
-        <input
-          type="checkbox"
-          checked={enabled}
-          disabled={busy}
-          onChange={(e) => setEnabled(e.target.checked)}
-        />
-        {t("回答时使用已有记忆", "Use saved memory in answers")}
-      </label>
-      <p className="dm-muted">
-        {t(
-          "关闭后，回答不再使用这里的内容；查看、纠正和忘记仍然可用。",
-          "Turning this off excludes saved facts from answers. You can still view, correct and forget them.",
-        )}
-      </p>
-      <label className="dm-memory-check">
-        <input
-          type="checkbox"
-          checked={capture}
-          disabled={busy}
-          onChange={(e) => setCapture(e.target.checked)}
-        />
-        {t(
-          "自动整理聊天中的偏好与要求",
-          "Automatically capture preferences and requirements",
-        )}
-      </label>
-      <p className="dm-muted">
-        {t(
-          "不用说“请记住”。比如“以后回答先给结论”，正常说就好。密码和验证码等认证信息不会保存；关闭后停止新增，已有记忆仍保留。",
-          "No special phrase is required. Authentication secrets are excluded. Pausing stops new capture and keeps existing facts.",
-        )}
-      </p>
-      <label className="dm-memory-check">
-        <input
-          type="checkbox"
-          checked={suggest}
-          disabled={busy || !enabled}
-          onChange={(event) => setSuggest(event.target.checked)}
-        />
-        {t("根据长期目标推荐新话题", "Suggest topics from saved goals")}
-      </label>
-      <p className="dm-muted">
-        {t(
-          "仅依据你保存的有效目标推荐问题，点击后才开始对话。不会自动执行任务或调用整理模型。",
-          "Suggests questions from your valid saved goals. A chat starts only when you click; no automatic task or summarization-model calls.",
-        )}
-      </p>
-      <button className="dm-button" disabled={busy}>
-        {busy
-          ? t("保存中…", "Saving…")
-          : t("保存个人设置", "Save personal settings")}
-      </button>
-      {feedback && <p role="alert">{feedback}</p>}
-    </form>
+    </Disclosure>
   );
 }

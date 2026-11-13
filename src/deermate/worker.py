@@ -121,17 +121,22 @@ class Worker:
             attributes={"deermate.attempt": task.attempt},
             recovery=task.attempt > 1,
         ):
-            await self._execute_traced(task_id)
-            finished = self.store.get(task_id)
-            if finished.status == State.FAILED:
-                telemetry.mark_error()
-            telemetry.current_attributes(
-                {
-                    "deermate.status": finished.status.value,
-                    "deermate.native_session_id": finished.session_id,
-                    "deermate.native_turn_id": finished.turn_id,
-                }
-            )
+            try:
+                await self._execute_traced(task_id)
+            finally:
+                # Shutdown can interrupt adapter cleanup after the terminal
+                # record is persisted. Retain its identity on the outer span
+                # without changing cancellation or execution semantics.
+                finished = self.store.get(task_id)
+                if finished.status == State.FAILED:
+                    telemetry.mark_error()
+                telemetry.current_attributes(
+                    {
+                        "deermate.status": finished.status.value,
+                        "deermate.native_session_id": finished.session_id,
+                        "deermate.native_turn_id": finished.turn_id,
+                    }
+                )
 
     async def _execute_traced(self, task_id: str):
         adapter = None

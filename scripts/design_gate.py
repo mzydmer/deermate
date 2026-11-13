@@ -3,6 +3,7 @@
 
 import json
 import re
+import subprocess
 from pathlib import Path
 
 if __package__:
@@ -24,7 +25,7 @@ def sources(root):
     )
 
 
-def violations(path, text):
+def violations(path, text, *, layer_policy=True):
     issues = []
     if path.suffix in (".scss", ".sass", ".less"):
         issues.append("unregistered stylesheet format; extend the gate before adding it")
@@ -59,6 +60,44 @@ def violations(path, text):
                     issues.append("named color outside design.md")
         if re.search(r"transition\s*:\s*all\b", region):
             issues.append("transition: all is not allowed")
+    for region in regions:
+        if re.search(r"\bresize\s*:", region):
+            issues.append("native resize is forbidden; use the Textarea primitive")
+        for selector, declarations in re.findall(r"([^{}]+)\{([^{}]*)\}", region):
+            if re.search(r"text-decoration\s*:\s*underline", declarations):
+                if not (
+                    "prose" in selector
+                    or all(
+                        re.search(r"(?:^|[\s>])a(?:[\s.:[#]|$)", part.strip())
+                        for part in selector.split(",")
+                    )
+                ):
+                    issues.append("underlines are reserved for links and prose")
+    if layer_policy and path.suffix in (".tsx", ".jsx"):
+        normalized = path.as_posix()
+        primitive = "/deermate/ui/" in normalized
+        pattern = "/deermate/patterns/" in normalized
+        if not primitive and re.search(
+            r"<(?:button|input|textarea|select|details|summary)\b", text
+        ):
+            issues.append("native interactive element outside primitives")
+        if not primitive and not pattern:
+            classes_to_check = re.findall(r'className\s*=\s*["\']([^"\']*)', text)
+            for expression in re.findall(r"className\s*=\s*\{([^}]+)\}", text, re.S):
+                classes_to_check.extend(re.findall(r'["\'`]([^"\'`]+)["\'`]', expression))
+            for classes in classes_to_check:
+                if re.search(
+                    r"(?:^|\s)(?:[\w-]+:)*(?:bg-|border(?:-|\b)|rounded(?:-|\b)|shadow(?:-|\b)|ring-|font-|text-(?!left\b|right\b|center\b|ellipsis\b))",
+                    classes,
+                ):
+                    issues.append("visual utilities outside primitives or patterns")
+        inline_copy = re.search(r'\b(?:t|text)\(\s*["\'`][^)]*?,\s*["\'`]', text, re.S)
+        inline_copy = inline_copy or re.search(
+            r'\bzh\s*\?\s*["\'`][^"\'`]+["\'`]\s*:\s*["\'`]', text
+        )
+        if not primitive and inline_copy:
+            issues.append("inline bilingual copy; use the DeerMate dictionary")
+
     if path.suffix in (".tsx", ".jsx", ".ts", ".js"):
         if path.suffix in (".tsx", ".jsx") and "ds-marketing-" in text:
             issues.append(
@@ -91,6 +130,50 @@ def check(root=ROOT):
         path = root / name
         if not path.exists() or path.read_text() != content:
             failures.append(f"{name}: generated drift; run sync_design_tokens.py")
+    legacy = root / "frontend/overlay/src/styles/deermate.css"
+    if legacy.exists():
+        failures.append("deermate.css must remain deleted")
+    budget = design.get("implementation", {}).get("cssBudgetLines", 0)
+    historical_limit = 1100
+    if root == ROOT:
+        history = subprocess.run(
+            ["git", "log", "--format=%H", "--", "design.md"],
+            cwd=root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        for commit in history.stdout.splitlines():
+            previous = subprocess.run(
+                ["git", "show", f"{commit}:design.md"],
+                cwd=root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            match = re.search(r'["\']?cssBudgetLines["\']?\s*:\s*(\d+)', previous.stdout)
+            if match:
+                historical_limit = min(historical_limit, int(match[1]))
+    if not isinstance(budget, int) or not 0 < budget <= historical_limit:
+        failures.append(
+            f"CSS budget must be positive and cannot increase beyond {historical_limit}"
+        )
+    handwritten = [
+        p
+        for p in (root / "frontend/overlay/src").rglob("*.css")
+        if str(p.relative_to(root)) not in expected
+    ]
+    line_count = sum(len(p.read_text().splitlines()) for p in handwritten)
+    if line_count > budget:
+        failures.append(f"CSS budget exceeded: {line_count} > {budget}")
+    for path in handwritten:
+        if path.name == "app.css":
+            if re.sub(r"/\*.*?\*/|@import[^;]+;|\s+", "", path.read_text(), flags=re.S):
+                failures.append("app.css is an import entrypoint only")
+        elif not any(
+            f"/components/deermate/{layer}/" in path.as_posix() for layer in ("ui", "patterns")
+        ):
+            failures.append(f"{path.relative_to(root)}: handwritten CSS belongs beside ui/patterns")
     # Unknown custom properties often silently discard a rule: reject rather than fall back.
     definitions = set(re.findall(r"(--[\w-]+)\s*:", "\n".join(expected.values())))
     paths = sources(root)
@@ -119,8 +202,16 @@ def check(root=ROOT):
     patch_path = root / "frontend/patches.json"
     if patch_path.exists():
         for patch in json.loads(patch_path.read_text()):
-            for _, replacement in patch["replace"]:
-                for issue in violations(Path(patch["path"]), replacement):
+            for original, replacement in patch["replace"]:
+                native = r"<(?:button|input|textarea|select|details|summary)\b"
+                if (
+                    len(re.findall(native, replacement)) > len(re.findall(native, original))
+                    and "/ui/" not in patch["path"]
+                ):
+                    failures.append(
+                        f"pinned UI {patch['path']}: new native control outside primitives"
+                    )
+                for issue in violations(Path(patch["path"]), replacement, layer_policy=False):
                     if issue.startswith(("inline", "arbitrary")):
                         continue
                     failures.append(f"pinned UI {patch['path']}: {issue}")

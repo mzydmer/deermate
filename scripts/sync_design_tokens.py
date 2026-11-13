@@ -3,6 +3,7 @@
 
 import argparse
 import copy
+import json
 import re
 from pathlib import Path
 
@@ -89,6 +90,7 @@ def token_css(design):
         "opacity",
         "tracking",
         "legacyMotion",
+        "motion",
     )
     lines = [
         "/* Generated from design.md; run scripts/sync_design_tokens.py. */",
@@ -225,6 +227,29 @@ def component_css(design):
     return "\n".join(lines) + "\n"
 
 
+def theme_css(design):
+    lines = ["/* Generated semantic utilities from design.md. */", "@theme inline {"]
+    lines.append("  --font-mono: var(--ds-fontFamilies-mono);")
+    for name in design["shadows"]:
+        lines.append(f"  --shadow-ds-{name}: var(--ds-shadows-{name});")
+    for name in design["colors"]:
+        lines.append(f"  --color-{name}: var(--ds-colors-{name});")
+    for name in design["typography"]:
+        lines.extend(
+            [
+                f"  --text-{name}: var(--ds-typography-{name}-fontSize);",
+                f"  --text-{name}--line-height: var(--ds-typography-{name}-lineHeight);",
+                f"  --text-{name}--letter-spacing: var(--ds-typography-{name}-letterSpacing);",
+            ]
+        )
+    for name in design["rounded"]:
+        lines.append(f"  --radius-ds-{name}: var(--ds-rounded-{name});")
+    for name in design["sizes"]:
+        lines.append(f"  --spacing-ds-{name}: var(--ds-sizes-{name});")
+    lines.append("}")
+    return "\n".join(lines) + "\n"
+
+
 def outputs(design):
     resolve(design, design)  # Validate every reference, including unused recipes.
     for theme in design["themes"].values():
@@ -237,6 +262,13 @@ def outputs(design):
         "frontend/overlay/src/styles/design-tokens.css": tokens,
         "backend/internal/controlplane/design-tokens.css": tokens,
         "frontend/overlay/src/styles/design-components.css": component_css(design),
+        "backend/internal/controlplane/design-components.css": component_css(design),
+        "frontend/overlay/src/styles/design-theme.css": theme_css(design),
+        "frontend/overlay/src/components/deermate/ui/design-utilities.generated.ts": (
+            "// Generated from design.md; do not edit.\nexport const typographyUtilities = "
+            + json.dumps(list(design["typography"]))
+            + " as const;\n"
+        ),
     }
 
 

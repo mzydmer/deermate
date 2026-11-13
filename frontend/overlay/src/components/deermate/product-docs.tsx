@@ -1,5 +1,6 @@
 "use client";
 
+import GithubSlugger from "github-slugger";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,30 +9,48 @@ import {
   Copy,
   FileText,
   FlaskConical,
+  Moon,
   Search,
   Sun,
-  Moon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import GithubSlugger from "github-slugger";
 import rehypeSlug from "rehype-slug";
+
+import { Card } from "@/components/deermate/ui";
+import { Button, Field, Heading, Input } from "@/components/deermate/ui";
 import {
   SafeStreamdown,
   toStreamdownComponents,
 } from "@/core/streamdown/components";
+
 import { DeerMark } from "./brand";
 import pages from "./product-docs.generated.json";
 
 const docComponents = toStreamdownComponents({
-  img: ({ src, alt }) => <span className="dm-docs-figure" tabIndex={0} role="region" aria-label={alt || "文档图示"}>
-    <a href={typeof src === "string" ? src : undefined} target="_blank" rel="noopener noreferrer" aria-label={`查看完整图：${alt}`}>
-      <img src={src} alt={alt} loading="lazy" />
-      <span className="dm-docs-figure-hint">查看完整图 ↗ · 小屏可横向滚动</span>
-    </a>
-  </span>,
+  img: ({ src, alt }) => (
+    <span
+      data-testid="docs-figure"
+      className="dm-docs-figure"
+      tabIndex={0}
+      role="region"
+      aria-label={alt ?? "文档图示"}
+    >
+      <a
+        href={typeof src === "string" ? src : undefined}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`查看完整图：${alt}`}
+      >
+        <img src={src} alt={alt} loading="lazy" />
+        <span data-testid="docs-figure-hint" className="dm-docs-figure-hint">
+          查看完整图 ↗ · 小屏可横向滚动
+        </span>
+      </a>
+    </span>
+  ),
   a: ({ href, children }) =>
     href?.startsWith("/docs/") ? (
       <Link href={href}>{children}</Link>
@@ -83,36 +102,40 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
     : [];
   const dark = mounted && resolvedTheme === "dark";
   return (
-    <div className="dm-docs" lang="zh-CN">
-      <a className="dm-docs-skip" href="#docs-main">
+    <div data-testid="docs" className="dm-docs" lang="zh-CN">
+      <a data-testid="docs-skip" className="dm-docs-skip" href="#docs-main">
         跳到文档正文
       </a>
-      <header className="dm-docs-header">
-        <Link className="dm-docs-brand" href="/docs">
+      <header data-testid="docs-header" className="dm-docs-header">
+        <Link data-testid="docs-brand" className="dm-docs-brand" href="/docs">
           <DeerMark />
           <strong>DeerMate</strong>
           <span>产品文档</span>
         </Link>
-        <div className="dm-docs-header-actions">
-          <button
+        <div
+          data-testid="docs-header-actions"
+          className="dm-docs-header-actions"
+        >
+          <Button
+            variant="secondary"
             type="button"
             onClick={() => setTheme(dark ? "light" : "dark")}
             aria-label={dark ? "切换浅色模式" : "切换深色模式"}
           >
             {dark ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          </Button>
           <Link href="/workspace">
             进入工作台 <ArrowRight size={15} />
           </Link>
         </div>
       </header>
-      <div className="dm-docs-layout">
-        <aside className="dm-docs-sidebar">
-          <div className="dm-docs-search">
-            <label htmlFor="docs-search">
+      <div data-testid="docs-layout" className="dm-docs-layout">
+        <aside data-testid="docs-sidebar" className="dm-docs-sidebar">
+          <div data-testid="docs-search" className="dm-docs-search">
+            <Field htmlFor="docs-search">
               <Search size={15} /> 搜索文档
-            </label>
-            <input
+            </Field>
+            <Input
               id="docs-search"
               type="search"
               placeholder="搜索标题或正文…"
@@ -121,7 +144,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
             />
           </div>
           {term ? (
-            <div className="dm-docs-results">
+            <div data-testid="docs-results" className="dm-docs-results">
               <p role="status">
                 {results.length
                   ? `找到 ${results.length} 篇文档`
@@ -139,13 +162,18 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
                   </Link>
                 ))}
               </nav>
-              <button type="button" onClick={() => setQuery("")}>
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setQuery("")}
+              >
                 清除搜索
-              </button>
+              </Button>
             </div>
           ) : (
             <nav aria-label="产品文档导航">
               <Link
+                data-testid="docs-home-link"
                 className="dm-docs-home-link"
                 href="/docs"
                 aria-current={pathname === "/docs" ? "page" : undefined}
@@ -154,7 +182,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
               </Link>
               {docGroups.map((group) => (
                 <section key={group.id}>
-                  <h2>{group.title}</h2>
+                  <Heading level={2}>{group.title}</Heading>
                   {pages
                     .filter((page) => page.group === group.id)
                     .map((page) => (
@@ -173,7 +201,12 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
             </nav>
           )}
         </aside>
-        <main id="docs-main" className="dm-docs-main" tabIndex={-1}>
+        <main
+          data-testid="docs-main"
+          id="docs-main"
+          className="dm-docs-main"
+          tabIndex={-1}
+        >
           {children}
         </main>
       </div>
@@ -183,28 +216,34 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
 
 export function DocsHome() {
   return (
-    <div className="dm-docs-home">
-      <p className="dm-eyebrow">DEERMATE DOCUMENTATION</p>
-      <h1>产品文档</h1>
-      <p className="dm-docs-lead">从交代一个目标，到检查每一步结果。</p>
-      <p className="dm-docs-intro">
+    <div data-testid="docs-home" className="dm-docs-home">
+      <p data-testid="eyebrow" className="dm-eyebrow">
+        DEERMATE DOCUMENTATION
+      </p>
+      <Heading level={1}>产品文档</Heading>
+      <p data-testid="docs-lead" className="dm-docs-lead">
+        从交代一个目标，到检查每一步结果。
+      </p>
+      <p data-testid="docs-intro" className="dm-docs-intro">
         了解如何使用你的私人 Agent 工作台，或深入阅读背后的系统设计与研究方法。
       </p>
-      <div className="dm-docs-cards">
+      <div data-testid="docs-cards" className="dm-docs-cards">
         {docGroups.map(({ icon: Icon, ...group }) => (
-          <Link key={group.id} href={group.href}>
-            <Icon size={22} />
-            <small>{group.audience}</small>
-            <h2>{group.title}</h2>
-            <p>{group.description}</p>
-            <span>
-              开始阅读 <ArrowRight size={16} />
-            </span>
-          </Link>
+          <Card asChild key={group.id}>
+            <Link href={group.href}>
+              <Icon size={22} />
+              <small>{group.audience}</small>
+              <Heading level={2}>{group.title}</Heading>
+              <p>{group.description}</p>
+              <span>
+                开始阅读 <ArrowRight size={16} />
+              </span>
+            </Link>
+          </Card>
         ))}
       </div>
-      <section className="dm-docs-start">
-        <h2>第一次使用？</h2>
+      <section data-testid="docs-start" className="dm-docs-start">
+        <Heading level={2}>第一次使用？</Heading>
         <p>
           先用一个范围清楚的小目标熟悉工作台，再按需开启记忆、关注或设备执行。
         </p>
@@ -212,7 +251,7 @@ export function DocsHome() {
           开始第一项工作 <ArrowRight size={16} />
         </Link>
       </section>
-      <aside className="dm-docs-note">
+      <aside data-testid="docs-note" className="dm-docs-note">
         <strong>当前为研究 Alpha</strong>
         <p>
           文档区分已有能力、可选功能与待验证方案。实例可用范围取决于版本、配置和授权；持续秘书默认关闭。
@@ -253,27 +292,29 @@ export function DocsArticle({ slug }: { slug: string }) {
     }
   }
   return (
-    <div className="dm-docs-reading">
-      <article className="dm-docs-article">
-        <p className="dm-docs-category">
+    <div data-testid="docs-reading" className="dm-docs-reading">
+      <article data-testid="docs-article" className="dm-docs-article">
+        <p data-testid="docs-category" className="dm-docs-category">
           {docGroups.find((group) => group.id === page.group)?.title}
           {page.status !==
             docGroups.find((group) => group.id === page.group)?.title &&
             ` / ${page.status}`}
         </p>
-        <h1>{page.title}</h1>
-        <p className="dm-docs-description">{page.description}</p>
-        <div className="dm-docs-meta">
+        <Heading level={1}>{page.title}</Heading>
+        <p data-testid="docs-description" className="dm-docs-description">
+          {page.description}
+        </p>
+        <div data-testid="docs-meta" className="dm-docs-meta">
           <span>
             更新于 <time dateTime={page.updated}>{page.updated}</time>
           </span>
-          <button type="button" onClick={copy}>
+          <Button variant="secondary" type="button" onClick={copy}>
             {copied ? <Check size={14} /> : <Copy size={14} />}
             {copied ? "已复制 Markdown" : "复制 Markdown"}
-          </button>
+          </Button>
         </div>
         {copyError && <p role="status">复制失败，请选择正文后手动复制。</p>}
-        <div className="dm-docs-prose">
+        <div data-testid="docs-prose" className="dm-docs-prose">
           <SafeStreamdown
             mode="static"
             plugins={{}}
@@ -284,7 +325,11 @@ export function DocsArticle({ slug }: { slug: string }) {
             {page.body}
           </SafeStreamdown>
         </div>
-        <nav className="dm-docs-pagination" aria-label="相邻文档">
+        <nav
+          data-testid="docs-pagination"
+          className="dm-docs-pagination"
+          aria-label="相邻文档"
+        >
           {previous ? (
             <Link href={`/docs/${previous.slug}`}>
               <small>
@@ -304,13 +349,13 @@ export function DocsArticle({ slug }: { slug: string }) {
             </Link>
           )}
         </nav>
-        <p className="dm-docs-footer">
+        <p data-testid="docs-footer" className="dm-docs-footer">
           以当前实例的功能与回执为准。
           <Link href="/docs/changelog">查看变更日志</Link>
         </p>
       </article>
-      <nav className="dm-docs-toc" aria-label="本页目录">
-        <h2>本页目录</h2>
+      <nav data-testid="docs-toc" className="dm-docs-toc" aria-label="本页目录">
+        <Heading level={2}>本页目录</Heading>
         {sections.map((section) => (
           <a key={section.id} href={`#${section.id}`}>
             {section.title}

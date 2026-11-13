@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+
 import { DocsArticle } from "@/components/deermate/product-docs";
 import pages from "@/components/deermate/product-docs.generated.json";
 

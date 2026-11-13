@@ -82,3 +82,69 @@ def test_frontend_build_refuses_gate_failure_before_writing(tmp_path, monkeypatc
     with pytest.raises(ValueError, match="design rejected"):
         frontend_overlay.apply(tmp_path)
     assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize(
+    "markup", ["<button/>", "<input/>", "<textarea/>", "<select/>", "<details/>", "<summary/>"]
+)
+def test_native_controls_are_confined_to_primitives(markup):
+    assert "native interactive element outside primitives" in gate.violations(
+        Path("frontend/overlay/src/components/deermate/feature.tsx"), markup
+    )
+    assert not gate.violations(
+        Path("frontend/overlay/src/components/deermate/ui/control.tsx"), markup
+    )
+
+
+@pytest.mark.parametrize(
+    "css", [".action { text-decoration: underline; }", ".textarea { resize: none; }"]
+)
+def test_action_underlines_and_resize_are_rejected(css):
+    assert gate.violations(Path("feature.css"), css)
+
+
+@pytest.mark.parametrize(
+    "markup", ['<div className="bg-canvas rounded-md"/>', 't("中文", "English")']
+)
+def test_feature_visuals_and_inline_copy_are_rejected(markup):
+    assert gate.violations(Path("frontend/overlay/src/components/deermate/feature.tsx"), markup)
+
+
+def test_css_budget_cannot_be_increased(tmp_path):
+    (tmp_path / "design.md").write_text(
+        (tokens.ROOT / "design.md")
+        .read_text()
+        .replace('"cssBudgetLines": 1100', '"cssBudgetLines": 1101')
+    )
+    with pytest.raises(ValueError, match="CSS budget"):
+        gate.check(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "markup",
+    ['<div className={active ? "bg-canvas" : "bg-primary"}/>', '<p>{zh ? "中文" : "English"}</p>'],
+)
+def test_expression_visuals_and_inline_locale_branches_are_rejected(markup):
+    assert gate.violations(Path("frontend/overlay/src/components/deermate/feature.tsx"), markup)
+
+
+@pytest.mark.parametrize(
+    "filename,reason",
+    [
+        ("frontend/overlay/src/styles/deermate.css", "must remain deleted"),
+        ("frontend/overlay/src/styles/feature.css", "belongs beside ui/patterns"),
+        ("frontend/overlay/src/styles/app.css", "import entrypoint only"),
+    ],
+)
+def test_stylesheet_location_and_entrypoint_contracts(tmp_path, filename, reason):
+    design = tokens.load_design()
+    (tmp_path / "design.md").write_text((tokens.ROOT / "design.md").read_text())
+    for name, content in tokens.outputs(design).items():
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    path = tmp_path / filename
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(".feature { color: var(--ds-colors-ink); }")
+    with pytest.raises(ValueError, match=reason):
+        gate.check(tmp_path)

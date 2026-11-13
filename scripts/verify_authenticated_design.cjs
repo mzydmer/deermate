@@ -1,3 +1,4 @@
+const { inspector } = require("./frontend_test_helpers.cjs");
 const fs = require("fs");
 const assert = require("assert/strict");
 const { chromium } = require(
@@ -32,7 +33,7 @@ assert(["127.0.0.1", "localhost"].includes(new URL(base).hostname));
       assert.equal(
         (
           await p.request.post(base + "/api/v1/auth/initialize", {
-            data: account,
+            data: { email: account.email, password: account.password },
           })
         ).status(),
         201,
@@ -48,7 +49,7 @@ assert(["127.0.0.1", "localhost"].includes(new URL(base).hostname));
     checks.push("real_go_owner_login");
     const state = await auth.storageState();
     await auth.close();
-    for (const width of [390, 600, 800, 960, 1200, 1440])
+    for (const width of [390, 768, 1024, 1280, 1440])
       for (const dark of [false, true]) {
         const context = await browser.newContext({
           viewport: { width, height: 1000 },
@@ -97,62 +98,69 @@ assert(["127.0.0.1", "localhost"].includes(new URL(base).hostname));
         }
         await check("workspace", async () => {
           await page.goto(base + "/workspace");
-          await page.locator(".dm-task-row").first().waitFor();
-          assert.equal(await page.locator(".dm-task-row").count(), 6);
+          await page.getByTestId("message-input").waitFor();
           assert.equal(
             await page.evaluate(
               () => document.documentElement.scrollWidth <= innerWidth,
             ),
             true,
           );
-          assert.equal(
-            await page
-              .locator(".dm-desk")
-              .evaluate((e) => getComputedStyle(e).backgroundColor),
-            dark ? "rgb(10, 10, 10)" : "rgb(255, 255, 255)",
-          );
+          const surface = await page
+            .locator("[data-testid~=desk]")
+            .evaluate((e) =>
+              (() => {
+                const probe = document.createElement("div");
+                probe.style.backgroundColor = "var(--ds-colors-canvas-soft)";
+                e.append(probe);
+                const result = {
+                  actual: getComputedStyle(e).backgroundColor,
+                  expected: getComputedStyle(probe).backgroundColor,
+                };
+                probe.remove();
+                return result;
+              })(),
+            );
+          assert.equal(surface.actual, surface.expected);
           await page.screenshot({
             path: `${output}/workspace-${width}-${dark ? "dark" : "light"}.png`,
             fullPage: true,
           });
         });
         await check("task_filters_and_evidence", async () => {
-          await page.getByRole("tab", { name: "需关注", exact: true }).click();
-          assert.equal(await page.locator(".dm-task-row").count(), 2);
-          await page.getByRole("tab", { name: "已完成", exact: true }).click();
-          await page.locator(".dm-task-row").first().click();
-          await page.locator(".dm-detail-body").waitFor();
-          const sheet = page.locator(".dm-details");
+          await page.goto(base + "/workspace/work");
+          await page.getByTestId("work-record-row").first().waitFor();
+          assert.equal(await page.getByTestId("work-record-row").count(), 6);
+          await page.getByRole("tab", { name: /待回应/ }).click();
+          assert.equal(await page.getByTestId("work-record-row").count(), 2);
+          await page.getByRole("tab", { name: /已结束/ }).click();
+          const opener = page
+            .getByTestId("work-record-row")
+            .first()
+            .getByRole("button", { name: "查看详情" });
+          await opener.click();
+          const sheet = inspector(page);
+          await sheet.waitFor();
+          await page.getByTestId("task-detail").waitFor();
           if (width < 600) {
-            const closeBox = await sheet
-              .locator(":scope > button")
+            const close = await page
+              .getByRole("dialog")
+              .getByRole("button", { name: "关闭", exact: true })
               .boundingBox();
-            assert(
-              closeBox.width >= 44 && closeBox.height >= 44,
-              "Close hit area must be 44px square",
-            );
+            assert(close.width >= 44 && close.height >= 44);
           }
-          assert.equal(
-            await sheet.evaluate((e) => getComputedStyle(e).borderRadius),
-            "12px",
-          );
           await page.screenshot({
             path: `${output}/detail-${width}-${dark ? "dark" : "light"}.png`,
             fullPage: true,
           });
           await page.keyboard.press("Escape");
           await sheet.waitFor({ state: "hidden" });
-          await page.waitForFunction(
-            () => document.activeElement?.classList.contains("dm-task-row"),
-            {},
-            { timeout: 2000 },
-          );
+          assert(await opener.evaluate((e) => e === document.activeElement));
         });
         await check("memory_settings_layout", async () => {
           await page.goto(base + "/workspace?settings=memory");
-          const dialog = page.locator(".dm-settings-dialog");
+          const dialog = page.locator("[role=dialog]");
           await dialog.waitFor();
-          await page.locator(".dm-memory-settings").waitFor();
+          await page.locator("[data-testid=settings-memory-page]").waitFor();
           await page.waitForTimeout(100);
           const selected = dialog.locator("nav [aria-current=page]");
           await selected.waitFor();
@@ -163,7 +171,7 @@ assert(["127.0.0.1", "localhost"].includes(new URL(base).hostname));
           });
           assert(visible, "Selected navigation item must be visible");
           const v = await dialog.evaluate((e) => {
-            const panel = e.querySelector('[data-slot="scroll-area"]'),
+            const panel = e.querySelector('[data-testid="settings-content"]'),
               nav = e.querySelector("nav");
             return {
               w: e.getBoundingClientRect().width,
@@ -196,7 +204,7 @@ assert(["127.0.0.1", "localhost"].includes(new URL(base).hostname));
         ])
           await check("settings_" + section, async () => {
             await page.goto(base + "/workspace?settings=" + section);
-            const d = page.locator(".dm-settings-dialog");
+            const d = page.locator("[role=dialog]");
             await d.waitFor();
             await page.waitForTimeout(200);
             assert.equal(

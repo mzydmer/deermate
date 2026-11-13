@@ -2,16 +2,17 @@
 
 import {
   Blocks,
+  Bot,
   CalendarClock,
   LayoutDashboard,
   ListChecks,
   MessagesSquare,
   UserRound,
-  Bot,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { dmCopy } from "@/components/deermate/i18n/copy";
 import {
   SidebarGroup,
   SidebarMenu,
@@ -27,22 +28,22 @@ export function WorkspaceNavChatList() {
   const links = [
     {
       href: "/workspace",
-      title: zh ? "助手" : "Assistant",
+      title: dmCopy(zh, "workspace-nav-chat-list.assistant.e7461b"),
       icon: LayoutDashboard,
     },
     {
       href: "/workspace/work",
-      title: zh ? "我的工作" : "My work",
+      title: dmCopy(zh, "workspace-nav-chat-list.my.work.1e404f"),
       icon: ListChecks,
     },
     {
       href: "/workspace/memory",
-      title: zh ? "关于你" : "About you",
+      title: dmCopy(zh, "workspace-nav-chat-list.about.you.38ca3c"),
       icon: UserRound,
     },
     {
       href: "/workspace/chats",
-      title: zh ? "全部对话" : "All chats",
+      title: dmCopy(zh, "workspace-nav-chat-list.all.chats.fdb146"),
       icon: MessagesSquare,
     },
   ];
@@ -51,8 +52,15 @@ export function WorkspaceNavChatList() {
       <SidebarMenu>
         {links.map((v) => (
           <SidebarMenuItem key={v.href}>
-            <SidebarMenuButton isActive={path === v.href} asChild>
-              <Link href={v.href}>
+            <SidebarMenuButton
+              tooltip={v.title}
+              isActive={path === v.href}
+              asChild
+            >
+              <Link
+                href={v.href}
+                aria-current={path === v.href ? "page" : undefined}
+              >
                 <v.icon />
                 <span>{v.title}</span>
               </Link>
@@ -71,17 +79,20 @@ export function WorkspaceAdvancedNav() {
   const links = [
     {
       href: "/workspace/capabilities",
-      title: zh ? "工具与能力" : "Tools and capabilities",
+      title: dmCopy(
+        zh,
+        "workspace-nav-chat-list.tools.and.capabilities.fb0340",
+      ),
       icon: Blocks,
     },
     {
       href: "/workspace/scheduled-tasks",
-      title: zh ? "定时任务" : "Scheduled tasks",
+      title: dmCopy(zh, "workspace-nav-chat-list.scheduled.tasks.9fe862"),
       icon: CalendarClock,
     },
     {
       href: "/workspace/agents",
-      title: zh ? "智能体设置" : "Agent settings",
+      title: dmCopy(zh, "workspace-nav-chat-list.agent.settings.38da81"),
       icon: Bot,
     },
   ];
@@ -90,8 +101,15 @@ export function WorkspaceAdvancedNav() {
       <SidebarMenu>
         {links.map((v) => (
           <SidebarMenuItem key={v.href}>
-            <SidebarMenuButton isActive={path.startsWith(v.href)} asChild>
-              <Link href={v.href}>
+            <SidebarMenuButton
+              tooltip={v.title}
+              isActive={path.startsWith(v.href)}
+              asChild
+            >
+              <Link
+                href={v.href}
+                aria-current={path === v.href ? "page" : undefined}
+              >
                 <v.icon />
                 <span>{v.title}</span>
               </Link>

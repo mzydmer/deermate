@@ -5,16 +5,20 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import { ErrorBanner, Skeleton } from "@/components/deermate/ui";
+import { Button, Heading, Text } from "@/components/deermate/ui";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
 } from "@/components/ui/sheet";
 import { useAuth } from "@/core/auth/AuthProvider";
 import { useI18n } from "@/core/i18n/hooks";
 
+import { StatusBadge } from "./ui";
 import { workspaceAPI } from "./workspace-api";
 
 type Source = {
@@ -32,15 +36,16 @@ type Source = {
 export function MemorySource({
   userId,
   factId,
+  restoreFocus,
   onClose,
   zh,
 }: {
   userId: string;
   factId: string;
+  restoreFocus?: () => void;
   onClose: () => void;
   zh: boolean;
 }) {
-  const t = (a: string, b: string) => (zh ? a : b);
   const opener = useRef<HTMLElement | null>(
     typeof document !== "undefined"
       ? (document.activeElement as HTMLElement)
@@ -63,16 +68,16 @@ export function MemorySource({
         body: JSON.stringify({ excluded: true }),
       });
       setError(
-        t(
-          "这个话题之后不会再整理进长期记忆。已有记忆可逐条忘记。",
-          "This topic is excluded from future capture. Existing facts can be forgotten individually.",
+        dmCopy(
+          zh,
+          "workspace-memory.this.topic.is.excluded.from.future.capture.exist.468cb7",
         ),
       );
     } catch {
       setError(
-        t(
-          "这次没有保存，请稍后再试。",
-          "This change was not saved. Try again.",
+        dmCopy(
+          zh,
+          "workspace-memory.this.change.was.not.saved.try.again..8f0400",
         ),
       );
     }
@@ -85,59 +90,72 @@ export function MemorySource({
       }}
     >
       <SheetContent
+        data-testid="workspace memory-source"
         className="dm-workspace dm-memory-source"
         onCloseAutoFocus={(e) => {
           e.preventDefault();
-          opener.current?.focus();
+          if (restoreFocus) restoreFocus();
+          else opener.current?.focus();
         }}
       >
-        <SheetHeader>
-          <SheetTitle>{t("这条记忆从哪来", "Memory source")}</SheetTitle>
+        <SheetHeader className="p-0">
+          <SheetTitle>
+            {dmCopy(zh, "workspace-memory.memory.source.5a5266")}
+          </SheetTitle>
           <SheetDescription>
-            {t(
-              "保留你说过的话，方便核对有没有记错。",
-              "Check the original statement and where this fact was included.",
+            {dmCopy(
+              zh,
+              "workspace-memory.check.the.original.statement.and.where.this.fact.bc2023",
             )}
           </SheetDescription>
         </SheetHeader>
         {source.isPending && (
-          <p role="status">{t("在找原来的话…", "Loading source…")}</p>
+          <Skeleton
+            label={dmCopy(zh, "workspace-memory.loading.source..696dbc")}
+          />
         )}
         {source.isError && (
-          <p role="alert">
-            {t("暂时没读到来源。", "Source unavailable.")}
-            <button className="dm-button" onClick={() => void source.refetch()}>
-              {t("重试", "Retry")}
-            </button>
-          </p>
+          <ErrorBanner role="alert">
+            {dmCopy(zh, "workspace-memory.source.unavailable..a97028")}
+            <Button
+              variant="primary"
+              type="button"
+              onClick={() => void source.refetch()}
+            >
+              {dmCopy(zh, "workspace-memory.retry.2cd694")}
+            </Button>
+          </ErrorBanner>
         )}
         {!source.isError && source.data && (
-          <div className="dm-memory-source-body">
-            <p className="dm-small dm-muted">
+          <div
+            data-testid="memory-source-body"
+            className="dm-memory-source-body"
+          >
+            <Text as="p" size="caption" tone="muted" className="">
               {scopeLabel(source.data.scope, zh)} ·{" "}
               {new Date(source.data.updated_at * 1000).toLocaleString()}
-            </p>
+            </Text>
             {source.data.state !== "available" ? (
               <p>
-                {t(
-                  "来源已经不可用，这条记忆不再用于回答。",
-                  "The source is unavailable; this memory is excluded from answers.",
+                {dmCopy(
+                  zh,
+                  "workspace-memory.the.source.is.unavailable.this.memory.is.exclude.9c6ef5",
                 )}
               </p>
             ) : source.data.kind === "manual" ? (
               <p>
-                {t(
-                  "这条是你在记忆管理中保存或纠正的。",
-                  "You saved or corrected this fact in memory settings.",
+                {dmCopy(
+                  zh,
+                  "workspace-memory.you.saved.or.corrected.this.fact.in.memory.setti.7969b4",
                 )}
               </p>
             ) : (
               <>
                 <blockquote>{source.data.text}</blockquote>
                 {source.data.observed_at && (
-                  <p className="dm-small dm-muted">
+                  <Text as="p" size="caption" tone="muted" className="">
                     {new Date(source.data.observed_at * 1000).toLocaleString()}
-                  </p>
+                  </Text>
                 )}
                 <Link
                   href={
@@ -146,45 +164,58 @@ export function MemorySource({
                       : `/workspace/chats/${source.data.thread_id}`
                   }
                 >
-                  {t("回到原对话", "Open original conversation")}
+                  {dmCopy(
+                    zh,
+                    "workspace-memory.open.original.conversation.0bf45d",
+                  )}
                 </Link>
                 {source.data.kind === "chat" && (
-                  <button className="dm-button" onClick={() => void exclude()}>
-                    {t("这个话题不再记忆", "Exclude this topic")}
-                  </button>
+                  <Button
+                    variant="primary"
+                    type="button"
+                    onClick={() => void exclude()}
+                  >
+                    {dmCopy(zh, "workspace-memory.exclude.this.topic.b2f72d")}
+                  </Button>
                 )}
               </>
             )}
             {!!source.data.expires_at && (
-              <p className="dm-small dm-muted">
-                {t("有效期至", "Expires")}{" "}
+              <Text as="p" size="caption" tone="muted" className="">
+                {dmCopy(zh, "workspace-memory.expires.dc61a8")}{" "}
                 {new Date(source.data.expires_at * 1000).toLocaleDateString()}
-              </p>
+              </Text>
             )}
-            <h3>{t("最近用在哪些对话", "Recently included in")}</h3>
-            <p className="dm-small dm-muted">
-              {t(
-                "表示已加入回答上下文，不代表模型一定采纳了它。",
-                "Included in model context; this does not prove the answer relied on it.",
+            <Heading level={3}>
+              {dmCopy(zh, "workspace-memory.recently.included.in.3aaf4d")}
+            </Heading>
+            <Text as="p" size="caption" tone="muted" className="">
+              {dmCopy(
+                zh,
+                "workspace-memory.included.in.model.context.this.does.not.prove.th.908a0a",
               )}
-            </p>
+            </Text>
             {source.data.uses.length ? (
               <ul>
                 {source.data.uses.map((v) => (
                   <li key={v.thread_id}>
                     <Link href={`/workspace/chats/${v.thread_id}`}>
-                      {v.title || t("未命名对话", "Untitled chat")}
+                      {v.title ||
+                        dmCopy(zh, "workspace-memory.untitled.chat.bcab73")}
                     </Link>
-                    <p className="dm-small dm-muted">
+                    <Text as="p" size="caption" tone="muted" className="">
                       {new Date(v.included_at * 1000).toLocaleString()}
-                    </p>
+                    </Text>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="dm-muted">
-                {t("还没有可展示的使用记录。", "No visible usage records yet.")}
-              </p>
+              <Text as="p" tone="muted" className="">
+                {dmCopy(
+                  zh,
+                  "workspace-memory.no.visible.usage.records.yet..53b54b",
+                )}
+              </Text>
             )}
             {error && <p role="status">{error}</p>}
           </div>
@@ -196,16 +227,10 @@ export function MemorySource({
 
 export function scopeLabel(scope: string, zh: boolean) {
   return scope.startsWith("project:")
-    ? zh
-      ? "这个项目"
-      : "This project"
+    ? dmCopy(zh, "workspace-memory.this.project.9cac57")
     : scope.startsWith("topic:")
-      ? zh
-        ? "当前话题"
-        : "This topic"
-      : zh
-        ? "个人偏好与背景"
-        : "Personal preferences and context";
+      ? dmCopy(zh, "workspace-memory.this.topic.c96822")
+      : dmCopy(zh, "workspace-memory.personal.preferences.and.context.eeb729");
 }
 
 type History = {
@@ -223,7 +248,6 @@ export function HistoryProgress({
   zh: boolean;
   compact?: boolean;
 }) {
-  const t = (a: string, b: string) => (zh ? a : b);
   const cache = useQueryClient();
   const [error, setError] = useState("");
   const query = useQuery({
@@ -248,9 +272,9 @@ export function HistoryProgress({
       }
     } catch {
       setError(
-        t(
-          "操作还没确认，请稍后核对。",
-          "This action is unconfirmed. Reconcile it later.",
+        dmCopy(
+          zh,
+          "workspace-memory.this.action.is.unconfirmed.reconcile.it.later..ff5076",
         ),
       );
     }
@@ -258,52 +282,66 @@ export function HistoryProgress({
   if (!query.data || query.isError) return null;
   const v = query.data;
   const active = ["not_started", "processing", "queued"].includes(v.status);
+  if (compact)
+    return (
+      <div className="flex items-center gap-2">
+        <StatusBadge domain="history" status={v.status} />
+      </div>
+    );
   return (
     <section
       className={
         compact ? "dm-assistant-history" : "dm-memory-history ds-app-card"
       }
     >
-      <h3>{t("把最近的事接回来", "Picking up recent context")}</h3>
-      <p className="dm-small dm-muted">
+      <Heading level={3}>
+        {dmCopy(zh, "workspace-memory.picking.up.recent.context.9df270")}
+      </Heading>
+      <Text as="p" size="caption" tone="muted" className="">
         {active
-          ? t(
-              "会在后台整理最近七天、最多十个话题，不影响你继续聊天。",
-              "Up to ten conversations from the past seven days, in the background.",
+          ? dmCopy(
+              zh,
+              "workspace-memory.up.to.ten.conversations.from.the.past.seven.days.15183a",
             )
           : ["stop", "undo", "interrupted"].includes(v.status)
-            ? t(
-                "最近资料的整理已停止。新对话仍按当前记忆设置处理。",
-                "History import stopped. New chats still follow current memory settings.",
+            ? dmCopy(
+                zh,
+                "workspace-memory.history.import.stopped.new.chats.still.follow.cu.dd0b0b",
               )
-            : t(
-                "最近资料已核对。没把握的内容不会硬记下来。",
-                "Recent context checked. Uncertain facts are left out.",
+            : dmCopy(
+                zh,
+                "workspace-memory.recent.context.checked.uncertain.facts.are.left..d9e97b",
               )}
-      </p>
+      </Text>
       {v.total > 0 && (
-        <p className="dm-small">
-          {t("已处理", "Settled")} {v.settled}/{v.total}
-        </p>
+        <Text as="p" size="caption" className="">
+          {dmCopy(zh, "workspace-memory.settled.e34f6b")} {v.settled}/{v.total}
+        </Text>
       )}
       {!compact && (
-        <div className="dm-assistant-actions">
+        <div data-testid="assistant-actions" className="dm-assistant-actions">
           {active && (
-            <button className="dm-button" onClick={() => void action("stop")}>
-              {t("停止整理", "Stop import")}
-            </button>
+            <Button
+              variant="primary"
+              type="button"
+              onClick={() => void action("stop")}
+            >
+              {dmCopy(zh, "workspace-memory.stop.import.d29ba3")}
+            </Button>
           )}
           {v.total > 0 && v.status !== "undo" && (
-            <button
-              className="dm-text-button"
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
               onClick={() => void action("undo")}
             >
-              {t("撤销这次新增", "Undo imported facts")}
-            </button>
+              {dmCopy(zh, "workspace-memory.undo.imported.facts.fab7ff")}
+            </Button>
           )}
         </div>
       )}
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorBanner role="alert">{error}</ErrorBanner>}
     </section>
   );
 }
@@ -324,7 +362,6 @@ export function MemoryActivity({
   threadId: string;
   zh: boolean;
 }) {
-  const t = (a: string, b: string) => (zh ? a : b);
   const cache = useQueryClient();
   const [source, setSource] = useState("");
   const [error, setError] = useState("");
@@ -373,9 +410,9 @@ export function MemoryActivity({
       });
     } catch {
       setError(
-        t(
-          "记录已变化，请到“关于你”核对后再操作。",
-          "This fact changed. Review it in About you.",
+        dmCopy(
+          zh,
+          "workspace-memory.this.fact.changed.review.it.in.about.you..ac9f13",
         ),
       );
     }
@@ -388,57 +425,68 @@ export function MemoryActivity({
   )
     return null;
   return (
-    <div className="dm-memory-activity">
+    <div data-testid="memory-activity" className="dm-memory-activity">
       <span role="status">
         {latest.status === "failed"
-          ? t(
-              "这次没有记下来，可以到“关于你”补充。",
-              "This was not saved. You can add it in About you.",
+          ? dmCopy(
+              zh,
+              "workspace-memory.this.was.not.saved.you.can.add.it.in.about.you..54196f",
             )
           : latest.status === "uncertain"
-            ? t(
-                "这次整理还没确认，不会重复调用模型。",
-                "This capture is unconfirmed; the model will not be called again.",
+            ? dmCopy(
+                zh,
+                "workspace-memory.this.capture.is.unconfirmed.the.model.will.not.b.36b3a5",
               )
             : latest.status === "budget_wait"
-              ? t(
-                  "今天的整理额度已用完，聊天可以继续。",
-                  "Today's capture allowance is used. You can keep chatting.",
+              ? dmCopy(
+                  zh,
+                  "workspace-memory.today.s.capture.allowance.is.used.you.can.keep.c.2dbae3",
                 )
               : latest.status === "clarification"
-                ? t(
-                    "没确定你指的是哪条记忆，可以在“关于你”选一下。",
-                    "Choose the memory you meant in About you.",
+                ? dmCopy(
+                    zh,
+                    "workspace-memory.choose.the.memory.you.meant.in.about.you..109b5a",
                   )
                 : op
                   ? op.kind === "delete"
-                    ? t(
-                        "这条记忆已忘记。原对话仍然保留。",
-                        "Memory forgotten. The original chat is retained.",
+                    ? dmCopy(
+                        zh,
+                        "workspace-memory.memory.forgotten.the.original.chat.is.retained..616e8f",
                       )
-                    : t(
-                        "记下了，之后会按这个来。",
-                        "Saved for future conversations.",
+                    : dmCopy(
+                        zh,
+                        "workspace-memory.saved.for.future.conversations..c2794b",
                       )
-                  : t(
-                      "正在整理刚才提到的事…",
-                      "Checking what you just shared…",
+                  : dmCopy(
+                      zh,
+                      "workspace-memory.checking.what.you.just.shared..9d85cd",
                     )}
       </span>
       {op && op.kind !== "delete" && (
         <>
-          <button
-            className="dm-text-button"
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
             onClick={() => setSource(op.fact_id)}
           >
-            {t("来源", "Source")}
-          </button>
-          <button className="dm-text-button" onClick={() => void undo()}>
-            {op.kind === "create" ? t("撤销", "Undo") : t("忘记这条", "Forget")}
-          </button>
+            {dmCopy(zh, "workspace-memory.source.58b22d")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={() => void undo()}
+          >
+            {op.kind === "create"
+              ? dmCopy(zh, "workspace-memory.undo.414c20")
+              : dmCopy(zh, "workspace-memory.forget.63cfb8")}
+          </Button>
         </>
       )}
-      <Link href="/workspace/memory">{t("关于你", "About you")}</Link>
+      <Link href="/workspace/memory">
+        {dmCopy(zh, "workspace-memory.about.you.38ca3c")}
+      </Link>
       {source && (
         <MemorySource
           userId={userId}
@@ -447,7 +495,7 @@ export function MemoryActivity({
           onClose={() => setSource("")}
         />
       )}{" "}
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorBanner role="alert">{error}</ErrorBanner>}
     </div>
   );
 }
@@ -468,18 +516,20 @@ export function ChatMemoryBanner() {
   });
   if (!user || !id || id === "new") return null;
   return (
-    <div className="dm-chat-memory-banner">
+    <div data-testid="chat-memory-banner" className="dm-chat-memory-banner">
       {mode.data?.mode === "temporary" ? (
         <p role="status">
-          {zh
-            ? "临时对话 · 不读取或新增长期记忆，聊天记录仍会保存。"
-            : "Temporary chat · No long-term memory is read or saved. Chat history is retained."}
+          {dmCopy(
+            zh,
+            "workspace-memory.temporary.chat.no.long.term.memory.is.read.or.sa.075526",
+          )}
         </p>
       ) : mode.data?.mode === "excluded" ? (
         <p role="status">
-          {zh
-            ? "这个话题不再整理进长期记忆。"
-            : "This topic is excluded from long-term capture."}
+          {dmCopy(
+            zh,
+            "workspace-memory.this.topic.is.excluded.from.long.term.capture..9085c7",
+          )}
         </p>
       ) : (
         <MemoryActivity userId={user.id} threadId={id} zh={zh} />

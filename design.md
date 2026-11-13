@@ -10,7 +10,7 @@
   "on-primary": "#ffffff"
   "ink": "#171717"
   "body": "#4d4d4d"
-  "mute": "#888888"
+  "mute": "#666666"
   "canvas": "#ffffff"
   "canvas-soft": "#fafafa"
   "canvas-soft-2": "#f5f5f5"
@@ -178,6 +178,11 @@
   "logo": "24px"
   "full": "100%"
   "touch": "44px"
+  "icon-block": "36px"
+  "empty-icon": "40px"
+  "work-row-max": "64px"
+  "auth-card": "420px"
+  "output": "320px"
 "borders":
   "thin": "1px"
   "focus": "2px"
@@ -275,6 +280,45 @@
         "backgroundColor": "{colors.primary-hover}"
       "active":
         "backgroundColor": "{colors.primary-active}"
+  "app-button-danger":
+    "scope": "app"
+    "description": "危险操作的明确确认；不代表普通主操作"
+    "backgroundColor": "{colors.error-deep}"
+    "textColor": "{colors.on-primary}"
+    "borderColor": "{colors.error-deep}"
+    "borderWidth": "{borders.thin}"
+    "typography": "{typography.button-md}"
+    "rounded": "{rounded.md}"
+    "height": "{sizes.control-md}"
+    "padding":
+      "block": "{spacing.none}"
+      "inline": "{spacing.md}"
+    "gap": "{spacing.xs}"
+    "shadow": "{shadows.level-0}"
+    "states":
+      "hover":
+        "backgroundColor": "{colors.error}"
+      "active":
+        "backgroundColor": "{colors.error-deep}"
+  "app-composer-send":
+    "scope": "app"
+    "description": "Composer 唯一发送操作；圆形用于紧凑消息工具栏"
+    "backgroundColor": "{colors.primary}"
+    "textColor": "{colors.on-primary}"
+    "borderColor": "{colors.primary}"
+    "borderWidth": "{borders.thin}"
+    "typography": "{typography.button-md}"
+    "rounded": "{rounded.full}"
+    "height": "{sizes.control-md}"
+    "padding": "{spacing.none}"
+    "gap": "{spacing.xs}"
+    "shadow": "{shadows.level-0}"
+    "states":
+      "hover":
+        "backgroundColor": "{colors.primary-hover}"
+      "active":
+        "backgroundColor": "{colors.primary-active}"
+    "width": "{sizes.control-md}"
   "app-button-secondary":
     "scope": "app"
     "description": "低于主操作的替代入口"
@@ -662,6 +706,9 @@
   - "frontend/overlay/src/styles/design-tokens.css"
   - "backend/internal/controlplane/design-tokens.css"
   - "frontend/overlay/src/styles/design-components.css"
+  - "backend/internal/controlplane/design-components.css"
+  - "frontend/overlay/src/styles/design-theme.css"
+  - "frontend/overlay/src/components/deermate/ui/design-utilities.generated.ts"
   "legacyAliases":
     "background": "canvas"
     "surface": "canvas-soft"
@@ -686,6 +733,16 @@
   - "backend/internal/controlplane/*.html"
   - "src/deermate/tooling_ui"
   "gateLimit": "静态门禁验证 tokens、生成一致性与禁止样式，不能证明视觉、键盘和可访问性全部合格；远端分支保护需配置为必需检查。"
+  "cssBudgetLines": 1100
+  "layers":
+    "primitives": "components/deermate/ui"
+    "patterns": "components/deermate/patterns"
+    "features": "components/deermate feature modules"
+    "routes": "app route composition"
+"motion":
+  "feedback": "150ms"
+  "selection": "250ms"
+  "ease": "cubic-bezier(0.22, 1, 0.36, 1)"
 ---
 
 # Developer platform design
@@ -702,7 +759,7 @@ YAML 是唯一数值来源。先应用主题覆盖，再递归解析 `{collectio
 
 ## 2. Colors
 
-`ink` 用于标题与主要内容，`body` 用于正文和必要说明，`mute` 仅用于非关键提示。`#888888` 不保证小文字对比度，不能用作必要标签和错误原因。`canvas` 是页面及卡片，`canvas-soft` 是次级分区，`canvas-soft-2` 是内嵌和中性选中表面。先用间距、边界组织信息，不连续嵌套灰色卡片。
+`ink` 用于标题与主要内容，`body` 用于正文和必要说明，`mute` 仅用于非关键提示。浅色 mute 调整为 #666666，确保 caption 在规定表面上可读；必要标签和错误仍使用各自语义色。`canvas` 是卡片和文档表面，`canvas-soft` 是工作台主区及次级分区，`canvas-soft-2` 是内嵌和中性选中表面。先用间距、边界组织信息，不连续嵌套灰色卡片。
 
 `hairline` 是普通分割，`hairline-strong` 是强调分组；可识别的输入与按钮边界使用 `control-border`，不能仅依赖极浅分割线。浅色主按钮深底浅字。
 
@@ -797,7 +854,7 @@ Hero组合标题、导语、CTA与大展示；feature-band组合区块标题与�
 
 hover使用配方状态，active按下反馈与持久selected区分。focus-visible为2px轮廓、4px偏移，不能被裁切；无效边框与焦点同时保留。disabled默认0.48透明度并实际阻止激活，不降低整个字段组透明度；需要解释时提供可读取原因。loading保留位置和标签，标记busy，阻止重复提交。
 
-本版未新建统一duration/easing体系；legacyMotion仅保留已有tabs、面板、列表参数兼容，不能称为所有组件的统一合同。动效短暂克制、可中断，禁止transition:all与装饰循环；reduced-motion移除非必要运动但保留状态反馈。
+组件反馈使用 motion.feedback/selection/ease；legacyMotion仅保留已有tabs、面板、列表参数兼容，不能称为所有组件的统一合同。动效短暂克制、可中断，禁止transition:all与装饰循环；reduced-motion移除非必要运动但保留状态反馈。
 
 不得仅凭按钮高度宣称可访问性等级。检查实际命中区（触屏优先44×44px且不重叠）、普通正文对比度、必要非文本对比度、键盘顺序、焦点、读屏、缩放与重排。静态门禁不能替代这些验证。
 
@@ -824,14 +881,16 @@ hover使用配方状态，active按下反馈与持久selected区分。focus-visi
 
 ## 11. Implementation Checklist
 
-- [ ] YAML可解析、无重复键、引用存在且无循环，全部组件范围明确。
-- [ ] 修改design.md后生成共享CSS；React与Go逐字一致，无手改生成资产。
-- [ ] 产品与营销配方没有混用，控件高度与圆角遵守合同。
-- [ ] 所有第一方样式通过design-system门禁，几何/第三方边界有明确范围。
-- [ ] 浅深色、五个响应范围、长文本、字体回退和图片比例已检查。
-- [ ] 主要操作、输入错误、加载、空、失败、过期状态正确且无伪数据。
-- [ ] 弹窗焦点、键盘、命中区、对比度、缩放和reduced-motion实际检查。
-- [ ] 文档影响、构建和验收结果写入STATUS/EVOLUTION；发布单独记录。
+- [x] YAML可解析、无重复键、引用存在且无循环，全部组件范围明确。
+- [x] 修改design.md后生成共享CSS；React与Go逐字一致，无手改生成资产。
+- [x] 产品与营销配方没有混用，控件高度与圆角遵守合同。
+- [x] 所有第一方样式通过design-system门禁，几何/第三方边界有明确范围。
+- [x] 浅深色、五个响应范围、长文本、字体回退和图片比例已检查。
+- [x] 主要操作、输入错误、加载、空、失败、过期状态正确且无伪数据。
+- [x] 弹窗焦点、键盘、命中区、对比度、缩放和reduced-motion实际检查。
+- [x] 文档影响、构建和验收结果写入STATUS/EVOLUTION；发布单独记录。
+
+本轮勾选范围为 issue #2 的合成产品页面与组件验收，实际结果见 docs/STATUS.md；缩放采用等效重排，静态文档图示保留纸面配色，不代表全面可访问性认证或真实模型/设备验收。
 
 ## 12. Repository enforcement
 
@@ -840,3 +899,7 @@ hover使用配方状态，active按下反馈与持久selected区分。focus-visi
 第一方CSS、Go内嵌CSS和工具扩展CSS不得硬编码颜色、字号、圆角、阴影和空间值；使用生成变量。TSX禁止任意视觉值和新增颜色体系；仅允许运动所需的动态自定义属性。现有任务列表仅允许 `--dm-index: Math.min(index, 5)` 的动态自定义属性用于既有列表错开；其余内联视觉样式拒绝。宽高、Grid、媒体查询、品牌光学尺寸等几何例外由implementation.cssExceptions约束。固定上游使用共享语义桥接和统一组件外壳；第三方代码高亮/用户内容不作为第一方UI样式放行依据。
 
 自动检查不能判断完整视觉效果，PR仍需附受影响页面及实测范围。设计变更修改本文件并说明理由，不能通过更新违例基线绕过；不建立无限增长的旧违例白名单。
+
+组件层补充（ADR 0018）：primitives 包装既有原语，features/routes 只组合组件和结构布局；语义 utility 由 YAML 生成。样式预算为 implementation.cssBudgetLines，迁移完成后删除 deermate.css；交互样式只属于 ui/patterns，文档 prose 独立。状态经 status.ts，文案来自 DeerMate 字典。
+
+圆形发送操作仅用于 app-composer-send；其余普通产品按钮仍为 rounded.md。ui/utils 的字号分类注册表同样由 YAML 生成，避免样式合并器把字号误当作文字颜色。

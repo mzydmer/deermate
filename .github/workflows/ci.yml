@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -50,6 +52,70 @@ jobs:
         with:
           node-version: '24'
       - run: node scripts/verify_continuous_intents.mjs
+
+  frontend-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '10.26.2'
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - run: python -m pip install 'httpx>=0.28,<1' 'PyYAML>=6,<7'
+      - name: Prepare pinned frontend and production build
+        run: python scripts/frontend_dev.py --mode build --output .deermate/frontend-ui
+      - name: Check frontend types, lint and complete offline unit suite
+        working-directory: .deermate/frontend-ui/frontend
+        env:
+          NODE_PATH: ${{ github.workspace }}/.deermate/frontend-ui/frontend/node_modules/.pnpm/node_modules
+        run: |
+          pnpm lint
+          pnpm typecheck
+          CI=1 pnpm test run --pool.maxWorkers 2 --pool.minWorkers 1
+          pnpm exec playwright install --with-deps chromium
+      - name: Start synthetic loopback fixture
+        run: |
+          (cd backend && CGO_ENABLED=0 go build -o ../.deermate/frontend-ui/control ./cmd/deermate)
+          python scripts/design_visual_fixture.py --frontend .deermate/frontend-ui/frontend --control .deermate/frontend-ui/control --work-dir .deermate/frontend-ui/fixture > .deermate/frontend-ui/fixture.log 2>&1 &
+          echo $! > .deermate/frontend-ui/fixture.pid
+          for attempt in $(seq 1 60); do
+            if curl -fsS --max-time 2 http://127.0.0.1:3300/__visual-fixture > /dev/null 2>&1; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Browser layout, contrast and keyboard contracts
+        env:
+          DEERMATE_URL: http://127.0.0.1:3300
+          DEERMATE_OWNER_FILE: .deermate/frontend-ui/fixture/owner.json
+          DEERMATE_OUTPUT: .deermate/frontend-ui/browser
+          DEERMATE_PLAYWRIGHT_MODULE: ${{ github.workspace }}/.deermate/frontend-ui/frontend/node_modules/@playwright/test
+        run: node scripts/verify_frontend_contracts.cjs
+      - name: Stop only this fixture
+        if: always()
+        run: |
+          if test -f .deermate/frontend-ui/fixture.pid; then
+            kill -TERM "$(cat .deermate/frontend-ui/fixture.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-synthetic-browser
+          path: |
+            .deermate/frontend-ui/browser/*.png
+            .deermate/frontend-ui/browser/contracts.json
+          if-no-files-found: ignore
 
   go-control:
     runs-on: ubuntu-latest

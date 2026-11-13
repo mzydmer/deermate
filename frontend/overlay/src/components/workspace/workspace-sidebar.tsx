@@ -1,10 +1,14 @@
 "use client";
 
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import { RouteProgress } from "@/components/deermate/patterns/shell";
+import { SidebarResponsiveBehavior } from "@/components/deermate/patterns/sidebar";
+import { Disclosure, DisclosureTrigger } from "@/components/deermate/ui";
 import {
   type Sidebar,
-  SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -18,8 +22,8 @@ import { RecentChatList } from "./recent-chat-list";
 import { ThreadDeleteDialogProvider } from "./thread-delete-dialog";
 import { WorkspaceHeader } from "./workspace-header";
 import {
-  WorkspaceNavChatList,
   WorkspaceAdvancedNav,
+  WorkspaceNavChatList,
 } from "./workspace-nav-chat-list";
 import { WorkspaceNavMenu } from "./workspace-nav-menu";
 import {
@@ -36,6 +40,8 @@ export function WorkspaceSidebar({
   useThreadActivity();
   return (
     <ThreadDeleteDialogProvider>
+      <SidebarResponsiveBehavior />
+      <RouteProgress />
       <WorkspaceSidebarFrame variant="sidebar" collapsible="icon" {...props}>
         <WorkspaceSidebarContents />
       </WorkspaceSidebarFrame>
@@ -55,13 +61,15 @@ function WorkspaceSidebarContents() {
       <SidebarContent>
         <WorkspaceNavChatList />
         {isSidebarOpen && <RecentChatList />}
-        <details className="dm-sidebar-more">
-          <summary>{locale === "zh-CN" ? "更多" : "More"}</summary>
+        <Disclosure data-testid="sidebar-more" className="dm-sidebar-more">
+          <DisclosureTrigger>
+            {dmCopy(locale === "zh-CN", "common.more")}
+          </DisclosureTrigger>
           <WorkspaceAdvancedNav />
           <PluginNavigation />
           <WorkspaceChannelsList />
           {isSidebarOpen && <ProjectsSection />}
-        </details>
+        </Disclosure>
       </SidebarContent>
       <SidebarFooter>
         <WorkspaceNavMenu />

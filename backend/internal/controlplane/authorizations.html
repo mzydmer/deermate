@@ -16,22 +16,38 @@
   </script>
   <style>
     /* DEERMATE_DESIGN_TOKENS */
+    main > header {
+      height: var(--ds-sizes-nav);
+      margin-top: calc(-1 * var(--dm-page-gutter));
+      margin-inline: calc(-1 * var(--dm-page-gutter));
+      padding-inline: var(--dm-page-gutter);
+      margin-bottom: var(--ds-spacing-lg);
+      background: var(--ds-colors-canvas);
+      border-bottom: var(--ds-borders-thin) solid var(--ds-colors-hairline);
+    }
+    .ds-app-badge { display: inline-flex; align-items: center; }
+    .ds-app-card { margin-block: var(--ds-spacing-md); }
+    table thead { background: var(--ds-colors-canvas-soft); }
+    table th { font-size: var(--ds-typography-body-sm-strong-fontSize); font-weight: var(--ds-typography-body-sm-strong-fontWeight); }
+    table tr { height: var(--ds-sizes-table-row); }
+
     * {
       box-sizing: border-box;
     }
     body {
       margin: 0;
-      background: var(--dm-background);
+      background: var(--ds-colors-canvas-soft);
       color: var(--dm-foreground);
       font: var(--ds-typography-body-sm-fontSize)/var(
           --ds-typography-body-sm-lineHeight
         )
         var(--dm-font-sans);
     }
+    body { --dm-page-gutter: var(--ds-spacing-lg); background: var(--ds-colors-canvas-soft); }
     main {
       max-width: none;
       margin: auto;
-      padding: var(--ds-spacing-xl);
+      padding: var(--dm-page-gutter);
     }
     header,
     .row {
@@ -210,6 +226,7 @@
       grid-column: 1/-1;
     }
     @media (width < 600px) {
+      body { --dm-page-gutter: var(--ds-spacing-md); }
       main {
         padding: var(--ds-spacing-md);
       }
@@ -237,10 +254,11 @@
     <header>
       <div>
         <a href="/workspace">DeerMate</a> <span class="muted"> / 设置</span>
-        <h1>Agent 授权</h1>
+
       </div>
       <a href="/admin">账号管理</a>
     </header>
+    <h1>Agent 授权</h1>
     <p class="muted">由你决定哪些设备可以执行任务、授权范围及有效期。</p>
     <p id="zone" class="muted"></p>
     <div id="notice" role="status" aria-live="polite"></div>
@@ -248,9 +266,9 @@
       <div class="row">
         <h2>已授权的 Agent</h2>
         <div class="actions">
-          <button id="refresh" type="button">刷新状态</button
-          ><button id="pair" type="button">连接设备</button
-          ><button id="create" class="primary" type="button">添加授权</button>
+          <button class="ds-app-button-secondary" id="refresh" type="button">刷新状态</button
+          ><button class="ds-app-button-secondary" id="pair" type="button">连接设备</button
+          ><button id="create" class="primary ds-app-button-primary" type="button">添加授权</button>
         </div>
       </div>
       <div id="list" aria-live="polite">正在读取授权…</div>
@@ -268,9 +286,9 @@
         <h2 id="edit-title">添加授权</h2>
         <p class="muted">本机确认后生效。续期申请不会提前改变原有截止时间。</p>
         <div class="grid">
-          <label>设备<select id="device" required></select></label
+          <label>设备<select class="ds-app-input" id="device" required></select></label
           ><label
-            >授权名称<input id="name" required maxlength="80" value="Codex"
+            >授权名称<input class="ds-app-input" id="name" required maxlength="80" value="Codex"
           /></label>
           <div class="wide">
             <span>项目（本机已登记）</span>
@@ -284,7 +302,7 @@
             >
           </div>
           <label
-            >授权有效期<select id="duration" required>
+            >授权有效期<select class="ds-app-input" id="duration" required>
               <option value="">请选择有效期</option>
               <option value="3600">1 小时</option>
               <option value="86400">24 小时</option>
@@ -295,21 +313,21 @@
             </select></label
           >
           <label
-            >到期时的任务处理<select id="expiry-policy" required>
+            >到期时的任务处理<select class="ds-app-input" id="expiry-policy" required>
               <option value="">请选择处理方式</option>
               <option value="finish">已开始任务在原时限内完成</option>
               <option value="stop">请求停止未完成任务</option>
             </select></label
           >
           <label id="custom-wrap" hidden
-            >截止时间（UTC）<input id="custom-date" type="datetime-local"
+            >截止时间（UTC）<input class="ds-app-input" id="custom-date" type="datetime-local"
           /></label>
           <p id="expiry-preview" class="muted"></p>
         </div>
         <p id="form-error" class="danger" role="alert"></p>
         <div class="actions">
-          <button type="submit" class="primary">提交本机确认</button
-          ><button type="button" id="close-editor">取消</button>
+          <button type="submit" class="primary ds-app-button-primary">提交本机确认</button
+          ><button class="ds-app-button-secondary" type="button" id="close-editor">取消</button>
         </div>
       </form>
     </dialog>
@@ -324,7 +342,7 @@
         配对后在页面选择项目和期限；在本机核对授权摘要并确认。Codex
         登录信息留在设备上。
       </p>
-      <button id="close-pair" type="button">完成</button>
+      <button class="ds-app-button-secondary" id="close-pair" type="button">完成</button>
     </dialog>
     <dialog id="revoke-dialog" aria-labelledby="revoke-title">
       <h2 id="revoke-title">撤销授权</h2>
@@ -332,9 +350,9 @@
         立即禁止云端派发新任务，并请求本机停止未完成任务。设备离线时，停止和清理结果需要后续确认。
       </p>
       <div class="actions">
-        <button id="confirm-revoke" class="danger" type="button">
+        <button id="confirm-revoke" class="ds-app-button-danger" type="button">
           撤销并请求停止</button
-        ><button id="close-revoke" type="button">返回</button>
+        ><button class="ds-app-button-secondary" id="close-revoke" type="button">返回</button>
       </div>
     </dialog>
   </main>
@@ -398,6 +416,8 @@
         const e = document.createElement(tag);
         if (text !== undefined) e.textContent = text;
         if (cls) e.className = cls;
+        if(tag === "button") e.classList.add(cls === "primary" ? "ds-app-button-primary" : "ds-app-button-secondary");
+        if(tag === "article") e.classList.add("ds-app-card");
         return e;
       }
       function action(text, fn, cls) {
@@ -443,13 +463,10 @@
             title = el("h2", g.name + " / " + (d?.name || "未连接设备")),
             tag = el(
               "span",
-              labels[status],
-              status === "expired" || status === "revoked"
-                ? "tag danger"
-                : status === "pending"
-                  ? "tag warning"
-                  : "tag",
+              (status === "active" ? "✓ " : status === "pending" ? "◷ " : "! ") + (labels[status] ?? status),
+              "ds-app-badge",
             );
+          tag.dataset.designVariant = status === "expired" || status === "revoked" ? "warning" : status === "active" ? "success" : "default";
           head.append(title, tag);
           article.append(head);
           if (g.pending)

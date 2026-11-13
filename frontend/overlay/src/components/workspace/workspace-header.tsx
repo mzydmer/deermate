@@ -1,57 +1,54 @@
 "use client";
-
-import { BookOpen, MessageSquarePlus } from "lucide-react";
+import { MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+
 import { DeerMark } from "@/components/deermate/brand";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import { Button } from "@/components/deermate/ui";
 import { useI18n } from "@/core/i18n/hooks";
+
 import { useWorkspaceSidebarExpanded } from "./workspace-sidebar-frame";
 import { WorkspaceSidebarTrigger } from "./workspace-sidebar-trigger";
-
 export function WorkspaceHeader({ className = "" }: { className?: string }) {
-  const { t, locale } = useI18n();
-  const pathname = usePathname();
+  const { locale } = useI18n();
   const expanded = useWorkspaceSidebarExpanded();
   return (
     <>
-      <div className={`dm-sidebar-brand ${className}`}>
-        <Link href="/workspace" aria-label="DeerMate">
+      <div
+        className={`dm-sidebar-brand ${expanded ? "" : "justify-center"} ${className}`}
+      >
+        <Link
+          href="/workspace"
+          aria-label="DeerMate"
+          className={expanded ? "" : "hidden"}
+        >
           <DeerMark />
-          {expanded && (
-            <span>
-              DeerMate<small>YOUR PERSONAL SECRETARY</small>
-            </span>
-          )}
+          <span data-expanded={expanded}>DeerMate</span>
         </Link>
-        {expanded && <WorkspaceSidebarTrigger />}
+        <WorkspaceSidebarTrigger />
       </div>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            className="dm-new-chat"
-            isActive={pathname === "/workspace/chats/new"}
-            asChild
-          >
-            <Link href="/workspace/chats/new">
-              <MessageSquarePlus size={16} />
-              <span>{t.sidebar.newChat}</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-          <SidebarMenuButton asChild>
-            <Link href="/docs">
-              <BookOpen size={16} />
-              <span>{locale === "zh-CN" ? "产品文档" : "Product docs"}</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
+      <div className="px-2">
+        <Button
+          asChild
+          variant="secondary"
+          className={
+            expanded
+              ? "w-full justify-start"
+              : "w-full justify-center gap-0 px-0"
+          }
+        >
+          <Link href="/workspace/chats/new">
+            <MessageSquarePlus className="size-4" />
+            <span
+              data-testid="sidebar-label"
+              className="dm-sidebar-label"
+              data-expanded={expanded}
+            >
+              {dmCopy(locale === "zh-CN", "common.newtopic")}
+            </span>
+          </Link>
+        </Button>
+      </div>
     </>
   );
 }

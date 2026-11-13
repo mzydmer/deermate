@@ -1,0 +1,367 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+
+import { RememberSessionOption } from "@/components/auth/remember-session-option";
+import {
+  Button,
+  ErrorBanner,
+  Field,
+  Heading,
+  Input,
+} from "@/components/deermate/ui";
+import { AuthDisabledContext, useAuth } from "@/core/auth/AuthProvider";
+import { resolveAuthNextPath } from "@/core/auth/next-path";
+import {
+  loadRememberLoginPreference,
+  saveRememberLoginPreference,
+} from "@/core/auth/remember-login";
+import {
+  canCreateRegularAccount,
+  fetchSetupStatus,
+  type SetupStatusResponse,
+} from "@/core/auth/setup";
+import { parseAuthError } from "@/core/auth/types";
+import { useI18n } from "@/core/i18n/hooks";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  const searchParams = useSearchParams();
+  const { isAuthenticated } = useAuth();
+  const { t } = useI18n();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
+  const [ssoProviders, setSsoProviders] = useState<
+    { id: string; display_name: string; type: string }[]
+  >([]);
+  const [setupStatus, setSetupStatus] = useState<SetupStatusResponse | null>(
+    null,
+  );
+  const [setupStatusPhase, setSetupStatusPhase] = useState<
+    "checking" | "ready" | "unavailable"
+  >("checking");
+  const [setupStatusAttempt, setSetupStatusAttempt] = useState(0);
+
+  // Extract error from query params (e.g., ?error=sso_failed)
+  const errorParam = searchParams.get("error");
+  // Direct auth-page entry with a suspended session: the layout hands the
+  // SSR account_disabled verdict down through context — the only place the
+  // reason is known before a (deliberately generic) login attempt.
+  const ssrDisabled = useContext(AuthDisabledContext);
+  const [error, setError] = useState(
+    errorParam
+      ? (t.login.errors[errorParam as keyof typeof t.login.errors] ??
+          t.login.authFailed)
+      : ssrDisabled
+        ? t.login.errors.account_disabled
+        : "",
+  );
+  // Soft hint shown after a failed login when SSO is configured: an SSO-only
+  // account has no local password, so the backend returns a generic
+  // "incorrect email or password" (deliberately, to avoid account enumeration).
+  // Nudge the user toward the SSO buttons without confirming the account exists.
+  const [showSsoHint, setShowSsoHint] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Get next parameter for validated redirect
+  const nextParam = searchParams.get("next");
+  const redirectPath = resolveAuthNextPath(nextParam);
+  const regularSignupAllowed = canCreateRegularAccount({
+    // A failed probe must not expose registration while the system's setup
+    // state is unknown. Existing users can still sign in normally.
+    checked: setupStatusPhase === "ready",
+    status: setupStatus,
+  });
+  const systemNeedsAdminSetup = setupStatus?.needs_setup === true;
+  const showSetupStatusUnavailable =
+    setupStatusPhase === "unavailable" ||
+    (setupStatusAttempt > 0 && setupStatusPhase === "checking");
+
+  // Redirect if already authenticated (client-side, post-login)
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(redirectPath);
+    }
+  }, [isAuthenticated, redirectPath, router]);
+
+  useEffect(() => {
+    const preference = loadRememberLoginPreference();
+    setRememberMe(preference.rememberMe);
+    if (preference.email) {
+      setEmail(preference.email);
+    }
+  }, []);
+
+  // Fetch setup state independently so retrying a slow Gateway does not also
+  // refetch unrelated auth-provider configuration.
+  useEffect(() => {
+    let cancelled = false;
+    setSetupStatusPhase("checking");
+
+    void fetchSetupStatus()
+      .then((data) => {
+        if (cancelled) return;
+        setSetupStatus(data);
+        setSetupStatusPhase("ready");
+        if (data.needs_setup) {
+          setIsLogin(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSetupStatus(null);
+          setSetupStatusPhase("unavailable");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setupStatusAttempt]);
+
+  // SSO providers are static for the page lifetime and should not be coupled to
+  // setup-status retries.
+  useEffect(() => {
+    let cancelled = false;
+
+    void fetch("/api/v1/auth/providers")
+      .then((r) => r.json())
+      .then(
+        (data: {
+          providers: { id: string; display_name: string; type: string }[];
+        }) => {
+          if (!cancelled) {
+            setSsoProviders(data.providers ?? []);
+          }
+        },
+      )
+      .catch(() => {
+        // Ignore errors; no SSO providers shown
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setShowSsoHint(false);
+    setLoading(true);
+
+    if (!isLogin && !regularSignupAllowed) {
+      setError(t.login.adminSetupRequiredDescription);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const endpoint = isLogin
+        ? "/api/v1/auth/login/local"
+        : "/api/v1/auth/register";
+      const body = isLogin
+        ? new URLSearchParams({
+            password,
+            remember_me: String(rememberMe),
+            username: email,
+          })
+        : JSON.stringify({ email, password, remember_me: rememberMe });
+
+      const headers: HeadersInit = isLogin
+        ? { "Content-Type": "application/x-www-form-urlencoded" }
+        : { "Content-Type": "application/json" };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body,
+        credentials: "include", // Important: include HttpOnly cookie
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        const authError = parseAuthError(data);
+        // account_disabled is the one code with user-facing copy of its own
+        // (#4063 gap 3): the backend message is not localized. Login-only:
+        // sign-up keeps the backend message verbatim so a suspended
+        // account's email cannot be probed through the register surface.
+        setError(
+          isLogin && authError.code === "account_disabled"
+            ? t.login.errors.account_disabled
+            : authError.message,
+        );
+        // On a failed login with SSO configured, surface a hint pointing at the
+        // SSO buttons — the "wrong password" may really mean "this is an SSO account".
+        if (isLogin && ssoProviders.length > 0) {
+          setShowSsoHint(true);
+        }
+        return;
+      }
+
+      saveRememberLoginPreference({ email, rememberMe });
+
+      // Both login and register set a cookie — redirect to workspace
+      router.push(redirectPath);
+    } catch {
+      setError(t.login.networkError);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="relative flex items-center justify-center overflow-x-hidden overflow-y-auto">
+      <div className="w-full space-y-6">
+        <div className="text-center">
+          <Heading level={1}>
+            {isLogin ? t.login.signInTitle : t.login.createAccountTitle}
+          </Heading>
+        </div>
+
+        {showSetupStatusUnavailable && (
+          <div role="status" aria-live="polite" className="ps-3">
+            <p className="">{t.login.serviceUnavailableTitle}</p>
+            <p className="mt-1">{t.login.serviceUnavailableDescription}</p>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="mt-3"
+              disabled={setupStatusPhase === "checking"}
+              onClick={() => {
+                setSetupStatusPhase("checking");
+                setSetupStatusAttempt((attempt) => attempt + 1);
+              }}
+            >
+              {setupStatusPhase === "checking"
+                ? t.login.pleaseWait
+                : t.login.retry}
+            </Button>
+          </div>
+        )}
+
+        {systemNeedsAdminSetup && (
+          <div className="ps-3">
+            <p className="">{t.login.adminSetupRequiredTitle}</p>
+            <p className="mt-1">{t.login.adminSetupRequiredDescription}</p>
+            <Link href="/setup" className="mt-2 inline-block">
+              {t.login.createAdminAccount}
+            </Link>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="">
+          <div className="flex flex-col">
+            <Field htmlFor="email" className="">
+              {t.login.email}
+            </Field>
+            <Input
+              disabled={!hydrated}
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t.login.emailPlaceholder}
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <Field htmlFor="password" className="">
+              {t.login.password}
+            </Field>
+            <Input
+              disabled={!hydrated}
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t.login.passwordPlaceholder}
+              required
+              minLength={isLogin ? 6 : 8}
+            />
+          </div>
+
+          <RememberSessionOption
+            checked={rememberMe}
+            onCheckedChange={setRememberMe}
+          />
+
+          {error && <ErrorBanner>{error}</ErrorBanner>}
+
+          <Button
+            variant="primary"
+            type="submit"
+            className="w-full"
+            disabled={loading || !hydrated}
+          >
+            {loading
+              ? t.login.pleaseWait
+              : isLogin
+                ? t.login.signIn
+                : t.login.createAccount}
+          </Button>
+        </form>
+
+        {ssoProviders.length > 0 && (
+          <div className="">
+            {isLogin && (
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-2">{t.login.orContinueWith}</span>
+                </div>
+              </div>
+            )}
+            {showSsoHint && <p className="text-center">{t.login.ssoHint}</p>}
+            {ssoProviders.map((provider) => (
+              <Button
+                key={provider.id}
+                type="button"
+                variant="secondary"
+                className="w-full"
+                disabled={loading || !hydrated}
+                onClick={() => {
+                  window.location.href = `/api/v1/auth/oauth/${provider.id}?next=${encodeURIComponent(redirectPath)}&remember_me=${String(rememberMe)}`;
+                }}
+              >
+                {t.login.continueWith(provider.display_name)}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {regularSignupAllowed && (
+          <div className="text-center">
+            <Button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+                setShowSsoHint(false);
+              }}
+              className=""
+            >
+              {isLogin ? t.login.noAccountSignUp : t.login.haveAccountSignIn}
+            </Button>
+          </div>
+        )}
+
+        <div className="text-center">
+          <Link href="/" className="">
+            {t.login.backToHome}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

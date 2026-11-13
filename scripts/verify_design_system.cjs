@@ -5,17 +5,17 @@ const { chromium } = require(
 );
 (async () => {
   const root = path.resolve(__dirname, "..");
-  fs.mkdirSync(path.join(root, ".deermate/design-system-20261105"), {
-    recursive: true,
-  });
+  const output = process.env.DEERMATE_OUTPUT;
+  if (!output) throw new Error("Set a private DEERMATE_OUTPUT directory");
+  fs.mkdirSync(output, { recursive: true, mode: 0o700 });
   const browser = await chromium.launch({
-    ...(process.env.DEERMATE_CHROME_PATH
-      ? { executablePath: process.env.DEERMATE_CHROME_PATH }
+    ...(process.env.DEERMATE_BROWSER_EXECUTABLE
+      ? { executablePath: process.env.DEERMATE_BROWSER_EXECUTABLE }
       : {}),
     headless: true,
   });
   const checks = [];
-  for (const width of [390, 600, 960, 1200, 1440])
+  for (const width of [390, 768, 1024, 1280, 1440])
     for (const dark of [false, true]) {
       const page = await browser.newPage({
         viewport: { width, height: 900 },
@@ -33,7 +33,10 @@ const { chromium } = require(
         ) +
         "\n" +
         fs.readFileSync(
-          path.join(root, "frontend/overlay/src/styles/design-system.css"),
+          path.join(
+            root,
+            "frontend/overlay/src/components/deermate/ui/upstream.css",
+          ),
           "utf8",
         );
       await page.setContent(
@@ -91,7 +94,14 @@ const { chromium } = require(
                 "backend/internal/controlplane/design-tokens.css",
               ),
               "utf8",
-            ),
+            ) +
+              fs.readFileSync(
+                path.join(
+                  root,
+                  "backend/internal/controlplane/design-components.css",
+                ),
+                "utf8",
+              ),
           );
         await page.setContent(html);
         if (dark)
@@ -110,16 +120,93 @@ const { chromium } = require(
         if (width === 390 || width === 1440)
           await page.screenshot({
             path: path.join(
-              root,
-              `.deermate/design-system-20261105/${name}-${width}-${dark ? "dark" : "light"}.png`,
+              output,
+              `${name}-${width}-${dark ? "dark" : "light"}.png`,
             ),
             fullPage: true,
           });
       }
+      // Mount the real non-React extension with deterministic offline callbacks.
+      await page.setContent(
+        `<html class="${dark ? "dark" : ""}" lang="en"><style>${css}</style><main id="tooling"></main></html>`,
+      );
+      const tooling = fs.readFileSync(
+        path.join(root, "src/deermate/tooling_ui/index.mjs"),
+        "utf8",
+      );
+      await page.evaluate(async (source) => {
+        const module = await import(
+          "data:text/javascript;base64," +
+            btoa(unescape(encodeURIComponent(source)))
+        );
+        module.default.surfaces[0].mount(document.querySelector("#tooling"), {
+          locale: "en-US",
+          signal: new AbortController().signal,
+          callBackend: async (operation) =>
+            operation === "inventory"
+              ? {
+                  native: [
+                    { name: "Synthetic public reader", status: "loaded" },
+                    { name: "Synthetic unchecked tool", status: "unknown" },
+                  ],
+                  connections: [
+                    {
+                      name: "Synthetic connection / " + "long-name_".repeat(8),
+                      scope: "personal",
+                      enabled: true,
+                    },
+                    {
+                      name: "Synthetic disabled connection",
+                      scope: "personal",
+                      enabled: false,
+                    },
+                  ],
+                }
+              : { status: "discovered", total: 2, tools: [] },
+        });
+      }, tooling);
+      await page
+        .getByRole("button", { name: "Refresh status", exact: true })
+        .waitFor();
+      await page.waitForFunction(
+        () => !document.querySelector("#tooling button").disabled,
+      );
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        )
+      )
+        throw Error("Tooling overflow");
+      await page
+        .getByRole("button", { name: /Test connection Synthetic connection/ })
+        .click();
+      await page.getByText("Connected · 2 tools", { exact: true }).waitFor();
+      if (
+        !(await page
+          .getByRole("button", {
+            name: "Test connection Synthetic disabled connection",
+            exact: true,
+          })
+          .isDisabled())
+      )
+        throw Error("Disabled connection became actionable");
+      await page.screenshot({
+        path: path.join(
+          output,
+          `tooling-${width}-${dark ? "dark" : "light"}.png`,
+        ),
+        fullPage: true,
+      });
+      checks.push({
+        surface: "tooling-extension",
+        width,
+        dark,
+        scope: "actual extension module; synthetic callbacks, no MCP discovery",
+      });
       await page.close();
     }
   fs.writeFileSync(
-    path.join(root, ".deermate/design-system-20261105/browser.json"),
+    path.join(output, "browser.json"),
     JSON.stringify(
       {
         checks,
