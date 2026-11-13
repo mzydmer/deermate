@@ -6,7 +6,7 @@
 
 基于 main `69bf1ce`，已将 ACK/local/single-host、前端准备与视觉 Gateway、驱动和完整 Gateway 验证、两个 CI checkout 的重复版本迁移到 `deploy/deerflow.lock`；当前上游 SHA 未变。NFR-010 要求缺失/非法锁和错误 HEAD 在抓取、构建或服务启动前失败，保留已有目录，输出 expected/actual；干净路径校验继续保留并覆盖未忽略新文件。镜像标签、Helm 资源/Pod annotation、前端/本地/单机与 Gateway 收据输出同一实际 SHA。[版本规范](deerflow-version.md)记录升级、回退和历史证据边界。
 
-本地：全量 Python **371 passed / 6 skipped**，包含实际固定 Gateway local/SSH（分别 22/30 项）与纯驱动合同；最后补齐 Worker ConfigMap 的版本 annotation 后，相关最终部署/锁/overlay/local 子集 **60 passed**。新增 28 项锁及预检反例；实际 Helm CLI 11 个资源、单机包和前端准备产物的 SHA 一致。Ruff、wheel、design/token、产品文档影响与七幅图检查通过。收据见 [版本锁验收](verification/deerflow-version-lock-2026-11-13.json)。实际 Linux 镜像及完整前端构建由远端 CI 验证，尚未据此宣称通过；未升级线上、未调用真实模型或 Native，也未改变设备权限。后续完成远端验证、合入并关闭 [Issue #9](https://github.com/mzydmer/deermate/issues/9)。
+本地：全量 Python **371 passed / 6 skipped**，包含实际固定 Gateway local/SSH（分别 22/30 项）与纯驱动合同；最后补齐 Worker ConfigMap 的版本 annotation 后，相关最终部署/锁/overlay/local 子集 **60 passed**。新增 28 项锁及预检反例；实际 Helm CLI 11 个资源、单机包和前端准备产物的 SHA 一致。Ruff、wheel、design/token、产品文档影响与七幅图检查通过。收据见 [版本锁验收](verification/deerflow-version-lock-2026-11-13.json)。修复已合入 main `2d7d5f6`；[本次远端 CI](https://github.com/mzydmer/deermate/actions/runs/43396448018) **12/12 job 全部成功**，包括 Linux 五镜像与非 root Gateway/前端 smoke、前端生产构建/lint/types、3529 项单元测试和 103 项浏览器合同。实际日志中 ACK prepare/render/build/smoke、前端与 Gateway local/SSH 的 SHA 均与锁一致；收据保存在 CI artifacts。 [Issue #9](https://github.com/mzydmer/deermate/issues/9) 已按 completed 关闭。此次只维护构建和验证，线上应用无需升级；无真实模型/Native 调用或设备权限变更。
 
 ## 2026-11-12 · 组件化工作台
 

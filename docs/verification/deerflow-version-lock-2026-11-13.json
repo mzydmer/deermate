@@ -274,12 +274,167 @@
     "product_diagrams": 7
   },
   "remote_ci": {
-    "status": "pending"
+    "status": "success",
+    "run_id": 43396448018,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/43396448018",
+    "source_revision": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3",
+    "jobs": [
+      {
+        "id": 131788407031,
+        "name": "design-system",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407361,
+        "name": "deerflow-contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407443,
+        "name": "frontend-ui",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407447,
+        "name": "product-docs",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407480,
+        "name": "worker (ubuntu-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407493,
+        "name": "observability",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407507,
+        "name": "go-control",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407513,
+        "name": "ack-package",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407550,
+        "name": "worker (macos-latest, 3.12)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407617,
+        "name": "deerflow-gateway (ssh)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407623,
+        "name": "frontend-intents",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407625,
+        "name": "deerflow-gateway (local)",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 14023631133,
+        "name": "frontend-synthetic-browser",
+        "digest": "sha256:be567aaad1a5de83287fe820d7473f39a7d1b263074e012149dd8fbcb922fa2e",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14023590572,
+        "name": "deerflow-gateway-ssh",
+        "digest": "sha256:9a9f12e7cd27752ff75e6195b6767f155ecabc107e49dcfc7de40920fb7285a1",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14023326428,
+        "name": "ssh-receipt-macos-latest-py3.12",
+        "digest": "sha256:24086eecf9b1f454f46812e1fd72135e499df39819590bc3102d70e166c8aca6",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14022563649,
+        "name": "ack-package-verification",
+        "digest": "sha256:6608195a23b68d8a58416b15b0c0acc0a745ef4ff53f8302d102332cb66c2e72",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14022504231,
+        "name": "ssh-receipt-ubuntu-latest-py3.11",
+        "digest": "sha256:339237691a1dfcc6dd875db96eea1f8efef560240d4a12ef888eba28cfcbaf5d",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14022479131,
+        "name": "deerflow-gateway-local",
+        "digest": "sha256:d24ea0b13d4695f7671c35b21787955f0305e9faacb669c6467a12116cdd3cae",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      }
+    ],
+    "gateway_revision_output": [
+      {
+        "name": "contract",
+        "id": 131788407361,
+        "expected_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "has_expected_revision": true,
+        "verified_output": []
+      },
+      {
+        "name": "local",
+        "id": 131788407625,
+        "expected_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "has_expected_revision": true,
+        "verified_output": [
+          "2026-11-13T08:51:31.6736539Z DeerFlow upstream commit: a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+        ]
+      },
+      {
+        "name": "ssh",
+        "id": 131788407617,
+        "expected_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "has_expected_revision": true,
+        "verified_output": [
+          "2026-11-13T08:51:26.9516455Z DeerFlow upstream commit: a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+        ]
+      }
+    ],
+    "ack_prepare_render_build_smoke_revision_matches": true,
+    "frontend_revision_matches": true,
+    "frontend_unit_tests_passed": 3529,
+    "browser_contracts_passed": 103,
+    "linux_five_image_build_and_non_root_smoke": "passed",
+    "evidence": "GitHub Actions conclusions, expected revision log lines, test/build/smoke summaries and artifact metadata; artifact digests are reported by GitHub."
   },
   "limits": [
     "No running-service deployment or cloud provisioning",
     "No real provider/model or native Codex invocation; Gateway uses offline protocol fixtures",
-    "Linux image and full frontend builds require the remote CI result",
     "Historical ADR and verification receipts retain their original revision"
-  ]
+  ],
+  "delivery": {
+    "state": "merged_main",
+    "source_revision": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3",
+    "implementation_revision": "23ddf13546cc7555e574a882804669b831cb01b2",
+    "issue_state": "closed",
+    "issue_state_reason": "completed",
+    "requires_running_application_upgrade": false
+  }
 }

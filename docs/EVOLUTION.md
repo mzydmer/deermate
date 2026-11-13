@@ -674,3 +674,5 @@ ce7ce59 的 11 个远端 CI job 全部通过，包含真实 Go→Relay、完整 
 新增 `deploy/deerflow.lock` 与标准库读取/checkout 校验器，消除构建、验证、前端工具及 CI checkout 的重复 SHA。保持现有上游提交，非法锁不导出 CI ref，错误 HEAD 输出 expected/actual 并保留现场；构建预检先于 Go/Docker，Gateway 预检先于进程启动。实际版本写入构建收据、镜像标签、Helm annotation、前端/本地/单机和 Gateway 收据。历史 ADR 与已提交收据未改写。
 
 本地全量 371 passed / 6 skipped，实际 Gateway local/SSH 及纯驱动合同通过；最终受影响合同 60 passed。产物核对发现 Worker 模式额外生成的 ConfigMap 漏标，补齐后两种真实 Helm 模式均通过。前端固定归档/overlay 准备、实际 Helm CLI 和单机包版本一致；Ruff、wheel、设计/token、文档影响及七幅图通过。远端镜像/前端 CI 与实际 main 合入另记交付，不以本地准备代替镜像构建；无需部署运行服务或恢复设备授权。
+
+修复 main `2d7d5f6` 的 [CI 43396448018](https://github.com/mzydmer/deermate/actions/runs/43396448018) 12 项 job 全通过：Linux 五镜像、非 root 认证/凭据/MCP/SSH 和生产前端 HTML、前端生产构建/lint/types、3529 项单元与 103 项浏览器合同。实际 ACK/前端/Gateway 日志的完整 SHA 一致；构建和前端版本收据纳入 artifacts。Issue #9 的三项验收标准已完成并关闭；后续提交只同步此工程交付记录，无需更新运行应用。
