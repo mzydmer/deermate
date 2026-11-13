@@ -25,3 +25,5 @@ Record significant choices and their consequences here. Current implementation a
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 
 When replacing a decision, add a new ADR and mark the earlier one `Superseded by ADR NNNN`. Keep its original rationale. Routine implementation details and typo fixes do not need ADRs.
+
+- [0018: Component-driven frontend and semantic utilities](0018-component-driven-frontend.md)
