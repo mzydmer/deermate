@@ -1,6 +1,19 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-10。根 README 沿用 `9ed993a`；技术品牌视觉方案和媒体按用户要求合入 main，尚未替换主 README。线上应用源码 595f654、发布文档 bfa91aa 保持不变。原应用与部署证据保留在后文，入口为[实施规格](specs/workspace-assistant-v2.md)和[计划](specs/workspace-assistant-v2-plan.md)。
+最后核对：2026-11-12。本轮在 `feat/observability-20261110` 完成标准 OpenTelemetry 核心、独立 ARMS 配置和本地验收；尚未合入 main 或升级线上。远端 main 核对仍为 `19bcc4d`，线上应用源码 595f654、发布文档 bfa91aa 保持原记录。README 技术品牌设计交付与历史发布范围见后文。
+
+## 2026-11-12 · 可选调用链与 ARMS 接入准备
+
+按用户要求将开源核心与厂商接入分开。Go/Python 使用标准 OTel API/SDK 与 OTLP/HTTP，默认关闭，核心没有阿里云 SDK 或接入地址；ARMS 样例、预检与接收/索引操作说明位于独立部署目录。规格、实现、验收和下一步分别见[实施规格](specs/vendor-neutral-observability.md)、[ADR 0017](decisions/0017-vendor-neutral-observability.md)、[运行手册](observability.md)与[脱敏收据](verification/observability-2026-11-12.json)。
+
+已实现 Go HTTP/持久派单、Gateway/模型/工具/记忆、MCP/受控 Relay、Worker 执行、原生协议轮次/已观测工具事件和独立验证的跨度。首次 operation/task 关联独立持久化，避免上下文进入提示词或改变幂等指纹；公网关联隔离、本人映射及重复投递约束保留。后台以原操作重读关联，Worker 恢复通过 Span link 另开执行段，Exporter 失败不增加任务重试。默认不采集正文、命令、补丁、认证或异常原文。
+
+本地实际接收的 protobuf 验证了两轮 Go → Gateway → MCP → Relay → Worker → 原生协议/独立验证：四个服务的父子链连续、同一原生根、两组 operation/task/turn 与 Trace、两次验证通过；885 个接收跨度的私有标记匹配为零。Fake 模型与原生协议进程只操作 toy 仓库，不构成真实供应方或 Codex 验收。固定运行时中的实际 LangChain 图另验模型/工具包裹和合成 usage 字段。也修正了系统代理影响本机导出、Python SDK `03` trace flags 被 Go propagator 拒绝，以及非法 MCP 元数据影响工具调用的问题。
+
+验证：常规 Python **324 通过 / 7 跳过**，跳过的四个 DeerFlow 模块和一个 LangChain 模块已在固定 Gateway 环境以 **76 项通过**覆盖；两个独立 full Gateway local/SSH 验证器未重跑，不能把 Docker 子集称为完整 SSH 复验。Go mod/vet/全包 race/无 CGO 与 Linux 构建、关闭重开数据库关联、实际固定 Helm/Compose 契约、Ruff/wheel 和产品文档/图示/设计门禁通过。新增无云凭据的跨语言 CI job，远端 CI 尚未验证。
+
+**下一步：**用户确认没有 ARMS 配置。取得目标工作空间/地域的 OTLP/HTTP HTTPS endpoint 与写入鉴权后，先运行独立 probe，在 ARMS 按 Trace ID 核对索引，再按既有备份发布流程升级与验证真实任务。当前未开通或购买云服务、未导出到 ARMS，未恢复家庭设备授权。原生内部模型/Pilot 子链合树、AgentLoop 评估及独立 Metrics/Logs 管线不在本轮已验收范围。
+
 
 ## 2026-11-10 · README 技术品牌方案（main 设计交付）
 

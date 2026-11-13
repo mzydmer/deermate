@@ -54,7 +54,7 @@ def compose(project, port):
         "/app/backend/.venv/bin/python",
         "-m",
         "uvicorn",
-        "app.gateway.app:app",
+        "deermate.gateway:app",
         "--host",
         "0.0.0.0",
         "--port",
@@ -102,7 +102,16 @@ def prepare(images, output, project, port):
         config = ack.app_config(settings)
         config["models"] = []
         (runtime / "config.yaml").write_text(yaml.safe_dump(config, sort_keys=False))
-        (runtime / "extensions_config.json").write_text('{"mcpServers":{},"skills":{}}\n')
+        (runtime / "extensions_config.json").write_text(
+            json.dumps(
+                {
+                    "mcpServers": {},
+                    "skills": {},
+                    "mcpInterceptors": ["deermate.observability_middleware:build_mcp_interceptor"],
+                }
+            )
+            + "\n"
+        )
         (runtime / "empty.env").touch()
         shutil.copyfile(ack.ROOT / "deploy/single-host/init.py", runtime / "single_host_init.py")
         for path in runtime.iterdir():

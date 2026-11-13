@@ -1,0 +1,312 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "scope": "Actual pinned Go/Gateway/MCP/relay/Worker OTLP ancestry; Fake model and native protocol",
+  "payload_count": 306,
+  "observed_span_count": 885,
+  "span_counts": {
+    "agent.model": 7,
+    "agent.operation": 7,
+    "codex.session.open": 2,
+    "codex.turn": 2,
+    "device.relay": 17,
+    "http.client": 106,
+    "http.server": 683,
+    "mcp.client": 8,
+    "mcp.server": 8,
+    "memory.retrieve": 7,
+    "operation.deliver": 26,
+    "worker.execute": 2,
+    "worker.request": 8,
+    "worker.validation": 2
+  },
+  "rounds": [
+    {
+      "trace_id": "df6469589696ccf1f9ac1c6a5d1d83a2",
+      "operation_id": "037ec57d6d72465d9b3e1d2b0c520ada",
+      "observed_ancestor_chain": [
+        {
+          "name": "worker.execute",
+          "service": "deermate-worker-fixture"
+        },
+        {
+          "name": "http.server",
+          "service": "deermate-worker-fixture"
+        },
+        {
+          "name": "device.relay",
+          "service": "deermate-control"
+        },
+        {
+          "name": "worker.request",
+          "service": "deermate-mcp-fixture"
+        },
+        {
+          "name": "mcp.server",
+          "service": "deermate-mcp-fixture"
+        },
+        {
+          "name": "mcp.client",
+          "service": "deermate-gateway"
+        },
+        {
+          "name": "agent.operation",
+          "service": "deermate-gateway"
+        },
+        {
+          "name": "http.server",
+          "service": "deermate-control"
+        }
+      ]
+    },
+    {
+      "trace_id": "bf470a493ea85f0510bcce4ef04a832c",
+      "operation_id": "fc720e40a0f74817b2d0af204bcacf33",
+      "observed_ancestor_chain": [
+        {
+          "name": "worker.execute",
+          "service": "deermate-worker-fixture"
+        },
+        {
+          "name": "http.server",
+          "service": "deermate-worker-fixture"
+        },
+        {
+          "name": "device.relay",
+          "service": "deermate-control"
+        },
+        {
+          "name": "worker.request",
+          "service": "deermate-mcp-fixture"
+        },
+        {
+          "name": "mcp.server",
+          "service": "deermate-mcp-fixture"
+        },
+        {
+          "name": "mcp.client",
+          "service": "deermate-gateway"
+        },
+        {
+          "name": "agent.operation",
+          "service": "deermate-gateway"
+        },
+        {
+          "name": "http.server",
+          "service": "deermate-control"
+        }
+      ]
+    }
+  ],
+  "native_roots": 1,
+  "native_rounds": 2,
+  "independent_validations": 2,
+  "privacy_markers_checked": 9,
+  "private_marker_matches": 0,
+  "real_provider_calls": 0,
+  "real_codex_turns": 0,
+  "arms_export_accepted": false,
+  "arms_indexed_verified": false,
+  "source_sha256": {
+    "src/deermate/__init__.py": "066ceff24061421990b42cf10bff8b923f134124313ee6cc88b7bb4e5be93853",
+    "src/deermate/api.py": "8993f4a1c4006fb8770e5d19254116f83e81070e488719ce9b83822e8ffaf87b",
+    "src/deermate/authorization.py": "60ace949095bc5cb940a10dcfd5e983dcda1ef35871b2f889bf16cedc8f72809",
+    "src/deermate/bridge.py": "06de72656d2f051dd8c9a9431b9e8d50729bd1168cc57bd56577e65bdddc7dbe",
+    "src/deermate/briefing.py": "00d591bdcbbd754bd0fb5183709c87c0094c72bd46db8e6c4f8f588949cfd0f4",
+    "src/deermate/briefing_middleware.py": "6b201707019780b16434b99c38d8b201f08e0eac2edba38d136847d597900ccb",
+    "src/deermate/chat_sessions.py": "85df9522ca5f6407c78838ad44c180e9fd3aba32f6d82b7a611db83a3365eabd",
+    "src/deermate/cli.py": "510800eec07e5ee4e8b6b1f3b2f63438b81b9cd6eb61360ca0082c9e5d670028",
+    "src/deermate/codex.py": "63f3fd1a87e036ee07fb0a6446a3fc08b6576d8cc6b847018f050abe89f9d9d6",
+    "src/deermate/config.py": "a1d8bcea983e13c91dfc1bcdd2051275c143028bb78d698e5b89c2c5a08933f7",
+    "src/deermate/continuous.py": "14aa2f0808ba21e67a9718c5644470206e4623a06470bb55d703b44937d7ef70",
+    "src/deermate/continuous_middleware.py": "3ce45cf8397a2d38ea1370440291d422c385690beebb95ea4d6518be28c8daaf",
+    "src/deermate/conversation.py": "9d5abae3ef9e85a7a959f506e51a8fd12f00cb3aaff36fbcd8e0871909f188b3",
+    "src/deermate/deerflow_tools.py": "71dd684c3bafc60b6d4188fd997bf462a9f56d597fe5d0de29e8db0ee638fe31",
+    "src/deermate/device_connector.py": "c96f8f8af5e4be85ba58c3a856622a3c097922b26dfd47cc9e62fc6e4f916cd9",
+    "src/deermate/gateway.py": "8b7379acbb1b4091de6acff4f6a9edacf3fd2982a8adb88dacc02eb63f2fd0b1",
+    "src/deermate/mcp_server.py": "445fbba477cb71984a723b4681953c87bf80679e1c88f131cb1d02587dfd9312",
+    "src/deermate/memory.py": "35aba9518a69a2b32a0cc710069cab618dffc6c196ddbc79d0aed2f6f787d9fe",
+    "src/deermate/memory_extraction.py": "d9a7bba5d21bdda261c2e2059ade62c876505e8d77ff7a690b479dfd343d8563",
+    "src/deermate/memory_middleware.py": "719394b50d35626d267719a2c0d617648d1b832e68406bffb9ebf7d824403ee2",
+    "src/deermate/models.py": "a3095fc04d421fcd5e86df0ddedc14ec28357613d5ca80d6865c500806f109dd",
+    "src/deermate/observability_middleware.py": "5165ae981dfe12fbd27570c408f0ef42df4eb536b3088eabd4cc259ba4662014",
+    "src/deermate/preflight.py": "96b386301a71927c3d875d17a8837b3e8e855f28730997289032d769920e13a8",
+    "src/deermate/protocol.py": "9c0508911be603684acfe6f5d310dc833029e55af2482a9408e231359b190b50",
+    "src/deermate/relay.py": "4657fe9d02c772308f2eb7e37680468ead236cfa2cacd9761a0c98949fd2a463",
+    "src/deermate/remote_config.py": "628137cb75ad464b997484e28ce5acdd01621995716c715fdbc5e4204276435a",
+    "src/deermate/rpc.py": "3a3b9a57f742658e4dbc3370d97acb4b8bbc522b4f67e163453b67bf0b4d84e9",
+    "src/deermate/runtime_telemetry.py": "0cbf55b79d413b1f1cb55bb67f2f7fc179dfdefaf8f0838ae8ea456ea4e68c68",
+    "src/deermate/session_middleware.py": "c46708ba1e99d43ea9b05eced67aa0de762ceb93d474a38b669254d88f117cc6",
+    "src/deermate/ssh.py": "9601c80df9ed36c568187a3a2cb020083b746cb449e36119de9ef992cd6d4f33",
+    "src/deermate/store.py": "0cd8709b9989d17ef631d3a9e7847e3d2a0016de0ca1b9488a7343717ba9dd63",
+    "src/deermate/telemetry.py": "cd8779430fdeb53d40121c8bdff300493cc6238ae5d5f6c4530773b5a4e9a39d",
+    "src/deermate/tooling.py": "d7873b05d959d5ed5dfcccca9bd15fd6adb1a353b5dda1b1460b52597efe3fa3",
+    "src/deermate/web_tools.py": "6922742c5cec6432fdf072242eedababcd3acc67d3b22cec6dcce0f1ef74d0ec",
+    "src/deermate/work_reports.py": "86b6c13c7477183ebdd73fc572a625108a2e9df26d9e0f15b31dac550493fa4e",
+    "src/deermate/worker.py": "2cfce8e3ab2ab085bdd293bc50f98471bad55b6469ad107ed8c690dfeb5731bf",
+    "src/deermate/workspace.py": "db426c842f44733de8ed155e40cd9d51c86a1b27744f091f967dccc3e714cc17",
+    "backend/internal/observability/telemetry.go": "7c2af46f01cef77bcfdcca07b5c194c7d08641b0f2a5e52542ca21fab804c2bc",
+    "backend/internal/observability/telemetry_test.go": "bd7d515f77b8377d9d9171a72d35e305b8d5e4f05b6239603ae1b09dee4ce4bd",
+    "backend/internal/controlplane/admin.go": "a7f87facc81b143424070a5c9f0fab90bdbd27094ad59c9ff275ecec57726415",
+    "backend/internal/controlplane/authorizations.go": "e55724d703405d0c0c04f9d0dedc87c969740bbe44fd0ca9342c9ce87c6297fb",
+    "backend/internal/controlplane/authorizations_test.go": "5d16f2d94b6950239366dd1e685289313ecc749a3a9795a74932d7fed0c719fe",
+    "backend/internal/controlplane/briefing.go": "8b9cfbfb8cc7b3ca4e029d9191d54759f154e3320b18429963e80108773b5000",
+    "backend/internal/controlplane/briefing_actions.go": "c7df373fb6b7f2e6fd586abf5e0e41930db4dcb59bcd80be679eb57a6bfd9cf5",
+    "backend/internal/controlplane/briefing_actions_test.go": "8f3880e42deb7dc6c7126d12b06218b177c23ae5c30df2cbe6efb44b7029b8d1",
+    "backend/internal/controlplane/briefing_suggestions.go": "fbe654f4d3d25ba04f12b400952c0f7ee87ca0e0b3e63eeec1ef072a7ad7b55f",
+    "backend/internal/controlplane/briefing_test.go": "2f88af317926fbb07d1e54896014c8e30f10b4b994b5beca50efd0fa3892690f",
+    "backend/internal/controlplane/continuous_api.go": "9a340e2abf1a121f7b7c799d5a3bd4a87c3349bdf38b22f701813cf710c94df6",
+    "backend/internal/controlplane/continuous_assessment.go": "4b49867905b15ba8cbf8fc22e54ca34b6eb15ca3ac557fbea2d8aa1cf1de5b3c",
+    "backend/internal/controlplane/continuous_defaults.go": "e20b8244977668508a1788c6085893455d53908ef282496a38fa233d61a8e8bf",
+    "backend/internal/controlplane/continuous_defaults_test.go": "613082b7711b77833b06d67e87da1168bffbc970a3e4bd7a55dc0ba0a1afe2d7",
+    "backend/internal/controlplane/continuous_recall.go": "047dcccaeb356fdadcbc7f816c0edfb9cfe02cedd2067b921ca3cc682e6382bf",
+    "backend/internal/controlplane/continuous_runtime.go": "724f177fcd5433a9a0188f2338e3d7b8f63188ffdf637fe85384feabab6f8d6f",
+    "backend/internal/controlplane/continuous_sources.go": "319b69846a9e6cad593ae147b060673a277c79422c66cad90dd59fb5bee1871a",
+    "backend/internal/controlplane/continuous_store.go": "6f7244987670be81f412b2a6573b9fcd201ae36ef349831b38cdbb8c0c2622f4",
+    "backend/internal/controlplane/continuous_test.go": "51e18fb4f6c8e4a45aefceeff75351b192863051b419f77930e6b0a81960e9de",
+    "backend/internal/controlplane/memory.go": "d5025a853f340ff9058dcd22b887b66572b059eae8737ed9dc8c122261fd7e9a",
+    "backend/internal/controlplane/memory_activity.go": "007c604851c2fcc75ef90b4f174c0e7f547ef689c2e7abe1e0db61506f1de60b",
+    "backend/internal/controlplane/memory_capture.go": "2eae67ed373adccaefc569d27fb0a39423dbbda1ac284ba35f22e49402543398",
+    "backend/internal/controlplane/memory_capture_test.go": "55822937753ca1678035cc0e4665dab2fa02073dbcc3c9a5fa73453dd36c23ae",
+    "backend/internal/controlplane/memory_history.go": "398dfdbd77fb97b301ff358be68332261d7ef855b0b259435810267d678907f7",
+    "backend/internal/controlplane/memory_history_test.go": "9338283e3e0d842c7edcbf873296f866e79a8c0f4508cc624a5d1e53a781674a",
+    "backend/internal/controlplane/memory_jobs.go": "44ddd57afcb28fb1da65eeb0aa8e58f7a211cb0cb22951907f26aaf3f63113e9",
+    "backend/internal/controlplane/memory_jobs_test.go": "4b797dc79cf45c19c2c8952ca06c5d9696382d342267493349c13f1164430a62",
+    "backend/internal/controlplane/memory_natural.go": "82e12db8388ec22d61922302fc238ddd238ff54ba60498b131d00a2ed161d6ca",
+    "backend/internal/controlplane/memory_natural_test.go": "598cb244c088b444ba41a8eb1fa7fd72819cf194dd87b9b28ecfbc7eac38a27a",
+    "backend/internal/controlplane/memory_scopes.go": "337f38e56c46fd720a618e88e065899c5bc6230008f9e96f118353b2bc8f9f9a",
+    "backend/internal/controlplane/memory_store.go": "c1bc80aea75f41287615628b7b152f13d3a89ac0ea68d5321213fd88708922a9",
+    "backend/internal/controlplane/memory_test.go": "d9cb159e804c1b77e06c62cea994160ac2556a4666c519220f16b4c9c69c21a9",
+    "backend/internal/controlplane/observability.go": "1764845f6b50507315f2e1dd96df03b95b324d5050a4e14cfe3ce9ef0ca75325",
+    "backend/internal/controlplane/observability_test.go": "5a4a5609dbfee59053b9d9f6e912219025b5be34987ad06de28a26a8a0d29fae",
+    "backend/internal/controlplane/runtime.go": "cd847657d40e5019cbd6013c767e13e8d4cc3b844e6bcaf0f547572fa8fd202b",
+    "backend/internal/controlplane/server.go": "8c957e4169196120bdcb33c0c045cab341c00032f1c355952527b40dd3a1836f",
+    "backend/internal/controlplane/server_test.go": "ef31aee8fd4bd5f917bfce9ab491e81a5b555d6e6d0b6e547f82422a3dc33ffd",
+    "backend/internal/controlplane/store.go": "62f804d5312b50f7383ee878017a2229c1302dbde668384d3fcdca9cb8e63ad3",
+    "backend/internal/controlplane/workspace_memory.go": "5d970df54258334933e6f806b85ea1707095dfc97168a9151df0dd96e0147c51",
+    "backend/internal/controlplane/workspace_memory_test.go": "b291f488f5e0f5aca817b4153c8561f4b95a42fa74ddfe625209683dd7af40e5",
+    "backend/internal/controlplane/workspace_snapshot.go": "12b4247b8368e71966d58d0f396528a010fd9201430ed78768dc28c903038abf",
+    "backend/internal/controlplane/workspace_snapshot_test.go": "82b1c3dd1f5d240f1f17b5b2dde766f2466462e4c9b8ad5f5910456100f21a45",
+    "scripts/verify_observability.py": "6f1eaaae6ad03a6a9df94579a4d712adb5be128f14147d5940ad06e581434ca7"
+  },
+  "limits": [
+    "No live ARMS, provider or native-agent acceptance",
+    "No Pilot automatic subtrace joining or dedicated metrics/logs pipeline",
+    "Offline protocol events are synthetic; raw payloads and credentials stay private"
+  ],
+  "verified_on": "2026-11-12",
+  "base_commit": "19bcc4d7ac73455cfb754bc0302c1d79d6a778ea",
+  "upstream_pin": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "delivery": {
+    "source_branch": "feat/observability-20261110",
+    "main_merged": false,
+    "cloud_deployed": false,
+    "arms_configuration_available": false
+  },
+  "verification": {
+    "python": {
+      "passed": 324,
+      "skipped": 7,
+      "failures": 0,
+      "errors": 0,
+      "command": "DEERMATE_ACK_UPSTREAM=<pinned> DEERMATE_HELM=<helm> DEERMATE_DEERFLOW_CHECKOUT=<pinned> DEERMATE_GO_BINARY=<compiled> python -m pytest -q -rs",
+      "skip_scope": "Four DeerFlow modules and the LangChain graph module rerun as 76 passing checks in the pinned Gateway image; two standalone full Gateway local/SSH verifier cases not rerun in this host suite",
+      "additional_focused_test": {
+        "passed": 1,
+        "test": "test_completion_only_native_event_does_not_invent_tool_start"
+      }
+    },
+    "pinned_runtime": {
+      "passed": 76,
+      "command": "docker run --network none <pinned Gateway plus current wheel> python -m pytest -q tests/test_continuous.py tests/test_personal_memory.py tests/test_personal_home.py tests/test_memory_extraction.py tests/test_observability_runtime.py",
+      "real_provider_calls": 0,
+      "synthetic_usage_metadata": true
+    },
+    "go": {
+      "mod_verify": "passed",
+      "vet": "passed",
+      "race_all_packages": "passed",
+      "cgo_disabled_build": "passed",
+      "linux_amd64_build": "passed",
+      "additional_db_close_reopen_race_test": "passed"
+    },
+    "docker_continuous": {
+      "schema_version": 1,
+      "profile": "isolated-offline-continuous",
+      "checks": [
+        "isolated_fake_model_and_no_devices",
+        "interactive_available_without_separate_setup",
+        "default_zero_native_quota",
+        "two_router_turns_one_persistent_thread_and_idempotent_input",
+        "explicit_input_does_not_resume_or_reconfigure_background",
+        "raw_plugin_route_blocked",
+        "no_grant_no_native_admission",
+        "work_lifecycle_preserves_closed_state"
+      ],
+      "passed": true,
+      "real_provider_requests": 0,
+      "native_processes": 0,
+      "scope": "API/Gateway Fake runs; separate real-model/device/cloud acceptance required"
+    },
+    "docker_native": {
+      "schema_version": 1,
+      "passed": true,
+      "profile": "actual-go-gateway-driver-relay-worker-fake-native",
+      "native_roots": 1,
+      "native_rounds": 2,
+      "distinct_tracking_ids": 2,
+      "independent_validation_passed": true,
+      "router_responded_during_native_round": true,
+      "trace_counts": {
+        "initialize": 2,
+        "initialized": 2,
+        "thread/start": 1,
+        "turn/start": 2,
+        "command/exec": 2,
+        "thread/resume": 1
+      },
+      "real_provider_calls": 0,
+      "real_codex_turns": 0,
+      "limits": "Synthetic device confirmation and toy project only; not live Codex or production enrollment."
+    },
+    "checks": {
+      "ruff": "passed",
+      "wheel": "passed",
+      "actual_pinned_helm_and_compose": "passed in Python suite and isolated fixture",
+      "design_gate": "passed",
+      "design_tokens": "passed",
+      "product_docs": "passed",
+      "product_diagrams": "passed"
+    },
+    "privacy_and_failure": {
+      "received_otlp_payloads_examined": true,
+      "canonical_parent_overrides_ambient_refs": true,
+      "invalid_mcp_metadata_ignored": true,
+      "public_trace_injection_isolated": true,
+      "exporter_outage_task_completed_once": true,
+      "go_python_random_trace_flags_compatible": true,
+      "native_tool_start_completion_tested": true,
+      "completion_only_does_not_create_fabricated_tool_start": true
+    },
+    "versions": {
+      "go_otel": "1.40.0",
+      "host_python_otel": "1.45.2",
+      "pinned_gateway": {
+        "opentelemetry-api": "1.41.1",
+        "opentelemetry-sdk": "1.41.1",
+        "opentelemetry-exporter-otlp-proto-http": "1.41.1",
+        "langchain": "1.3.14",
+        "mcp": "1.30.0"
+      }
+    },
+    "diagram": {
+      "browser": "Chrome headless",
+      "viewport": [
+        880,
+        650
+      ],
+      "text_bounds": "all inside viewBox",
+      "visual_inspection": "passed"
+    }
+  }
+}

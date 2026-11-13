@@ -1,3 +1,4 @@
+from . import telemetry
 from .config import Settings
 from .models import Task
 from .rpc import AppServer, RpcError
@@ -12,6 +13,7 @@ class CodexAdapter:
         self.pending_input = None
         self.summary = ""
         self.policy_denied = False
+        self.item_spans = {}
 
     @property
     def sandbox(self) -> dict:
@@ -25,6 +27,7 @@ class CodexAdapter:
             }
         return {"type": "readOnly", "networkAccess": False}
 
+    @telemetry.observed("codex.session.open")
     async def start(self):
         await self.rpc.start()
         params = {
@@ -47,6 +50,7 @@ class CodexAdapter:
         self.session_id = thread["id"]
         # Persist identity BEFORE turn/start; a lost acknowledgement is then reconcilable.
         await self.record("session.ready", {"session_id": self.session_id})
+        telemetry.current_attributes({"deermate.native_session_id": self.session_id})
         turn = await self.rpc.request(
             "turn/start",
             {
@@ -59,8 +63,13 @@ class CodexAdapter:
         )
         self.turn_id = turn["turn"]["id"]
         await self.record("turn.ready", {"turn_id": self.turn_id})
+        telemetry.current_attributes({"deermate.native_turn_id": self.turn_id})
 
+    @telemetry.observed("codex.turn")
     async def run(self) -> str:
+        telemetry.current_attributes(
+            {"deermate.native_session_id": self.session_id, "deermate.native_turn_id": self.turn_id}
+        )
         while True:
             message = await self.rpc.events.get()
             method = message.get("method", "")
@@ -69,15 +78,53 @@ class CodexAdapter:
                 raise RpcError(params["reason"])
             if params.get("threadId") not in (None, self.session_id):
                 continue
+            if params.get("turnId") not in (None, self.turn_id):
+                continue
             if "id" in message:
                 await self._server_request(message)
                 continue
             # Keep bounded, completed evidence rather than token-by-token deltas.
-            if method == "item/completed":
+            if method == "item/started":
                 item = params.get("item", {})
+                if (
+                    item.get("type")
+                    in {"commandExecution", "fileChange", "mcpToolCall", "webSearch"}
+                    and isinstance(item.get("id"), str)
+                    and item["id"] not in self.item_spans
+                    and len(self.item_spans) < 128
+                    and telemetry._provider is not None
+                ):
+                    self.item_spans[item["id"]] = telemetry.begin_item(
+                        {
+                            "gen_ai.operation.name": "execute_tool",
+                            "deermate.native_session_id": self.session_id,
+                            "deermate.native_turn_id": self.turn_id,
+                            "deermate.native_item_id": item["id"],
+                            "deermate.item_type": item["type"],
+                        }
+                    )
+            elif method == "item/completed":
+                item = params.get("item", {})
+                telemetry.end_item(
+                    self.item_spans.pop(item["id"], None)
+                    if isinstance(item.get("id"), str)
+                    else None,
+                    item.get("status", "completed"),
+                )
+                telemetry.current_attributes({"deermate.item_type": item.get("type")})
                 if item.get("type") == "agentMessage":
                     self.summary = item.get("text", "")[:64_000]
                 await self.record("codex.item", {"item": self._bounded(item)})
+            elif method == "thread/tokenUsage/updated":
+                value = params.get("tokenUsage")
+                usage = value.get("last") if isinstance(value, dict) else None
+                if isinstance(usage, dict):
+                    telemetry.current_attributes(
+                        {
+                            "gen_ai.usage.input_tokens": usage.get("inputTokens"),
+                            "gen_ai.usage.output_tokens": usage.get("outputTokens"),
+                        }
+                    )
             elif method == "turn/completed":
                 turn = params["turn"]
                 if turn.get("id") != self.turn_id:
@@ -85,6 +132,7 @@ class CodexAdapter:
                 await self.record(
                     "codex.turn", {"status": turn["status"], "error": turn.get("error")}
                 )
+                telemetry.current_attributes({"deermate.status": turn["status"]})
                 if turn["status"] == "failed":
                     raise RpcError(str(turn.get("error") or "native turn failed")[:2000])
                 if turn["status"] not in {"completed", "interrupted"}:
@@ -144,6 +192,7 @@ class CodexAdapter:
             timeout_seconds=5,
         )
 
+    @telemetry.observed("worker.validation")
     async def validate(self, command: list[str]) -> dict:
         result = await self.rpc.request(
             "command/exec",
@@ -155,6 +204,11 @@ class CodexAdapter:
             },
             timeout_seconds=self.settings.test_timeout_seconds + 10,
         )
+        telemetry.current_attributes(
+            {"deermate.validation_status": "passed" if result["exitCode"] == 0 else "failed"}
+        )
+        if result["exitCode"] != 0:
+            telemetry.mark_error()
         return {
             "command": command,
             "exit_code": result["exitCode"],
@@ -163,4 +217,7 @@ class CodexAdapter:
         }
 
     async def close(self):
+        for current in self.item_spans.values():
+            telemetry.end_item(current, "incomplete")
+        self.item_spans.clear()
         await self.rpc.close()

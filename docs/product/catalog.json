@@ -154,7 +154,7 @@
     "group": "technical",
     "title": "系统架构与设计边界",
     "description": "面向技术与研究读者的组件职责、数据路径和设计取舍。",
-    "updated": "2026-11-05",
+    "updated": "2026-11-12",
     "status": "技术方案",
     "sources": [
       "docs/architecture.md",
@@ -162,7 +162,12 @@
       "docs/decisions/0015-continuous-agent-control-plane.md",
       "docs/verification/product-documentation-cloud-2026-11-04.json",
       "scripts/ack_deploy.py",
-      "docs/diagrams/product/diagrams.json"
+      "docs/diagrams/product/diagrams.json",
+      "docs/specs/vendor-neutral-observability.md",
+      "docs/decisions/0017-vendor-neutral-observability.md",
+      "src/deermate/telemetry.py",
+      "backend/internal/observability/telemetry.go",
+      "docs/verification/observability-2026-11-12.json"
     ]
   },
   {
@@ -219,7 +224,7 @@
     "group": "changelog",
     "title": "变更日志",
     "description": "查看产品变化、启用条件和交付范围。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-12",
     "status": "持续更新",
     "sources": [
       "docs/EVOLUTION.md",
@@ -232,7 +237,12 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "docs/specs/vendor-neutral-observability.md",
+      "docs/decisions/0017-vendor-neutral-observability.md",
+      "src/deermate/telemetry.py",
+      "backend/internal/observability/telemetry.go",
+      "docs/verification/observability-2026-11-12.json"
     ]
   }
 ]

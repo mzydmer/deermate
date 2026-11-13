@@ -5,6 +5,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+from . import telemetry
 from .models import ACTIVE, Conflict, ContinueTask, ResumeTask, State, SubmitTask, Task
 
 
@@ -27,6 +28,9 @@ class Store:
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.executescript("""
             CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS deermate_task_trace (
+                task_id TEXT PRIMARY KEY, context TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS tasks (
                 id TEXT PRIMARY KEY, project TEXT NOT NULL, status TEXT NOT NULL,
                 data TEXT NOT NULL
@@ -104,6 +108,7 @@ class Store:
                 "INSERT INTO conversation_heads VALUES(?,?)", (task.task_id, task.task_id)
             )
             self._event(task.task_id, "task.queued", {"attempt": 1})
+            telemetry.save_binding(self.db, task.task_id, telemetry.metadata())
             self.db.commit()
             return task, True
         except BaseException:
@@ -255,6 +260,7 @@ class Store:
                 "task.continued",
                 {"parent_task_id": parent_id, "conversation_round": task.conversation_round},
             )
+            telemetry.save_binding(self.db, task.task_id, telemetry.metadata())
             self.db.commit()
             return task, True
         except BaseException:

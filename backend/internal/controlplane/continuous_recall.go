@@ -1,12 +1,14 @@
 package controlplane
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	obs "github.com/mzydmer/deermate/backend/internal/observability"
 	"net/http"
 	"strconv"
 	"strings"
@@ -231,7 +233,7 @@ func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 			return e
 		}
 		var e error
-		out, e = enqueueRouter(tx, sessionOf(r).User, b.Operation, b.Text, "user", b.Work)
+		out, e = enqueueRouter(tx, sessionOf(r).User, b.Operation, b.Text, "user", b.Work, r.Context())
 		return e
 	})
 	if e != nil {
@@ -241,7 +243,7 @@ func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 	s.captureRouterMemory(r.Context(), owner, out)
 	respond(w, 200, workPublic(out))
 }
-func enqueueRouter(tx *sql.Tx, u User, key, text, origin, work string) (workRecord, error) {
+func enqueueRouter(tx *sql.Tx, u User, key, text, origin, work string, traceContexts ...context.Context) (workRecord, error) {
 	if id, e := workExisting(tx, u.ID, "inbox", key); e == nil {
 		v, e := workGet(tx, u.ID, "inbox", id)
 		if e == nil && workString(v, "_request_hash") != workHash([]any{text, origin, work}) {
@@ -275,6 +277,9 @@ func enqueueRouter(tx *sql.Tx, u User, key, text, origin, work string) (workReco
 	}
 	if e = workPut(tx, &v); e != nil {
 		return v, e
+	}
+	if len(traceContexts) > 0 {
+		bindTrace(tx, u.ID, v.ID, obs.WithRefs(traceContexts[0], map[string]string{"conversation_id": workString(router, "thread_id"), "work_id": work}))
 	}
 	return v, workUnique(tx, u.ID, "inbox", key, v.ID)
 }

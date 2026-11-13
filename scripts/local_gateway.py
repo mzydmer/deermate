@@ -9,12 +9,13 @@ import uuid
 from types import SimpleNamespace
 
 import uvicorn
-from app.gateway.app import app
 from app.gateway.deps import get_current_user_from_request, get_mcp_task_repo, get_thread_store
 from deerflow.mcp.tools import get_mcp_tools
 from deerflow.persistence.mcp_tasks.sql import DuplicateMcpRemoteTaskError
 from fastapi import HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
+
+from deermate.gateway import app
 
 
 class Submission(BaseModel):

@@ -9,6 +9,7 @@ from mcp.server.stdio import stdio_server
 from mcp.types import CallToolResult, TextContent, Tool, ToolAnnotations
 from pydantic import BaseModel, ConfigDict, Field
 
+from . import telemetry
 from .bridge import BridgeError, TaskBridge
 from .models import ContinueTask, SubmitTask
 
@@ -120,7 +121,18 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
         model, operation, _ = tools[name]
         request = model.model_validate(arguments)
         try:
-            payload = await operation(**request.model_dump())
+            try:
+                meta = server.request_context.meta
+                meta = meta.model_dump() if hasattr(meta, "model_dump") else meta
+                parent = telemetry.from_headers(
+                    meta.get("headers") if isinstance(meta, dict) else {}
+                )
+            except (LookupError, TypeError, ValueError):
+                parent = {}
+            with telemetry.span(
+                "mcp.server", parent=parent, attributes={"deermate.tool_name": name}
+            ):
+                payload = await operation(**request.model_dump())
             return CallToolResult(
                 structuredContent=payload,
                 content=[TextContent(type="text", text=json.dumps(payload, ensure_ascii=False))],
@@ -132,6 +144,7 @@ def create_server(token_path: Path, port: int = 18777, *, bridge=None) -> Server
 
 
 async def run_server(token_path: Path, port: int, *, bridge=None):
+    telemetry.configure("deermate-mcp")
     server = create_server(token_path, port, bridge=bridge)
     async with stdio_server() as (reader, writer):
         await server.run(reader, writer, server.create_initialization_options())

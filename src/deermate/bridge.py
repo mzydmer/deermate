@@ -11,6 +11,7 @@ from pathlib import Path
 import httpx
 from pydantic import ValidationError
 
+from . import telemetry
 from .models import ContinueTask, State, SubmitTask, Task
 from .protocol import CAPABILITIES_LIMIT, ProtocolError, parse_capabilities
 
@@ -212,13 +213,14 @@ class TaskBridge:
             failure = BridgeError("Worker connection is unavailable.", code="unavailable")
         return connection_report(self.connection_info, error=failure)
 
+    @telemetry.observed("worker.request")
     async def _request(self, method: str, path: str, body: dict | None = None) -> Task:
         try:
             async with self.client.stream(
                 method,
                 path,
                 json=body,
-                headers={"Authorization": f"Bearer {self._read_token()}"},
+                headers={"Authorization": f"Bearer {self._read_token()}", **telemetry.headers()},
             ) as response:
                 if response.status_code == 404:
                     if method == "POST" and path == "/tasks":

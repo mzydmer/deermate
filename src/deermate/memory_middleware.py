@@ -6,9 +6,12 @@ import sqlite3
 from langchain.agents.middleware import AgentMiddleware
 from langchain_core.messages import SystemMessage
 
+from . import telemetry
+
 
 class PersonalMemoryMiddleware(AgentMiddleware):
     @staticmethod
+    @telemetry.observed("memory.retrieve")
     def _context(request):
         from deerflow.runtime.user_context import resolve_runtime_user_id
 

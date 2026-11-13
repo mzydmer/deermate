@@ -4,6 +4,7 @@ import fcntl
 import os
 from pathlib import Path
 
+from . import telemetry
 from .authorization import admit_remote, local_grant
 from .codex import CodexAdapter
 from .config import Settings
@@ -111,6 +112,28 @@ class Worker:
         self.store.event(task_id, kind + ".detail", payload)
 
     async def _execute(self, task_id: str):
+        task = self.store.get(task_id)
+        parent = telemetry.load_binding(self.store.db, task_id)
+        with telemetry.span(
+            "worker.execute",
+            parent=parent,
+            refs={"task_id": task_id, "instance_id": self.store.instance_id},
+            attributes={"deermate.attempt": task.attempt},
+            recovery=task.attempt > 1,
+        ):
+            await self._execute_traced(task_id)
+            finished = self.store.get(task_id)
+            if finished.status == State.FAILED:
+                telemetry.mark_error()
+            telemetry.current_attributes(
+                {
+                    "deermate.status": finished.status.value,
+                    "deermate.native_session_id": finished.session_id,
+                    "deermate.native_turn_id": finished.turn_id,
+                }
+            )
+
+    async def _execute_traced(self, task_id: str):
         adapter = None
         try:
             task = self.store.get(task_id)

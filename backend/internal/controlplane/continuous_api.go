@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	obs "github.com/mzydmer/deermate/backend/internal/observability"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -389,7 +390,7 @@ func (s *Server) workAction(w http.ResponseWriter, r *http.Request) {
 			if b.Action == "execute" && message == "" {
 				message = workString(v, "goal")
 			}
-			out, e = s.prepareWorkOperation(tx, sessionOf(r).User, v, b.Action, message, b.Operation, false)
+			out, e = s.prepareWorkOperation(tx, sessionOf(r).User, v, b.Action, message, b.Operation, false, r.Context())
 			return e
 		}
 		if b.Action == "reconcile" {
@@ -489,7 +490,7 @@ func safeWorkText(s string, max int) string {
 	return s
 }
 
-func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, message, key string, automatic bool) (workRecord, error) {
+func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, message, key string, automatic bool, traceContexts ...context.Context) (workRecord, error) {
 	if !s.cfg.ContinuousEnabled || (automatic && !workEnabled(tx, u.ID)) {
 		return workRecord{}, ErrDisabled
 	}
@@ -567,6 +568,9 @@ func (s *Server) prepareWorkOperation(tx *sql.Tx, u User, v workRecord, kind, me
 	op := newWork(u.ID, "operation", "prepared", v.ID, map[string]any{"target_operation": workString(v, "active_operation"), "context_refs": refs, "kind": kind, "message": message, "thread_id": workString(v, "thread_id"), "incarnation": workString(v, "incarnation"), "project": workString(v, "project"), "server": "deermate", "grant_id": grant.ID, "grant_version": grant.Version, "instance_id": grant.Instance, "expected_head": workString(v, "head"), "automatic": automatic, "_user_version": u.Version, "_nonce": opaque(), "_request_hash": workHash([]any{v.ID, kind, originalMessage})})
 	if err = workPut(tx, &op); err != nil {
 		return op, err
+	}
+	if len(traceContexts) > 0 {
+		bindTrace(tx, u.ID, op.ID, obs.WithRefs(traceContexts[0], map[string]string{"operation_id": op.ID, "work_id": v.ID, "conversation_id": workString(v, "thread_id"), "incarnation": workString(v, "incarnation")}))
 	}
 	if err = workUnique(tx, u.ID, "action", key, op.ID); err != nil {
 		return op, err

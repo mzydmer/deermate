@@ -19,8 +19,8 @@ Record significant choices and their consequences here. Current implementation a
 | [0013](0013-memory-backed-personal-briefing.md) | Accepted | Reuse semantic memory with a Go attention/briefing product layer, sourced progress and explicit actions | Personal facts, explicit capture, attention/briefing and home actions implemented; local/cloud evidence and remaining scope in STATUS |
 | [0014](0014-user-managed-agent-authorization.md) | Accepted | User-owned expiry, local confirmation and outbound HTTPS relay | Go/Worker and local Native fixture verified; Go/Gateway deployed with 17 HTTPS checks; cloud visual acceptance not performed |
 | [0015](0015-continuous-agent-control-plane.md) | Accepted; implementation in progress | Persistent Router/independent Worker, async inbox, subscribed-thread pass-through and Go admission | P0–P6 Alpha implemented; local acceptance, remaining gaps and deployment tracked in STATUS |
-
 | [0016](0016-versioned-personal-memory-jobs.md) | Accepted; local acceptance in progress | Versioned defaults, owner-local scopes and bounded durable memory extraction | Release tracked in STATUS |
+| [0017](0017-vendor-neutral-observability.md) | Accepted; local implementation verified | Vendor-neutral OpenTelemetry core with separate ARMS deployment configuration | Generic OTLP ancestry verified; real ARMS configuration/indexing pending, delivery in STATUS |
 
 For a new decision, use the next number and include date, status, context, decision, alternatives, consequences, and relevant spec/code links. Statuses are `Proposed`, `Accepted`, `Superseded`, or `Rejected`; acceptance describes the design decision, not release status.
 

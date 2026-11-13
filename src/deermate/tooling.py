@@ -17,6 +17,7 @@ def runtime_config() -> dict:
     return {
         "extensions": {
             "middlewares": [
+                "deermate.observability_middleware:TelemetryMiddleware",
                 "deermate.continuous_middleware:ContinuousMiddleware",
                 "deermate.briefing_middleware:BriefingActionMiddleware",
                 "deermate.session_middleware:CodingSessionMiddleware",

@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from . import telemetry
 from .authorization import private_json, private_save
 from .bridge import read_token
 from .config import load_settings
@@ -202,6 +203,7 @@ async def process_request(client, local, state, settings, packet):
                     headers={
                         "Authorization": "Bearer " + read_token(settings.state_dir / "api.token"),
                         "X-Deermate-Authorization": grant["id"],
+                        **telemetry.headers(job.get("telemetry") or {}),
                     },
                 ) as response:
                     raw = bytearray()

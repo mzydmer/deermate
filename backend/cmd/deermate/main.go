@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/mzydmer/deermate/backend/internal/controlplane"
+	"github.com/mzydmer/deermate/backend/internal/observability"
 	"log/slog"
 	"net/http"
 	"os"
@@ -39,6 +40,12 @@ func main() {
 	}
 }
 func run() error {
+	shutdownTelemetry := observability.Setup(context.Background())
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		_ = shutdownTelemetry(ctx)
+	}()
 	runtimeURL := env("DEERMATE_RUNTIME_URL", "http://127.0.0.1:8001")
 	// Runtime owns its initial SQLAlchemy schema; wait until its migration has completed.
 	client := &http.Client{Timeout: 2 * time.Second}

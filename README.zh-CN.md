@@ -64,6 +64,8 @@ python scripts/local_docker.py up
 | 只运行 Worker，支持 macOS/Linux | [Worker 安装](docs/local-worker.md) |
 | Kubernetes / ACK | [可选集群部署](docs/ack-deployment.md) |
 
+可选 [OpenTelemetry 调用链](docs/observability.md)关联操作、任务和原生轮次；默认关闭、不采集对话正文，可更换兼容 OTLP 后端。[ARMS 配置](deploy/observability/arms/README.md)独立提供。
+
 ## 架构与分工
 
 ```mermaid

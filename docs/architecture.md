@@ -1,5 +1,11 @@
 # Architecture proposal
 
+## 可选调用链边界（2026-11-12）
+
+Go `internal/observability` 与 Python `deermate.telemetry` 使用标准 OpenTelemetry API/SDK 和 OTLP/HTTP，默认关闭。ARMS 是独立部署配置，不在核心代码导入云 SDK；其他兼容接收端使用同一接口。公开入口隔离客户端父上下文，内部 HTTP/MCP 与已授权 Relay 传播有界白名单。
+
+首次 operation/task 关联保存在独立表，后台派单和执行读取原绑定；不进入模型正文、任务参数或幂等指纹。原生 session/turn 与实际 item 生命周期建立跨度，独立验证分别记录。Exporter 有界且失败不重放任务，遥测不替代业务账本。详见[规格](specs/vendor-neutral-observability.md)、[运行手册](observability.md)与 [ADR 0017](decisions/0017-vendor-neutral-observability.md)。ARMS 索引、原生内部子链及 AgentLoop 评估仍需独立验收。
+
 ## 工作台 v2 的增量边界（2026-11-09）
 
 Go 继续独占公开认证、个人策略、话题策略、规范来源、事实引用、持久提取/历史作业、配额和首页快照。Python 内部复用 DeerMem 文件事务与 FTS5、既有对话模型的有界提取、最终 Router 的个人参考注入；工具与设备授权保持原边界。首页 GET 仅汇总已有记录，不调用模型。

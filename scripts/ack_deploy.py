@@ -399,7 +399,10 @@ def post_render(documents, settings, rollout="review"):
         )
         # The legacy runtime/auth endpoints must not be reachable via a Pod IP.
         runtime["args"] = [
-            arg.replace("--host 0.0.0.0", "--host 127.0.0.1") for arg in runtime["args"]
+            arg.replace("--host 0.0.0.0", "--host 127.0.0.1").replace(
+                "app.gateway.app:app", "deermate.gateway:app"
+            )
+            for arg in runtime["args"]
         ]
         for probe in ("readinessProbe", "livenessProbe"):
             old = runtime[probe]

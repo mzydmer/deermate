@@ -306,6 +306,7 @@ def test_actual_pinned_helm_chart(settings, tmp_path, enabled):
         },
     ]
     assert config["extensions"]["middlewares"] == [
+        "deermate.observability_middleware:TelemetryMiddleware",
         "deermate.continuous_middleware:ContinuousMiddleware",
         "deermate.briefing_middleware:BriefingActionMiddleware",
         "deermate.session_middleware:CodingSessionMiddleware",

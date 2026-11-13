@@ -64,9 +64,19 @@ def finish(turn_id, prompt, path, sid):
     while time.monotonic() < end and not stop.is_set():
         time.sleep(0.01)
     if not stop.is_set():
+        item = {"id": "fixture-write", "type": "fileChange", "status": "completed"}
+        if "trace-tools" in prompt:
+            send({"method": "item/started", "params": {"threadId": sid, "item": item}})
         if "bad-fix" not in prompt:
             (path / "answer.py").write_text("def add(a, b):\n    return a + b\n")
         (path / "notes.txt").write_text("offline protocol fixture\n")
+        if "trace-tools" in prompt:
+            send(
+                {
+                    "method": "item/completed",
+                    "params": {"threadId": sid, "item": {**item, "diff": "PRIVATE_TOOL_DIFF"}},
+                }
+            )
         send(
             {
                 "method": "item/completed",

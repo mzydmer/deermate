@@ -106,6 +106,14 @@ def verify(args):
                 },
             ],
         }
+        if args.telemetry_env_file:
+            if __package__:
+                from .observability import read_env, validate
+            else:
+                from observability import read_env, validate
+            values = read_env(args.telemetry_env_file)
+            validate(values)
+            profile["env"] = {**values, "OTEL_SERVICE_NAME": "deermate-mcp-fixture"}
         docker_python(
             "import json,subprocess,sys;p=json.load(sys.stdin);"
             "subprocess.run([p['command'],*p['args'],'--help'],check=True,"
@@ -141,6 +149,8 @@ def verify(args):
             [
                 "docker",
                 "exec",
+                "-e",
+                "OTEL_SERVICE_NAME=deermate-worker-fixture",
                 "-d",
                 gateway,
                 "/bin/sh",
@@ -360,4 +370,5 @@ if __name__ == "__main__":
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--owner-file", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--telemetry-env-file", type=Path)
     verify(parser.parse_args())

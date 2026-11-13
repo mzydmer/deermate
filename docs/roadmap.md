@@ -219,3 +219,15 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] 真实供应方记忆闭环 16 项，独立真实 Codex 同根两轮；范围见专项收据。
 - [x] 最终浏览器矩阵 33 项、旧镜像升级保留与本地全部门禁。
 - [x] 应用 595f654 推送与既有云端升级，22 项 API、13 项浏览器及原账号/数据保留通过；见上线收据。
+
+## Optional observability — portable core, ARMS first
+
+- [x] Standard Go/Python OTel modules, default off, content allowlist and bounded export.
+- [x] Durable operation/task bindings and HTTP/MCP/authorized relay propagation.
+- [x] Runtime model/tool/memory and native-protocol spans, independent validation.
+- [x] Local actual OTLP ancestry, two protocol rounds on one native root, failure/privacy regressions.
+- [x] Separate ARMS configuration, private preflight/probe and operator guide.
+- [ ] Actual ARMS transport and indexed Trace query using the owner's workspace configuration.
+- [ ] Verify native/Pilot internal subtrace joining and optional AgentLoop AI views separately.
+
+Scope and evidence: [observability spec](specs/vendor-neutral-observability.md). No cloud resources are activated by the local implementation; source completion does not establish a release or real-model acceptance.

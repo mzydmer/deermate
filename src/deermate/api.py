@@ -10,6 +10,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.datastructures import Headers
 
+from . import telemetry
 from .authorization import admit_remote
 from .config import Settings
 from .models import AnswerInput, Conflict, ContinueTask, ResumeTask, SubmitTask
@@ -87,6 +88,7 @@ def token_file(state_dir: Path) -> str:
 
 
 def create_app(settings: Settings, token: str | None = None) -> FastAPI:
+    telemetry.configure("deermate-worker")
     access_token = token if token is not None else token_file(settings.state_dir)
     bearer = HTTPBearer(auto_error=False)
 
@@ -127,6 +129,7 @@ def create_app(settings: Settings, token: str | None = None) -> FastAPI:
             raise Conflict("task belongs to another authorization")
         return grant_id
 
+    app.add_middleware(telemetry.TraceASGI)
     app.add_middleware(LocalBoundary)
 
     @app.exception_handler(KeyError)

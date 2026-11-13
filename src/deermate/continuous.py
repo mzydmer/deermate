@@ -10,6 +10,7 @@ import hmac
 import json
 import time
 
+from . import telemetry
 from .briefing import gate
 
 NAMESPACE = "deermate.continuous"
@@ -161,7 +162,19 @@ async def perform(payload, context):
     saved = await asyncio.to_thread(rejected_receipt, owner, canonical["id"])
     if saved is not None:
         return saved
-    result = await _perform(payload, context)
+    from .runtime_telemetry import operation_parent
+
+    with telemetry.span(
+        "agent.operation",
+        parent=operation_parent(canonical),
+        refs={
+            "operation_id": canonical["id"],
+            "work_id": canonical["parent"],
+            "conversation_id": canonical["data"].get("thread_id", ""),
+        },
+        attributes={"deermate.kind": canonical["data"]["kind"]},
+    ):
+        result = await _perform(payload, context)
     if result.get("status") == "rejected":
         await asyncio.to_thread(save_rejection, owner, canonical["id"], result)
     return result

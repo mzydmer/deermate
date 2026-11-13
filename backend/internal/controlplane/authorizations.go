@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	obs "github.com/mzydmer/deermate/backend/internal/observability"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -60,13 +61,14 @@ type agentDevice struct {
 	Continuous string   `json:"continuous_protocol,omitempty"`
 }
 type relayRequest struct {
-	ID       string          `json:"id"`
-	Grant    string          `json:"grant_id"`
-	Version  int             `json:"version"`
-	Method   string          `json:"method"`
-	Path     string          `json:"path"`
-	Body     json.RawMessage `json:"body"`
-	Deadline int64           `json:"deadline"`
+	Telemetry obs.Context     `json:"telemetry,omitempty"`
+	ID        string          `json:"id"`
+	Grant     string          `json:"grant_id"`
+	Version   int             `json:"version"`
+	Method    string          `json:"method"`
+	Path      string          `json:"path"`
+	Body      json.RawMessage `json:"body"`
+	Deadline  int64           `json:"deadline"`
 }
 
 func (s *Server) initAuthorizations() error {
@@ -730,9 +732,10 @@ func (s *Server) agentRelay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var b struct {
-		Method string          `json:"method"`
-		Path   string          `json:"path"`
-		Body   json.RawMessage `json:"body"`
+		Telemetry obs.Context     `json:"telemetry"`
+		Method    string          `json:"method"`
+		Path      string          `json:"path"`
+		Body      json.RawMessage `json:"body"`
 	}
 	if !decode(w, r, &b) {
 		return
@@ -777,7 +780,9 @@ func (s *Server) agentRelay(w http.ResponseWriter, r *http.Request) {
 		fail(w, 429, "device_busy", "Too many pending device operations")
 		return
 	}
-	job := relayRequest{ID: uuid(), Grant: g.ID, Version: g.Version, Method: b.Method, Path: b.Path, Body: b.Body, Deadline: time.Now().Add(15 * time.Second).Unix()}
+	ctx, relaySpan := obs.Start(obs.Restore(r.Context(), obs.Clean(b.Telemetry)), "device.relay", nil)
+	defer relaySpan.End()
+	job := relayRequest{ID: uuid(), Grant: g.ID, Version: g.Version, Method: b.Method, Path: b.Path, Body: b.Body, Deadline: time.Now().Add(15 * time.Second).Unix(), Telemetry: obs.Capture(ctx)}
 	raw, _ := json.Marshal(job)
 	_, err = s.Store.DB.Exec("INSERT INTO deermate_agent_requests VALUES(?,?,?,?,'queued',?,NULL,NULL)", job.ID, g.ID, d.ID, string(raw), job.Deadline)
 	if err != nil {

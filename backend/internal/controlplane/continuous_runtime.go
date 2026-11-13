@@ -5,6 +5,7 @@ import (
 	"crypto/subtle"
 	"database/sql"
 	"encoding/json"
+	obs "github.com/mzydmer/deermate/backend/internal/observability"
 	"net/http"
 	"net/url"
 	"strings"
@@ -149,6 +150,7 @@ func (s *Server) pumpRouter(ctx context.Context) {
 		if e = workPut(tx, &op); e != nil {
 			return e
 		}
+		bindTrace(tx, inbox.Owner, op.ID, obs.WithRefs(restoreTrace(ctx, tx, inbox.Owner, inbox.ID), map[string]string{"operation_id": op.ID, "conversation_id": workString(router, "thread_id"), "work_id": workString(current, "work_id")}))
 		current.State = "queued"
 		current.Data["operation_id"] = op.ID
 		return workPut(tx, &current)
@@ -160,6 +162,12 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 		return
 	}
 	op := snapshot
+	ctx, deliverySpan := obs.Start(restoreTrace(ctx, s.Store.DB, u.ID, op.ID), "operation.deliver", map[string]string{"operation_id": op.ID, "work_id": op.Parent, "conversation_id": workString(op, "thread_id"), "incarnation": workString(op, "incarnation")})
+	defer deliverySpan.End()
+	if value := obs.Capture(ctx); value.Traceparent != "" {
+		raw, _ := json.Marshal(value)
+		_, _ = s.Store.DB.Exec("INSERT OR IGNORE INTO deermate_operation_trace VALUES(?,?,?)", u.ID, op.ID, string(raw))
+	}
 	resolvedModel := ""
 	if op.State == "prepared" && s.cfg.ContinuousEnabled && (workString(op, "kind") == "router" || workString(op, "kind") == "assessor") && workString(op, "model") == "" {
 		req, _ := http.NewRequestWithContext(context.WithValue(ctx, sessionKey{}, Session{User: u}), "GET", s.cfg.Origin, nil)
@@ -468,6 +476,9 @@ func (s *Server) workInternal(w http.ResponseWriter, r *http.Request) {
 		fail(w, 403, "operation_expired", "Router admission is no longer current")
 		return
 	}
+	actionContext, actionSpan := obs.Start(restoreTrace(r.Context(), s.Store.DB, owner, op.ID), "router.action", map[string]string{"operation_id": op.ID})
+	defer actionSpan.End()
+	r = r.WithContext(actionContext)
 	if workBool(op, "_tool_done") {
 		respond(w, 200, op.Data["_tool_result"])
 		return
@@ -541,7 +552,7 @@ func (s *Server) workInternal(w http.ResponseWriter, r *http.Request) {
 					if workString(current, "head") != "" {
 						kind = "followup"
 					}
-					out, err := s.prepareWorkOperation(tx, u, current, kind, message, "router-action-"+op.ID, false)
+					out, err := s.prepareWorkOperation(tx, u, current, kind, message, "router-action-"+op.ID, false, r.Context())
 					result = workPublic(out)
 					return err
 				})

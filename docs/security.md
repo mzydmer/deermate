@@ -66,6 +66,8 @@ The runtime adapter strips external bearer/internal/forwarded identities and cre
 
 ## Logging and secrets
 
+Optional OpenTelemetry uses allowlisted metadata and is disabled by default. It does not export messages, memory text, command arguments/output, diffs, authentication headers, query strings or exception text. Public requests cannot select internal trace roots; scoped relay metadata is accepted only after existing authorization checks. Private endpoint/header files and raw local test payloads stay outside version control. IDs remain operational metadata: protect backend access and retention. Export failure cannot authorize or replay work. See the [observability guide](observability.md) for configuration, sampling, failure limits and independent native probes.
+
 [个人记忆基础](personal-memory.md)默认关闭，当前仅使用本人显式保存的事实。Go 负责身份/策略与投递引用，Python 适配器在同一共享本地 SQLite 保留期间复核账号、策略和目标遗忘屏障再操作 provider；不在此期间调用模型。读取验证来源、版本和正文哈希，检索在排名前限制获准 ID。共享摘要及未支持的项目范围不回退到个人桶。公开 API 不接收 owner 选择，原始插件动作及旧 memory 路由不能绕过该入口；角色和 Native/Worker 授权没有扩大。备份恢复、自动来源权限及完整简报尚未验收，不承诺磁盘取证级擦除。
 
 Keep secret values out of committed configuration, ordinary logs, and video fixtures. Do not copy entire local credential directories into workers. Use supported local sign-in flows or secret references. Redaction is best effort and does not justify recording secrets in the first place. Protect local databases and artifacts with OS permissions; disk encryption and backup encryption remain deployment concerns.

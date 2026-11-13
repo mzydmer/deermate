@@ -68,6 +68,9 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 	if err := s.initAuthorizations(); err != nil {
 		return nil, err
 	}
+	if err := s.initTraceBindings(); err != nil {
+		return nil, err
+	}
 	if err := s.syncWorkSources(); err != nil {
 		return nil, err
 	}
@@ -120,6 +123,10 @@ func decode(w http.ResponseWriter, r *http.Request, dst any) bool {
 func sessionOf(r *http.Request) Session { return r.Context().Value(sessionKey{}).(Session) }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	r, traceSpan := publicTrace(r)
+	response := &tracedResponse{ResponseWriter: w}
+	w = response
+	defer finishHTTP(traceSpan, r, response)
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("X-DeerMate-Backend", "go")

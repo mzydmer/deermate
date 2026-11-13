@@ -31,5 +31,8 @@
         }
       ]
     }
-  }
+  },
+  "mcpInterceptors": [
+    "deermate.observability_middleware:build_mcp_interceptor"
+  ]
 }

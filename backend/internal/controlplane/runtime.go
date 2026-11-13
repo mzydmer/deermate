@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	obs "github.com/mzydmer/deermate/backend/internal/observability"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -33,8 +34,8 @@ func newRuntime(address, secret string) (*runtimeAdapter, error) {
 	}
 	// Do not retry mutations with Idempotency-Key on stale pooled connections.
 	transport := &http.Transport{Proxy: nil, DisableKeepAlives: true, ResponseHeaderTimeout: 30 * time.Second}
-	a := &runtimeAdapter{url: u, secret: []byte(secret), client: &http.Client{Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
-	a.proxy = &httputil.ReverseProxy{Transport: transport, FlushInterval: -1, Rewrite: func(p *httputil.ProxyRequest) {
+	a := &runtimeAdapter{url: u, secret: []byte(secret), client: &http.Client{Transport: obs.Transport{Base: transport}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
+	a.proxy = &httputil.ReverseProxy{Transport: obs.Transport{Base: transport}, FlushInterval: -1, Rewrite: func(p *httputil.ProxyRequest) {
 		p.SetURL(a.url)
 		p.Out.Host = p.In.Host
 		a.identity(p.Out, sessionOf(p.In).User, p.In)

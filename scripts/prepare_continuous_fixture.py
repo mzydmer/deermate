@@ -33,7 +33,9 @@ def prepare(bundle):
     for key in ("tools", "tool_groups", "plugins"):
         config[key] = additions[key]
     config["extensions"]["middlewares"] = additions["extensions"]["middlewares"]
-    config["extensions"]["middlewares"][0] = "continuous_fixture_model:FixtureMiddleware"
+    middlewares = config["extensions"]["middlewares"]
+    index = middlewares.index("deermate.continuous_middleware:ContinuousMiddleware")
+    middlewares[index] = "continuous_fixture_model:FixtureMiddleware"
     config["plugins"][0]["use"] = "continuous_fixture_model:install"
     config["models"] = [
         {

@@ -7,6 +7,7 @@ from pathlib import Path
 
 import httpx
 
+from . import telemetry
 from .authorization import private_json
 from .bridge import BridgeError, TaskBridge, connection_report, task_path
 
@@ -29,14 +30,16 @@ class RelayTransport(httpx.AsyncBaseTransport):
     async def handle_async_request(self, request):
         if not operation_path(request.method, request.url.path):
             raise BridgeError("Operation not allowed by relay")
+        trace_context = telemetry.from_headers(request.headers)
         response = await self.client.post(
             "/api/agent-relay/" + self.grant["id"] + "/requests",
             json={
                 "method": request.method,
                 "path": request.url.path,
                 "body": json.loads(request.content) if request.content else None,
+                **({"telemetry": trace_context} if trace_context else {}),
             },
-            headers={"Authorization": "Bearer " + self.grant["token"]},
+            headers={"Authorization": "Bearer " + self.grant["token"], **telemetry.headers()},
         )
         if len(response.content) > 2_000_000:
             raise BridgeError("Relay response exceeded limit")

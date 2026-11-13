@@ -64,6 +64,8 @@ Open **http://localhost:2026**, create the first administrator, and configure a 
 | Worker only on macOS/Linux | [Worker setup](docs/local-worker.md) |
 | Kubernetes / ACK | [Optional cluster deployment](docs/ack-deployment.md) |
 
+Optional [OpenTelemetry tracing](docs/observability.md) connects operation, task and native-turn identities. It is off by default, exports no message content, and supports interchangeable OTLP backends; [ARMS setup](deploy/observability/arms/README.md) is provided separately.
+
 ## How it fits together
 
 ```mermaid
