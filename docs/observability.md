@@ -1,6 +1,6 @@
 # 可选调用链与 ARMS 接入
 
-DeerMate 的可观测核心使用 OpenTelemetry 和 OTLP/HTTP；默认关闭。Go、Gateway、MCP、授权 Relay 与 Worker 共享标准上下文，厂商配置单独放在 `deploy/observability/`。本轮先准备 ARMS 接入，开源部署可以换成其他兼容后端。
+DeerMate 的可观测核心使用 OpenTelemetry 和 OTLP/HTTP；开源部署默认关闭。Go、Gateway、MCP、授权 Relay 与 Worker 共享标准上下文，厂商配置单独放在 `deploy/observability/`。既有云端实例已接入 ARMS，开源部署可以换成其他兼容后端。
 
 规格与验收合同见[可观测规格](specs/vendor-neutral-observability.md)，设计取舍见 [ADR 0017](decisions/0017-vendor-neutral-observability.md)。这是工程运维文档；产品技术说明见[系统架构](product/technical/architecture.md)。
 
@@ -83,6 +83,8 @@ docker restart PROJECT-gateway-1
 
 如使用个人 MCP 配置，对相应文件单独执行同一命令。输出会给出匹配的 DeerMate stdio profile 数量；0 表示该文件没有待配置的 profile，不能视为 MCP 已接入。工具只更新 `python -m deermate.cli … mcp` profile 的遥测环境和标准 interceptor，保留原命令参数、其他服务器、授权与凭据。之后新建的 profile 也需配置，不能假定一次执行覆盖所有未来连接。
 
+旧实例如果使用 `uvx --offline --from …whl … deermate --relay-config … mcp`，该命令会报告 0；它不会升级旧 wheel。先备份实际启用的配置，再将这个已识别的入口迁移为当前 Gateway 环境的 `/app/backend/.venv/bin/python -m deermate.cli --relay-config <原路径> mcp`，保留原 relay 路径、其他参数和 profile 字段；在隔离环境检查当前 CLI、MCP/SSH 与 OTel 依赖后再应用。2026-11-12 既有实例使用了这项显式迁移，并逐字段核对了其他设置与设备授权。
+
 独立 Worker/MCP 在各自宿主机安装 extra 并以服务管理器加载私有配置后重启，不能通过云 bundle 自动获得设备执行权限。ACK/Kubernetes 使用相同环境变量，通过既有 Secret 注入 control/Gateway 与 MCP 子进程；本轮没有新增 Operator 或开通 ACK/ARMS 资源。
 
 ## 更换后端与停用
@@ -91,7 +93,7 @@ docker restart PROJECT-gateway-1
 
 停用时将 control、Gateway、每个 MCP profile 和 Worker 的 `DEERMATE_TELEMETRY_ENABLED` 改为 `false` 后重启。`configure-mcp` 是启用预检工具，要求 true；停用使用原服务配置或直接编辑明确的 profile，不能再次执行启用命令。已保存的关联和任务数据无需删除，不会导致任务重放。单独安装的原生探针需独立停用，历史后端数据按其保留/删除策略管理。
 
-ARMS 的地域、获取配置、索引验收与限制见[ARMS 接入](../deploy/observability/arms/README.md)。当前没有真实 ARMS 配置，不能将本地 OTLP 通过解释为已接入云端。原生内部模型调用、Pilot 自动子链合树和供应方缺失的 Token 用量仍保持未知。
+ARMS 的地域、获取配置、索引验收与限制见[ARMS 接入](../deploy/observability/arms/README.md)。2026-11-12 已验证现有北京工作空间接收新加坡服务器的 HTTPS OTLP，并查询到两轮真实 Router 模型调用；[上线收据](verification/observability-cloud-2026-11-12.json)区分真实模型和合成执行树。原生内部模型调用、Pilot 自动子链合树和供应方缺失的 Token 用量仍保持未知。
 
 ## 可复现验收
 

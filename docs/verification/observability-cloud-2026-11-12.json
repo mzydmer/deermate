@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "date": "2026-11-12",
+  "application_revision": "ce7ce59899e95df91374a166b619e43716a6e5a7",
+  "origin": "https://47.79.234.242",
+  "scope": "Existing single-host production upgrade and real ARMS ingestion/query; real Router model calls and separately labelled synthetic execution-chain diagnostics",
+  "ci": {
+    "run_id": 43359323645,
+    "jobs": 11,
+    "all_success": true,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/43359323645"
+  },
+  "release": {
+    "database_backup_quick_check": "ok",
+    "existing_column_values_preserved": true,
+    "managed_model_journal_and_grant_bytes_preserved": true,
+    "instrumentation_configuration_changes_only": true,
+    "worker_permissions_expanded": false,
+    "installed_artifacts_match": true,
+    "old_images": {
+      "gateway": "sha256:99a12c549c22ba180a68706656fde0332c18469b5d2597228606778081ab8ea7",
+      "control": "sha256:25231d6b5fa86c9c05c7dc47ead99415be9a6bb9d8a112ea2b0c6a6d807f1ed1",
+      "frontend": "sha256:56a85f0ba66c0caef7f8bc205ab2735667f7219eb2a298de1f9cb2452829591d"
+    },
+    "new_images": {
+      "gateway": "sha256:ca574c36a8e1dbe1492c2ce4a7767210e6227164a74788a7d9bb364ff7d19600",
+      "control": "sha256:dea942da667e426cb16737ba37a1bcdaed9a5f350999c411876bacd8cbbf7d90",
+      "frontend": "sha256:8f65958e8b0a9c1ff144e82bb41b27eaf8ce4b89c78d68c66ef10e9660f5dbf9"
+    }
+  },
+  "preserved": {
+    "users": 1,
+    "threads_meta": 9,
+    "runs": 19,
+    "mcp_tasks": 5,
+    "deermate_agent_devices": 1,
+    "deermate_agent_grants": 1
+  },
+  "public_https": {
+    "checks": [
+      "trusted_public_https",
+      "original_password_login",
+      "original_owner_and_role",
+      "historical_thread_ids",
+      "managed_model_catalog",
+      "legacy_profile_preserved",
+      "page:/workspace",
+      "production_assets",
+      "page:/workspace/work",
+      "page:/workspace/memory",
+      "page:/docs",
+      "page:/docs/guide/memory",
+      "page:/docs/guide/focus",
+      "api:workspace-snapshot",
+      "api:memory-history",
+      "api:memories",
+      "api:memory-activity",
+      "bounded_home_snapshot",
+      "owner_mismatch_rejected",
+      "missing_csrf_rejected"
+    ],
+    "original_password_login": true,
+    "original_historical_threads": 9
+  },
+  "arms": {
+    "integration": "Standard OTLP/HTTP over HTTPS; deployment-only private endpoint/headers",
+    "workspace_region": "cn-beijing",
+    "singapore_server_probe": {
+      "export_accepted": true,
+      "indexed_verified": true,
+      "trace_id": "67354b068d3d37001c614c6b306be0cd"
+    },
+    "production_router": {
+      "real_model_rounds": 2,
+      "same_persistent_thread": true,
+      "background_config_preserved": true,
+      "traces": [
+        "fef5fea8e80230cbfe494613e39aba61",
+        "d9a19c3817ba6af0118c2fdb8ae577a3"
+      ],
+      "both_indexed": true,
+      "observed_spans": [
+        "operation.deliver",
+        "http.client",
+        "http.server",
+        "agent.operation",
+        "memory.retrieve",
+        "agent.model"
+      ],
+      "standard_roles_verified": [
+        "SERVER",
+        "CLIENT",
+        "PRODUCER"
+      ],
+      "native_execution_requested": false
+    },
+    "synthetic_execution_diagnostic": {
+      "scope": "Re-export of earlier verified two-round synthetic fixture; original timestamps and IDs preserved; no business/model/native replay",
+      "exported_spans": 70,
+      "services": 4,
+      "first_trace_indexed": {
+        "trace_id": "df6469589696ccf1f9ac1c6a5d1d83a2",
+        "services": 4,
+        "spans": 47,
+        "native_turn_and_validation_visible": true
+      },
+      "private_markers_checked": 9,
+      "private_marker_matches": 0,
+      "real_provider_calls": 0,
+      "real_codex_turns": 0
+    }
+  },
+  "limits": [
+    "No new real cloud-to-home Worker/Codex execution; expired device access was not restored",
+    "Synthetic protobuf forwarding preserved earlier timestamps and IDs; it did not replay an operation or call a model",
+    "No native/Pilot automatic subtrace joining, vendor AI dashboard acceptance or AgentLoop evaluations",
+    "No independent metrics/logs pipeline; trace delivery remains best effort",
+    "Credentials, workspace identifiers, raw traces, prompts and private browser screenshots remain outside Git"
+  ],
+  "public_browser": {
+    "original_account_login": true,
+    "page_checks": 4,
+    "widths": [
+      390,
+      1280
+    ],
+    "page_errors": 0
+  }
+}

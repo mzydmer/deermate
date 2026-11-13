@@ -167,7 +167,8 @@
       "docs/decisions/0017-vendor-neutral-observability.md",
       "src/deermate/telemetry.py",
       "backend/internal/observability/telemetry.go",
-      "docs/verification/observability-2026-11-12.json"
+      "docs/verification/observability-2026-11-12.json",
+      "docs/verification/observability-cloud-2026-11-12.json"
     ]
   },
   {
@@ -242,7 +243,8 @@
       "docs/decisions/0017-vendor-neutral-observability.md",
       "src/deermate/telemetry.py",
       "backend/internal/observability/telemetry.go",
-      "docs/verification/observability-2026-11-12.json"
+      "docs/verification/observability-2026-11-12.json",
+      "docs/verification/observability-cloud-2026-11-12.json"
     ]
   }
 ]

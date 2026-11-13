@@ -1,8 +1,8 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-12。本轮在 `feat/observability-20261110` 完成标准 OpenTelemetry 核心、独立 ARMS 配置和本地验收；源码 `66d3088` 已合入 main，11 个远端 CI job 全部通过；云端新镜像已完成构建和隔离 Linux 检查，尚未切换线上。远端 main 核对为 `66d3088`，线上应用源码 595f654、发布文档 bfa91aa 保持原记录。README 技术品牌设计交付与历史发布范围见后文。
+最后核对：2026-11-12。标准 OpenTelemetry 核心与独立 ARMS 配置已合入 main，应用 `ce7ce59` 的 11 个远端 CI job 全部通过，既有新加坡实例已升级并启用遥测。20 项可信公网 HTTPS/API 检查、原账号和历史数据核对、两轮同秘书会话的真实模型调用通过；两轮 Trace 均已在 ARMS 查询到。四服务执行树使用此前合成协议数据单独验证，未恢复过期家庭设备权限。正文与上线证据见下文。
 
-## 2026-11-12 · 可选调用链与 ARMS 接入准备
+## 2026-11-12 · 可选调用链与 ARMS 已上线
 
 按用户要求将开源核心与厂商接入分开。Go/Python 使用标准 OTel API/SDK 与 OTLP/HTTP，默认关闭，核心没有阿里云 SDK 或接入地址；ARMS 样例、预检与接收/索引操作说明位于独立部署目录。规格、实现、验收和下一步分别见[实施规格](specs/vendor-neutral-observability.md)、[ADR 0017](decisions/0017-vendor-neutral-observability.md)、[运行手册](observability.md)与[脱敏收据](verification/observability-2026-11-12.json)。
 
@@ -10,9 +10,13 @@
 
 本地实际接收的 protobuf 验证了两轮 Go → Gateway → MCP → Relay → Worker → 原生协议/独立验证：四个服务的父子链连续、同一原生根、两组 operation/task/turn 与 Trace、两次验证通过；885 个接收跨度的私有标记匹配为零。Fake 模型与原生协议进程只操作 toy 仓库，不构成真实供应方或 Codex 验收。固定运行时中的实际 LangChain 图另验模型/工具包裹和合成 usage 字段。也修正了系统代理影响本机导出、Python SDK `03` trace flags 被 Go propagator 拒绝，以及非法 MCP 元数据影响工具调用的问题。
 
-验证：常规 Python **324 通过 / 7 跳过**，跳过的四个 DeerFlow 模块和一个 LangChain 模块已在固定 Gateway 环境以 **76 项通过**覆盖；两个独立 full Gateway local/SSH 验证器未重跑，不能把 Docker 子集称为完整 SSH 复验。Go mod/vet/全包 race/无 CGO 与 Linux 构建、关闭重开数据库关联、实际固定 Helm/Compose 契约、Ruff/wheel 和产品文档/图示/设计门禁通过。新增无云凭据的跨语言 CI job，远端 CI 尚未验证。
+验证：常规 Python **324 通过 / 7 跳过**，跳过的四个 DeerFlow 模块和一个 LangChain 模块已在固定 Gateway 环境以 **76 项通过**覆盖；两个独立 full Gateway local/SSH 验证器未重跑，不能把 Docker 子集称为完整 SSH 复验。Go mod/vet/全包 race/无 CGO 与 Linux 构建、关闭重开数据库关联、实际固定 Helm/Compose 契约、Ruff/wheel 和产品文档/图示/设计门禁通过。新增无云凭据的跨语言 CI job；后续 ce7ce59 的 11 个远端 job 全部通过，包含完整 Gateway local/SSH、固定镜像和跨语言协议检查。
 
-**当前发布进度：**按用户新要求接入 ARMS、合入 main 并升级。已通过短信登录，取得现有北京工作空间的公网 HTTPS/HTTP 接入配置；本机和云端独立 probe 均返回接收成功。ARMS 索引查询仍在核验，尚未切换线上；补齐标准协议 SpanKind 后继续发布。旧版试用到期提示与 2.0 工作空间分开核对，没有提交按量付费购买订单。未购买资源包或新开服务器，未恢复家庭设备授权。原生内部模型/Pilot 子链合树、AgentLoop 评估及独立 Metrics/Logs 管线不在本轮已验收范围。
+**当前发布进度：**应用 ce7ce59 已升级现有单机，Go/Gateway/前端安装内容哈希匹配；一致备份、原表旧列值和模型/journal/授权文件核对通过，原 1 个账号、9 个话题、19 个 run、5 条任务及原密码保留。活动 MCP 从旧离线 uvx wheel 显式迁移到当前 Gateway Python，保留同一 relay 配置、其他 profile 字段和设备授权。20 项可信公网检查及两轮真实 Router 回复通过；测试新增秘书记录单独计入，不冒充旧数据。云端服务健康，没有增加服务器或恢复家庭权限。
+
+现有北京工作空间实际接收了新加坡服务器 probe，两轮真实 Router 的 operation、记忆和模型跨度均已按 Trace ID 查询；标准 SERVER/CLIENT/PRODUCER 类型在实际调用树可见。另将此前本地已验证的两轮合成协议 protobuf 作为诊断数据发送，保留原始时间与 ID；ARMS 首轮展示四服务、47 个 Span 和独立验证。这不重放业务、不调用模型或真实 Codex。原始凭据、工作空间身份、protobuf 和浏览器截图保持私有；[云端收据](verification/observability-cloud-2026-11-12.json)记录脱敏证据。
+
+旧版试用到期提示与 2.0 工作空间分开核对，没有提交付费购买订单。原生内部模型/Pilot 子链合树、厂商 AI 专属视图、AgentLoop 评估和独立 Metrics/Logs 管线未验收。下一步是在有效设备授权下完成新的真实云端 → 家庭 Worker/Codex 链路；本轮请求的 ARMS 接入、main 合入和既有实例升级已完成。
 
 
 ## 2026-11-10 · README 技术品牌方案（main 设计交付）

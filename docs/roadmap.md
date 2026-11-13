@@ -227,7 +227,9 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [x] Runtime model/tool/memory and native-protocol spans, independent validation.
 - [x] Local actual OTLP ancestry, two protocol rounds on one native root, failure/privacy regressions.
 - [x] Separate ARMS configuration, private preflight/probe and operator guide.
-- [ ] Actual ARMS transport and indexed Trace query using the owner's workspace configuration.
+- [x] Actual server probe and two real-model Router traces indexed in ARMS; synthetic four-service execution tree separately verified.
+- [x] Merge to main, 11 successful CI jobs and existing production upgrade with account/history/grants retained.
+- [ ] Fresh real cloud-to-home native execution; expired access was not restored for telemetry acceptance.
 - [ ] Verify native/Pilot internal subtrace joining and optional AgentLoop AI views separately.
 
-Scope and evidence: [observability spec](specs/vendor-neutral-observability.md). No cloud resources are activated by the local implementation; source completion does not establish a release or real-model acceptance.
+Scope and evidence: [observability spec](specs/vendor-neutral-observability.md) and [cloud receipt](verification/observability-cloud-2026-11-12.json). The local implementation creates no cloud resources; the existing production deployment now uses a private ARMS workspace profile. Real Router calls, synthetic execution diagnostics and unverified native/Pilot joining remain separate acceptance scopes.
