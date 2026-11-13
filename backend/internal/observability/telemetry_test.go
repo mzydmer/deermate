@@ -112,3 +112,17 @@ func TestRealOTLPHTTPAndDisabledExport(t *testing.T) {
 		t.Fatal("no actual OTLP payload")
 	}
 }
+
+func TestProtocolSpanKinds(t *testing.T) {
+	exporter := recorder(t)
+	for _, name := range []string{"http.server", "http.client", "device.relay", "operation.deliver"} {
+		_, span := Start(context.Background(), name, nil)
+		span.End()
+	}
+	want := []string{"server", "client", "server", "producer"}
+	for i, span := range exporter.GetSpans() {
+		if span.SpanKind.String() != want[i] {
+			t.Fatal("incorrect protocol span role", span.Name)
+		}
+	}
+}

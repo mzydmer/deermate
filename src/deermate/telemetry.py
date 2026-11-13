@@ -41,6 +41,14 @@ ATTRS = {
     "error.type",
 }
 METHODS = {"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"}
+SPAN_KINDS = {
+    "http.server": "SERVER",
+    "mcp.server": "SERVER",
+    "mcp.client": "CLIENT",
+    "worker.request": "CLIENT",
+    "agent.model": "CLIENT",
+    "worker.execute": "CONSUMER",
+}
 
 
 def resource_attributes(service):
@@ -266,7 +274,7 @@ def from_headers(value):
 
 
 @contextmanager
-def span(name, *, parent=None, refs=None, attributes=None, recovery=False):
+def span(name, *, parent=None, refs=None, attributes=None, recovery=False, kind=None):
     if _provider is None:
         yield None
         return
@@ -286,6 +294,7 @@ def span(name, *, parent=None, refs=None, attributes=None, recovery=False):
     try:
         with _provider.get_tracer("deermate").start_as_current_span(
             name,
+            kind=kind if kind is not None else trace.SpanKind[SPAN_KINDS.get(name, "INTERNAL")],
             context=ctx,
             links=links,
             record_exception=False,

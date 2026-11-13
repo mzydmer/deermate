@@ -178,6 +178,7 @@ def probe(values, receipt):
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import SimpleSpanProcessor, SpanExporter, SpanExportResult
+    from opentelemetry.trace import SpanKind
 
     from deermate import telemetry
 
@@ -201,7 +202,9 @@ def probe(values, receipt):
     provider.add_span_processor(SimpleSpanProcessor(Exporter()))
     telemetry.configure(provider=provider)
     with telemetry.span(
-        "deermate.observability.probe", attributes={"deermate.kind": "synthetic_probe"}
+        "deermate.observability.probe",
+        attributes={"deermate.kind": "synthetic_probe"},
+        kind=SpanKind.SERVER,
     ):
         parent = telemetry.capture()["traceparent"]
     provider.shutdown()

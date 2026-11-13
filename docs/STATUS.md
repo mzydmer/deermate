@@ -1,6 +1,6 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-12。本轮在 `feat/observability-20261110` 完成标准 OpenTelemetry 核心、独立 ARMS 配置和本地验收；尚未合入 main 或升级线上。远端 main 核对仍为 `19bcc4d`，线上应用源码 595f654、发布文档 bfa91aa 保持原记录。README 技术品牌设计交付与历史发布范围见后文。
+最后核对：2026-11-12。本轮在 `feat/observability-20261110` 完成标准 OpenTelemetry 核心、独立 ARMS 配置和本地验收；源码 `66d3088` 已合入 main，11 个远端 CI job 全部通过；云端新镜像已完成构建和隔离 Linux 检查，尚未切换线上。远端 main 核对为 `66d3088`，线上应用源码 595f654、发布文档 bfa91aa 保持原记录。README 技术品牌设计交付与历史发布范围见后文。
 
 ## 2026-11-12 · 可选调用链与 ARMS 接入准备
 
@@ -12,7 +12,7 @@
 
 验证：常规 Python **324 通过 / 7 跳过**，跳过的四个 DeerFlow 模块和一个 LangChain 模块已在固定 Gateway 环境以 **76 项通过**覆盖；两个独立 full Gateway local/SSH 验证器未重跑，不能把 Docker 子集称为完整 SSH 复验。Go mod/vet/全包 race/无 CGO 与 Linux 构建、关闭重开数据库关联、实际固定 Helm/Compose 契约、Ruff/wheel 和产品文档/图示/设计门禁通过。新增无云凭据的跨语言 CI job，远端 CI 尚未验证。
 
-**下一步：**用户确认没有 ARMS 配置。取得目标工作空间/地域的 OTLP/HTTP HTTPS endpoint 与写入鉴权后，先运行独立 probe，在 ARMS 按 Trace ID 核对索引，再按既有备份发布流程升级与验证真实任务。当前未开通或购买云服务、未导出到 ARMS，未恢复家庭设备授权。原生内部模型/Pilot 子链合树、AgentLoop 评估及独立 Metrics/Logs 管线不在本轮已验收范围。
+**当前发布进度：**按用户新要求接入 ARMS、合入 main 并升级。已通过短信登录，取得现有北京工作空间的公网 HTTPS/HTTP 接入配置；本机和云端独立 probe 均返回接收成功。ARMS 索引查询仍在核验，尚未切换线上；补齐标准协议 SpanKind 后继续发布。旧版试用到期提示与 2.0 工作空间分开核对，没有提交按量付费购买订单。未购买资源包或新开服务器，未恢复家庭设备授权。原生内部模型/Pilot 子链合树、AgentLoop 评估及独立 Metrics/Logs 管线不在本轮已验收范围。
 
 
 ## 2026-11-10 · README 技术品牌方案（main 设计交付）

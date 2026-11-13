@@ -119,7 +119,16 @@ func Inject(ctx context.Context, h http.Header) {
 }
 func Start(ctx context.Context, name string, refs map[string]string) (context.Context, trace.Span) {
 	ctx = WithRefs(ctx, refs)
-	ctx, span := otel.Tracer("deermate").Start(ctx, name)
+	kind := trace.SpanKindInternal
+	switch name {
+	case "http.server", "device.relay":
+		kind = trace.SpanKindServer
+	case "http.client":
+		kind = trace.SpanKindClient
+	case "operation.deliver":
+		kind = trace.SpanKindProducer
+	}
+	ctx, span := otel.Tracer("deermate").Start(ctx, name, trace.WithSpanKind(kind))
 	if refs, ok := ctx.Value(refsKey{}).(map[string]string); ok {
 		for k, v := range refs {
 			span.SetAttributes(attribute.String("deermate."+k, v))

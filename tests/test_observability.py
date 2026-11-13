@@ -262,3 +262,25 @@ async def test_completion_only_native_event_does_not_invent_tool_start(settings,
     spans = traced.get_finished_spans()
     assert [s.name for s in spans] == ["codex.turn"]
     assert "PRIVATE_TOOL_DIFF" not in spans[0].to_json()
+
+
+def test_protocol_boundaries_have_standard_span_kinds(traced):
+    for name in (
+        "http.server",
+        "mcp.server",
+        "mcp.client",
+        "worker.request",
+        "agent.model",
+        "worker.execute",
+    ):
+        with telemetry.span(name):
+            pass
+    kinds = {s.name: s.kind.name for s in traced.get_finished_spans()}
+    assert kinds == {
+        "http.server": "SERVER",
+        "mcp.server": "SERVER",
+        "mcp.client": "CLIENT",
+        "worker.request": "CLIENT",
+        "agent.model": "CLIENT",
+        "worker.execute": "CONSUMER",
+    }
