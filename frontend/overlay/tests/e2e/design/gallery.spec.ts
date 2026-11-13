@@ -20,6 +20,17 @@ for (const width of [390, 768, 1024, 1280, 1440])
       await page.getByLabel("Password", { exact: true }).fill(owner.password);
       await page.locator('button[type="submit"]').click();
       await page.waitForURL((url) => url.pathname === "/workspace");
+      // Keep page chrome deterministic when other fixture verifiers create threads.
+      const thread = await (
+        await page.request.get("/api/threads/visual-thread")
+      ).json();
+      expect(thread.thread_id).toBe("visual-thread");
+      await page.route(
+        /\/api\/(?:langgraph\/)?threads\/search(?:\?|$)/,
+        async (route) => {
+          await route.fulfill({ json: [thread] });
+        },
+      );
       await page.evaluate(
         (value) => localStorage.setItem("theme", value),
         theme,

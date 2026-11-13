@@ -1,6 +1,6 @@
 # Frontend component overhaul
 
-- Status: in progress, no merge or deployment.
+- Status: implemented and locally accepted; PR #10, no main merge or deployment.
 - Requirement: NFR-008; all API, permission and recovery contracts retained.
 - Tracking: https://github.com/mzydmer/deermate/issues/2
 - Base: 66d3088; upstream a1b89d0432de4e45adc59f512cb25bb386ea1e51.
@@ -12,17 +12,17 @@ Native controls and page-specific CSS bypass the existing design recipes. Build 
 
 ## Scope and contract
 
-React overlay, login, documents, Go management/authorization and tooling UI. Wrap existing shadcn/Radix; no upstream primitive replacement, lockfile change or new npm dependencies. Features retain endpoint paths, request bodies, operation IDs, uncertainty journals, source/deletion barriers, temporary-topic policy and server permissions/revisions. No model/Native invocation, personal data, main merge or deployment.
+React overlay, login, documents, Go management/authorization and tooling UI. Wrap existing shadcn/Radix; no upstream primitive replacement, lockfile change or new npm dependencies. Features retain endpoint paths, request bodies, operation IDs, uncertainty journals, source/deletion barriers, temporary-topic policy and server permissions/revisions. No real-provider/Native invocation, personal data, main merge or deployment.
 
 ## Layers and acceptance
 
-- O-01: YAML-generated Tailwind semantics, typed primitives with DOM tests and development-only gallery.
-- O-02: reusable 240/64px/drawer shell, 64px header, compact rows, content-sized composer and Inspector.
-- O-03: feature/route native controls, dm-text-button and inline bilingual calls eliminated; dictionary and status map shared.
-- O-04: deermate.css deleted after migration; CSS budget and layer enforcement with negative cases.
-- O-05: Go/extension surfaces use generated recipes.
-- O-06: synthetic browser matrix at 390/768/1024/1280/1440 in both themes, long content, >=4.5 contrast, keyboard and reduced-motion. Retain before/after screenshots privately and inspect them.
-- O-07: portable prepare/install/build/dev/fixture command, semantic verifier selectors.
+- [x] O-01: YAML-generated Tailwind semantics, typed primitives with DOM tests and development-only gallery.
+- [x] O-02: reusable 240/64px/drawer shell, 64px header, compact rows, content-sized composer and Inspector.
+- [x] O-03: feature/route native controls, dm-text-button and inline bilingual calls eliminated; dictionary and status map shared.
+- [x] O-04: deermate.css deleted after migration; CSS budget and layer enforcement with negative cases.
+- [x] O-05: Go/extension surfaces use generated recipes.
+- [x] O-06: synthetic browser matrix at 390/768/1024/1280/1440 in both themes, long content, >=4.5 contrast, keyboard and reduced-motion. Retain before/after screenshots privately and inspect them.
+- [x] O-07: portable prepare/install/build/dev/fixture command, semantic verifier selectors.
 
 ## Failure behavior and authority
 
@@ -30,7 +30,7 @@ Loading skeletons; empty reason; retained data and retry on partial failure. Exe
 
 ## Stages and validation
 
-P0 inventory/spec/environment; P1 primitives/mapping/tests/gallery; P2 patterns/shell; P3 features/copy/verifiers; P4 embedded surfaces; P5 stricter gate/regression. Commit separately. Use DOM tests, existing behavioral verifiers, production build and design/document/Go/Python checks. Acceptance items remain pending until executed; actual progress belongs in STATUS/EVOLUTION.
+P0 inventory/spec/environment; P1 primitives/mapping/tests/gallery; P2 patterns/shell; P3 features/copy/verifiers; P4 embedded surfaces; P5 stricter gate/regression. Commit separately. Use DOM tests, existing behavioral verifiers, production build and design/document/Go/Python checks. O-01–O-07 are locally accepted; actual command results, screenshots and CI scope belong in STATUS/EVOLUTION.
 
 ## Inventory at base
 

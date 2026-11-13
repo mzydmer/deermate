@@ -1,6 +1,22 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-12。Go 控制面已升级 `bc69dab` 修复流式计时；11 个远端 CI job 全通过，真实页面及 ARMS 复验通过。Gateway 保持 ce7ce59、前端保持 73040b4 的既有镜像。标准 OpenTelemetry 核心与独立 ARMS 配置已合入 main，既有新加坡实例已启用遥测。20 项可信公网 HTTPS/API 检查、原账号和历史数据核对、两轮同秘书会话的真实模型调用通过；两轮 Trace 均已在 ARMS 查询到。四服务执行树使用此前合成协议数据单独验证，未恢复过期家庭设备权限。正文与上线证据见下文。
+最后核对：2026-11-12。当前工作为 GitHub Design issue #2 的组件化前端重构，分支 `feat/frontend-overhaul-20261112`，已推送 [PR #10](https://github.com/mzydmer/deermate/pull/10)，基于最新 main `3b28af7`。本轮未合入 main、未部署、未读取个人数据；只使用新建合成 fixture 和离线 Fake 模型，无真实模型或 Native 调用。
+
+## 2026-11-12 · 组件化工作台
+
+按 [专项规格](specs/frontend-overhaul.md) / [ADR 0018](decisions/0018-component-driven-frontend.md) 完成 P0–P5：YAML 生成 Tailwind 语义主题、类型化 primitives、共享 shell/Composer/Inspector、页面与字典迁移、Go/tooling 配方，以及更严格的分层和 CSS 预算门禁。删除旧 deermate.css，手写 React CSS 预算 1100 行只能收紧；固定上游、依赖和 lockfile 保持。
+
+本地实际检查：设计/token/产品文档与图示门禁、Ruff CI 同范围和新增脚本、wheel；Python **336 passed / 13 skipped**（一条既有 Starlette 弃用提示）；Go mod verify / vet / 全包 race / 无 CGO 构建；生产 Next 构建、lint、typecheck；前端全量 **3528 passed / 0 skipped**，最后侧栏修复另有 **20 项组件回归通过**。Chrome 合同 **103 项通过**，覆盖五宽度×浅深色、对比度≥4.5、长内容、发送可用性、Sidebar/Inspector、键盘和 reduced-motion。普通生产配置的两条设计陈列路由均经登录后确认 404。迁移 verifier 全部通过：authenticated 141、workspace 39、states 16、basic 18；共享与 Go/tooling 40 项；陈列页原有基线比较 10 项通过。远端完整前端套件为 **3529 passed**。代码提交 `7934652` 的 [12 个远端 CI job](https://github.com/mzydmer/deermate/actions/runs/43385990782)全部通过；后续交付文档与陈列样本固定的检查以 PR head 为准。
+
+离线 Gateway/Go 验收：记忆管理 **14 项**、保留关注流程 **14 项**、聊天 Composer/SDK **两轮**通过。检查真实操作身份、重复点击复用、普通提问不采集、明确记忆来源、删除后的遮挡和清理；上述共享与 Go/tooling 40 项中，工具扩展以实际 JS 模块和合成回调完成 **10 项**主题/宽度检查，无外部发现请求。
+
+已修正验收发现的工作列表内部裁切与手机行高、设置面板挤压、新对话标题裁切、发送按钮形状与空输入，以及侧栏隐藏 Tooltip 拦截 Esc。首次全量前端测试暴露准备上下文漏取 contracts/skills/examples/backend；已改为完整固定归档并全量通过。Fake SDK 的首次 404 来自 fixture 缺少生产 Nginx 的路径重写，已修复。截图比较首次受其他验收新增合成对话影响；陈列页固定同一近期话题后，原有基线 10 项比较通过，未放宽阈值或重录基线。旧选择器与新组件语义不同导致的脚本失败保留在本地诊断日志，不计为通过结果。
+
+改造前矩阵：`.deermate/overhaul-before/screenshots-final`；最终页面矩阵：`.deermate/overhaul-final-ui/contracts`（90 张原图，已逐页检查五宽度/双主题）；`.deermate/overhaul-final-ui/comparison` 另有六组同视角对照；组件基线：`.deermate/overhaul-release-candidate/regression/gallery-baselines`。均为私有合成素材，不入 Git。文档中的静态流程图保留原纸面配色；本轮没有重画图示，也不宣称全面可访问性认证或真实供应方/设备兼容性验收。
+
+下一步：交付 PR 评审并核对远端检查；合并与发布不属于本次范围。
+
+此前线上基线：Go 控制面已升级 `bc69dab` 修复流式计时；11 个远端 CI job 全通过，真实页面及 ARMS 复验通过。Gateway 保持 ce7ce59、前端保持 73040b4 的既有镜像。标准 OpenTelemetry 核心与独立 ARMS 配置已合入 main，既有新加坡实例已启用遥测。20 项可信公网 HTTPS/API 检查、原账号和历史数据核对、两轮同秘书会话的真实模型调用通过；两轮 Trace 均已在 ARMS 查询到。四服务执行树使用此前合成协议数据单独验证，未恢复过期家庭设备权限。正文与上线证据见下文。
 
 ## 2026-11-12 · 流式 HTTP 计时修复（已上线）
 

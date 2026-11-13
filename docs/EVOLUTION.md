@@ -652,3 +652,11 @@ ce7ce59 的 11 个远端 CI job 全部通过，包含真实 Go→Relay、完整 
 
 
 流式计时修复源码 bc69dab 已合入 main，11 项远端 CI 全通过；只更新既有 Go 控制面，保留 Gateway/前端镜像、原账号与十三个历史话题、模型和设备授权。24 项实际部署合同与二十项可信公网检查通过。真实页面的临时话题输出后，ARMS Trace 5909596c62a19300cd85e02238536cb9 显示客户端 18.60 秒、Gateway 18.51 秒、模型 17.53 秒；客户端已覆盖完整响应流。前后请求内容不同，这不是性能提升比较。见[上线收据](verification/http-stream-timing-2026-11-12.json)。此后交付记录只更新工程文档，不修改已发布应用或产品页面。
+
+## 2026-11-12 · 组件化前端与 Design issue #2
+
+基于最新 main `3b28af7`，按 P0–P5 完成 [前端重构](specs/frontend-overhaul.md)：YAML 生成 Tailwind 语义主题，建立 typed primitives / patterns / features / routes，迁移工作台、记忆、聊天、持续秘书、设置、登录、文档及 Go/tooling 外壳。删除旧 CSS，预算 1100 行只能收紧，新增原生控件/视觉 class/内联双语等门禁反例与合成浏览器 CI。
+
+生产构建、lint/types、全量前端与 Python/Go 检查、九个浏览器脚本和组件原基线比较通过；实际数量及范围见 STATUS。验收修复了列表与设置裁切、聊天标题和发送形状、隐藏 Tooltip 拦截 Esc，以及本地代理遗漏 SDK 路径重写。保留业务权限、操作身份与记忆屏障；全新 Fake Gateway 验证来源删除、关注重复操作和两轮真实 Composer/SDK，不调用真实供应方或 Native。
+
+[PR #10](https://github.com/mzydmer/deermate/pull/10) 独立交付评审，截图只保存在私有目录；本次不合入 main、不部署，不把本地矩阵称为全面可访问性认证。
