@@ -316,6 +316,50 @@ assert(
                     64,
                   );
 
+                if (name.startsWith("chat")) {
+                  const stats = page.getByTestId("header-token-usage");
+                  await stats.waitFor();
+                  if (width < 600) {
+                    const box = await stats.boundingBox();
+                    assert.equal(box.width, 44);
+                    assert.equal(box.height, 44);
+                  }
+                  const header = page.getByTestId("chat-topbar");
+                  assert(
+                    await header.evaluate(
+                      (e) => e.scrollWidth <= e.clientWidth,
+                    ),
+                    "chat toolbar fits its container",
+                  );
+                  const clipped = await header
+                    .locator("button:visible")
+                    .evaluateAll((nodes) =>
+                      nodes
+                        .filter((e) => {
+                          const r = e.getBoundingClientRect();
+                          return (
+                            r.x < 0 ||
+                            r.right > innerWidth ||
+                            r.y < 0 ||
+                            r.bottom > innerHeight
+                          );
+                        })
+                        .map(
+                          (e) => e.getAttribute("aria-label") || e.textContent,
+                        ),
+                    );
+                  assert.deepEqual(
+                    clipped,
+                    [],
+                    "all chat toolbar buttons are within viewport",
+                  );
+                  await stats.click();
+                  await page.getByRole("menu").waitFor();
+                  await page.keyboard.press("Escape");
+                  await page.getByRole("menu").waitFor({ state: "hidden" });
+                  await waitForFocus(page, stats);
+                }
+
                 const heading = page.getByRole("heading", { level: 1 }).first();
                 if (await heading.count()) {
                   const box = await heading.boundingBox();

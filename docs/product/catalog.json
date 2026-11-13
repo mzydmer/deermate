@@ -53,7 +53,8 @@
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "design.md",
-      "docs/specs/frontend-overhaul.md"
+      "docs/specs/frontend-overhaul.md",
+      "docs/verification/live-walkthrough-2026-11-13.json"
     ]
   },
   {
@@ -255,7 +256,8 @@
       "docs/verification/observability-2026-11-12.json",
       "docs/verification/observability-cloud-2026-11-12.json",
       "docs/specs/frontend-overhaul.md",
-      "docs/verification/frontend-overhaul-cloud-2026-11-13.json"
+      "docs/verification/frontend-overhaul-cloud-2026-11-13.json",
+      "docs/verification/live-walkthrough-2026-11-13.json"
     ]
   }
 ]

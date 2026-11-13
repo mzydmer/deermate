@@ -282,5 +282,35 @@
         "key={`duration-group:${group.id ?? groupIndex}`}\n        className=\"flex w-full flex-col gap-2\"\n      >\n        {group.type.startsWith(\"assistant\") && <AssistantAvatar />}"
       ]
     ]
+  },
+  {
+    "path": "src/components/workspace/token-usage-indicator.tsx",
+    "sha256": "3c0b2d0711af866b37031d91b6e8dd512b5bba909bf36afbf61cc79481d8c847",
+    "replace": [
+      [
+        "          type=\"button\"\n          variant=\"ghost\"",
+        "          type=\"button\"\n          aria-label={t.tokenUsage.label}\n          data-testid=\"header-token-usage\"\n          variant=\"ghost\""
+      ],
+      [
+        "text-muted-foreground bg-background/70 hover:bg-background/90 flex h-auto items-center gap-1.5 rounded-full border px-2 py-1 text-xs font-normal",
+        "gap-2 border-hairline text-caption font-normal text-muted-foreground max-[600px]:size-ds-touch max-[600px]:px-0"
+      ],
+      [
+        "<span>{t.tokenUsage.label}</span>",
+        "<span className=\"hidden min-[600px]:inline\">{t.tokenUsage.label}</span>"
+      ],
+      [
+        "<span className=\"font-mono\">\n            {preferences.headerTotal",
+        "<span className=\"hidden font-mono min-[600px]:inline\">\n            {preferences.headerTotal"
+      ],
+      [
+        "className=\"text-muted-foreground/80 border-l pl-1.5 font-mono\"",
+        "className=\"text-muted-foreground hidden border-l pl-2 font-mono min-[600px]:inline\""
+      ],
+      [
+        "<ChevronDownIcon className=\"size-3\" />",
+        "<ChevronDownIcon className=\"hidden size-3 min-[600px]:block\" />"
+      ]
+    ]
   }
 ]
