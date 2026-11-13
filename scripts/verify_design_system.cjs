@@ -126,6 +126,83 @@ const { chromium } = require(
             fullPage: true,
           });
       }
+      // Mount the real non-React extension with deterministic offline callbacks.
+      await page.setContent(
+        `<html class="${dark ? "dark" : ""}" lang="en"><style>${css}</style><main id="tooling"></main></html>`,
+      );
+      const tooling = fs.readFileSync(
+        path.join(root, "src/deermate/tooling_ui/index.mjs"),
+        "utf8",
+      );
+      await page.evaluate(async (source) => {
+        const module = await import(
+          "data:text/javascript;base64," +
+            btoa(unescape(encodeURIComponent(source)))
+        );
+        module.default.surfaces[0].mount(document.querySelector("#tooling"), {
+          locale: "en-US",
+          signal: new AbortController().signal,
+          callBackend: async (operation) =>
+            operation === "inventory"
+              ? {
+                  native: [
+                    { name: "Synthetic public reader", status: "loaded" },
+                    { name: "Synthetic unchecked tool", status: "unknown" },
+                  ],
+                  connections: [
+                    {
+                      name: "Synthetic connection / " + "long-name_".repeat(8),
+                      scope: "personal",
+                      enabled: true,
+                    },
+                    {
+                      name: "Synthetic disabled connection",
+                      scope: "personal",
+                      enabled: false,
+                    },
+                  ],
+                }
+              : { status: "discovered", total: 2, tools: [] },
+        });
+      }, tooling);
+      await page
+        .getByRole("button", { name: "Refresh status", exact: true })
+        .waitFor();
+      await page.waitForFunction(
+        () => !document.querySelector("#tooling button").disabled,
+      );
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        )
+      )
+        throw Error("Tooling overflow");
+      await page
+        .getByRole("button", { name: /Test connection Synthetic connection/ })
+        .click();
+      await page.getByText("Connected · 2 tools", { exact: true }).waitFor();
+      if (
+        !(await page
+          .getByRole("button", {
+            name: "Test connection Synthetic disabled connection",
+            exact: true,
+          })
+          .isDisabled())
+      )
+        throw Error("Disabled connection became actionable");
+      await page.screenshot({
+        path: path.join(
+          output,
+          `tooling-${width}-${dark ? "dark" : "light"}.png`,
+        ),
+        fullPage: true,
+      });
+      checks.push({
+        surface: "tooling-extension",
+        width,
+        dark,
+        scope: "actual extension module; synthetic callbacks, no MCP discovery",
+      });
       await page.close();
     }
   fs.writeFileSync(

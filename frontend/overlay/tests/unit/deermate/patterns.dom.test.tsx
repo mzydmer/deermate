@@ -15,6 +15,11 @@ import {
   PopoverTrigger,
   Switch,
 } from "../../../src/components/deermate/ui";
+import {
+  SidebarMenuButton,
+  SidebarProvider,
+} from "../../../src/components/ui/sidebar";
+
 rs.mock("@/core/i18n/hooks", () => ({ useI18n: () => ({ locale: "en-US" }) }));
 afterEach(cleanup);
 test("composer keeps sending disabled when empty and separates newline from send", () => {
@@ -140,4 +145,27 @@ test("disabled asChild also blocks a child's own handlers", () => {
   fireEvent.click(screen.getByRole("link"));
   expect(click).not.toHaveBeenCalled();
   expect(screen.getByRole("link").getAttribute("tabindex")).toBe("-1");
+});
+
+test("expanded sidebar labels do not create invisible tooltip layers", () => {
+  const view = render(
+    <SidebarProvider open>
+      <SidebarMenuButton tooltip="Assistant">Assistant</SidebarMenuButton>
+    </SidebarProvider>,
+  );
+  expect(
+    screen
+      .getByRole("button", { name: "Assistant" })
+      .hasAttribute("data-state"),
+  ).toBe(false);
+  view.rerender(
+    <SidebarProvider open={false}>
+      <SidebarMenuButton tooltip="Assistant">Assistant</SidebarMenuButton>
+    </SidebarProvider>,
+  );
+  expect(
+    screen
+      .getByRole("button", { name: "Assistant" })
+      .getAttribute("data-state"),
+  ).toBe("closed");
 });

@@ -426,7 +426,13 @@ class Proxy(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(content)
             return
-        control = self.path.startswith(("/api/", "/admin", "/health/"))
+        # Match the pinned production nginx SDK prefix rewrite before Go admission.
+        forwarded_path = (
+            "/api/" + self.path.removeprefix("/api/langgraph/")
+            if self.path.startswith("/api/langgraph/")
+            else self.path
+        )
+        control = forwarded_path.startswith(("/api/", "/admin", "/health/"))
         port = 3302 if control else 3301
         headers = {
             k: v
@@ -438,7 +444,7 @@ class Proxy(BaseHTTPRequestHandler):
             with httpx.Client(trust_env=False, timeout=45) as client:
                 r = client.request(
                     self.command,
-                    f"http://127.0.0.1:{port}" + self.path,
+                    f"http://127.0.0.1:{port}" + forwarded_path,
                     headers=headers,
                     content=self.rfile.read(int(self.headers.get("Content-Length", 0))),
                 )

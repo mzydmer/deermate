@@ -300,10 +300,10 @@ async function main() {
         .locator("[data-testid~=memory-list] > li")
         .filter({ hasText: captured.content });
       await capturedRow
-        .getByRole("button", { name: /^(来源与使用|Source and usage)$/ })
+        .getByRole("button", { name: /^(查看来源与用途|Source and usage)$/ })
         .click();
       const source = page.getByRole("dialog").getByRole("link", {
-        name: /打开原对话|Open original conversation/,
+        name: /回到原对话|Open original conversation/,
       });
       await source.waitFor();
       assert.equal(

@@ -466,14 +466,27 @@ assert(
               await trigger.click();
               const dialog = page.getByRole("dialog");
               await dialog.waitFor();
-              for (let i = 0; i < 12; i++) {
+              const visited = new Set();
+              for (let i = 0; i < 24; i++) {
                 await page.keyboard.press("Tab");
                 assert(
                   await page.evaluate(
                     () => !!document.activeElement.closest("[role=dialog]"),
                   ),
                 );
+                visited.add(
+                  await page.evaluate(() =>
+                    document.activeElement.getAttribute("href"),
+                  ),
+                );
               }
+              for (const href of [
+                "/workspace",
+                "/workspace/work",
+                "/workspace/memory",
+                "/workspace/chats",
+              ])
+                assert(visited.has(href), `Tab reaches ${href}`);
               await page.keyboard.press("Escape");
               await dialog.waitFor({ state: "hidden" });
               assert(
