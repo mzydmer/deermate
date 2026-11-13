@@ -21,6 +21,8 @@ export type Variant =
 type Definition = { variant: Variant; labelKey: string; icon: LucideIcon };
 export const statusMap: Record<string, Record<string, Definition>> = {
   continuous: {
+    enabled: { variant: "info", labelKey: "enabled", icon: CheckCircle2 },
+    disabled: { variant: "default", labelKey: "disabled", icon: Ban },
     ready: {
       variant: "default",
       labelKey: "continuous.ready",
@@ -157,7 +159,72 @@ export const statusMap: Record<string, Record<string, Definition>> = {
       icon: CircleHelp,
     },
   },
+  history: {
+    not_started: {
+      variant: "default",
+      labelKey: "historyNotStarted",
+      icon: Clock3,
+    },
+    processing: {
+      variant: "info",
+      labelKey: "historyProcessing",
+      icon: LoaderCircle,
+    },
+    queued: { variant: "default", labelKey: "historyQueued", icon: Clock3 },
+    stop: { variant: "default", labelKey: "historyStopped", icon: Ban },
+    undo: { variant: "default", labelKey: "historyStopped", icon: Ban },
+    interrupted: {
+      variant: "warning",
+      labelKey: "historyInterrupted",
+      icon: AlertTriangle,
+    },
+    completed: {
+      variant: "default",
+      labelKey: "historyCompleted",
+      icon: CheckCircle2,
+    },
+  },
+  conversation: {
+    recorded: {
+      variant: "default",
+      labelKey: "conversationRecorded",
+      icon: Circle,
+    },
+  },
+  memory: {
+    completed: {
+      variant: "success",
+      labelKey: "memoryUpdated",
+      icon: CheckCircle2,
+    },
+    invalidated: {
+      variant: "default",
+      labelKey: "memoryInvalidated",
+      icon: Ban,
+    },
+    queued: { variant: "default", labelKey: "queued", icon: Clock3 },
+    pending: { variant: "info", labelKey: "memoryWorking", icon: LoaderCircle },
+    working: { variant: "info", labelKey: "memoryWorking", icon: LoaderCircle },
+    failed: { variant: "danger", labelKey: "memoryFailed", icon: XCircle },
+    uncertain: {
+      variant: "warning",
+      labelKey: "unconfirmed",
+      icon: CircleHelp,
+    },
+    budget_wait: { variant: "warning", labelKey: "budgetWait", icon: Clock3 },
+    clarification: {
+      variant: "warning",
+      labelKey: "clarification",
+      icon: CircleHelp,
+    },
+  },
   execution: {
+    partial: { variant: "warning", labelKey: "partial", icon: AlertTriangle },
+    partial_failed: {
+      variant: "warning",
+      labelKey: "partial",
+      icon: AlertTriangle,
+    },
     submitted: { variant: "default", labelKey: "queued", icon: Clock3 },
     pending: { variant: "default", labelKey: "queued", icon: Clock3 },
     working: { variant: "info", labelKey: "running", icon: LoaderCircle },
@@ -167,7 +234,12 @@ export const statusMap: Record<string, Record<string, Definition>> = {
       labelKey: "needsReply",
       icon: CircleHelp,
     },
-    completed: { variant: "default", labelKey: "ended", icon: Circle },
+    completed: { variant: "default", labelKey: "executionEnded", icon: Circle },
+    completed_unverified: {
+      variant: "default",
+      labelKey: "ended",
+      icon: Circle,
+    },
     failed: { variant: "danger", labelKey: "failed", icon: XCircle },
     cancelled: { variant: "default", labelKey: "cancelled", icon: Ban },
     uncertain: {
@@ -202,6 +274,22 @@ export const statusMap: Record<string, Record<string, Definition>> = {
   },
 };
 export const statusCopy = {
+  enabled: ["已启用", "Enabled"],
+  disabled: ["已停用", "Disabled"],
+  conversationRecorded: ["仅有对话记录", "Conversation recorded"],
+  memoryUpdated: ["记忆已更新", "Memory updated"],
+  memoryInvalidated: ["更新已停止", "Update stopped"],
+  memoryWorking: ["整理中", "Organizing memory"],
+  memoryFailed: ["整理失败", "Memory update failed"],
+  budgetWait: ["等待额度", "Waiting for budget"],
+  clarification: ["需要确认内容", "Clarification needed"],
+  historyNotStarted: ["最近上下文 · 尚未整理", "Recent context · not started"],
+  historyProcessing: ["正在整理最近上下文", "Organizing recent context"],
+  historyQueued: ["最近上下文 · 等待整理", "Recent context · queued"],
+  historyStopped: ["历史整理已停止", "History import stopped"],
+  historyInterrupted: ["历史整理已中断", "History import interrupted"],
+  historyCompleted: ["最近上下文已核对", "Recent context checked"],
+  executionEnded: ["执行结束", "Execution ended"],
   "continuous.ready": ["待执行", "Ready"],
   "continuous.waiting_budget": [
     "今日后台额度已用尽",

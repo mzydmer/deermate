@@ -1,8 +1,9 @@
 "use client";
-import { cn } from "@/lib/utils";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
 import * as React from "react";
+
+import { cn } from "./utils";
 
 type Size = "sm" | "md" | "lg";
 const heights = {
@@ -66,8 +67,20 @@ export const Textarea = React.forwardRef<
     if (!el) return;
     el.style.resize = "none";
     el.style.height = "auto";
-    const line = Number.isFinite(Number.parseFloat(getComputedStyle(el).lineHeight)) ? Number.parseFloat(getComputedStyle(el).lineHeight) : 20;
-    el.style.height = `${Math.min(Math.max(el.scrollHeight, rows * line + 24), maxRows * line + 24)}px`;
+    const style = getComputedStyle(el);
+    const line =
+      Number.parseFloat(style.lineHeight) ||
+      Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--ds-typography-body-sm-lineHeight",
+        ),
+      );
+    const padding =
+      Number.parseFloat(style.paddingTop) +
+      Number.parseFloat(style.paddingBottom) +
+      Number.parseFloat(style.borderTopWidth) +
+      Number.parseFloat(style.borderBottomWidth);
+    el.style.height = `${Math.min(Math.max(el.scrollHeight, rows * line + padding), Math.max(rows, maxRows) * line + padding)}px`;
   }, [rows, maxRows]);
   React.useLayoutEffect(fit, [fit, props.value]);
   return (
@@ -109,7 +122,24 @@ export function Field({
   children: React.ReactNode;
 }) {
   const generated = React.useId();
-  const id = htmlFor ?? generated;
+  const first = React.Children.toArray(children).find(
+    (child) =>
+      React.isValidElement<{
+        id?: string;
+        value?: unknown;
+        checked?: boolean;
+        defaultValue?: unknown;
+      }>(child) &&
+      ([Input, Textarea, Checkbox, Select].includes(
+        child.type as typeof Input,
+      ) ||
+        "value" in child.props ||
+        "checked" in child.props),
+  );
+  const childId = React.isValidElement<{ id?: string }>(first)
+    ? first.props.id
+    : undefined;
+  const id = htmlFor ?? childId ?? generated;
   let assigned = false;
   const content = React.Children.map(children, (child) => {
     if (
@@ -117,9 +147,11 @@ export function Field({
         id?: string;
         "aria-describedby"?: string;
         invalid?: boolean;
+        "aria-invalid"?: React.AriaAttributes["aria-invalid"];
       }>(child) &&
       !assigned &&
-      child.type !== "span"
+      React.isValidElement(first) &&
+      child.type === first.type
     ) {
       assigned = true;
       return React.cloneElement(child, {
@@ -127,11 +159,12 @@ export function Field({
         "aria-describedby":
           [
             child.props["aria-describedby"],
-            error ? `${id}-error` : hint ? `${id}-hint` : null,
+            error ? `${id}-error` : null,
+            hint ? `${id}-hint` : null,
           ]
             .filter(Boolean)
             .join(" ") || undefined,
-        invalid: error ? true : child.props.invalid,
+        "aria-invalid": error ? true : child.props["aria-invalid"],
       });
     }
     return child;
@@ -246,17 +279,20 @@ export function Select({
   ...rest
 }: SelectProps) {
   const choices = options(children);
-  const toRadix = (v: string) => (v === "" ? "__empty__" : v);
+  let emptyValue = "__empty__";
+  while (choices.some((option) => option.value === emptyValue))
+    emptyValue += "_";
+  const toRadix = (v: string) => (v === "" ? emptyValue : v);
   return (
     <SelectPrimitive.Root
-      value={value === undefined ? undefined : toRadix(String(value))}
+      value={value === undefined ? undefined : String(value)}
       defaultValue={
-        defaultValue === undefined ? undefined : toRadix(String(defaultValue))
+        defaultValue === undefined ? undefined : String(defaultValue)
       }
       onValueChange={(v) =>
         onChange?.({
-          target: { value: v === "__empty__" ? "" : v },
-          currentTarget: { value: v === "__empty__" ? "" : v },
+          target: { value: v === emptyValue ? "" : v },
+          currentTarget: { value: v === emptyValue ? "" : v },
         } as React.ChangeEvent<HTMLSelectElement>)
       }
       name={name}
@@ -277,7 +313,9 @@ export function Select({
           className,
         )}
       >
-        <SelectPrimitive.Value />
+        <SelectPrimitive.Value
+          placeholder={choices.find((option) => option.value === "")?.text}
+        />
         <SelectPrimitive.Icon>
           <ChevronDown className="size-4" />
         </SelectPrimitive.Icon>
@@ -285,12 +323,13 @@ export function Select({
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
           position="popper"
-          className="dm-ui-menu z-50 max-h-80 min-w-40 rounded-ds-md border border-hairline bg-canvas p-1 text-body-sm text-ink shadow-sm"
+          className="dm-ui-menu z-50 max-h-80 min-w-40 rounded-ds-md border border-hairline bg-canvas p-1 text-body-sm text-ink shadow-ds-level-3"
         >
           <SelectPrimitive.Viewport>
             {choices.map((o) => (
               <SelectPrimitive.Item
                 key={o.value}
+                data-value={o.value}
                 value={toRadix(o.value)}
                 disabled={o.disabled}
                 className="dm-ui-menu-item flex cursor-default items-center justify-between gap-3 rounded-ds-md px-3 py-2 outline-none"

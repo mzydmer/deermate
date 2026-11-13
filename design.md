@@ -182,6 +182,7 @@
   "empty-icon": "40px"
   "work-row-max": "64px"
   "auth-card": "420px"
+  "output": "320px"
 "borders":
   "thin": "1px"
   "focus": "2px"
@@ -279,6 +280,45 @@
         "backgroundColor": "{colors.primary-hover}"
       "active":
         "backgroundColor": "{colors.primary-active}"
+  "app-button-danger":
+    "scope": "app"
+    "description": "危险操作的明确确认；不代表普通主操作"
+    "backgroundColor": "{colors.error-deep}"
+    "textColor": "{colors.on-primary}"
+    "borderColor": "{colors.error-deep}"
+    "borderWidth": "{borders.thin}"
+    "typography": "{typography.button-md}"
+    "rounded": "{rounded.md}"
+    "height": "{sizes.control-md}"
+    "padding":
+      "block": "{spacing.none}"
+      "inline": "{spacing.md}"
+    "gap": "{spacing.xs}"
+    "shadow": "{shadows.level-0}"
+    "states":
+      "hover":
+        "backgroundColor": "{colors.error}"
+      "active":
+        "backgroundColor": "{colors.error-deep}"
+  "app-composer-send":
+    "scope": "app"
+    "description": "Composer 唯一发送操作；圆形用于紧凑消息工具栏"
+    "backgroundColor": "{colors.primary}"
+    "textColor": "{colors.on-primary}"
+    "borderColor": "{colors.primary}"
+    "borderWidth": "{borders.thin}"
+    "typography": "{typography.button-md}"
+    "rounded": "{rounded.full}"
+    "height": "{sizes.control-md}"
+    "padding": "{spacing.none}"
+    "gap": "{spacing.xs}"
+    "shadow": "{shadows.level-0}"
+    "states":
+      "hover":
+        "backgroundColor": "{colors.primary-hover}"
+      "active":
+        "backgroundColor": "{colors.primary-active}"
+    "width": "{sizes.control-md}"
   "app-button-secondary":
     "scope": "app"
     "description": "低于主操作的替代入口"
@@ -666,6 +706,9 @@
   - "frontend/overlay/src/styles/design-tokens.css"
   - "backend/internal/controlplane/design-tokens.css"
   - "frontend/overlay/src/styles/design-components.css"
+  - "backend/internal/controlplane/design-components.css"
+  - "frontend/overlay/src/styles/design-theme.css"
+  - "frontend/overlay/src/components/deermate/ui/design-utilities.generated.ts"
   "legacyAliases":
     "background": "canvas"
     "surface": "canvas-soft"
@@ -856,3 +899,5 @@ hover使用配方状态，active按下反馈与持久selected区分。focus-visi
 自动检查不能判断完整视觉效果，PR仍需附受影响页面及实测范围。设计变更修改本文件并说明理由，不能通过更新违例基线绕过；不建立无限增长的旧违例白名单。
 
 组件层补充（ADR 0018）：primitives 包装既有原语，features/routes 只组合组件和结构布局；语义 utility 由 YAML 生成。样式预算为 implementation.cssBudgetLines，迁移完成后删除 deermate.css；交互样式只属于 ui/patterns，文档 prose 独立。状态经 status.ts，文案来自 DeerMate 字典。
+
+圆形发送操作仅用于 app-composer-send；其余普通产品按钮仍为 rounded.md。ui/utils 的字号分类注册表同样由 YAML 生成，避免样式合并器把字号误当作文字颜色。

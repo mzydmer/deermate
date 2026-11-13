@@ -1,3 +1,12 @@
+import { afterEach, expect, rs, test } from "@rstest/core";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+
 import {
   Button,
   Card,
@@ -17,14 +26,6 @@ import {
   StatusBadge,
   Textarea,
 } from "@/components/deermate/ui";
-import { afterEach, expect, rs, test } from "@rstest/core";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
 rs.mock("@/core/i18n/hooks", () => ({ useI18n: () => ({ locale: "en-US" }) }));
 afterEach(cleanup);
 test("button tone replaces variant text, sizes are explicit, loading blocks activation", () => {
@@ -48,7 +49,7 @@ test("asChild preserves link semantics and prevents disabled navigation", () => 
   const click = rs.fn();
   render(
     <Button asChild disabled onClick={click}>
-      <a href="/docs">Docs</a>
+      <a href="https://example.test/docs">Docs</a>
     </Button>,
   );
   const link = screen.getByRole("link");
@@ -69,9 +70,10 @@ test("field preserves caller control and links errors", () => {
   const input = screen.getByLabelText("Project");
   expect((input as HTMLInputElement).value).toBe("hello");
   expect(input.getAttribute("aria-invalid")).toBe("true");
-  expect(document.getElementById(input.getAttribute("aria-describedby")!)).toBe(
-    screen.getByRole("alert"),
+  expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(
+    screen.getByRole("alert").id,
   );
+  expect(input.getAttribute("aria-describedby")?.split(" ")).toHaveLength(2);
 });
 test("textarea keeps controlled changes and removes native resize affordance", () => {
   const change = rs.fn();
@@ -83,12 +85,12 @@ test("textarea keeps controlled changes and removes native resize affordance", (
 });
 test("checkbox retains native keyboard and form semantics", () => {
   render(<Checkbox aria-label="Remember" defaultChecked />);
-  expect((screen.getByRole("checkbox") as HTMLInputElement).checked).toBe(true);
+  expect((screen.getByRole("checkbox")).checked).toBe(true);
 });
 test("status map distinguishes unverified execution, failed validation and unknown", () => {
   render(
     <>
-      <StatusBadge status="completed" />
+      <StatusBadge status="completed_unverified" />
       <StatusBadge domain="validation" status="failed" />
       <StatusBadge status="future_state" />
     </>,

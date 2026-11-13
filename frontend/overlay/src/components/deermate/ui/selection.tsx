@@ -1,8 +1,20 @@
 "use client";
-import { cn } from "@/lib/utils";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { ChevronsUpDown } from "lucide-react";
 import * as React from "react";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+
+import { Button } from "./button";
+import { Popover, PopoverContent, PopoverTrigger } from "./overlays";
+import { cn } from "./utils";
 export function Switch(
   props: React.ComponentProps<typeof SwitchPrimitive.Root>,
 ) {
@@ -13,11 +25,13 @@ export function Switch(
       data-size="md"
       data-variant="default"
       className={cn(
-        "dm-ui-switch inline-flex h-6 w-10 items-center rounded-ds-full border border-control-border bg-canvas-soft-2 p-1",
+        "dm-ui-switch inline-flex size-ds-touch items-center justify-center",
         props.className,
       )}
     >
-      <SwitchPrimitive.Thumb className="dm-ui-switch-thumb size-4 rounded-ds-full bg-ink" />
+      <span className="dm-ui-switch-track flex h-6 w-10 items-center rounded-ds-full border border-control-border bg-canvas-soft-2 p-1">
+        <SwitchPrimitive.Thumb className="dm-ui-switch-thumb size-4 rounded-ds-full bg-ink" />
+      </span>
     </SwitchPrimitive.Root>
   );
 }
@@ -36,6 +50,7 @@ export function SegmentedControl({
 }) {
   return (
     <TabsPrimitive.Root
+      className="min-w-0 max-w-full"
       value={value}
       defaultValue={defaultValue ?? items[0]?.value}
       onValueChange={onChange}
@@ -62,10 +77,68 @@ export function SegmentedControl({
   );
 }
 export {
-  Command as Combobox,
+  Command,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export function Combobox({
+  items,
+  value,
+  defaultValue,
+  onChange,
+  label,
+  emptyLabel = "No matches",
+  disabled = false,
+}: {
+  items: { value: string; label: string }[];
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  label: string;
+  emptyLabel?: string;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [local, setLocal] = React.useState(defaultValue ?? "");
+  const selected = value ?? local;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          role="combobox"
+          aria-label={label}
+          aria-expanded={open}
+          disabled={disabled}
+        >
+          {items.find((item) => item.value === selected)?.label ?? label}
+          <ChevronsUpDown className="size-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Command>
+          <CommandInput placeholder={label} aria-label={label} />
+          <CommandList>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
+            {items.map((item) => (
+              <CommandItem
+                key={item.value}
+                value={item.label}
+                onSelect={() => {
+                  setLocal(item.value);
+                  onChange?.(item.value);
+                  setOpen(false);
+                }}
+              >
+                {item.label}
+              </CommandItem>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}

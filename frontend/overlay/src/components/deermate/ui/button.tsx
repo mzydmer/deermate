@@ -1,14 +1,17 @@
 "use client";
+import { Slot } from "@radix-ui/react-slot";
+import { cva } from "class-variance-authority";
+import { LoaderCircle } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
-import { LoaderCircle } from "lucide-react";
-import * as React from "react";
+
+import { cn } from "./utils";
 
 type Variant = "primary" | "secondary" | "ghost" | "link" | "danger";
 type Tone = "neutral" | "muted" | "link" | "danger";
@@ -20,7 +23,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
 };
 const shape = cva(
-  "dm-ui-button inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-ds-md border text-button-md font-medium",
+  "dm-ui-button relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-ds-md border text-button-md font-medium",
   {
     variants: {
       variant: {
@@ -57,7 +60,30 @@ export function Button({
   type = "button",
   ...props
 }: ButtonProps) {
+  const stableLabel = React.useRef(children);
+  React.useLayoutEffect(() => {
+    if (!loading) stableLabel.current = children;
+  }, [children, loading]);
   const Comp = asChild ? Slot : "button";
+  const unavailable = disabled === true || loading;
+  const slotted =
+    asChild &&
+    unavailable &&
+    React.isValidElement<React.HTMLAttributes<HTMLElement>>(children)
+      ? React.cloneElement(children, {
+          tabIndex: -1,
+          onClick: (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          },
+          onKeyDown: (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          },
+        })
+      : children;
   const color = tone
     ? textTone[tone]
     : variant === "primary" || variant === "danger"
@@ -73,7 +99,7 @@ export function Button({
       data-variant={variant}
       data-size={size}
       data-tone={tone ?? "default"}
-      aria-busy={loading || undefined}
+      aria-busy={loading ? true : props["aria-busy"]}
       aria-disabled={asChild && (disabled || loading) ? true : undefined}
       disabled={!asChild && (disabled || loading) ? true : undefined}
       className={cn(shape({ variant, size }), color, className)}
@@ -87,19 +113,23 @@ export function Button({
     >
       {loading && !asChild ? (
         <>
-          <LoaderCircle className="dm-ui-spinner size-4" aria-hidden="true" />
-          {children}
+          <LoaderCircle
+            className="dm-ui-spinner absolute left-1 size-3"
+            aria-hidden="true"
+          />
+          {stableLabel.current}
         </>
       ) : (
-        children
+        slotted
       )}
     </Comp>
   );
 }
 export type IconButtonProps = Omit<
   ButtonProps,
-  "children" | "aria-label" | "size" | "variant"
+  "children" | "aria-label" | "size" | "variant" | "asChild"
 > & {
+  href?: string;
   label: string;
   icon: React.ReactNode;
   size?: "sm" | "md";
@@ -107,10 +137,13 @@ export type IconButtonProps = Omit<
 };
 export function IconButton({
   label,
+  href,
   icon,
-  size = "md",
+  size = "sm",
   variant = "ghost",
   className,
+  loading,
+  disabled,
   ...props
 }: IconButtonProps) {
   return (
@@ -118,12 +151,56 @@ export function IconButton({
       <TooltipTrigger asChild>
         <Button
           {...props}
+          asChild={!!href}
+          disabled={disabled === true || loading}
+          aria-busy={loading ? true : props["aria-busy"]}
           aria-label={label}
           variant={variant === "default" ? "secondary" : "ghost"}
           size={size}
           className={cn("dm-ui-icon-button p-0", className)}
         >
-          {icon}
+          {href ? (
+            <Link href={href} aria-label={label}>
+              {icon}
+            </Link>
+          ) : loading ? (
+            <LoaderCircle className="dm-ui-spinner size-4" aria-hidden="true" />
+          ) : (
+            icon
+          )}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+export function SendButton({
+  label,
+  icon,
+  loading,
+  disabled,
+  size = "md",
+  className,
+  ...props
+}: Omit<IconButtonProps, "variant" | "href">) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          {...props}
+          size={size}
+          variant="primary"
+          aria-label={label}
+          aria-busy={loading ? true : undefined}
+          disabled={disabled === true || loading}
+          className={cn("dm-ui-icon-button rounded-ds-full p-0", className)}
+        >
+          {loading ? (
+            <LoaderCircle className="dm-ui-spinner size-4" aria-hidden="true" />
+          ) : (
+            icon
+          )}
         </Button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>

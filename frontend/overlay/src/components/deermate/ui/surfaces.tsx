@@ -1,14 +1,18 @@
 "use client";
+import { Slot } from "@radix-ui/react-slot";
+import { AlertTriangle, Check, Copy, Inbox, LoaderCircle } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import { AlertTriangle, Check, Copy, Inbox, LoaderCircle } from "lucide-react";
-import * as React from "react";
-import { toast } from "sonner";
+
 import { Button, IconButton } from "./button";
+import { cn } from "./utils";
+
 export const Toast = toast;
 export function Text({
   as: Tag = "span",
@@ -75,15 +79,18 @@ export function Heading({
 }
 export function Card({
   as: Tag = "div",
+  asChild = false,
   variant = "default",
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement> & {
   as?: "div" | "section" | "li" | "aside";
+  asChild?: boolean;
   variant?: "default" | "compact";
 }) {
+  const Comp = asChild ? Slot : Tag;
   return (
-    <Tag
+    <Comp
       {...props}
       data-slot="dm-card"
       data-variant={variant}
@@ -187,13 +194,15 @@ export function ErrorBanner({
   children,
   onRetry,
   retryLabel = "Retry",
-}: {
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
   onRetry?: () => void;
   retryLabel?: string;
 }) {
   return (
     <div
+      {...props}
       role="alert"
       data-slot="dm-error-banner"
       className="flex flex-wrap items-center gap-3 rounded-ds-md border border-error-soft bg-error-soft p-3 text-body-sm text-error-deep"
@@ -305,14 +314,28 @@ export function RelativeTime({
   timezone?: string;
   locale?: string;
 }) {
-  const date = new Date(typeof value === "number" ? value * 1000 : value);
+  const [now, setNow] = React.useState<number>();
+  React.useEffect(() => {
+    setNow(Date.now());
+    const timer = window.setInterval(() => setNow(Date.now()), 60000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const normalized =
+    typeof value === "string" ? value.replace(" ", "T") : value;
+  const date = new Date(
+    typeof normalized === "number"
+      ? normalized * 1000
+      : /[zZ]$|[+-]\d\d:\d\d$/.test(normalized)
+        ? normalized
+        : normalized + "Z",
+  );
   if (Number.isNaN(date.getTime())) return <Text size="caption">—</Text>;
   const full = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: timezone,
   }).format(date);
-  const seconds = Math.round((date.getTime() - Date.now()) / 1000);
+  const seconds = Math.round((date.getTime() - (now ?? date.getTime())) / 1000);
   const unit =
     Math.abs(seconds) < 60
       ? "second"
@@ -329,11 +352,12 @@ export function RelativeTime({
     <Tooltip>
       <TooltipTrigger asChild>
         <time
+          data-testid="relative-time"
           tabIndex={0}
           dateTime={date.toISOString()}
           className="text-caption tabular-nums text-body"
         >
-          {relative}
+          {now === undefined ? "—" : relative}
         </time>
       </TooltipTrigger>
       <TooltipContent>{full}</TooltipContent>
@@ -414,3 +438,17 @@ export function DataTable<T>({
     </div>
   );
 }
+
+export const ComposerSurface = React.forwardRef<
+  HTMLFormElement,
+  React.FormHTMLAttributes<HTMLFormElement>
+>(function ComposerSurface({ className, ...props }, ref) {
+  return (
+    <form
+      {...props}
+      ref={ref}
+      data-slot="dm-composer"
+      className={cn("dm-pattern-composer", className)}
+    />
+  );
+});

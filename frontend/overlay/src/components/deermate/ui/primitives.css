@@ -46,7 +46,7 @@
 .dm-ui-disclosure-trigger[data-state="open"] > svg {
   transform: rotate(90deg);
 }
-.dm-ui-switch[data-state="checked"] {
+.dm-ui-switch[data-state="checked"] .dm-ui-switch-track {
   background: var(--ds-colors-primary);
 }
 .dm-ui-switch[data-state="checked"] .dm-ui-switch-thumb {
@@ -67,8 +67,13 @@
 }
 @media (width < 600px) {
   .dm-ui-button,
-  .dm-ui-input {
+  .dm-ui-input,
+  .dm-ui-disclosure-trigger,
+  .dm-ui-segment {
     min-height: var(--ds-sizes-touch);
+  }
+  .dm-ui-input {
+    font-size: var(--ds-typography-body-md-fontSize);
   }
   .dm-ui-icon-button {
     min-width: var(--ds-sizes-touch);
@@ -91,8 +96,31 @@
 }
 .t-tabs-pill {
   width: 0;
-  transition: transform var(--tabs-dur) var(--tabs-ease), width var(--tabs-dur) var(--tabs-ease);
+  transition:
+    transform var(--tabs-dur) var(--tabs-ease),
+    width var(--tabs-dur) var(--tabs-ease);
 }
 @media (prefers-reduced-motion: reduce) {
-  .t-tab, .t-tabs-pill { transition: none; }
+  .t-tab,
+  .t-tabs-pill {
+    transition: none;
+  }
+}
+
+.dm-ui-button[data-variant="primary"]:active {
+  background: var(--ds-colors-primary-active);
+}
+.dm-ui-button:is([data-variant="secondary"], [data-variant="ghost"]):active {
+  background: var(--ds-colors-hairline);
+}
+.dm-ui-button[data-variant="danger"]:hover {
+  background: var(--ds-colors-error);
+}
+.dm-ui-button[data-variant="danger"]:active {
+  background: var(--ds-colors-error-deep);
+}
+
+:is(.dm-ui-input, .dm-ui-switch, .dm-ui-checkbox):disabled {
+  opacity: var(--ds-opacity-disabled);
+  cursor: default;
 }

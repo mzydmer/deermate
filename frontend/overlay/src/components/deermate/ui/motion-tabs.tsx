@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@/components/deermate/ui";
 import { useEffect, useRef } from "react";
+
+import { Button } from "@/components/deermate/ui";
 
 export function MotionTabs({
   items,
@@ -38,11 +39,21 @@ export function MotionTabs({
     return () => observer.disconnect();
   }, [value]);
   return (
-    <div className="t-tabs relative inline-flex items-center gap-1 rounded-ds-md bg-canvas-soft-2 p-1" role="tablist" aria-label="Task status" ref={bar}>
-      <span className="t-tabs-pill pointer-events-none absolute left-0 top-1 z-0 h-ds-control-sm rounded-ds-md bg-canvas" aria-hidden="true" ref={pill} />
+    <div
+      className="t-tabs relative inline-flex items-center gap-1 rounded-ds-md bg-canvas-soft-2 p-1"
+      role="tablist"
+      aria-label="Task status"
+      ref={bar}
+    >
+      <span
+        className="t-tabs-pill pointer-events-none absolute left-0 top-1 z-0 h-ds-control-sm rounded-ds-md bg-canvas"
+        aria-hidden="true"
+        ref={pill}
+      />
       {items.map((item, index) => (
         <Button
-          variant="ghost" size="sm"
+          variant="ghost"
+          size="sm"
           type="button"
           key={item.id}
           className="t-tab relative z-10 border-0 bg-transparent text-body"

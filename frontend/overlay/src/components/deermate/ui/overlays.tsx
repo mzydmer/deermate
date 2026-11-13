@@ -1,4 +1,7 @@
 "use client";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+import * as React from "react";
+
 import {
   Dialog,
   DialogClose,
@@ -9,9 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-import * as React from "react";
-import { Button } from "./button";
+import { SheetContent as BaseSheetContent } from "@/components/ui/sheet";
 export {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +24,6 @@ export {
 export {
   Sheet,
   SheetClose,
-  SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
@@ -44,6 +44,9 @@ export {
   DialogTitle,
   DialogTrigger,
 };
+import { Button } from "./button";
+import { cn } from "./utils";
+
 export const Popover = PopoverPrimitive.Root;
 export const PopoverTrigger = PopoverPrimitive.Trigger;
 export function PopoverContent(
@@ -54,7 +57,7 @@ export function PopoverContent(
       <PopoverPrimitive.Content
         {...props}
         data-slot="dm-popover"
-        className="z-50 rounded-ds-md border border-hairline bg-canvas p-4 text-body-sm text-ink"
+        className="z-50 rounded-ds-md border border-hairline bg-canvas p-4 text-body-sm text-ink shadow-ds-level-3"
       />
     </PopoverPrimitive.Portal>
   );
@@ -69,6 +72,7 @@ export function ConfirmDialog({
   cancelLabel,
   onConfirm,
   busy = false,
+  restoreFocus,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -78,10 +82,18 @@ export function ConfirmDialog({
   cancelLabel: string;
   onConfirm: () => void;
   busy?: boolean;
+  restoreFocus?: () => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        onCloseAutoFocus={(event) => {
+          if (restoreFocus) {
+            event.preventDefault();
+            restoreFocus();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -100,5 +112,19 @@ export function ConfirmDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function SheetContent({
+  hideClose = false,
+  className,
+  ...props
+}: React.ComponentProps<typeof BaseSheetContent> & { hideClose?: boolean }) {
+  return (
+    <BaseSheetContent
+      {...props}
+      data-hide-close={hideClose || undefined}
+      className={cn(hideClose && "[&>button:last-child]:hidden", className)}
+    />
   );
 }

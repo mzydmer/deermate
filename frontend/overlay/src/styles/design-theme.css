@@ -1,5 +1,12 @@
 /* Generated semantic utilities from design.md. */
 @theme inline {
+  --font-mono: var(--ds-fontFamilies-mono);
+  --shadow-ds-level-0: var(--ds-shadows-level-0);
+  --shadow-ds-level-1: var(--ds-shadows-level-1);
+  --shadow-ds-level-2: var(--ds-shadows-level-2);
+  --shadow-ds-level-3: var(--ds-shadows-level-3);
+  --shadow-ds-level-4: var(--ds-shadows-level-4);
+  --shadow-ds-level-5: var(--ds-shadows-level-5);
   --color-primary: var(--ds-colors-primary);
   --color-on-primary: var(--ds-colors-on-primary);
   --color-ink: var(--ds-colors-ink);
@@ -117,4 +124,5 @@
   --spacing-ds-empty-icon: var(--ds-sizes-empty-icon);
   --spacing-ds-work-row-max: var(--ds-sizes-work-row-max);
   --spacing-ds-auth-card: var(--ds-sizes-auth-card);
+  --spacing-ds-output: var(--ds-sizes-output);
 }

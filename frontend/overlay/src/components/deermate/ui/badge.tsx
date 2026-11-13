@@ -1,8 +1,11 @@
 "use client";
-import { useI18n } from "@/core/i18n/hooks";
-import { cn } from "@/lib/utils";
 import { AlertTriangle, type LucideIcon } from "lucide-react";
+
+import { useI18n } from "@/core/i18n/hooks";
+
 import { statusCopy, statusMap, type Variant } from "./status";
+import { cn } from "./utils";
+
 const tones: Record<Variant, string> = {
   default: "bg-canvas-soft-2 text-body",
   info: "bg-link-bg-soft text-link-deep",

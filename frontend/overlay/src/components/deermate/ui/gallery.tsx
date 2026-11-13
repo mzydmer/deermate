@@ -1,11 +1,14 @@
 "use client";
 import { Inbox, Plus } from "lucide-react";
+
 import {
   Avatar,
   Badge,
   Button,
   Card,
   Checkbox,
+  Combobox,
+  CopyButton,
   DataTable,
   Dialog,
   DialogContent,
@@ -19,23 +22,34 @@ import {
   DropdownMenuTrigger,
   Empty,
   ErrorBanner,
+  ErrorState,
   Field,
   Heading,
   IconButton,
   Input,
+  InputGroup,
   Kbd,
   KeyValue,
   Panel,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   RelativeTime,
   SectionHeader,
   SegmentedControl,
   Select,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
   Skeleton,
   Spinner,
   StatusBadge,
   Switch,
   Text,
   Textarea,
+  Toast,
 } from "./index";
 export function DesignGallery() {
   return (
@@ -56,6 +70,16 @@ export function DesignGallery() {
           )}
           <Button loading>Saving</Button>
           <Button disabled>Disabled</Button>
+          {(["sm", "md", "lg"] as const).map((size) => (
+            <Button size={size} key={size}>
+              {size}
+            </Button>
+          ))}
+          {(["neutral", "muted", "link", "danger"] as const).map((tone) => (
+            <Button tone={tone} key={tone}>
+              {tone}
+            </Button>
+          ))}
           <IconButton label="Add" icon={<Plus className="size-4" />} />
         </div>
       </Card>
@@ -75,6 +99,25 @@ export function DesignGallery() {
             <option value="two">Two</option>
           </Select>
         </Field>
+        {(["sm", "md", "lg"] as const).map((size) => (
+          <Field label={`Input ${size}`} key={size}>
+            <Input size={size} />
+          </Field>
+        ))}
+        <InputGroup
+          prefix={<Inbox className="size-4" />}
+          suffix={<Kbd>⌘ K</Kbd>}
+        >
+          <Input aria-label="Search group" />
+        </InputGroup>
+        <Combobox
+          label="Search choices"
+          defaultValue="one"
+          items={[
+            { value: "one", label: "One" },
+            { value: "two", label: "Two" },
+          ]}
+        />
         <Checkbox aria-label="Select" />
         <Switch aria-label="Enabled" />
       </Card>
@@ -96,7 +139,43 @@ export function DesignGallery() {
           <StatusBadge domain="validation" status="failed" />
           <StatusBadge domain="connection" status="expired" />
         </div>
-        <Badge variant="violet">Preview</Badge>
+        {(
+          ["default", "info", "success", "warning", "danger", "violet"] as const
+        ).map((variant) => (
+          <Badge key={variant} variant={variant}>
+            {variant}
+          </Badge>
+        ))}
+        <StatusBadge domain="work" status="partial" />
+        <StatusBadge domain="connection" status="not_checked" />
+        <StatusBadge status="future_status" />
+        <ErrorState
+          title="Could not load"
+          detail="Try again when the source is available."
+          action={<Button>Retry</Button>}
+        />
+        <Button onClick={() => Toast("Saved preview")}>Preview toast</Button>
+        <CopyButton value="synthetic-identifier" />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button>Open popover</Button>
+          </PopoverTrigger>
+          <PopoverContent>Supplementary details</PopoverContent>
+        </Popover>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button>Open sheet</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetTitle>Details</SheetTitle>
+            <SheetDescription>Synthetic long-form details</SheetDescription>
+            <KeyValue
+              label="Path"
+              mono
+              value={"/workspace/" + "long-segment/".repeat(30)}
+            />
+          </SheetContent>
+        </Sheet>
         <Skeleton />
         <Spinner />
         <Empty title="No records" description="Choose a source to begin." />
