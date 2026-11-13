@@ -1,22 +1,24 @@
 "use client";
 
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+
+import { dmCopy } from "@/components/deermate/i18n/copy";
 import {
-  ArrowUpRight,
-  CheckCircle2,
-  Circle,
-  FileText,
-  LoaderCircle,
-} from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Button,
+  Disclosure,
+  DisclosureTrigger,
+  ErrorBanner,
+  KeyValue,
+  ScrollArea,
+  Skeleton,
+  StatusBadge,
+  Text,
+} from "@/components/deermate/ui";
 import { useBackgroundTask } from "@/core/background-tasks";
 import { useI18n } from "@/core/i18n/hooks";
+
+import { Inspector } from "./patterns/inspector";
 
 export type DeskTask = {
   threadId: string;
@@ -57,154 +59,142 @@ export function TaskDetail({
   const validation = record(result?.validation);
   const verified =
     result?.validation_status === "passed" && validation?.exit_code === 0;
+  const validationFailed =
+    result?.validation_status === "failed" ||
+    (typeof validation?.exit_code === "number" && validation.exit_code !== 0);
   const summary = typeof result?.summary === "string" ? result.summary : null;
   const testOutput = [validation?.stdout, validation?.stderr]
     .filter((value) => typeof value === "string" && value)
     .join("\n");
   const status = detail.data?.status ?? "";
-  const statusLabels: Record<string, string> = {
-    completed: "已完成",
-    working: "执行中",
-    failed: "执行失败",
-    submitted: "排队中",
-    input_required: "等待答复",
-    cancelled: "已取消",
-  };
   return (
-    <Sheet
+    <Inspector
       open={!!task}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
+      onClose={onClose}
+      restoreFocus={restoreFocus}
+      title={
+        task?.task_name ?? dmCopy(zh, "task-detail.work.you.can.verify..35fc98")
+      }
+      description={dmCopy(
+        zh,
+        "task-detail.from.the.gateway.s.durable.task.record..c9515b",
+      )}
+      zh={zh}
     >
-      <SheetContent
-        className="dm-workspace dm-details w-[min(96vw,540px)] sm:max-w-[540px]"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-          restoreFocus();
-        }}
-      >
-        <SheetHeader>
-          <p className="dm-eyebrow">TASK EVIDENCE</p>
-          <SheetTitle className="dm-detail-title">
-            {zh ? "每一步，都有据可查。" : "Work you can verify."}
-          </SheetTitle>
-          <SheetDescription>
-            {zh
-              ? "来自 Gateway 持久任务记录。"
-              : "From the Gateway’s durable task record."}
-          </SheetDescription>
-        </SheetHeader>
-        {detail.isLoading ? (
-          <p role="status">
-            <LoaderCircle className="dm-spin" size={16} />
-            {zh ? "正在读取证据…" : "Loading evidence…"}
-          </p>
-        ) : detail.isError ? (
-          <div role="alert">
-            <p>{zh ? "无法读取任务结果" : "Could not load the result"}</p>
-            <button
-              className="dm-text-button"
-              onClick={() => void detail.refetch()}
-            >
-              {zh ? "重试" : "Retry"}
-            </button>
-          </div>
-        ) : (
-          detail.data && (
-            <div className="dm-detail-body">
-              <div className={`dm-detail-state dm-state-${status}`}>
-                {detail.data.status === "completed" ? (
-                  <CheckCircle2 size={19} />
-                ) : (
-                  <Circle size={19} />
-                )}
-                <strong>
-                  {zh ? (statusLabels[status] ?? status) : status}
-                </strong>
-              </div>
-              {detail.data.cancel_requested && (
-                <p>
-                  {zh
-                    ? "存在取消请求。是否已停止，请以当前执行状态为准。"
-                    : "Cancellation was requested. The execution state determines whether it has stopped."}
-                </p>
-              )}
+      {detail.isLoading ? (
+        <Skeleton label={dmCopy(zh, "task-detail.loading.evidence..eab808")} />
+      ) : detail.isError ? (
+        <ErrorBanner onRetry={() => void detail.refetch()}>
+          {dmCopy(zh, "task-detail.could.not.load.the.result.af153f")}
+        </ErrorBanner>
+      ) : (
+        detail.data && (
+          <div data-testid="task-detail" className="grid gap-4">
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge status={status} />
               {detail.data.tracking_degraded && (
-                <p role="status">
-                  {zh
-                    ? "跟踪连接异常，状态可能已过时。"
-                    : "Tracking degraded; this state may be stale."}
-                </p>
+                <StatusBadge domain="connection" status="offline" />
               )}
-              {summary && <p className="dm-result-summary">{summary}</p>}
-              {verified && (
-                <p className="dm-validation-pass">
-                  <CheckCircle2 size={16} />
-                  {zh ? "独立验证通过" : "Independent validation passed"}
-                  <span>exit 0</span>
-                </p>
-              )}
-              {typeof validation?.exit_code === "number" && !verified && (
-                <p role="status">
-                  {zh ? "验证结果" : "Validation"}: exit {validation.exit_code}
-                </p>
-              )}
-              {testOutput && (
-                <>
-                  <h3>
-                    <FileText size={16} />
-                    {zh ? "测试输出" : "Test output"}
-                  </h3>
-                  <pre tabIndex={0}>
-                    {testOutput.slice(0, 12000)}
-                    {testOutput.length > 12000
-                      ? "\n… output preview truncated"
-                      : ""}
-                  </pre>
-                </>
-              )}
-              <details className="dm-raw-evidence">
-                <summary>{zh ? "查看任务记录" : "View task record"}</summary>
-                <dl>
-                  <dt>Task ID</dt>
-                  <dd>{detail.data.task_id}</dd>
-                  <dt>{zh ? "任务类型" : "Task type"}</dt>
-                  <dd>{detail.data.task_name}</dd>
-                  <dt>{zh ? "更新时间" : "Updated"}</dt>
-                  <dd>
-                    {new Date(detail.data.updated_at).toLocaleString(locale)}
-                  </dd>
-                </dl>
-                {detail.data.error && <p role="alert">{detail.data.error}</p>}
-                <h3>
-                  <FileText size={16} />
-                  {zh ? "执行结果" : "Execution result"}
-                </h3>
-                {json ? (
-                  <pre tabIndex={0}>
-                    {json.slice(0, 16000)}
-                    {json.length > 16000 ? "\n… preview truncated" : ""}
-                  </pre>
-                ) : (
-                  <p>
-                    {zh
-                      ? "还没有可展示的结果。"
-                      : "No result is available yet."}
-                  </p>
-                )}
-              </details>
-              <Link
-                className="dm-button"
-                href={`/workspace/chats/${task?.threadId}`}
-              >
-                {zh ? "打开原始对话" : "Open conversation"}
-                <ArrowUpRight size={16} />
-              </Link>
             </div>
-          )
-        )}
-      </SheetContent>
-    </Sheet>
+            {detail.data.cancel_requested && (
+              <Text>
+                {dmCopy(
+                  zh,
+                  "task-detail.cancellation.was.requested.the.execution.state.d.0507ab",
+                )}
+              </Text>
+            )}
+            {summary && (
+              <Text as="p" tone="ink">
+                {summary}
+              </Text>
+            )}
+            <KeyValue
+              label={dmCopy(zh, "task-detail.execution.result.49b067")}
+              value={summary ?? status}
+            />
+            <div>
+              <Text size="caption">
+                {dmCopy(zh, "task-detail.validation.c6cf01")}
+              </Text>
+              <div className="mt-2">
+                <StatusBadge
+                  domain="validation"
+                  status={
+                    verified
+                      ? "passed"
+                      : validationFailed
+                        ? "failed"
+                        : "unverified"
+                  }
+                />
+              </div>
+            </div>
+            <KeyValue
+              label={dmCopy(zh, "common.deployment")}
+              value={dmCopy(zh, "common.undeployed")}
+            />
+            <KeyValue
+              label={dmCopy(zh, "common.project")}
+              value={typeof result?.project === "string" ? result.project : "—"}
+              mono
+            />
+            <KeyValue
+              label={dmCopy(zh, "common.executor")}
+              value={
+                typeof result?.executor === "string" ? result.executor : "—"
+              }
+              mono
+            />
+            <KeyValue label="Task ID" value={detail.data.task_id} mono copy />
+            <KeyValue
+              label={dmCopy(zh, "common.topic")}
+              value={task?.threadId ?? "—"}
+              mono
+              copy
+            />
+            {detail.data.error && (
+              <ErrorBanner>{detail.data.error}</ErrorBanner>
+            )}
+            {testOutput && (
+              <Disclosure>
+                <DisclosureTrigger>
+                  {dmCopy(zh, "task-detail.test.output.a458b6")}
+                </DisclosureTrigger>
+                <ScrollArea
+                  data-testid="evidence-scroll"
+                  className="dm-evidence-scroll"
+                >
+                  <pre tabIndex={0}>{testOutput.slice(0, 12000)}</pre>
+                </ScrollArea>
+              </Disclosure>
+            )}
+            <Disclosure>
+              <DisclosureTrigger>
+                {dmCopy(zh, "task-detail.view.task.record.2787bc")}
+              </DisclosureTrigger>
+              <ScrollArea
+                data-testid="evidence-scroll"
+                className="dm-evidence-scroll"
+              >
+                <pre tabIndex={0}>
+                  {json?.slice(0, 16000) ??
+                    dmCopy(
+                      zh,
+                      "task-detail.no.result.is.available.yet..314e4a",
+                    )}
+                </pre>
+              </ScrollArea>
+            </Disclosure>
+            <Button asChild variant="primary">
+              <Link href={`/workspace/chats/${task?.threadId}`}>
+                {dmCopy(zh, "task-detail.open.conversation.b0163e")}
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        )
+      )}
+    </Inspector>
   );
 }

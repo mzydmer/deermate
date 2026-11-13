@@ -227,13 +227,21 @@ export function ErrorState({
   action?: React.ReactNode;
 }) {
   return (
-    <div role="alert">
-      <Empty
-        icon={AlertTriangle}
-        title={title}
-        description={detail}
-        action={action}
+    <div
+      role="alert"
+      data-slot="dm-error-state"
+      className="flex flex-col items-center gap-4 p-8 text-center"
+    >
+      <AlertTriangle
+        className="size-ds-empty-icon text-error-deep"
+        aria-hidden="true"
       />
+      <Text size="caption" mono>
+        ERROR
+      </Text>
+      <Heading level={1}>{title}</Heading>
+      {detail && <Text>{detail}</Text>}
+      {action}
     </div>
   );
 }

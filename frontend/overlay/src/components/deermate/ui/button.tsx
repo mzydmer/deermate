@@ -114,6 +114,7 @@ export function Button({
       {loading && !asChild ? (
         <>
           <LoaderCircle
+            data-slot="dm-spinner"
             className="dm-ui-spinner absolute left-1 size-3"
             aria-hidden="true"
           />
@@ -164,7 +165,11 @@ export function IconButton({
               {icon}
             </Link>
           ) : loading ? (
-            <LoaderCircle className="dm-ui-spinner size-4" aria-hidden="true" />
+            <LoaderCircle
+              data-slot="dm-spinner"
+              className="dm-ui-spinner size-4"
+              aria-hidden="true"
+            />
           ) : (
             icon
           )}
@@ -197,7 +202,11 @@ export function SendButton({
           className={cn("dm-ui-icon-button rounded-ds-full p-0", className)}
         >
           {loading ? (
-            <LoaderCircle className="dm-ui-spinner size-4" aria-hidden="true" />
+            <LoaderCircle
+              data-slot="dm-spinner"
+              className="dm-ui-spinner size-4"
+              aria-hidden="true"
+            />
           ) : (
             icon
           )}

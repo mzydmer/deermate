@@ -7,10 +7,6 @@
 .dm-docs a {
   text-decoration: none;
 }
-.dm-docs :is(a, button, input):focus-visible {
-  outline: var(--ds-focus-width) solid var(--ds-focus-color);
-  outline-offset: var(--ds-focus-offset);
-}
 .dm-docs-skip {
   position: fixed;
   top: -100px;
@@ -24,17 +20,7 @@
   top: 8px;
 }
 .dm-docs-header {
-  height: var(--ds-sizes-nav);
-  position: sticky;
-  top: 0;
   z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ds-spacing-md);
-  padding-inline: var(--ds-spacing-lg);
-  border-bottom: var(--ds-borders-thin) solid var(--ds-colors-hairline);
-  background: var(--ds-colors-canvas);
 }
 .dm-docs-brand,
 .dm-docs-header-actions {

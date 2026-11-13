@@ -219,6 +219,11 @@ export const statusMap: Record<string, Record<string, Definition>> = {
     },
   },
   execution: {
+    cancellation_requested: {
+      variant: "warning",
+      labelKey: "continuous.cancel_requested",
+      icon: Clock3,
+    },
     partial: { variant: "warning", labelKey: "partial", icon: AlertTriangle },
     partial_failed: {
       variant: "warning",

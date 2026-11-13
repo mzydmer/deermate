@@ -54,7 +54,6 @@ body {
   padding-inline: var(--ds-spacing-md);
   gap: var(--ds-spacing-xs);
   box-shadow: var(--ds-shadows-level-0);
-  transition-property: background-color, border-color, color, opacity;
 }
 :root [data-slot="button"][data-size="sm"],
 :root [data-slot="button"][data-size="icon-sm"] {
@@ -174,13 +173,16 @@ body {
   }
 }
 @media (width < 600px) {
-  :root [data-slot="button"],
+  :root :is(button, a)[data-size][data-variant],
   :root [data-slot="sidebar-trigger"],
   :root [data-slot="input"],
   :root [data-slot="select-trigger"] {
     min-height: var(--ds-sizes-touch);
   }
-  :root [data-slot="sidebar-trigger"] { min-width: var(--ds-sizes-touch); }
+  :root :is(button, a)[data-size][data-variant],
+  :root [data-slot="sidebar-trigger"] {
+    min-width: var(--ds-sizes-touch);
+  }
   :root [data-slot="input"],
   :root [data-slot="textarea"],
   :root [data-slot="select-trigger"] {
@@ -233,4 +235,8 @@ body {
 [data-sonner-toast] {
   border-radius: var(--ds-rounded-md);
   box-shadow: var(--ds-shadows-level-4);
+}
+
+:root button[data-variant][data-size] {
+  transition-property: background-color, border-color, color, opacity;
 }

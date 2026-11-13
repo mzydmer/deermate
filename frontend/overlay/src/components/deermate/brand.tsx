@@ -70,13 +70,16 @@ export function BrandMotion({ className = "" }: { className?: string }) {
         animation?.addEventListener("DOMLoaded", () => {
           if (disposed) return;
           if (motion.matches) animation?.goToAndStop(89, true);
-          setRendered(true);
+          setRendered(!motion.matches);
         });
       })
       .catch(() => {
         /* The static vector mark remains visible. */
       });
-    const settle = () => animation?.goToAndStop(89, true);
+    const settle = () => {
+      animation?.goToAndStop(89, true);
+      setRendered(!motion.matches && !!animation);
+    };
     motion.addEventListener("change", settle);
     return () => {
       disposed = true;
@@ -91,8 +94,8 @@ export function BrandMotion({ className = "" }: { className?: string }) {
       aria-hidden="true"
       data-rendered={rendered}
     >
-      <DeerMark className="dm-brand-fallback" />
-      <span ref={host} className="dm-brand-player" />
+      <DeerMark data-testid="brand-fallback" className="dm-brand-fallback" />
+      <span data-testid="brand-player" ref={host} className="dm-brand-player" />
       <Script
         id="deermate-lottie"
         src="/deermate/vendor/lottie-light-5.13.0.min.js"

@@ -1,11 +1,21 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import { ErrorBanner } from "@/components/deermate/ui";
+import {
+  Button,
+  Disclosure,
+  DisclosureTrigger,
+  Text,
+} from "@/components/deermate/ui";
+
 import { ContinuousIntents, type ContinuousIntent } from "./continuous-intents";
+import { Composer } from "./patterns/composer";
+import { AssistantAvatar, MessageBody } from "./ui";
 import { workspaceAPI } from "./workspace-api";
 import { MemoryActivity } from "./workspace-memory";
 
@@ -28,7 +38,6 @@ export function SecretaryConversation({
   userId: string;
   zh: boolean;
 }) {
-  const t = (cn: string, en: string) => (zh ? cn : en);
   const cache = useQueryClient();
   const [message, setMessage] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -121,9 +130,9 @@ export function SecretaryConversation({
         setReconcile(true);
       }
       setError(
-        t(
-          "这次发送还没确认。保留这句话，再点发送会核对同一次请求。",
-          "Delivery is unconfirmed. Send again to reconcile this request.",
+        dmCopy(
+          zh,
+          "secretary-conversation.delivery.is.unconfirmed.send.again.to.reconcile..27b100",
         ),
       );
     } finally {
@@ -133,78 +142,119 @@ export function SecretaryConversation({
   }
   return (
     <section
+      data-testid="assistant-conversation"
       className="dm-assistant-conversation"
-      aria-label={t("和助手聊聊", "Talk to your assistant")}
+      aria-label={dmCopy(
+        zh,
+        "secretary-conversation.talk.to.your.assistant.a508ae",
+      )}
     >
       {router.isError && (
-        <p role="alert">
-          {t("暂时读不到最新对话。", "Could not refresh this conversation.")}{" "}
-          <button
-            className="dm-text-button"
+        <ErrorBanner role="alert">
+          {dmCopy(
+            zh,
+            "secretary-conversation.could.not.refresh.this.conversation..cbe2aa",
+          )}{" "}
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
             onClick={() => void router.refetch()}
           >
-            {t("重试", "Retry")}
-          </button>
-        </p>
+            {dmCopy(zh, "secretary-conversation.retry.2cd694")}
+          </Button>
+        </ErrorBanner>
       )}
-      <details
-        open={expanded}
-        onToggle={(e) => setExpanded(e.currentTarget.open)}
-        className="dm-assistant-recent-conversation"
-      >
-        <summary>{t("接着刚才的对话", "Recent conversation")}</summary>
-        <ol
-          className="dm-assistant-messages"
-          aria-label={t("最近的对话", "Recent conversation")}
+      {router.data?.items.some((item) => item.data.origin === "user") && (
+        <Disclosure
+          data-testid="assistant-recent-conversation"
+          open={expanded}
+          onToggle={(e) => setExpanded(e.currentTarget.open)}
+          className="dm-assistant-recent-conversation"
         >
-          {router.data?.items
-            .filter((v) => v.data.origin === "user")
-            .slice(0, 6)
-            .reverse()
-            .map((v) => (
-              <li key={v.id}>
-                <div className="dm-assistant-user">
-                  <span className="dm-small dm-muted">{t("你", "You")}</span>
-                  <p>{v.data.text}</p>
-                </div>
-                {v.data.reply ? (
-                  <div className="dm-assistant-reply">
-                    <span className="dm-small dm-muted">DeerMate</span>
-                    <p>{v.data.reply}</p>
+          <DisclosureTrigger>
+            {dmCopy(zh, "secretary-conversation.recent.conversation.62c93e")}
+          </DisclosureTrigger>
+          <ol
+            data-testid="assistant-messages"
+            className="dm-assistant-messages"
+            aria-label={dmCopy(
+              zh,
+              "secretary-conversation.recent.conversation.1678fb",
+            )}
+          >
+            {router.data?.items
+              .filter((v) => v.data.origin === "user")
+              .slice(0, 6)
+              .reverse()
+              .map((v) => (
+                <li key={v.id}>
+                  <div
+                    data-testid="assistant-user"
+                    className="dm-assistant-user"
+                  >
+                    <Text as="span" size="caption" tone="muted" className="">
+                      {dmCopy(zh, "secretary-conversation.you.a9b773")}
+                    </Text>
+                    <p>{v.data.text}</p>
                   </div>
-                ) : (
-                  <p className="dm-small dm-muted" role="status">
-                    {v.state === "waiting_model" ? (
-                      <>
-                        {t(
-                          "先连接一个对话模型，就可以接着聊。",
-                          "Connect a conversation model to continue.",
-                        )}{" "}
-                        <Link href="/workspace?settings=models">
-                          {t("连接模型", "Connect model")}
-                        </Link>
-                      </>
-                    ) : v.state === "uncertain" ? (
-                      t(
-                        "这句话已收下，处理结果还没确认，请勿重复派单。",
-                        "Received; the outcome is unconfirmed. Check the original operation.",
-                      )
-                    ) : ["pending", "dispatching", "acknowledged"].includes(
-                        v.state,
-                      ) ? (
-                      t("在看你刚才说的事…", "Reading your message…")
-                    ) : (
-                      t(
-                        "这次处理已结束，可到工作里查看结果。",
-                        "This turn ended. Check your work for the result.",
-                      )
-                    )}
-                  </p>
-                )}
-              </li>
-            ))}
-        </ol>
-      </details>
+                  {v.data.reply ? (
+                    <div
+                      data-testid="assistant-reply"
+                      className="dm-assistant-reply"
+                    >
+                      <div className="flex items-center gap-2">
+                        <AssistantAvatar />
+                        <Text size="caption">DeerMate</Text>
+                      </div>
+                      <MessageBody value={v.data.reply} />
+                    </div>
+                  ) : (
+                    <Text
+                      as="p"
+                      size="caption"
+                      tone="muted"
+                      className=""
+                      role="status"
+                    >
+                      {v.state === "waiting_model" ? (
+                        <>
+                          {dmCopy(
+                            zh,
+                            "secretary-conversation.connect.a.conversation.model.to.continue..843f88",
+                          )}{" "}
+                          <Link href="/workspace?settings=models">
+                            {dmCopy(
+                              zh,
+                              "secretary-conversation.connect.model.436a05",
+                            )}
+                          </Link>
+                        </>
+                      ) : v.state === "uncertain" ? (
+                        dmCopy(
+                          zh,
+                          "secretary-conversation.received.the.outcome.is.unconfirmed.check.the.or.2d3d5e",
+                        )
+                      ) : ["pending", "dispatching", "acknowledged"].includes(
+                          v.state,
+                        ) ? (
+                        dmCopy(
+                          zh,
+                          "secretary-conversation.reading.your.message..775571",
+                        )
+                      ) : (
+                        dmCopy(
+                          zh,
+                          "secretary-conversation.this.turn.ended.check.your.work.for.the.result..9c7c6a",
+                        )
+                      )}
+                    </Text>
+                  )}
+                </li>
+              ))}
+          </ol>
+        </Disclosure>
+      )}
       {router.data?.session.data?.thread_id && (
         <MemoryActivity
           userId={userId}
@@ -212,51 +262,30 @@ export function SecretaryConversation({
           zh={zh}
         />
       )}
-      <form
-        className="dm-assistant-composer ds-app-card"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send();
-        }}
-        aria-busy={busy}
-      >
-        <label htmlFor="dm-assistant-message">
-          {t("今天想先做什么？", "What would you like to do today?")}
-        </label>
-        <textarea
-          id="dm-assistant-message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          maxLength={8000}
-          rows={3}
-          placeholder={t(
-            "接着聊上次的事，或者交代一件新事。",
-            "Pick up where we left off, or tell me something new.",
-          )}
-          disabled={busy || reconcile}
-          required
-        />
-        <div className="dm-assistant-composer-footer">
-          <span className="dm-small dm-muted">
-            {t(
-              "需要执行时，我会按已有的设备授权安排。",
-              "Execution uses your existing device permissions.",
-            )}
-          </span>
-          <button
-            className="ds-app-button-primary"
-            disabled={busy || !message.trim()}
-          >
-            <ArrowUp size={16} />
-            {busy
-              ? t("发送中", "Sending")
-              : reconcile
-                ? t("核对这次发送", "Reconcile delivery")
-                : t("发送", "Send")}
-          </button>
-        </div>
-      </form>
-      {error && <p role="alert">{error}</p>}
+      <Composer
+        zh={zh}
+        value={message}
+        onChange={setMessage}
+        onSubmit={() => void send()}
+        busy={busy}
+        disabled={reconcile}
+        label={dmCopy(
+          zh,
+          "secretary-conversation.what.would.you.like.to.do.today..e3086b",
+        )}
+        placeholder={dmCopy(
+          zh,
+          "secretary-conversation.pick.up.where.we.left.off.or.tell.me.something.n.856aa5",
+        )}
+        sendLabel={
+          busy
+            ? dmCopy(zh, "secretary-conversation.sending.ddd4e5")
+            : reconcile
+              ? dmCopy(zh, "secretary-conversation.reconcile.delivery.f8cb1c")
+              : dmCopy(zh, "secretary-conversation.send.f1004b")
+        }
+      />
+      {error && <ErrorBanner role="alert">{error}</ErrorBanner>}
     </section>
   );
 }

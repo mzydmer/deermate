@@ -1,5 +1,13 @@
 // DeerMate copy follows the locale provided by the upstream I18nProvider.
 export const messages = {
+  "common.project": ["项目", "Project"],
+  "common.executor": ["执行者", "Executor"],
+  "common.pageerror": ["页面未能加载", "Could not load this page"],
+  "common.pageerror.detail": [
+    "请重试，或返回工作台。",
+    "Try again or return to the workspace.",
+  ],
+  "common.retry": ["重试", "Retry"],
   "personal-home.more-followed": [
     "还有 {count} 项关注，可在下方管理。",
     "{count} more followed items are available below.",
@@ -1052,8 +1060,8 @@ export const messages = {
   ],
   "workspace-work.view.details.b34027": ["查看详情", "View details"],
   "workspace-work.shows.executions.from.your.twenty.most.recent.ch.b83e40": [
-    "这里展示最近二十个对话中的执行。更早的记录仍可从原对话打开。",
-    "Shows executions from your twenty most recent chats. Older records remain in their original chats.",
+    "更早的执行记录可在原对话查看。",
+    "Open the original conversation to see older executions.",
   ],
   "memory-settings-page.memory.management.dc630f": [
     "记忆管理",

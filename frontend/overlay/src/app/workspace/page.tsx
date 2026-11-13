@@ -1,5 +1,6 @@
-import { DeerMateDesk } from "@/components/deermate/desk";
 import { redirect } from "next/navigation";
+
+import { DeerMateDesk } from "@/components/deermate/desk";
 import { DEMO_THREAD_IDS } from "@/core/threads/static-demo";
 import { env } from "@/env";
 

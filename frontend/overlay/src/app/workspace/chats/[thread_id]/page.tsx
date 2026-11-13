@@ -1,5 +1,10 @@
-import ChatPage from "@/components/workspace/chats/chat-page";
 import { ChatMemoryBanner } from "@/components/deermate/workspace-memory";
+import ChatPage from "@/components/workspace/chats/chat-page";
 export default function WorkspaceChatPage() {
-  return <><ChatMemoryBanner /><ChatPage /></>;
+  return (
+    <>
+      <ChatMemoryBanner />
+      <ChatPage />
+    </>
+  );
 }

@@ -1,14 +1,33 @@
 "use client";
 
 import { useQueries } from "@tanstack/react-query";
+import { ListChecks } from "lucide-react";
+import { Search } from "lucide-react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import { ErrorBanner, SectionHeader } from "@/components/deermate/ui";
+import {
+  Button,
+  Card,
+  Empty,
+  Heading,
+  Input,
+  InputGroup,
+  RelativeTime,
+  SegmentedControl,
+  Skeleton,
+  StatusBadge,
+  Text,
+} from "@/components/deermate/ui";
 import { useAuth } from "@/core/auth/AuthProvider";
 import { fetchBackgroundTasks } from "@/core/background-tasks";
 import { useI18n } from "@/core/i18n/hooks";
 import { useThreads } from "@/core/threads/hooks";
 
 import { ContinuousSecretary } from "./continuous-secretary";
+import { AppShell } from "./patterns/shell";
 import { TaskDetail, type DeskTask } from "./task-detail";
 import { WorkspaceHeader } from "./workspace-assistant";
 
@@ -16,7 +35,7 @@ export function WorkspaceWork() {
   const { user } = useAuth();
   const { locale } = useI18n();
   const zh = locale === "zh-CN";
-  const t = (a: string, b: string) => (zh ? a : b);
+  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<DeskTask | null>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
@@ -43,136 +62,211 @@ export function WorkspaceWork() {
       })),
     )
     .sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
-  const visible = tasks.filter(
-    (task) =>
-      filter === "all" ||
-      (filter === "attention"
-        ? ["failed", "input_required"].includes(task.status) ||
-          task.tracking_degraded
-        : filter === "active"
-          ? ["working", "submitted"].includes(task.status)
-          : ["completed", "cancelled"].includes(task.status)),
-  );
+  const visible = tasks
+    .filter((task) =>
+      task.task_name.toLowerCase().includes(search.toLowerCase()),
+    )
+    .filter(
+      (task) =>
+        filter === "all" ||
+        (filter === "attention"
+          ? ["failed", "input_required"].includes(task.status) ||
+            task.tracking_degraded
+          : filter === "active"
+            ? ["working", "submitted"].includes(task.status)
+            : ["completed", "cancelled"].includes(task.status)),
+    );
   if (!user) return null;
-  const labels: Record<string, string> = {
-    submitted: t("排队中", "Queued"),
-    working: t("处理中", "Running"),
-    input_required: t("等你答复", "Needs your reply"),
-    completed: t("执行已结束", "Execution ended"),
-    failed: t("执行失败", "Failed"),
-    cancelled: t("已停止", "Stopped"),
-  };
   return (
-    <div className="dm-desk dm-assistant">
-      <WorkspaceHeader title={t("我的工作", "My work")} zh={zh} />
-      <main className="dm-assistant-work-page">
-        <h1>{t("我的工作", "My work")}</h1>
-        <p className="dm-muted">
-          {t(
-            "哪些等你答复，哪些有了结果，都在这里。",
-            "Replies needed, progress and results in one place.",
+    <AppShell data-testid="desk assistant">
+      <WorkspaceHeader
+        title={dmCopy(zh, "workspace-work.my.work.1e404f")}
+        zh={zh}
+      />
+      <main
+        data-testid="assistant-work-page"
+        className="dm-assistant-work-page grid-cols-1"
+      >
+        <div data-testid="section-heading" className="dm-section-heading">
+          <Heading level={1}>
+            {dmCopy(zh, "workspace-work.my.work.1e404f")}
+          </Heading>
+          <Button asChild variant="primary">
+            <Link href="/workspace/chats/new">
+              {dmCopy(zh, "common.newtopic")}
+            </Link>
+          </Button>
+        </div>
+        <Text as="p" tone="muted" className="">
+          {dmCopy(
+            zh,
+            "workspace-work.replies.needed.progress.and.results.in.one.place.0679c2",
           )}
-        </p>
+        </Text>
         <ContinuousSecretary
           userId={user.id}
           zh={zh}
           canRun={user.system_role === "admin"}
           workOnly
         />
-        <section className="dm-native-work">
-          <div className="dm-section-heading">
-            <h2>{t("对话里的执行记录", "Executions from your chats")}</h2>
-            <label>
-              {t("筛选", "Filter")}
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="all">{t("全部", "All")}</option>
-                <option value="attention">
-                  {t("待回应", "Needs attention")}
-                </option>
-                <option value="active">{t("处理中", "Active")}</option>
-                <option value="ended">{t("已结束", "Ended")}</option>
-              </select>
-            </label>
+        <section
+          data-testid="native-work"
+          className="dm-native-work min-w-0 grid-cols-1"
+        >
+          <div data-testid="section-heading" className="dm-section-heading">
+            <SectionHeader
+              icon={ListChecks}
+              title={
+                <>
+                  {dmCopy(
+                    zh,
+                    "workspace-work.executions.from.your.chats.15d40b",
+                  )}
+                </>
+              }
+            />
+            <SegmentedControl
+              label={dmCopy(zh, "workspace-work.filter.d617c7")}
+              value={filter}
+              onChange={setFilter}
+              items={[
+                {
+                  value: "all",
+                  label: dmCopy(zh, "workspace-work.all.bafb97"),
+                  count: tasks.length,
+                },
+                {
+                  value: "attention",
+                  label: dmCopy(zh, "workspace-work.needs.attention.1af2e4"),
+                  count: tasks.filter(
+                    (t) =>
+                      ["failed", "input_required"].includes(t.status) ||
+                      t.tracking_degraded,
+                  ).length,
+                },
+                {
+                  value: "active",
+                  label: dmCopy(zh, "workspace-work.active.b69c8c"),
+                  count: tasks.filter((t) =>
+                    ["working", "submitted"].includes(t.status),
+                  ).length,
+                },
+                {
+                  value: "ended",
+                  label: dmCopy(zh, "workspace-work.ended.c0e3f9"),
+                  count: tasks.filter((t) =>
+                    ["completed", "cancelled"].includes(t.status),
+                  ).length,
+                },
+              ]}
+            />
           </div>
+          <InputGroup prefix={<Search className="size-4" aria-hidden="true" />}>
+            <Input
+              data-testid="work-search"
+              aria-label={dmCopy(zh, "common.search")}
+              placeholder={dmCopy(zh, "common.search")}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </InputGroup>
           {(threads.isLoading || queries.some((q) => q.isLoading)) && (
-            <p role="status">{t("正在读取工作…", "Loading work…")}</p>
+            <Skeleton
+              label={dmCopy(zh, "workspace-work.loading.work..188312")}
+            />
           )}
           {(threads.isError || queries.some((q) => q.isError)) && (
-            <p role="alert">
-              {t(
-                "有些记录暂时没读到。已显示的状态可能过时。",
-                "Some records could not be refreshed and may be stale.",
+            <ErrorBanner role="alert">
+              {dmCopy(
+                zh,
+                "workspace-work.some.records.could.not.be.refreshed.and.may.be.s.8f3120",
               )}
-              <button
-                className="dm-text-button"
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
                 onClick={() => {
                   void threads.refetch();
                   queries.forEach((q) => void q.refetch());
                 }}
               >
-                {t("重试", "Retry")}
-              </button>
-            </p>
+                {dmCopy(zh, "workspace-work.retry.2cd694")}
+              </Button>
+            </ErrorBanner>
           )}
           {!threads.isLoading &&
             !queries.some((q) => q.isLoading || q.isError) &&
             !visible.length && (
-              <p className="dm-muted">
-                {t(
-                  "这里暂时没有执行记录。回到助手，交代想做的事就好。",
-                  "No executions here yet. Tell your assistant what you want to do.",
+              <Empty
+                title={dmCopy(
+                  zh,
+                  "workspace-work.no.executions.here.yet.tell.your.assistant.what..3e6e5b",
                 )}
-              </p>
+              />
             )}
-          <ul className="dm-work-record-list">
+          <ul
+            data-testid="work-record-list"
+            className="dm-work-record-list min-w-0 grid-cols-1"
+          >
             {visible.map((task) => (
-              <li
-                className="ds-app-card"
+              <Card
+                data-testid="work-record-row"
+                as="li"
+                variant="compact"
                 key={`${task.threadId}-${task.task_id}`}
               >
                 <div>
-                  <h3>{task.task_name || t("未命名任务", "Untitled task")}</h3>
-                  <p className="dm-small dm-muted">
-                    {labels[task.status] ?? task.status} ·{" "}
-                    {new Date(task.updated_at).toLocaleString()}
-                  </p>
-                  {task.tracking_degraded && (
-                    <p>
-                      {t(
-                        "连接暂不可用，尚未确认最新状态。",
-                        "The latest state is unconfirmed while disconnected.",
-                      )}
-                    </p>
-                  )}
+                  <Heading level={3}>
+                    {task.task_name ||
+                      dmCopy(zh, "workspace-work.untitled.task.4ce5bd")}
+                  </Heading>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge
+                      status={
+                        task.status === "completed"
+                          ? "completed_unverified"
+                          : task.status
+                      }
+                    />
+                    <RelativeTime value={task.updated_at} locale={locale} />
+                    {task.tracking_degraded && (
+                      <StatusBadge domain="connection" status="offline" />
+                    )}
+                  </div>
                 </div>
-                <button
-                  className="ds-app-button-secondary"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
                   onClick={(e) => {
                     opener.current = e.currentTarget;
                     setSelected(task);
                   }}
                 >
-                  {t("查看详情", "View details")}
-                </button>
-              </li>
+                  {dmCopy(zh, "workspace-work.view.details.b34027")}
+                </Button>
+              </Card>
             ))}
           </ul>
-          <p className="dm-small dm-muted">
-            {t(
-              "这里展示最近二十个对话中的执行。更早的记录仍可从原对话打开。",
-              "Shows executions from your twenty most recent chats. Older records remain in their original chats.",
+          <Text as="p" size="caption" tone="muted" className="">
+            {dmCopy(
+              zh,
+              "workspace-work.shows.executions.from.your.twenty.most.recent.ch.b83e40",
             )}
-          </p>
+          </Text>
         </section>
       </main>
       <TaskDetail
         task={selected}
         onClose={() => setSelected(null)}
-        restoreFocus={() => opener.current?.focus()}
+        restoreFocus={() => {
+          if (opener.current?.isConnected) opener.current.focus();
+          else
+            document
+              .querySelector<HTMLInputElement>('[data-testid="work-search"]')
+              ?.focus();
+        }}
       />
-    </div>
+    </AppShell>
   );
 }

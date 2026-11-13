@@ -4,6 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
+import { dmCopy } from "@/components/deermate/i18n/copy";
+import { ErrorBanner } from "@/components/deermate/ui";
+import { Button, Card, Heading, Text } from "@/components/deermate/ui";
+
 import { workspaceAPI } from "./workspace-api";
 
 type Suggestion = { fact_id: string; fact_revision: number; question: string };
@@ -20,7 +24,6 @@ export function GoalSuggestions({
   userId: string;
   zh: boolean;
 }) {
-  const t = (a: string, b: string) => (zh ? a : b);
   const query = useQuery({
     queryKey: ["deermate", "briefing", userId],
     queryFn: () =>
@@ -71,9 +74,9 @@ export function GoalSuggestions({
       setIntent(accepted);
     } catch {
       setError(
-        t(
-          "还没确认创建结果，再点会核对同一个话题。",
-          "Creation is unconfirmed. Retry to reconcile this topic.",
+        dmCopy(
+          zh,
+          "goal-suggestions.creation.is.unconfirmed.retry.to.reconcile.this..3a4b5a",
         ),
       );
       if (pending.current) setIntent(pending.current);
@@ -94,37 +97,54 @@ export function GoalSuggestions({
       await query.refetch();
     } catch {
       setError(
-        t("这次没保存，请再试一次。", "This change was not saved. Try again."),
+        dmCopy(
+          zh,
+          "goal-suggestions.this.change.was.not.saved.try.again..95620c",
+        ),
       );
     }
   }
   if (query.isError || !query.data?.suggestions.length) return null;
   const current = status.data ?? intent;
   return (
-    <section className="ds-app-card dm-goal-suggestions">
-      <h2>{t("也可以接着聊", "Something else to explore")}</h2>
+    <Card
+      data-testid="goal-suggestions"
+      as="section"
+      className="dm-goal-suggestions"
+    >
+      <Heading level={2}>
+        {dmCopy(zh, "goal-suggestions.something.else.to.explore.74a2ec")}
+      </Heading>
       {query.data.suggestions.slice(0, 2).map((v) => (
         <div key={v.fact_id}>
           <p>{v.question}</p>
-          <p className="dm-small dm-muted">
-            {t(
-              "因为你之前提过这个长期目标。",
-              "Based on a long-term goal you shared.",
+          <Text as="p" size="caption" tone="muted" className="">
+            {dmCopy(
+              zh,
+              "goal-suggestions.based.on.a.long.term.goal.you.shared..9ec814",
             )}
-          </p>
-          <div className="dm-assistant-actions">
-            <button
-              className="dm-text-button"
+          </Text>
+          <div data-testid="assistant-actions" className="dm-assistant-actions">
+            <Button
+              loading={busy}
+              variant="ghost"
+              size="sm"
+              type="button"
               disabled={busy || (!!current && current.status !== "prepared")}
               onClick={() => void start(v)}
             >
               {busy
-                ? t("创建中…", "Creating…")
-                : t("开始这个话题", "Start this topic")}
-            </button>
-            <button className="dm-text-button" onClick={() => void dismiss(v)}>
-              {t("不感兴趣", "Not interested")}
-            </button>
+                ? dmCopy(zh, "goal-suggestions.creating..978565")
+                : dmCopy(zh, "goal-suggestions.start.this.topic.3e80c9")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              onClick={() => void dismiss(v)}
+            >
+              {dmCopy(zh, "goal-suggestions.not.interested.965c55")}
+            </Button>
           </div>
         </div>
       ))}
@@ -132,22 +152,22 @@ export function GoalSuggestions({
         <p role="status">
           {current.status === "completed" ? (
             <Link href={`/workspace/chats/${current.thread_id}`}>
-              {t("看看这个话题", "Open conversation")}
+              {dmCopy(zh, "goal-suggestions.open.conversation.ca9762")}
             </Link>
           ) : current.status === "failed" || current.status === "blocked" ? (
-            t(
-              "这次没有开始，请核对模型或来源设置。",
-              "This conversation did not start. Check the model and source.",
+            dmCopy(
+              zh,
+              "goal-suggestions.this.conversation.did.not.start.check.the.model..35756b",
             )
           ) : (
-            t(
-              "话题已登记，正在核对原来的请求。",
-              "Recorded; reconciling the original request.",
+            dmCopy(
+              zh,
+              "goal-suggestions.recorded.reconciling.the.original.request..532152",
             )
           )}
         </p>
       )}
-      {error && <p role="alert">{error}</p>}
-    </section>
+      {error && <ErrorBanner role="alert">{error}</ErrorBanner>}
+    </Card>
   );
 }

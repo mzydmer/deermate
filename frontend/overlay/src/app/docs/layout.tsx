@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import { DocsShell } from "@/components/deermate/product-docs";
 
 export const metadata: Metadata = {

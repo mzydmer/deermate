@@ -30,6 +30,7 @@ export function Inspector({
   zh: boolean;
 }) {
   const anchor = useRef<HTMLDivElement>(null);
+  const floating = useRef<HTMLDivElement>(null);
   const stillOpen = useRef(open);
   stillOpen.current = open;
   const focusHeader = useCallback((node: HTMLDivElement | null) => {
@@ -125,9 +126,14 @@ export function Inspector({
         >
           <SheetContent
             hideClose
+            ref={floating}
+            onOpenAutoFocus={(e) => {
+              e.preventDefault();
+              floating.current?.querySelector<HTMLElement>("h2")?.focus();
+            }}
             data-expanded={overlay || undefined}
             data-testid="pattern-inspector-sheet"
-            className="dm-pattern-inspector-sheet"
+            className="dm-pattern-inspector-sheet data-[state=open]:duration-(--ds-legacyMotion-slow) data-[state=closed]:duration-(--ds-legacyMotion-medium)"
             onCloseAutoFocus={(e) => {
               e.preventDefault();
               if (!stillOpen.current) restoreFocus();

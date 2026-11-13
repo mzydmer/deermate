@@ -13,6 +13,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { SheetContent as BaseSheetContent } from "@/components/ui/sheet";
+
+import { Button } from "./button";
+import { cn } from "./utils";
+
 export {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,9 +48,6 @@ export {
   DialogTitle,
   DialogTrigger,
 };
-import { Button } from "./button";
-import { cn } from "./utils";
-
 export const Popover = PopoverPrimitive.Root;
 export const PopoverTrigger = PopoverPrimitive.Trigger;
 export function PopoverContent(

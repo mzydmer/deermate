@@ -1,0 +1,6 @@
+/* Product entrypoint. */
+@import "./design-components.css";
+@import "../components/deermate/ui/primitives.css";
+@import "../components/deermate/ui/upstream.css";
+@import "../components/deermate/patterns/workspace.css";
+@import "../components/deermate/patterns/docs.css";
