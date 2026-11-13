@@ -66,6 +66,7 @@ def compose(*args, capture=False):
 
 
 def initialize(model):
+    ack.read_revision()
     STATE.mkdir(mode=0o700, parents=True, exist_ok=True)
     profile = STATE / "profile.json"
     if not profile.exists():
@@ -91,6 +92,10 @@ def initialize(model):
     if cached.is_dir() and not checkout.exists():
         checkout.symlink_to(cached, target_is_directory=True)
     checkout = ack.prepare(STATE)
+    ack.private_write(
+        STATE / "upstream.json",
+        json.dumps({"upstream_commit": ack.verify_checkout(checkout)}, indent=2) + "\n",
+    )
     settings = ack.load(images)
     config_dir = STATE / "config"
     # Config files are deliberately readable by the non-root container UID;
@@ -568,6 +573,7 @@ def verify(profile):
     )
     receipt = {
         "passed": True,
+        "upstream_commit": ack.verify_checkout(STATE / "deer-flow"),
         "finished_at": datetime.now(UTC).isoformat(),
         "checks": checks,
         "native_runtime": "real locally signed-in Codex",

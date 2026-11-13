@@ -115,6 +115,7 @@ jobs:
           path: |
             .deermate/frontend-ui/browser/*.png
             .deermate/frontend-ui/browser/contracts.json
+            .deermate/frontend-ui/upstream.json
           if-no-files-found: ignore
 
   go-control:
@@ -152,7 +153,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev]'
-      - run: ruff check src tests scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py
+      - run: ruff check src tests scripts/deerflow_lock.py scripts/frontend_dev.py scripts/design_visual_fixture.py scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py
       - run: python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json
       - run: python -m build --wheel
       - uses: actions/upload-artifact@v4
@@ -198,6 +199,7 @@ jobs:
           name: ack-package-verification
           path: |
             .deermate/ack/review.yaml
+            .deermate/ack/build-receipt.json
             .deermate/verification/ack-image-ci.json
           include-hidden-files: true
 
@@ -208,11 +210,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Read and validate pinned DeerFlow revision
+        id: deerflow
+        run: python scripts/deerflow_lock.py --github-output "$GITHUB_OUTPUT"
       - run: python -m pip install -e '.[dev]'
       - uses: actions/checkout@v4
         with:
           repository: bytedance/deer-flow
-          ref: a1b89d0432de4e45adc59f512cb25bb386ea1e51
+          ref: ${{ steps.deerflow.outputs.revision }}
           path: upstream/deer-flow
           sparse-checkout-cone-mode: false
           sparse-checkout: |
@@ -255,11 +260,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Read and validate pinned DeerFlow revision
+        id: deerflow
+        run: python scripts/deerflow_lock.py --github-output "$GITHUB_OUTPUT"
       - run: python -m pip install -e '.[dev]' uv
       - uses: actions/checkout@v4
         with:
           repository: bytedance/deer-flow
-          ref: a1b89d0432de4e45adc59f512cb25bb386ea1e51
+          ref: ${{ steps.deerflow.outputs.revision }}
           path: upstream/deer-flow
           sparse-checkout: backend
       - run: uv sync --project upstream/deer-flow/backend --frozen --no-default-groups --python 3.12

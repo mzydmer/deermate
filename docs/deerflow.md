@@ -35,7 +35,7 @@ deermate --config /absolute/path/to/deermate/deermate.toml --port 18777 mcp
 
 ## 配置 DeerFlow
 
-本次兼容目标是 [DeerFlow 提交 a1b89d0](https://github.com/bytedance/deer-flow/commit/a1b89d0432de4e45adc59f512cb25bb386ea1e51)，其 backend 版本为 `2.2.0-dev`，不是对所有版本的支持声明。依据该版本的 [MCP 配置文档](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/docs/MCP_SERVER.md)和[后台任务驱动](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/packages/harness/deerflow/mcp/tasks/ordinary.py)。
+当前兼容目标由 [deploy/deerflow.lock](../deploy/deerflow.lock) 唯一指定，使用 `python scripts/deerflow_lock.py` 查看。以下引用保留本指南依据的 [DeerFlow 提交 a1b89d0](https://github.com/bytedance/deer-flow/commit/a1b89d0432de4e45adc59f512cb25bb386ea1e51)，其 backend 版本为 `2.2.0-dev`，不是对所有版本的支持声明。依据该版本的 [MCP 配置文档](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/docs/MCP_SERVER.md)和[后台任务驱动](https://github.com/bytedance/deer-flow/blob/a1b89d0432de4e45adc59f512cb25bb386ea1e51/backend/packages/harness/deerflow/mcp/tasks/ordinary.py)。升级、预检及历史证据边界见[版本锁规范](deerflow-version.md)。
 
 1. 将 [deerflow.extensions.json](../examples/deerflow.extensions.json) 中的 `deermate` 条目合并到 DeerFlow 根目录 `extensions_config.json` 的 `mcpServers`。替换 Python、配置和 `cwd` 的绝对路径；不要覆盖已有的其他服务器。
 2. 将 [deerflow.runtime.yaml](../examples/deerflow.runtime.yaml) 的设置合并到已有 `config.yaml`，开启 SQL 持久化和 `mcp_tasks`。现有 PostgreSQL 部署保留 PostgreSQL，不能为了复制示例切换数据库。
@@ -94,7 +94,8 @@ python -m build --wheel
 
 ```bash
 git clone https://github.com/bytedance/deer-flow.git /path/to/deer-flow
-git -C /path/to/deer-flow checkout --detach a1b89d0432de4e45adc59f512cb25bb386ea1e51
+DEERMATE_UPSTREAM_REVISION=$(python scripts/deerflow_lock.py)
+git -C /path/to/deer-flow checkout --detach "$DEERMATE_UPSTREAM_REVISION"
 DEERMATE_DEERFLOW_CHECKOUT=/path/to/deer-flow python -m pytest -q tests/test_deerflow_compat.py
 ```
 

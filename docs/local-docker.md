@@ -56,7 +56,7 @@ python scripts/local_docker.py up
 python scripts/local_docker.py verify --live
 ```
 
-`--model` 指定你有权限的 Codex 模型；省略则使用原生配置。本次实测 `gpt-6.1-sol`。`init` 会准备固定上游并生成本地配置；`build` 首次下载和编译较多依赖，之后复用 BuildKit 缓存，不需要每次启动重建。没有上传镜像到 ACR。
+`--model` 指定你有权限的 Codex 模型；省略则使用原生配置。本次实测 `gpt-6.1-sol`。`init` 按 [deploy/deerflow.lock](../deploy/deerflow.lock) 准备固定上游并生成本地配置，`upstream.json` 记录实际 SHA；已有 checkout 不匹配时停止并保留原目录。`build` 首次下载和编译较多依赖，之后复用 BuildKit 缓存，不需要每次启动重建。没有上传镜像到 ACR。版本更换按[版本锁规范](deerflow-version.md)进行。
 
 `verify --live` **会使用 Codex 模型额度**：只在自动生成的 `demo-project` 中修复 `answer.py` 的一行加法错误，由 Worker 独立运行 unittest 并返回 diff。它不接管任意已有项目，也不修改 Codex 全局配置。使用已有主机登录，不将 `.codex` 或用户凭据目录挂进容器。
 

@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -9,10 +10,14 @@ import tarfile
 import tempfile
 from pathlib import Path
 
-from frontend_overlay import apply
+if __package__:
+    from .deerflow_lock import DeerFlowLockError, read_revision, verify_checkout
+    from .frontend_overlay import apply
+else:
+    from deerflow_lock import DeerFlowLockError, read_revision, verify_checkout
+    from frontend_overlay import apply
 
 ROOT = Path(__file__).resolve().parents[1]
-PIN = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
 
 
 def main():
@@ -25,6 +30,10 @@ def main():
     parser.add_argument("--mode", choices=["prepare", "build", "dev", "fixture"], default="build")
     parser.add_argument("--control", type=Path)
     args = parser.parse_args()
+    try:
+        revision = read_revision()
+    except DeerFlowLockError as error:
+        parser.error(str(error))
     if not args.node:
         parser.error("Node must be on PATH or supplied with --node")
     target = args.output.resolve() / "frontend"
@@ -48,10 +57,21 @@ def main():
                 "fetch",
                 "--depth=1",
                 "https://github.com/bytedance/deer-flow.git",
-                PIN,
+                revision,
             ],
             check=True,
         )
+        subprocess.run(
+            ["git", "-C", str(upstream), "checkout", "--detach", revision], check=True
+        )
+    try:
+        verify_checkout(
+            upstream, paths=("frontend", "contracts", "skills", "examples", "backend"),
+            revision=revision,
+        )
+    except DeerFlowLockError as error:
+        parser.error(str(error))
+    print(f"DeerFlow upstream commit: {revision}", flush=True)
     with tempfile.TemporaryFile() as archive:
         subprocess.run(
             [
@@ -59,7 +79,7 @@ def main():
                 "-C",
                 str(upstream),
                 "archive",
-                PIN,
+                revision,
                 "frontend",
                 "contracts",
                 "skills",
@@ -73,6 +93,9 @@ def main():
         with tarfile.open(fileobj=archive) as tar:
             tar.extractall(target.parent, filter="data")
     apply(target)
+    (target.parent / "upstream.json").write_text(
+        json.dumps({"upstream_commit": revision}, indent=2) + "\n"
+    )
     if args.reuse_deps:
         for name in ("package.json", "pnpm-lock.yaml"):
             if (

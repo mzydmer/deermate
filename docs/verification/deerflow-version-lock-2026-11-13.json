@@ -1,0 +1,440 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-13",
+  "issue": "https://github.com/mzydmer/deermate/issues/9",
+  "base_revision": "69bf1ce8667537e0bfed6544fe556fea9e5602ec",
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "upstream_revision_changed": false,
+  "source_sha256": {
+    "deploy/deerflow.lock": "ceb1d3d775b8a813446d6fecd56daa3c5198a02407ea9485f07db1b5c5a9d50a",
+    ".github/workflows/ci.yml": "c3dbbde588bc2673d9905be9319ee22ed83478d983ae1c5475f672d5f28d5681",
+    "scripts/deerflow_lock.py": "f25074bc0015db11dbaf783a264dda47c00124c204efae6c49f20fe6704836cc",
+    "scripts/ack_deploy.py": "e256a94fabb5060c9c96354a2533991a8653888491e29c032e5d807b30457537",
+    "scripts/ack_image_smoke.py": "6c600708e993ce233bcf4b2a508143604e2745e7f98ba9989003e4bc54a9c69a",
+    "scripts/frontend_dev.py": "e0cc32d00968c87417c6995f659917f3d200a87d37525ffc73612e4817d3b1b3",
+    "scripts/design_visual_fixture.py": "6df2ca9732a74c5817c49dcd2a3fa0687419679a6a0510741122487c625ed275",
+    "scripts/local_docker.py": "bd64b42c44e57e5e7b7095051f6b00baaee91f085f2c87aa6da74a0858726318",
+    "scripts/single_host.py": "cf7a87344dcadafd314e13ba9caa94dc786548836e8bab1ea763b331c725651b",
+    "scripts/verify_deerflow_gateway.py": "2ed33f04e1fc9dcb07c7fc4d632b2474748524d32b2b50e9000c5de05fb1cb07",
+    "tests/test_deerflow_lock.py": "ee309e93a278ae291ee100c642fff2625c41021ed11d200aa632d81a4bfcb2df",
+    "tests/test_deerflow_compat.py": "b0a1c58ce4eef5246480b2a03a8e08c72180703044dd218014aefebc898aab58",
+    "tests/test_ack_deploy.py": "a8da32335a0cd8108524a21f2f8417ae7086fe80ea6813d5c165d7f9bfdb06e6",
+    "tests/test_single_host.py": "46e495a0aa0555c1ac99c6f16536a49382284cb0b809482c5a0f8e96c89023da"
+  },
+  "local": {
+    "python_full": {
+      "passed": 371,
+      "skipped": 6,
+      "seconds": 233.57,
+      "warning": "Existing Starlette httpx deprecation"
+    },
+    "final_affected_contracts": {
+      "passed": 60,
+      "skipped": 0
+    },
+    "lock_negative_and_upgrade_cases": 28,
+    "gateway": [
+      {
+        "transport": "local",
+        "passed": true,
+        "check_count": 22,
+        "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "upstream_lock_sha256": "021af3f934529c5492f9cc157b59ab021577e274c57cb7f174dd18d624fc8993",
+        "checks": [
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "worker_survives_gateway_stop",
+            "passed": true
+          },
+          {
+            "name": "gateway_process_restart_preserves_identity",
+            "passed": true
+          },
+          {
+            "name": "http_cancel_confirmed_in_sql_and_worker",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "background_validation_completed",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "background_validation_failed",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "outage_is_retryable_not_terminal",
+            "passed": true
+          },
+          {
+            "name": "reconnect_requires_explicit_recovery",
+            "passed": true
+          },
+          {
+            "name": "no_replayed_sessions_or_turns",
+            "passed": true
+          },
+          {
+            "name": "source_checkout_unchanged",
+            "passed": true
+          },
+          {
+            "name": "three_rounds_one_native_session_and_workspace",
+            "passed": true
+          },
+          {
+            "name": "continuation_reconcile_and_chat_scope",
+            "passed": true
+          },
+          {
+            "name": "chat_binding_survives_restart_and_routes_submit_to_continue",
+            "passed": true
+          },
+          {
+            "name": "chat_binding_reconcile_and_project_switch_no_new_native_turn",
+            "passed": true
+          },
+          {
+            "name": "pinned_upstream_unchanged",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "transport": "ssh",
+        "passed": true,
+        "check_count": 30,
+        "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "upstream_lock_sha256": "021af3f934529c5492f9cc157b59ab021577e274c57cb7f174dd18d624fc8993",
+        "checks": [
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "ssh_instance_bound_path",
+            "passed": true
+          },
+          {
+            "name": "worker_survives_gateway_stop",
+            "passed": true
+          },
+          {
+            "name": "gateway_process_restart_preserves_identity",
+            "passed": true
+          },
+          {
+            "name": "http_cancel_confirmed_in_sql_and_worker",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "background_validation_completed",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "background_validation_failed",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "ssh_outage_preserves_running_worker",
+            "passed": true
+          },
+          {
+            "name": "ssh_reconnect_preserves_identity",
+            "passed": true
+          },
+          {
+            "name": "ssh_revocation_does_not_claim_cancelled",
+            "passed": true
+          },
+          {
+            "name": "ssh_grant_restore_completes_requested_cancel",
+            "passed": true
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true
+          },
+          {
+            "name": "outage_is_retryable_not_terminal",
+            "passed": true
+          },
+          {
+            "name": "reconnect_requires_explicit_recovery",
+            "passed": true
+          },
+          {
+            "name": "no_replayed_sessions_or_turns",
+            "passed": true
+          },
+          {
+            "name": "source_checkout_unchanged",
+            "passed": true
+          },
+          {
+            "name": "three_rounds_one_native_session_and_workspace",
+            "passed": true
+          },
+          {
+            "name": "continuation_reconcile_and_chat_scope",
+            "passed": true
+          },
+          {
+            "name": "chat_binding_survives_restart_and_routes_submit_to_continue",
+            "passed": true
+          },
+          {
+            "name": "chat_binding_reconcile_and_project_switch_no_new_native_turn",
+            "passed": true
+          },
+          {
+            "name": "pinned_upstream_unchanged",
+            "passed": true
+          },
+          {
+            "name": "ssh_fixture_enforced_forwarding",
+            "passed": true
+          }
+        ]
+      }
+    ],
+    "actual_helm_cli": {
+      "resources": 11,
+      "all_revision_annotations_match": true
+    },
+    "single_host_upstream_pin_matches": true,
+    "frontend_archive_overlay_and_upstream_receipt_match": true,
+    "ruff": "passed",
+    "wheel": "passed",
+    "design_and_tokens": "passed",
+    "product_documentation_impact": "passed",
+    "product_diagrams": 7
+  },
+  "remote_ci": {
+    "status": "success",
+    "run_id": 43396448018,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/43396448018",
+    "source_revision": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3",
+    "jobs": [
+      {
+        "id": 131788407031,
+        "name": "design-system",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407361,
+        "name": "deerflow-contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407443,
+        "name": "frontend-ui",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407447,
+        "name": "product-docs",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407480,
+        "name": "worker (ubuntu-latest, 3.11)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407493,
+        "name": "observability",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407507,
+        "name": "go-control",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407513,
+        "name": "ack-package",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407550,
+        "name": "worker (macos-latest, 3.12)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407617,
+        "name": "deerflow-gateway (ssh)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407623,
+        "name": "frontend-intents",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 131788407625,
+        "name": "deerflow-gateway (local)",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 14023631133,
+        "name": "frontend-synthetic-browser",
+        "digest": "sha256:be567aaad1a5de83287fe820d7473f39a7d1b263074e012149dd8fbcb922fa2e",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14023590572,
+        "name": "deerflow-gateway-ssh",
+        "digest": "sha256:9a9f12e7cd27752ff75e6195b6767f155ecabc107e49dcfc7de40920fb7285a1",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14023326428,
+        "name": "ssh-receipt-macos-latest-py3.12",
+        "digest": "sha256:24086eecf9b1f454f46812e1fd72135e499df39819590bc3102d70e166c8aca6",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14022563649,
+        "name": "ack-package-verification",
+        "digest": "sha256:6608195a23b68d8a58416b15b0c0acc0a745ef4ff53f8302d102332cb66c2e72",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14022504231,
+        "name": "ssh-receipt-ubuntu-latest-py3.11",
+        "digest": "sha256:339237691a1dfcc6dd875db96eea1f8efef560240d4a12ef888eba28cfcbaf5d",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      },
+      {
+        "id": 14022479131,
+        "name": "deerflow-gateway-local",
+        "digest": "sha256:d24ea0b13d4695f7671c35b21787955f0305e9faacb669c6467a12116cdd3cae",
+        "head_sha": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3"
+      }
+    ],
+    "gateway_revision_output": [
+      {
+        "name": "contract",
+        "id": 131788407361,
+        "expected_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "has_expected_revision": true,
+        "verified_output": []
+      },
+      {
+        "name": "local",
+        "id": 131788407625,
+        "expected_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "has_expected_revision": true,
+        "verified_output": [
+          "2026-11-13T08:51:31.6736539Z DeerFlow upstream commit: a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+        ]
+      },
+      {
+        "name": "ssh",
+        "id": 131788407617,
+        "expected_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "has_expected_revision": true,
+        "verified_output": [
+          "2026-11-13T08:51:26.9516455Z DeerFlow upstream commit: a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+        ]
+      }
+    ],
+    "ack_prepare_render_build_smoke_revision_matches": true,
+    "frontend_revision_matches": true,
+    "frontend_unit_tests_passed": 3529,
+    "browser_contracts_passed": 103,
+    "linux_five_image_build_and_non_root_smoke": "passed",
+    "evidence": "GitHub Actions conclusions, expected revision log lines, test/build/smoke summaries and artifact metadata; artifact digests are reported by GitHub."
+  },
+  "limits": [
+    "No running-service deployment or cloud provisioning",
+    "No real provider/model or native Codex invocation; Gateway uses offline protocol fixtures",
+    "Historical ADR and verification receipts retain their original revision"
+  ],
+  "delivery": {
+    "state": "merged_main",
+    "source_revision": "2d7d5f6726d398be1e65ed6e05fd8ef356d4edb3",
+    "implementation_revision": "23ddf13546cc7555e574a882804669b831cb01b2",
+    "issue_state": "closed",
+    "issue_state_reason": "completed",
+    "requires_running_application_upgrade": false
+  }
+}

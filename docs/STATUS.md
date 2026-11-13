@@ -1,13 +1,18 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-13。PR #10 已合入 main `06f09d5`，组件化工作台已升级既有 HTTPS 实例。后续 `85f768e` 修正了验收脚本的焦点等待，12 项 main CI 全部通过；应用源码与该测试修复之间无运行代码差异。线上五服务健康，原账号、14 个历史话题、模型、个人设置与设备授权保持；未提交真实模型或 Native 任务。发布文档 `69bf1ce` 已同步，12 项远端 CI 全通过；最终 HTTPS/API、正文、静态资源与浏览器复验通过。
-
+最后核对：2026-11-13。PR #10 已合入 main `06f09d5`，组件化工作台已升级既有 HTTPS 实例。后续 `85f768e` 修正了验收脚本的焦点等待，12 项 main CI 全部通过；应用源码与该测试修复之间无运行代码差异。线上五服务健康，原账号、14 个历史话题、模型、个人设置与设备授权保持；此前发布验收未提交真实模型或 Native 任务；本轮真实走查见下文。发布文档 `69bf1ce` 已同步，12 项远端 CI 全通过；最终 HTTPS/API、正文、静态资源与浏览器复验通过。
 
 ## 2026-11-13 · 线上实际执行与交互走查
 
 用户要求真实操作后，创建一个长期记忆禁用的临时话题，单次提交两轮真实模型请求。第一轮只读连接检查返回 `authorization_selection_required`，现有本机授权已过期，模型明确说明终端命令未执行；第二轮实际 `web_fetch` 返回公开页面标题、正文与来源，表格呈现正常。运行中刷新后仍为原 run，未重复提交。新增、来源、纠正、取消忘记、确认忘记仅使用一条合成记忆并已清理；删除屏障版本按原机制递增，个人偏好不变。
 
-发现已有话题的核查提示绝对定位贴底，以及手机临时话题顶部说明在加载完成后撑高页面 36px。修复为提示正常排布、顶部说明与聊天共用有界 flex 高度。新增真实 Go 创建临时话题的浏览器合同，等待模式说明后检查短/长草稿、发送形状及完整底部空间；补齐合成运行时的空历史分页响应。构建、lint/typecheck、设计门禁与 35 项 overlay/design 测试通过；完整浏览器矩阵、远端 CI、合并与部署尚在本轮验收中。
+发现已有话题的核查提示绝对定位贴底，以及手机临时话题顶部说明在加载完成后撑高页面 36px。修复为提示正常排布、顶部说明与聊天共用有界 flex 高度。新增真实 Go 创建临时话题的浏览器合同，等待模式说明后检查短/长草稿、发送形状及完整底部空间；补齐合成运行时的空历史分页响应。构建、lint/typecheck、设计门禁与 35 项 overlay/design 测试通过；本地 **113 项浏览器合同**通过（5 宽度×双主题，零模型投递），线上工作详情与记忆设置 **6 项**通过（390/768/1440px 深色，零写入、零页面异常）；HTTPS/API 再验 **26 项**通过。已合并 main 最新版本锁修复，保留其单一上游输入与记录。PR #11 的远端 CI、合并与部署尚在本轮验收中。
+
+## 2026-11-13 · DeerFlow 唯一版本输入（Issue #9）
+
+基于 main `69bf1ce`，已将 ACK/local/single-host、前端准备与视觉 Gateway、驱动和完整 Gateway 验证、两个 CI checkout 的重复版本迁移到 `deploy/deerflow.lock`；当前上游 SHA 未变。NFR-010 要求缺失/非法锁和错误 HEAD 在抓取、构建或服务启动前失败，保留已有目录，输出 expected/actual；干净路径校验继续保留并覆盖未忽略新文件。镜像标签、Helm 资源/Pod annotation、前端/本地/单机与 Gateway 收据输出同一实际 SHA。[版本规范](deerflow-version.md)记录升级、回退和历史证据边界。
+
+本地：全量 Python **371 passed / 6 skipped**，包含实际固定 Gateway local/SSH（分别 22/30 项）与纯驱动合同；最后补齐 Worker ConfigMap 的版本 annotation 后，相关最终部署/锁/overlay/local 子集 **60 passed**。新增 28 项锁及预检反例；实际 Helm CLI 11 个资源、单机包和前端准备产物的 SHA 一致。Ruff、wheel、design/token、产品文档影响与七幅图检查通过。收据见 [版本锁验收](verification/deerflow-version-lock-2026-11-13.json)。修复已合入 main `2d7d5f6`；[本次远端 CI](https://github.com/mzydmer/deermate/actions/runs/43396448018) **12/12 job 全部成功**，包括 Linux 五镜像与非 root Gateway/前端 smoke、前端生产构建/lint/types、3529 项单元测试和 103 项浏览器合同。实际日志中 ACK prepare/render/build/smoke、前端与 Gateway local/SSH 的 SHA 均与锁一致；收据保存在 CI artifacts。 [Issue #9](https://github.com/mzydmer/deermate/issues/9) 已按 completed 关闭。此次只维护构建和验证，线上应用无需升级；无真实模型/Native 调用或设备权限变更。
 
 ## 2026-11-12 · 组件化工作台
 

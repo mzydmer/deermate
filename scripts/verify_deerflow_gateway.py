@@ -25,9 +25,14 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import httpx
-from demo_replay import render_replay
 
-DEERFLOW_COMMIT = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+if __package__:
+    from .deerflow_lock import verify_checkout as verify_locked_checkout
+    from .demo_replay import render_replay
+else:
+    from deerflow_lock import verify_checkout as verify_locked_checkout
+    from demo_replay import render_replay
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -204,14 +209,7 @@ def child_environment():
 
 
 def verify_checkout(checkout):
-    head = subprocess.check_output(["git", "-C", str(checkout), "rev-parse", "HEAD"], text=True)
-    if head.strip() != DEERFLOW_COMMIT:
-        raise ValueError("Gateway verification requires the documented pinned DeerFlow commit")
-    subprocess.run(
-        ["git", "-C", str(checkout), "diff", "--exit-code", DEERFLOW_COMMIT, "--", "backend"],
-        check=True,
-        capture_output=True,
-    )
+    return verify_locked_checkout(checkout, paths=("backend",))
 
 
 def prepare(work, checkout, worker_port):
@@ -372,7 +370,8 @@ def prepare_ssh(work, ssh_port, worker_port, instance_id, token):
 
 def run(checkout, gateway_python, receipt_path, work, transport="local", replay_path=None):
     started = time.monotonic()
-    verify_checkout(checkout)
+    revision = verify_checkout(checkout)
+    print(f"DeerFlow upstream commit: {revision}", flush=True)
     worker_port, gateway_port = port_number(), port_number()
     worker_config, env = prepare(work, checkout, worker_port)
     env["GATEWAY_PORT"] = str(gateway_port)
@@ -393,7 +392,7 @@ def run(checkout, gateway_python, receipt_path, work, transport="local", replay_
     receipt = {
         "schema_version": 1,
         "started_at": datetime.now(UTC).isoformat(),
-        "upstream_commit": DEERFLOW_COMMIT,
+        "upstream_commit": revision,
         "upstream_lock_sha256": hashlib.sha256(
             (checkout / "backend/uv.lock").read_bytes()
         ).hexdigest(),

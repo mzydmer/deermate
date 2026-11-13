@@ -16,7 +16,7 @@ python scripts/single_host.py \
   --output .deermate/single-host/bundle
 ```
 
-`--images-config` 只用于选镜像及固定上游，原来的模型/Worker 凭据和运行数据不会复制。生成空模型/MCP 配置、新的内部密钥和可搬运的 Compose 包；已有输出目录会拒绝覆盖。可用 `--project`、`--port` 指定隔离实例，默认 `deermate-single` / `2027`，与现有本地 2026 入口分开。
+`--images-config` 只用于选镜像，Helm 上游统一读取 [deploy/deerflow.lock](../deploy/deerflow.lock)，并在 `bundle.json` 的 `upstream_pin` 保存已验证的 HEAD；原来的模型/Worker 凭据和运行数据不会复制。生成空模型/MCP 配置、新的内部密钥和可搬运的 Compose 包；已有输出目录会拒绝覆盖。可用 `--project`、`--port` 指定隔离实例，默认 `deermate-single` / `2027`，与现有本地 2026 入口分开。版本升级与回退见[版本锁规范](deerflow-version.md)。
 
 镜像必须与服务器架构一致；当前最低成本候选是 amd64。将 bundle.json 中列出的四个镜像用 `docker save --output images.tar IMAGE1 IMAGE2 IMAGE3 IMAGE4` 导出，传到服务器后 `docker load --input images.tar`。可压缩后传输、再解压导入；准备足够临时磁盘空间。通过已核对主机身份的 SSH/SCP 搬运，不关闭主机公钥校验。传输的是镜像和新生成的应用配置，**不要打包整个 `.deermate`、`.codex`、用户 SSH 目录或原运行数据库**。
 
