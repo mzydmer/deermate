@@ -131,5 +131,22 @@
     "page_errors": 0,
     "model_submissions": 0,
     "native_submissions": 0
+  },
+  "documentation_sync": {
+    "passed": true,
+    "revision": "03feb47db247eafa6e49443bc8c53301a70d3828",
+    "frontend_image": "sha256:18c0af7f49200fbba9d33ea24623010df7fe0141233ebd09ff162f105eb3d02e",
+    "verified_files": 2869,
+    "ci_run": 43403005580,
+    "ci_successful_jobs": 12,
+    "public_documentation_checks": 24,
+    "final_https_api_checks": 26,
+    "final_real_conversation_checks": 6,
+    "page_errors": 0,
+    "model_submissions": 0,
+    "native_submissions": 0,
+    "backend_images_and_historical_rows_preserved": true,
+    "healthy_services": 5,
+    "rollback_image_and_consistent_backup_retained": true
   }
 }
