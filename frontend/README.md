@@ -67,3 +67,9 @@ The viewport/theme matrix covers login, workspace, task filters/evidence, all se
 `workspace-assistant.tsx`, `workspace-work.tsx` and `workspace-memory.tsx` implement `/workspace`, `/workspace/work` and `/workspace/memory`. The sidebar keeps primary destinations and recent chats; advanced tools/projects remain under More. All visual values come from design.md. Mobile collapses recent focus by default so the one composer remains visible. Timestamps follow the personal profile timezone.
 
 Run `verify_workspace_v2.cjs` with `DEERMATE_URL` pointing to an isolated loopback instance and `DEERMATE_OUTPUT` containing its private `owner.json` marked `synthetic_owner`. The verifier refuses non-loopback origins, uses real Go login/storage and production React, blocks provider/native submissions, and writes an actual UI receipt. Its 2x-density/640px check is a reflow equivalent, not proof of a native browser zoom shortcut. Actual provider and Native evidence are separate receipts.
+
+## Component overhaul iteration
+
+Use `python scripts/frontend_dev.py --mode fixture --control /path/to/fresh-go-binary` to archive the pinned upstream, apply the overlay, run a frozen pnpm install, build production React and start a fresh synthetic fixture. Node/pnpm must be on PATH or provided with `--node` / `--pnpm`. `--mode dev` provides loopback Next development; `--output`, `--upstream` and `--reuse-deps` support isolated local iteration. Dependency reuse is refused unless package.json and pnpm-lock.yaml match byte for byte. Existing output directories are never overwritten. No Docker image is required.
+
+The fixture now requires explicit `--frontend`, `--control` and `--work-dir` arguments; the earlier dated build directories are historical evidence, not runtime defaults.

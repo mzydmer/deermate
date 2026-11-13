@@ -1,8 +1,10 @@
 """Local visual fixture: real Go auth/storage + production React + synthetic runtime."""
 
+import argparse
 import json
 import os
 import secrets
+import shutil
 import sqlite3
 import subprocess
 import threading
@@ -13,7 +15,15 @@ from pathlib import Path
 import httpx
 
 root = Path(__file__).resolve().parents[1]
-work = root / ".deermate/design-auth-20261106"
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--frontend", type=Path, required=True)
+parser.add_argument("--control", type=Path, required=True)
+parser.add_argument("--work-dir", type=Path, required=True)
+parser.add_argument("--node", default=shutil.which("node"))
+args = parser.parse_args()
+if not args.node:
+    parser.error("Supply Node on PATH or --node")
+work = args.work_dir.resolve()
 work.mkdir(mode=0o700, exist_ok=False)
 owner = {"email": "visual-fixture@example.com", "password": secrets.token_urlsafe(24)}
 (work / "owner.json").write_text(json.dumps(owner))
@@ -248,11 +258,11 @@ env.update(
 jobs = []
 try:
     for name, command, cwd in [
-        ("control", [str(root / ".deermate/design-system-20261105/control")], root),
+        ("control", [str(args.control.resolve())], root),
         (
             "frontend",
             [
-                "/Users/a123/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+                args.node,
                 "node_modules/next/dist/bin/next",
                 "start",
                 "--hostname",
@@ -260,7 +270,7 @@ try:
                 "--port",
                 "3301",
             ],
-            root / ".deermate/design-system-20261105/frontend",
+            args.frontend.resolve(),
         ),
     ]:
         jobs.append(
