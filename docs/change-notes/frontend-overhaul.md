@@ -11,3 +11,7 @@
 ## 回归中的追踪收尾修正
 
 全量回归发现，任务已写入终态后，关闭 Worker 可能中断适配器清理，导致外层追踪缺少原生会话和轮次标识。标识写入改到追踪的 finally 收尾，保留原有取消传播、任务状态和验证流程。该修正只补齐观测元数据，无需更改客户操作说明。涉及 src/deermate/worker.py；tests/test_observability.py 的 20 项测试通过。
+
+## 合并后的焦点回归
+
+main 首次浏览器 CI 在手机浅色菜单关闭后立即检查焦点时失败。Radix 的隐藏和恢复焦点分属关闭生命周期的不同步骤；验收改为最多等待 5 秒，仍要求同一个原触发器实际获得焦点，不增加重试次数或放宽断言。涉及 scripts/frontend_test_helpers.cjs、scripts/verify_frontend_contracts.cjs；无用户功能、权限或部署配置变化，因此无需改写客户使用指南。

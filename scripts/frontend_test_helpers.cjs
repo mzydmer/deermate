@@ -56,3 +56,19 @@ async function seedMemory(page, context, base, content) {
   throw new Error("Synthetic memory operation did not complete");
 }
 module.exports.seedMemory = seedMemory;
+
+// Radix restores focus after its close/unmount lifecycle, after hidden is observable.
+async function waitForFocus(page, locator) {
+  const element = await locator.elementHandle();
+  if (!element) throw new Error("Focus return target is missing");
+  try {
+    await page.waitForFunction(
+      (node) => node === document.activeElement,
+      element,
+      { timeout: 5000 },
+    );
+  } finally {
+    await element.dispose();
+  }
+}
+module.exports.waitForFocus = waitForFocus;

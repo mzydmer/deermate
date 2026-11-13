@@ -1,4 +1,5 @@
 /* Synthetic browser contracts for the component-driven workspace. */
+const { waitForFocus } = require("./frontend_test_helpers.cjs");
 const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert/strict");
@@ -400,7 +401,7 @@ assert(
             });
             await page.keyboard.press("Escape");
             await panel.waitFor({ state: "hidden" });
-            assert(await opener.evaluate((e) => e === document.activeElement));
+            await waitForFocus(page, opener);
           },
           meta,
         );
@@ -420,7 +421,7 @@ assert(
             await page.getByRole("dialog").waitFor();
             await page.keyboard.press("Escape");
             await page.getByRole("dialog").waitFor({ state: "hidden" });
-            assert(await open.evaluate((e) => e === document.activeElement));
+            await waitForFocus(page, open);
             const menu = page.getByRole("button", {
               name: "Open menu",
               exact: true,
@@ -443,7 +444,7 @@ assert(
             );
             await page.keyboard.press("Escape");
             await page.getByRole("menu").waitFor({ state: "hidden" });
-            assert(await menu.evaluate((e) => e === document.activeElement));
+            await waitForFocus(page, menu);
             const moving = await page
               .locator("[data-slot=dm-spinner]")
               .evaluateAll((nodes) =>
@@ -489,9 +490,7 @@ assert(
                 assert(visited.has(href), `Tab reaches ${href}`);
               await page.keyboard.press("Escape");
               await dialog.waitFor({ state: "hidden" });
-              assert(
-                await trigger.evaluate((e) => e === document.activeElement),
-              );
+              await waitForFocus(page, trigger);
             },
             meta,
           );
