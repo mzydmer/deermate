@@ -8,6 +8,7 @@ import { WorkspaceSidebarTrigger } from "@/components/workspace/workspace-sideba
 
 import { dmCopy } from "../i18n/copy";
 import { IconButton, Spinner, Text } from "../ui";
+import { cn } from "../ui/utils";
 
 export function TopBar({
   title,
@@ -18,9 +19,6 @@ export function TopBar({
   zh: boolean;
   trailing?: React.ReactNode;
 }) {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   return (
     <header data-testid="topbar" data-slot="dm-topbar" className="dm-topbar">
       <div className="flex min-w-0 items-center gap-3">
@@ -31,7 +29,15 @@ export function TopBar({
         </Text>
         {trailing}
       </div>
-      <div className="flex items-center gap-2">
+      <HeaderActions zh={zh} />
+    </header>
+  );
+}
+export function HeaderActions({zh,className=""}:{zh:boolean;className?:string}){
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return (      <div className={cn("flex items-center gap-2",className)}>
         <IconButton
           label={dmCopy(zh, "common.docs")}
           icon={<BookOpen className="size-4" />}
@@ -48,10 +54,9 @@ export function TopBar({
           }
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         />
-      </div>
-    </header>
-  );
+      </div>);
 }
+
 export function AppShell({
   children,
   ...props

@@ -120,3 +120,24 @@ test("menu opens by keyboard and exposes actionable items", () => {
   expect(screen.getByRole("menu")).toBeTruthy();
   expect(screen.getAllByRole("menuitem")).toHaveLength(2);
 });
+
+test("loading preserves the action label when a caller changes its busy text", () => {
+  const view = render(<Button>Save</Button>);
+  view.rerender(<Button loading>Saving…</Button>);
+  expect(screen.getByRole("button").textContent).toBe("Save");
+  view.rerender(<Button>Saved</Button>);
+  expect(screen.getByRole("button").textContent).toBe("Saved");
+});
+test("disabled asChild also blocks a child's own handlers", () => {
+  const click = rs.fn();
+  render(
+    <Button asChild disabled>
+      <a href="https://example.test/docs" onClick={click}>
+        Docs
+      </a>
+    </Button>,
+  );
+  fireEvent.click(screen.getByRole("link"));
+  expect(click).not.toHaveBeenCalled();
+  expect(screen.getByRole("link").getAttribute("tabindex")).toBe("-1");
+});

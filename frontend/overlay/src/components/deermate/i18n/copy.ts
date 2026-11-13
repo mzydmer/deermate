@@ -1,5 +1,7 @@
 // DeerMate copy follows the locale provided by the upstream I18nProvider.
 export const messages = {
+  "common.send":["发送","Send"],
+  "common.stop":["停止","Stop"],
   "common.project": ["项目", "Project"],
   "common.executor": ["执行者", "Executor"],
   "common.pageerror": ["页面未能加载", "Could not load this page"],

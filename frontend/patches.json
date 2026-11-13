@@ -22,8 +22,8 @@
     "sha256": "1b826dcbc6fb06cc6e738f3755cfd5800343c3baa19d67510d7eb6f2374232d5",
     "replace": [
       [
-        "import { redirect }",
-        "import { AuthFrame } from \"@/components/deermate/auth-frame\";\nimport { redirect }"
+        "import { GatewayOfflineFallback }",
+        "import { AuthFrame } from \"@/components/deermate/auth-frame\";\nimport { GatewayOfflineFallback }"
       ],
       [
         "return <I18nProvider initialLocale={locale}>{content}</I18nProvider>;",
@@ -148,6 +148,126 @@
       [
         "text-muted-foreground/67 z-10 px-4 text-center text-xs leading-4",
         "text-muted-foreground z-10 px-4 text-center text-xs leading-4"
+      ],
+      [
+        "        {extraHeader && (\n          <div className=\"absolute top-0 right-0 left-0 z-10\">\n            <div className=\"absolute right-0 bottom-0 left-0 flex items-center justify-center\">\n              {extraHeader}\n            </div>\n          </div>\n        )}\n",
+        ""
+      ],
+      [
+        "      <PromptInput\n",
+        "      {extraHeader && <div className=\"flex items-center justify-center\">{extraHeader}</div>}\n      <PromptInput\n"
+      ],
+      [
+        "              variant=\"outline\"\n              status={status}",
+        "              variant=\"default\"\n              status={status}"
+      ],
+      [
+        "            <PromptInputSubmit\n              className=\"rounded-full\"",
+        "            <PromptInputSubmit\n              aria-busy={status === \"submitted\"}\n              className=\"dm-composer-send rounded-ds-full size-ds-control-md\""
+      ],
+      [
+        "} from \"@/components/ai-elements/prompt-input\";",
+        "} from \"@/components/ai-elements/prompt-input\";\nimport { dmCopy } from \"@/components/deermate/i18n/copy\";"
+      ],
+      [
+        "              disabled={\n                composerLocked ||\n                stopDenied ||",
+        "              disabled={\n                getInputSubmitAction({text:readableReferences(textInput.value),fileCount:attachmentParts.length+projectAttachments.length+conversationReferences.length+inlineRefs.length,status}).kind === \"empty\" ||\n                composerLocked ||\n                stopDenied ||"
+      ],
+      [
+        "import { ConfettiButton } from \"@/components/ui/confetti-button\";\n",
+        ""
+      ],
+      [
+        "<ConfettiButton\n",
+        "<Button\n"
+      ],
+      [
+        "</ConfettiButton>",
+        "</Button>"
+      ],
+      [
+        "                  : {})}\n              onClick={(e) => {",
+        "                  : {\"aria-label\": dmCopy(locale === \"zh-CN\", status === \"streaming\" ? \"common.stop\" : \"common.send\")})}\n              onClick={(e) => {"
+      ]
+    ]
+  },
+  {
+    "path": "src/components/workspace/chats/chat-page.tsx",
+    "sha256": "8f69e423471d22b9a60de5ded1231a5e6aefbc78d8b8484cd94b6f0b759145aa",
+    "replace": [
+      [
+        "import { type PromptInputMessage } from \"@/components/ai-elements/prompt-input\";",
+        "import { type PromptInputMessage } from \"@/components/ai-elements/prompt-input\";\nimport { HeaderActions } from \"@/components/deermate/patterns/shell\";\nimport { Text } from \"@/components/deermate/ui\";"
+      ],
+      [
+        "className=\"relative flex size-full min-h-0 justify-between\"",
+        "className=\"dm-desk relative flex size-full min-h-0 flex-col\""
+      ],
+      [
+        "absolute top-0 right-0 left-0 flex h-12 shrink-0 items-center gap-2 px-2 sm:px-4",
+        "dm-topbar shrink-0"
+      ],
+      [
+        "bg-background/0 z-40 backdrop-blur-none",
+        "z-40"
+      ],
+      [
+        "bg-background/80 z-30 shadow-xs backdrop-blur",
+        "z-30"
+      ],
+      [
+        "<div className=\"flex shrink-0 items-center gap-2\">",
+        "<div className=\"flex shrink-0 items-center gap-2\"><HeaderActions zh={locale === \"zh-CN\"} className=\"hidden min-[960px]:flex\"/>"
+      ],
+      [
+        "<div className=\"flex min-h-0 flex-1 justify-center\">",
+        "<div className={cn(\"flex min-h-0 justify-center\",isWelcomeMode ? \"hidden\" : \"flex-1\")}>"
+      ],
+      [
+        "isWelcomeMode ? \"absolute\" : \"relative shrink-0 pb-4\"",
+        "isWelcomeMode ? \"relative flex-1 items-start overflow-y-auto py-6\" : \"relative shrink-0 pb-4\""
+      ],
+      [
+        "\"-translate-y-[calc(50vh-48px)] sm:-translate-y-[calc(50vh-96px)]\"",
+        "\"pt-6\""
+      ],
+      [
+        "isWelcomeMode\n                      ? \"max-w-(--container-width-sm)\"\n                      : \"max-w-(--container-width-md)\"",
+        "\"max-w-ds-form\""
+      ],
+      [
+        "\"bg-background/5 w-full\",\n                        isWelcomeMode && \"-translate-y-2 sm:-translate-y-4\"",
+        "\"bg-background/5 w-full\",\n                        isWelcomeMode && \"min-w-0\""
+      ],
+      [
+        "\"bg-background/5 h-32 w-full rounded-2xl\",\n                        isWelcomeMode && \"-translate-y-2 sm:-translate-y-4\"",
+        "\"bg-background/5 h-32 w-full rounded-2xl\",\n                        isWelcomeMode && \"min-w-0\""
+      ],
+      [
+        "className={cn(\"size-full\", !isWelcomeMode && \"pt-10\")}",
+        "className=\"size-full\""
+      ],
+      [
+        "            <header\n",
+        "            <header data-testid=\"chat-topbar\"\n"
+      ],
+      [
+        "                <ThreadTitle\n",
+        "                {isNewThread && <Text tone=\"ink\">{t.pages.chats}</Text>}\n                <ThreadTitle\n"
+      ]
+    ]
+  },
+  {
+    "path": "src/components/workspace/messages/message-list.tsx",
+    "sha256": "51b025e0c5b4f62cf928a2940ce6d0016644e39634c6054de855554d2325e76c",
+    "replace": [
+      [
+        "import { Button } from \"@/components/ui/button\";",
+        "import { AssistantAvatar } from \"@/components/deermate/ui\";\nimport { Button } from \"@/components/ui/button\";"
+      ],
+      [
+        "key={`duration-group:${group.id ?? groupIndex}`}\n        className=\"flex w-full flex-col gap-2\"\n      >",
+        "key={`duration-group:${group.id ?? groupIndex}`}\n        className=\"flex w-full flex-col gap-2\"\n      >\n        {group.type.startsWith(\"assistant\") && <AssistantAvatar />}"
       ]
     ]
   }

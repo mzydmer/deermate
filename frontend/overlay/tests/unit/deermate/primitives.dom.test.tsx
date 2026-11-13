@@ -85,7 +85,7 @@ test("textarea keeps controlled changes and removes native resize affordance", (
 });
 test("checkbox retains native keyboard and form semantics", () => {
   render(<Checkbox aria-label="Remember" defaultChecked />);
-  expect((screen.getByRole("checkbox")).checked).toBe(true);
+  expect(screen.getByRole<HTMLInputElement>("checkbox").checked).toBe(true);
 });
 test("status map distinguishes unverified execution, failed validation and unknown", () => {
   render(

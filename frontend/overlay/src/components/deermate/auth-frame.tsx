@@ -11,7 +11,7 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
   return (
     <main data-testid="auth" className="dm-auth">
       <Card data-testid="auth-card" className="dm-auth-card grid gap-6">
-        <Link data-testid="wordmark" href="/workspace" className="dm-wordmark">
+        <Link data-testid="wordmark" href="/workspace" className="dm-wordmark justify-center">
           <DeerMark />
           DeerMate
         </Link>

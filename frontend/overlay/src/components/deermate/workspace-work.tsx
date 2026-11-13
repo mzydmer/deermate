@@ -216,10 +216,15 @@ export function WorkspaceWork() {
                 key={`${task.threadId}-${task.task_id}`}
               >
                 <div>
-                  <Heading level={3}>
-                    {task.task_name ||
-                      dmCopy(zh, "workspace-work.untitled.task.4ce5bd")}
-                  </Heading>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Heading level={3} className="min-w-0 flex-1 truncate">
+                      {task.task_name ||
+                        dmCopy(zh, "workspace-work.untitled.task.4ce5bd")}
+                    </Heading>
+                    <span className="shrink-0 min-[600px]:hidden">
+                      <RelativeTime value={task.updated_at} locale={locale} />
+                    </span>
+                  </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge
                       status={
@@ -228,7 +233,9 @@ export function WorkspaceWork() {
                           : task.status
                       }
                     />
-                    <RelativeTime value={task.updated_at} locale={locale} />
+                    <span className="hidden min-[600px]:inline-flex">
+                      <RelativeTime value={task.updated_at} locale={locale} />
+                    </span>
                     {task.tracking_degraded && (
                       <StatusBadge domain="connection" status="offline" />
                     )}

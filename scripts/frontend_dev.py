@@ -31,9 +31,41 @@ def main():
     if target.exists():
         parser.error("Use a fresh output directory; existing builds are preserved")
     target.parent.mkdir(parents=True, exist_ok=True)
+    env = os.environ.copy()
+    env["PATH"] = str(Path(args.node).absolute().parent) + os.pathsep + env.get("PATH", "")
+    env["NEXT_TELEMETRY_DISABLED"] = "1"
+    if args.mode == "fixture" and not args.control:
+        parser.error("Supply a freshly built Go --control for fixture mode")
+    upstream = args.upstream
+    if not upstream.exists():
+        upstream = target.parent / "upstream"
+        subprocess.run(["git", "init", str(upstream)], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(upstream),
+                "fetch",
+                "--depth=1",
+                "https://github.com/bytedance/deer-flow.git",
+                PIN,
+            ],
+            check=True,
+        )
     with tempfile.TemporaryFile() as archive:
         subprocess.run(
-            ["git", "-C", str(args.upstream), "archive", PIN, "frontend"],
+            [
+                "git",
+                "-C",
+                str(upstream),
+                "archive",
+                PIN,
+                "frontend",
+                "contracts",
+                "skills",
+                "examples",
+                "backend",
+            ],
             stdout=archive,
             check=True,
         )
@@ -54,9 +86,12 @@ def main():
     elif args.mode != "prepare":
         if not args.pnpm:
             parser.error("pnpm is required for a frozen install")
-        subprocess.run([args.pnpm, "install", "--frozen-lockfile"], cwd=target, check=True)
-    env = os.environ.copy()
-    env["NEXT_TELEMETRY_DISABLED"] = "1"
+        subprocess.run(
+            [args.pnpm, "install", "--frozen-lockfile", "--ignore-scripts"],
+            cwd=target,
+            env=env,
+            check=True,
+        )
     if args.mode in ("build", "fixture"):
         subprocess.run(
             [args.node, "node_modules/next/dist/bin/next", "build", "--webpack"],
@@ -66,7 +101,14 @@ def main():
         )
     if args.mode == "dev":
         subprocess.run(
-            [args.node, "node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1"],
+            [
+                args.node,
+                "node_modules/next/dist/bin/next",
+                "dev",
+                "--webpack",
+                "--hostname",
+                "127.0.0.1",
+            ],
             cwd=target,
             env=env,
             check=True,

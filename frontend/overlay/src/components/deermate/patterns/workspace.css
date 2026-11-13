@@ -351,9 +351,6 @@
   width: 100%;
   max-width: var(--ds-sizes-auth-card);
 }
-.dm-wordmark {
-  justify-content: center;
-}
 .dm-brand-motion {
   position: relative;
   width: var(--ds-sizes-nav);
@@ -422,4 +419,10 @@
 
 .dm-pattern-inspector-sheet[data-expanded="true"] {
   width: min(var(--ds-sizes-form), 100vw);
+}
+
+:root .dm-pattern-composer .dm-composer-send {
+  width: var(--ds-sizes-control-md);
+  height: var(--ds-sizes-control-md);
+  border-radius: var(--ds-rounded-full);
 }

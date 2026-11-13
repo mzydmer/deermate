@@ -1,3 +1,4 @@
+const { memoryAction, seedMemory } = require("./frontend_test_helpers.cjs");
 /* Real Go/React workspace acceptance. Read-only matrix blocks model submissions.
    Functional checks only use an isolated synthetic owner's memory and empty chats. */
 const fs = require("fs");
@@ -32,8 +33,9 @@ assert(owner.synthetic_owner === true && owner.origin === base);
     await page.locator("#password").fill(owner.password);
     await page.locator("button[type=submit]").click();
     await page.waitForURL((u) => u.pathname === "/workspace");
-    await page.locator("#dm-assistant-message").waitFor();
+    await page.locator("[data-testid=message-input]").waitFor();
     checks.push({ name: "real_go_dom_login" });
+    await seedMemory(page, auth, base, "Synthetic source and keyboard check");
     const state = await auth.storageState();
     await auth.close();
     async function runCheck(name, p, fn, meta = {}) {
@@ -51,7 +53,7 @@ assert(owner.synthetic_owner === true && owner.origin === base);
           .catch(() => {});
       }
     }
-    for (const width of [390, 768, 1280, 1440])
+    for (const width of [390, 768, 1024, 1280, 1440])
       for (const dark of [false, true]) {
         const context = await browser.newContext({
           storageState: state,
@@ -89,15 +91,19 @@ assert(owner.synthetic_owner === true && owner.origin === base);
             p,
             async () => {
               await p.goto(base + route);
-              await p.locator(".dm-assistant").waitFor();
+              await p.locator("[data-testid~=assistant]").waitFor();
               if (title)
                 await p
                   .getByRole("heading", { name: title, exact: true })
                   .waitFor();
               else {
-                await p.locator("#dm-assistant-message").waitFor();
-                await p.getByText("在看最近的事…", { exact: true }).waitFor({ state: "hidden" });
-                await p.getByText("正在读取记忆…", { exact: true }).waitFor({ state: "hidden" });
+                await p.locator("[data-testid=message-input]").waitFor();
+                await p
+                  .getByText("在看最近的事…", { exact: true })
+                  .waitFor({ state: "hidden" });
+                await p
+                  .getByText("正在读取记忆…", { exact: true })
+                  .waitFor({ state: "hidden" });
               }
               assert(
                 await p.evaluate(
@@ -120,9 +126,11 @@ assert(owner.synthetic_owner === true && owner.origin === base);
                   1,
                   "one main composer",
                 );
-                assert((await p.locator(".dm-focus-card").count()) <= 3);
+                assert(
+                  (await p.locator("[data-testid~=focus-card]").count()) <= 3,
+                );
                 const area = await p
-                  .locator("#dm-assistant-message")
+                  .locator("[data-testid=message-input]")
                   .boundingBox();
                 assert(area.width > 200);
                 if (width === 390) {
@@ -154,7 +162,7 @@ assert(owner.synthetic_owner === true && owner.origin === base);
             async () => {
               await p.goto(base + "/workspace");
               const trigger = p.locator(
-                ".dm-topbar [data-slot=sidebar-trigger]",
+                "[data-testid~=topbar] [data-slot=sidebar-trigger]",
               );
               await trigger.focus();
               await p.keyboard.press("Enter");
@@ -207,9 +215,9 @@ assert(owner.synthetic_owner === true && owner.origin === base);
       );
       await p.goto(base + "/workspace");
       await p.getByText("最近的进展暂时没读到，仍然可以和我聊天。").waitFor();
-      assert(await p.locator("#dm-assistant-message").isEnabled());
+      assert(await p.locator("[data-testid=message-input]").isEnabled());
       await p.unroute("**/api/me/workspace-snapshot");
-      await p.getByRole("button", { name: "再试一次", exact: true }).click();
+      await p.getByRole("button", { name: "重试", exact: true }).click();
       await p
         .getByText("最近的进展暂时没读到，仍然可以和我聊天。")
         .waitFor({ state: "hidden" });
@@ -245,22 +253,24 @@ assert(owner.synthetic_owner === true && owner.origin === base);
     });
     await runCheck("memory_create_correct_forget", p, async () => {
       await p.goto(base + "/workspace/memory");
-      await p.locator("#dm-memory-content").fill("我习惯在周一整理笔记");
+      await p
+        .locator("[data-testid~=memory-content]")
+        .fill("我习惯在周一整理笔记");
       await p.getByRole("button", { name: "保存记忆", exact: true }).click();
       const row = p
-        .locator(".dm-memory-list>li")
+        .locator("[data-testid~=memory-list]>li")
         .filter({ hasText: "我习惯在周一整理笔记" });
       await row.waitFor();
-      await row.getByRole("button", { name: "纠正", exact: true }).click();
-      await p.locator("#dm-memory-content").fill("我习惯在周五整理笔记");
+      await memoryAction(p, row, "纠正");
+      await p
+        .locator("[data-testid~=memory-content]")
+        .fill("我习惯在周五整理笔记");
       await p.getByRole("button", { name: "保存记忆", exact: true }).click();
       const corrected = p
-        .locator(".dm-memory-list>li")
+        .locator("[data-testid~=memory-list]>li")
         .filter({ hasText: "我习惯在周五整理笔记" });
       await corrected.waitFor();
-      await corrected
-        .getByRole("button", { name: "忘记", exact: true })
-        .click();
+      await memoryAction(p, corrected, "忘记");
       await corrected.waitFor({ state: "hidden" });
     });
     await runCheck("temporary_creation_lost_ack_same_topic", p, async () => {
@@ -285,7 +295,7 @@ assert(owner.synthetic_owner === true && owner.origin === base);
         .getByText("临时对话还没创建成功。再点一次会核对同一个对话。")
         .waitFor();
       await p.reload();
-      await p.locator("#dm-assistant-message").waitFor();
+      await p.locator("[data-testid=message-input]").waitFor();
       await p.getByRole("button", { name: "临时对话", exact: true }).click();
       await p.waitForURL((u) =>
         u.pathname.startsWith("/workspace/chats/temporary-"),
@@ -326,18 +336,15 @@ assert(owner.synthetic_owner === true && owner.origin === base);
           : value + "Z";
         const expected = new Intl.DateTimeFormat("zh-CN", {
           timeZone: "Asia/Shanghai",
-          month: "numeric",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hourCycle: "h23",
+          dateStyle: "medium",
+          timeStyle: "short",
         }).format(new Date(normalized));
-        await p.locator(".dm-focus-time").first().waitFor();
-        assert(
-          (await p.locator(".dm-focus-time").first().innerText()).includes(
-            expected,
-          ),
-        );
+        const time = p.getByTestId("relative-time").first();
+        await time.focus();
+        await p
+          .getByRole("tooltip")
+          .getByText(expected, { exact: true })
+          .waitFor();
       }
     });
     await c.close();
@@ -351,16 +358,16 @@ assert(owner.synthetic_owner === true && owner.origin === base);
     const zp = await zoom.newPage();
     await runCheck("200_percent_equivalent_reflow", zp, async () => {
       await zp.goto(base + "/workspace");
-      await zp.locator("#dm-assistant-message").waitFor();
+      await zp.locator("[data-testid=message-input]").waitFor();
       assert(
         await zp.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       );
-      await zp.locator("#dm-assistant-message").focus();
+      await zp.locator("[data-testid=message-input]").focus();
       assert(
         await zp
-          .locator("#dm-assistant-message")
+          .locator("[data-testid=message-input]")
           .evaluate((el) => el === document.activeElement),
       );
       await zp.screenshot({

@@ -10,6 +10,7 @@ export function AssistantAvatar() {
       data-slot="dm-assistant-avatar"
       data-size="sm"
       data-variant="default"
+      role="img"
       aria-label="DeerMate"
       className="flex size-8 shrink-0 items-center justify-center rounded-ds-md bg-primary text-on-primary [&_svg]:size-5"
     >

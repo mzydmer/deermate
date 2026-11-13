@@ -190,9 +190,15 @@ body {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root [data-slot] {
+  :root [data-slot],
+  :root [data-slot] svg {
     animation-duration: 0s;
     transition-duration: 0s;
+  }
+  :root [data-slot="suggestions-list"] > span {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -223,11 +229,7 @@ body {
   background: transparent;
   box-shadow: var(--ds-shadows-level-0);
 }
-[data-slot="dm-composer"] [aria-label="Submit"] {
-  width: var(--ds-sizes-control-md);
-  height: var(--ds-sizes-control-md);
-  border-radius: var(--ds-rounded-full);
-}
+
 
 [data-sonner-toaster] {
   max-width: min(var(--ds-sizes-toast), calc(100vw - 2 * var(--ds-spacing-md)));

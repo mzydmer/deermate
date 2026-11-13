@@ -4,7 +4,7 @@
     "group": "guide",
     "title": "认识 DeerMate",
     "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-12",
     "status": "Alpha",
     "sources": [
       "docs/STATUS.md",
@@ -15,7 +15,8 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "docs/specs/frontend-overhaul.md"
     ]
   },
   {
@@ -40,7 +41,7 @@
     "group": "guide",
     "title": "对话与任务结果",
     "description": "理解同一会话的连续追问、执行状态和独立验证。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-12",
     "status": "使用指南",
     "sources": [
       "docs/chat-sessions.md",
@@ -49,7 +50,9 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "design.md",
+      "docs/specs/frontend-overhaul.md"
     ]
   },
   {
@@ -72,7 +75,7 @@
     "group": "guide",
     "title": "关于你与记忆管理",
     "description": "管理称呼、时区与长期事实，纠正或遗忘记录。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-12",
     "status": "新账号默认开启",
     "sources": [
       "docs/personal-memory.md",
@@ -84,7 +87,9 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "design.md",
+      "docs/specs/frontend-overhaul.md"
     ]
   },
   {
@@ -168,7 +173,9 @@
       "src/deermate/telemetry.py",
       "backend/internal/observability/telemetry.go",
       "docs/verification/observability-2026-11-12.json",
-      "docs/verification/observability-cloud-2026-11-12.json"
+      "docs/verification/observability-cloud-2026-11-12.json",
+      "design.md",
+      "docs/specs/frontend-overhaul.md"
     ]
   },
   {
@@ -244,7 +251,8 @@
       "src/deermate/telemetry.py",
       "backend/internal/observability/telemetry.go",
       "docs/verification/observability-2026-11-12.json",
-      "docs/verification/observability-cloud-2026-11-12.json"
+      "docs/verification/observability-cloud-2026-11-12.json",
+      "docs/specs/frontend-overhaul.md"
     ]
   }
 ]

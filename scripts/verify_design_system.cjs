@@ -5,17 +5,17 @@ const { chromium } = require(
 );
 (async () => {
   const root = path.resolve(__dirname, "..");
-  fs.mkdirSync(path.join(root, ".deermate/design-system-20261105"), {
-    recursive: true,
-  });
+  const output = process.env.DEERMATE_OUTPUT;
+  if (!output) throw new Error("Set a private DEERMATE_OUTPUT directory");
+  fs.mkdirSync(output, { recursive: true, mode: 0o700 });
   const browser = await chromium.launch({
-    ...(process.env.DEERMATE_CHROME_PATH
-      ? { executablePath: process.env.DEERMATE_CHROME_PATH }
+    ...(process.env.DEERMATE_BROWSER_EXECUTABLE
+      ? { executablePath: process.env.DEERMATE_BROWSER_EXECUTABLE }
       : {}),
     headless: true,
   });
   const checks = [];
-  for (const width of [390, 600, 960, 1200, 1440])
+  for (const width of [390, 768, 1024, 1280, 1440])
     for (const dark of [false, true]) {
       const page = await browser.newPage({
         viewport: { width, height: 900 },
@@ -33,7 +33,10 @@ const { chromium } = require(
         ) +
         "\n" +
         fs.readFileSync(
-          path.join(root, "frontend/overlay/src/styles/design-system.css"),
+          path.join(
+            root,
+            "frontend/overlay/src/components/deermate/ui/upstream.css",
+          ),
           "utf8",
         );
       await page.setContent(
@@ -91,7 +94,14 @@ const { chromium } = require(
                 "backend/internal/controlplane/design-tokens.css",
               ),
               "utf8",
-            ),
+            ) +
+              fs.readFileSync(
+                path.join(
+                  root,
+                  "backend/internal/controlplane/design-components.css",
+                ),
+                "utf8",
+              ),
           );
         await page.setContent(html);
         if (dark)
@@ -110,8 +120,8 @@ const { chromium } = require(
         if (width === 390 || width === 1440)
           await page.screenshot({
             path: path.join(
-              root,
-              `.deermate/design-system-20261105/${name}-${width}-${dark ? "dark" : "light"}.png`,
+              output,
+              `${name}-${width}-${dark ? "dark" : "light"}.png`,
             ),
             fullPage: true,
           });
@@ -119,7 +129,7 @@ const { chromium } = require(
       await page.close();
     }
   fs.writeFileSync(
-    path.join(root, ".deermate/design-system-20261105/browser.json"),
+    path.join(output, "browser.json"),
     JSON.stringify(
       {
         checks,
