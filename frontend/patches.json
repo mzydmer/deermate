@@ -192,6 +192,14 @@
       [
         "                  : {})}\n              onClick={(e) => {",
         "                  : {\"aria-label\": dmCopy(locale === \"zh-CN\", status === \"streaming\" ? \"common.stop\" : \"common.send\")})}\n              onClick={(e) => {"
+      ],
+      [
+        "      {!isWelcomeMode && (\n        <div className=\"bg-background absolute right-0 -bottom-[17px] left-0 z-0 h-4\"></div>\n      )}\n",
+        ""
+      ],
+      [
+        "      <p\n        className={cn(\n          \"text-muted-foreground z-10 px-4 text-center text-xs leading-4\",\n          !isWelcomeMode && \"absolute top-full right-0 left-0\",\n        )}\n      >",
+        "      <p\n        data-testid=\"composer-disclaimer\"\n        className=\"text-muted-foreground z-10 px-4 text-center text-xs leading-4\"\n      >"
       ]
     ]
   },

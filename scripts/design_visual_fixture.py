@@ -357,6 +357,12 @@ VALUES(?,
                     if k in data.get("ids", []) and data.get("query", "") in v["content"]
                 ]
             }
+        elif path.endswith("/messages/page"):
+            key = path.split("/threads/", 1)[1].split("/", 1)[0]
+            if key in owned:
+                out = {"data": [], "has_more": False, "next_before_seq": None}
+            else:
+                status, out = 404, {"detail": "Synthetic conversation unavailable"}
         elif path.endswith("/state"):
             out = {"values": thread["values"], "next": [], "tasks": [], "checkpoint": None}
         elif path.endswith("/visual-thread"):
