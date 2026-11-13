@@ -102,5 +102,34 @@
     "public_https_checks": 26,
     "live_conversation_layout_checks": 6
   },
-  "followup_mobile_toolbar": "Tokens compaction implemented on separate branch; validation and release pending"
+  "followup_mobile_toolbar": {
+    "passed": true,
+    "merged_pr": 12,
+    "main_merge": "e6865d1fda18aabdf910fc1f009957bdf47c0a3f",
+    "frontend_revision": "cc914cecc3fdbec6dc4ee99ec048b25a72e2c852",
+    "frontend_image": "sha256:ae4f23d273c0e36979e67e147e2de4708ca33986282b2ad82e812341c79a7212",
+    "ci_run": 43401164428,
+    "ci_successful_jobs": 12,
+    "verified_files": 2869,
+    "database_backup_quick_check": "ok",
+    "historical_rows_and_grants_preserved": true,
+    "backend_images_preserved": true,
+    "public_https_checks": 26,
+    "live_conversation_checks": 6,
+    "widths": [
+      390,
+      768,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "mobile_token_button_px": 44,
+    "toolbar_controls_within_viewport": true,
+    "statistics_menu_and_focus_restoration": true,
+    "page_errors": 0,
+    "model_submissions": 0,
+    "native_submissions": 0
+  }
 }
