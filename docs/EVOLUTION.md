@@ -831,3 +831,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · 统一的原通知接纳输入适配
 
 B03去工具后仍首次12,544 bytes超预算，五次拒绝至dead_letter，失败原样保留。独立评审接受owned-admission-v1用于本离线协议：复核当前owner/run/thread与mcp_notification origin，完整原接纳单HumanMessage、固定短提示/空tools、全文哈希关联，排除普通历史和重试错误；原12,000上限不变。固定Gateway镜像内UID1000/networknone/只读测试源的三个合同通过，三组输入哈希相同，错身份/多消息/非Human拒绝。协议/基线/研究页同步限定为测试适配，B04实际完整屏障尚待运行，不声称默认生产通知预算验收。
+
+
+## 2026-11-16 · 共享账本写锁竞争的有限修正
+
+B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均保留。完整原ToolMessage/checkpoint仅私存，原始日志未记录竞争写方；独立连接控制写锁稳定复现deferred读取后首次写入BUSY(5)与完整回滚。workTransaction现在先取得writer intent，数据库回调只调用一次，沿用5s busy/context，无外部动作重放；22处生产及两处tag回调确认没有等待外部runtime I/O。五项聚焦测试通过，包含真实HTTP原状态全等、显式原token单action/同对象回执和0 runtime派发，方向获评审接受；必要Go全检和新源码B/C完整校准待完成。客户/技术/协议与目录同步，发送/恢复图语义不变，正式36格未开始。

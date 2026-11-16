@@ -228,6 +228,15 @@ func (s *Store) workTransaction(ctx context.Context, f func(*sql.Tx) error) erro
 		return e
 	}
 	defer tx.Rollback()
+	// Go and the Gateway share this WAL database. A deferred transaction that
+	// reads first cannot reliably upgrade while another connection is writing;
+	// SQLite can return BUSY immediately despite busy_timeout. Acquire writer
+	// intent before invoking the database-only callback. No rows change here.
+	// Keep the existing busy_timeout/context bound and never retry the callback
+	// or an external dispatch after an uncertain result.
+	if _, e = tx.ExecContext(ctx, "UPDATE deermate_work_records SET revision=revision WHERE 0"); e != nil {
+		return fmt.Errorf("work transaction writer acquisition: %w", e)
+	}
 	if e = f(tx); e != nil {
 		return e
 	}

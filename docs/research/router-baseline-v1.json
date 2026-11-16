@@ -147,7 +147,15 @@
     "ingress": "fixed-upstream minimal HTTP proxy; loopback only; proxy alone has dual networks",
     "go_gateway": "internal network only; no external network",
     "runner": "Mac client/schedule clock domain; service and Native clocks remain same Linux monotonic domain",
-    "same_for_all_modes": true
+    "same_for_all_modes": true,
+    "work_store_transactions": {
+      "writer_intent_before_callback": true,
+      "callback_invocations_per_attempt": 1,
+      "callback_retries": 0,
+      "busy_timeout_seconds": 5,
+      "request_context_bound": true,
+      "same_source_for_all_modes": true
+    }
   },
   "reproducibility_repeat": {
     "seeds": [
@@ -185,7 +193,13 @@
     "system": "fixed brief notification-only instruction",
     "tools": [],
     "preserve_original_admission_sha256": true,
-    "reject": ["wrong owner", "wrong thread", "non-notification origin", "multiple messages", "non-human input"],
+    "reject": [
+      "wrong owner",
+      "wrong thread",
+      "non-notification origin",
+      "multiple messages",
+      "non-human input"
+    ],
     "default_production_notification_budget_verified": false
   }
 }

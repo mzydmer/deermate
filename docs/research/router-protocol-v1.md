@@ -33,6 +33,7 @@ A 具备相同后台能力、Worker 并发和查询能力，不调用同步 `wai
 - 每次模型请求最多 1024 output tokens，最大输入 12,000 UTF-8 bytes，同一工作卡和同一批来源正文。上下文构造和实际输入字节均记录；历史如何保存属于结构差异，超预算必须拒绝并计失败，不截断关键证据来配平。
 - 每组协调模型预算 20、研判预算 4、Native 预算 1，MCP poll interval 1s，Go 队列保持现有 3s tick；批量上限 20 件/16,000 bytes，固定事件采用同一个 Thread，避免只对 B 取消合批。
 - 执行环境用最小固定上游HTTP代理提供loopback入口，只有代理同时连接ingress与内部网络；Go和Gateway仅接internal网络、无外网，Native/Worker仍在同一Linux fixture。Mac runner仅提供客户端计时与调度；服务/Native延迟仍按前述Linux同域计算。三组使用同一代理配置，不改变任务、预算或故障屏障。
+- 三组使用同一Go源码与持续账本事务策略：读取前取得writer intent，原数据库回调执行一次，锁等待沿用5s busy timeout及请求context；没有仅对B/C加等待或重试外部动作。早期SQLite BUSY/503校准失败保留，修正后须重新校准并冻结新版本，不混入正式批次。
 - 每个样本新建 fixture owner、home 和工作目录；已下载镜像与官方 tokenizer 缓存预热，不复用上一样本的 DB/事件/模型缓存。启动和健康检查单独记时，均不进入前台响应指标。
 - 相同机器上串行运行，保留 CPU/内存限制和实际版本；不调整全局 Docker 网络或既有实例。无 Provider/真实 Native 凭据，网络只连本批 fixture。
 

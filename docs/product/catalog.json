@@ -159,7 +159,11 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "backend/internal/controlplane/continuous_store.go",
+      "backend/internal/controlplane/continuous_runtime.go",
+      "backend/internal/controlplane/continuous_store_concurrency_test.go",
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md"
     ]
   },
   {
@@ -244,7 +248,11 @@
       "docs/backup-restore.md",
       "scripts/single_host_backup.py",
       "backend/internal/controlplane/server.go",
-      "docs/verification/single-host-restore-2026-11-16.json"
+      "docs/verification/single-host-restore-2026-11-16.json",
+      "backend/internal/controlplane/continuous_store.go",
+      "backend/internal/controlplane/continuous_runtime.go",
+      "backend/internal/controlplane/continuous_store_concurrency_test.go",
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md"
     ]
   },
   {
@@ -356,7 +364,11 @@
       "docs/verification/router-routing-contracts-2026-11-16.json",
       "backend/internal/controlplane/evaluation_fixture.go",
       "tests/router_evaluation_model.py",
-      "scripts/verify_router_a.py"
+      "scripts/verify_router_a.py",
+      "backend/internal/controlplane/continuous_store.go",
+      "backend/internal/controlplane/continuous_runtime.go",
+      "backend/internal/controlplane/continuous_store_concurrency_test.go",
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md"
     ]
   }
 ]

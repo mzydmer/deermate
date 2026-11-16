@@ -4,6 +4,8 @@
 
 ## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
 
+当前正常链校准：B01/04/05真实SQLite BUSY/503且未进Native，B02/03通知超预算后dead_letter，五次均保留。已停止新卷预试，原ToolMessage/checkpoint仅私存，原卷WAL且接纳标记未持久；受控第二连接写锁稳定复现旧deferred读取→首次写入BUSY(5)与原记录完整回滚。有限候选在workTransaction回调前取得writer intent、回调一次、沿用5s busy/context、无外部重放；22处生产及两处tag回调已核对无外部runtime I/O。五项聚焦合同通过，评审方向接受；详见[说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。普通Go必要检查尚待运行，通过后构建三组共用的新源码镜像，再校准正常B/C；正式批次未开始。
+
 单样本脚本 `scripts/run_router_sample.py` 复用现有prepare/device/ordinary MCP链，接收mode/scenario/seed，目前只接纳非正式normal校准，S1/S2在建栈前拒绝。先创建真实本人work，公开tracking只由已知执行thread的本人list/detail取得；完成条件覆盖Worker、公开MCP及通知、Go原operation/inbox/work、相关runs与模型调用，再观察4s稳定尾部。只读probe去除授权字段，保留真实diff/测试文件哈希和全量调用记录；三个屏障合同测试通过（含Worker完成但tracking/通知未收敛及错owner/替代handle反例）。实际B/C单样本尚待运行；MCP轮询已对齐协议1s。
 
 `c6b959a` 的两个normal B预试保留：01在Router工具接纳前因真实Go SQLITE_BUSY/503失败，0 MCP/Worker/Native；02实际完成一个Native/Worker与公开MCP，Go账本已settled，但通知输入超12,000 bytes被拒绝并进入dead_letter，不能计完整完成。仅测试适配修正为A/B/C通知均不带无关普通工具schema，原通知messages及12,000上限保持；超预算拒绝另记录identity/实际bytes/hash，不冒充已调用模型。需新样本验证，未开始正式批次，也未改生产SQLite/通知行为。

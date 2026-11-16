@@ -5,6 +5,7 @@ import (
 	"crypto/subtle"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	obs "github.com/mzydmer/deermate/backend/internal/observability"
 	"net/http"
 	"net/url"
@@ -494,13 +495,16 @@ func (s *Server) workInternal(w http.ResponseWriter, r *http.Request) {
 	e = s.Store.workTransaction(r.Context(), func(tx *sql.Tx) error {
 		v, err := workGet(tx, owner, "operation", op.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("router tool claim canonical read: %w", err)
 		}
 		if workBool(v, "_tool_claimed") {
 			return ErrConflict
 		}
 		v.Data["_tool_claimed"] = true
-		return workPut(tx, &v)
+		if err := workPut(tx, &v); err != nil {
+			return fmt.Errorf("router tool claim record write: %w", err)
+		}
+		return nil
 	})
 	if e != nil {
 		workError(w, e)
