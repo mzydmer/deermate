@@ -66,12 +66,21 @@ def collect():
                 "notification_run_id,event_version,notified_version FROM mcp_tasks ORDER BY id"
             )
         ]
-        runs = [
-            dict(r)
-            for r in db.execute(
-                "SELECT run_id,thread_id,user_id,status,origin_kind FROM runs ORDER BY run_id"
-            )
-        ]
+        runs = []
+        for row in db.execute(
+            "SELECT run_id,thread_id,user_id,status,origin_kind,kwargs_json "
+            "FROM runs ORDER BY run_id"
+        ):
+            item = dict(row)
+            kwargs = json.loads(item.pop("kwargs_json") or "{}")
+            if item["origin_kind"] == "mcp_notification":
+                encoded = json.dumps(
+                    (kwargs.get("input") or {}).get("messages", []),
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ).encode()
+                item["notification_admission_sha256"] = hashlib.sha256(encoded).hexdigest()
+            runs.append(item)
         deliveries = []
         if db.execute(
             "SELECT 1 FROM sqlite_master WHERE name='continuous_fixture_deliveries'"

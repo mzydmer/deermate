@@ -826,3 +826,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Router B 预试失败与通知输入适配
 
 干净c6b959a两个normal B预试保留：01在Go工具接纳事务SQLITE_BUSY/503，0 Native；02实际Worker独立验证和公开MCP完成，但通知输入超预算重试后dead_letter，未通过完整完成屏障。测试适配统一三组通知无工具schema并保留原消息/预算上限，超预算拒绝记录实际bytes/hash与身份，未改生产SQLite或通知行为。新版本仍需实跑验证，正式36格未开始。
+
+
+## 2026-11-16 · 统一的原通知接纳输入适配
+
+B03去工具后仍首次12,544 bytes超预算，五次拒绝至dead_letter，失败原样保留。独立评审接受owned-admission-v1用于本离线协议：复核当前owner/run/thread与mcp_notification origin，完整原接纳单HumanMessage、固定短提示/空tools、全文哈希关联，排除普通历史和重试错误；原12,000上限不变。固定Gateway镜像内UID1000/networknone/只读测试源的三个合同通过，三组输入哈希相同，错身份/多消息/非Human拒绝。协议/基线/研究页同步限定为测试适配，B04实际完整屏障尚待运行，不声称默认生产通知预算验收。

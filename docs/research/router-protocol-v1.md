@@ -57,6 +57,8 @@ A/B对已绑定事件的最终附加是测试适配中的“已有权威订阅�
 
 模型输入计数/上限包含实际序列化messages（含tool_calls和非string内容）与绑定工具schema；按operation/run/thread/role关联日志，事件批次另记引用与context哈希。当前Router API在settled时才返回非空整段回复，因此first与complete为同一服务事件，不称为流式首token。
 
+三组通知统一使用测试适配 `owned-admission-v1`：以当前runtime已知run复核owner、thread与持久origin_kind=mcp_notification，只读取该run原始接纳的单个完整HumanMessage（含原通知说明和已框定的不可信事件）；配固定短System提示、空tools，保留原通知全文序列化SHA。普通会话历史、重试错误历史和通用工具说明不注入这一步，不截通知正文，也不增加12,000 bytes/1024 output上限；非本人、非通知、thread不匹配、多消息或非Human输入拒绝。超预算拒绝另记实际bytes/hash与身份。此为所有组共同的离线测试输入适配，不能据此声称默认生产通知已经在该预算内验证。
+
 正式样本只有在Worker独立验证及终态、MCP本人公开tracking终态、应有Go原operation/inbox终态、关联runs终态及通知投递全部核对后才进入完成屏障；之后再观察4s（超过Go tick与MCP poll）确保没有迟到模型/执行调用。调用数覆盖该屏障，A与B/C采用相同完成标准；任何层未收敛保留unknown/timeout，不能只靠Workercompleted结束。A用原请求已知的coordinator thread和正常本人MCP list/detail接口发现原tracking，B/C用原work的公开执行thread；禁止从私有观察器注入task句柄或重放。
 
 ## 配对、顺序和失败保留

@@ -140,6 +140,7 @@ def prepare(args, work, project, key):
         "native_delay_seconds": 12,
         "formal_batch": False,
         "project_commit_date": "2026-11-16T00:00:00Z",
+        "notification_context_adapter": "owned-admission-v1",
     }
     (runtime / "evaluation.json").write_text(json.dumps(cfg) + "\n")
     config = yaml.safe_load((runtime / "config.yaml").read_text())

@@ -20,3 +20,5 @@ B/C检查点新增共享canonical关联函数，C摄取时关联，测试A/B在R
 新增 `scripts/run_router_sample.py`、`tests/router_evaluation_probe.py` 与 `tests/test_router_sample.py`，复用已有A启动/设备配对函数，先校准一个normal B再验证C。原始证据采集只读并剔除nonce/凭据；公开任务handle只从本人已知thread的list/detail发现。完成屏障要求所有层和通知收敛后4秒稳定，Worker单独完成不足；测试覆盖未收敛和替代身份反例。脚本只支持非正式normal，S1/S2尚未实现即提前拒绝，尚无比较结果。全部为显式隔离fixture维护，未修改生产轮询、客户交互、默认路由或授权，因此客户指南和能力声明无需变化；共享fixture的MCP轮询对齐协议1秒。
 
 normal B01保留真实Go SQLITE_BUSY/503且无Native，B02完成实际任务后因通知输入超预算未达到完整屏障。测试model统一将三组通知工具设为空，完整保留通知messages，不增预算/不截关键正文；拒绝调用前记录实际输入bytes/hash和身份。生产middleware、SQLite和通知实现未改，因此无需客户文档能力变更；需新样本校准后才能记通过。镜像预检附加现有producer label，与harness当前提交分别记录，避免复用控制镜像时混淆生产身份。
+
+B03移除工具后仍首次12,544 bytes超预算，失败保留。经评审接受，增加显式owned-admission-v1通知测试适配：只读复核当前已知run的owner/thread/mcp_notification origin，完整保留原接纳单HumanMessage与哈希，固定短System且无tools；普通历史和重试错误不带入。三个Gateway运行时合同覆盖三组输入哈希一致、错owner/thread/origin、多消息和非Human拒绝，已通过；预算未扩大，未修改生产路径。协议/基线配置、产品技术评估与待发布说明同步限定该证据范围；B04真实通知投递与完整屏障仍待校准。

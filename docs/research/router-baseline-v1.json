@@ -176,5 +176,16 @@
     "all_modes_same_standard": true,
     "unsettled": "unknown_or_timeout"
   },
-  "project_commit_date": "2026-11-16T00:00:00Z"
+  "project_commit_date": "2026-11-16T00:00:00Z",
+  "notification_context": {
+    "adapter": "owned-admission-v1",
+    "same_for_all_modes": true,
+    "source": "current owned run, matching thread and origin_kind=mcp_notification",
+    "messages": "one complete original admitted HumanMessage; no truncation",
+    "system": "fixed brief notification-only instruction",
+    "tools": [],
+    "preserve_original_admission_sha256": true,
+    "reject": ["wrong owner", "wrong thread", "non-notification origin", "multiple messages", "non-human input"],
+    "default_production_notification_budget_verified": false
+  }
 }
