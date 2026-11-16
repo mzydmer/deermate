@@ -103,8 +103,8 @@ func (s *Server) evaluationContext(w http.ResponseWriter, r *http.Request) {
 	respond(w, 200, map[string]any{"context": batch, "event_refs": op.Data["event_batch"]})
 }
 
-func (s *Server) evaluationAdmitted(owner, inbox string) {
-	if os.Getenv("DEERMATE_EVALUATION_MODE") == "" {
+func (s *Server) evaluationAdmitted(owner, inbox, text string) {
+	if os.Getenv("DEERMATE_EVALUATION_MODE") == "" || !strings.HasPrefix(text, "EVAL_FRONT ") {
 		return
 	}
 	_, _ = s.Store.DB.Exec("INSERT OR IGNORE INTO deermate_evaluation_timings(owner,inbox,admitted_ns) VALUES(?,?,?)", owner, inbox, evaluationClock())
@@ -114,8 +114,23 @@ func (s *Server) evaluationVisible(owner string, items []workRecord) {
 	if os.Getenv("DEERMATE_EVALUATION_MODE") == "" {
 		return
 	}
+	// Polling already-visible replies must remain read-only. Even a zero-row
+	// UPDATE obtains writer intent and can starve Gateway admission on this
+	// shared WAL database. Only the first actual foreground projection writes.
+	rows, err := s.Store.DB.Query("SELECT inbox FROM deermate_evaluation_timings WHERE owner=? AND first_visible_ns IS NULL", owner)
+	if err != nil {
+		return
+	}
+	pending := map[string]bool{}
+	for rows.Next() {
+		var id string
+		if rows.Scan(&id) == nil {
+			pending[id] = true
+		}
+	}
+	rows.Close()
 	for _, item := range items {
-		if item.State == "settled" && workString(item, "reply") != "" {
+		if pending[item.ID] && item.State == "settled" && workString(item, "reply") != "" {
 			stamp := evaluationClock()
 			_, _ = s.Store.DB.Exec("UPDATE deermate_evaluation_timings SET first_visible_ns=?,complete_ns=? WHERE owner=? AND inbox=? AND first_visible_ns IS NULL", stamp, stamp, owner, item.ID)
 		}

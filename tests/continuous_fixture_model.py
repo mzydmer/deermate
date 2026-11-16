@@ -2,7 +2,9 @@
 
 import asyncio
 import json
+import os
 import time
+import traceback
 
 from deerflow_extension_api import BackendAction, PluginContribution
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
@@ -37,6 +39,43 @@ class FixtureMiddleware(continuous_middleware.ContinuousMiddleware):
 
 
 async def delayed_perform(payload, context):
+    try:
+        return await _delayed_perform(payload, context)
+    except Exception:
+        private_failure("perform", payload)
+        raise
+
+
+def private_failure(action, payload):
+    if not os.environ.get("DEERMATE_EVALUATION_CONFIG"):
+        return
+    from deermate.briefing import database
+
+    path = database().parent.parent / "evaluation-private-errors.log"
+    with path.open("a") as out:
+        path.chmod(0o600)
+        out.write(
+            json.dumps(
+                {
+                    "action": action,
+                    "operation": payload.get("operation_id"),
+                    "ns": time.monotonic_ns(),
+                }
+            )
+            + "\n"
+        )
+        traceback.print_exc(file=out)
+
+
+async def fixture_query(payload, context):
+    try:
+        return await continuous.query(payload, context)
+    except Exception:
+        private_failure("query", payload)
+        raise
+
+
+async def _delayed_perform(payload, context):
     with continuous.gate(context.principal.user_id) as (db, _):
         db.execute(
             "CREATE TABLE IF NOT EXISTS continuous_fixture_deliveries("
@@ -63,7 +102,7 @@ def install(registry, config):
             enabled=True,
             backend=(
                 BackendAction("perform", delayed_perform),
-                BackendAction("query", continuous.query),
+                BackendAction("query", fixture_query),
                 BackendAction("capabilities", continuous.capabilities),
             ),
         )

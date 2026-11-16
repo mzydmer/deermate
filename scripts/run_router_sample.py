@@ -222,6 +222,7 @@ def run(args):
                         "router_evaluation_model.py",
                         "fake_codex.py",
                         "continuous_native_fixture.py",
+                        "continuous_fixture_model.py",
                     )
                 ),
             )

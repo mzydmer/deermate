@@ -836,3 +836,8 @@ B03去工具后仍首次12,544 bytes超预算，五次拒绝至dead_letter，失
 ## 2026-11-16 · 共享账本写锁竞争的有限修正
 
 B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均保留。完整原ToolMessage/checkpoint仅私存，原始日志未记录竞争写方；独立连接控制写锁稳定复现deferred读取后首次写入BUSY(5)与完整回滚。workTransaction现在先取得writer intent，数据库回调只调用一次，沿用5s busy/context，无外部动作重放；22处生产及两处tag回调确认没有等待外部runtime I/O。五项聚焦测试通过，包含真实HTTP原状态全等、显式原token单action/同对象回执和0 runtime派发，方向获评审接受；必要Go全检和新源码B/C完整校准待完成。客户/技术/协议与目录同步，发送/恢复图语义不变，正式36格未开始。
+
+
+## 2026-11-16 · 正常B完整屏障与计时观察器修正
+
+干净4abb692的B06完整normal通过并经独立复核，单任务/根/轮次/effect、独立测试0、公开MCP与通知完成、Go四操作settled及4.15172s稳定尾部，通知1947bytes原admission哈希一致。该提交必要Go检查与Linux九项合同通过。C01同源前台perform/query发生OperationalError，原操作uncertain/前台超时而Native与通知完成，失败保留。两个新Linux合同证明旧计时每次GET反复零匹配写入争夺写锁，修正后仅前台建时钟、首次可见写一次、后续只读且不改原时间；原C日志未能证明具体竞争写方，不能预称全部根因解决。仅evaluation配置下原perform/query异常加0600私存栈并原样抛出，无等待/重试。新版本检查与同源B/C复验待完成，正式样本未开始。

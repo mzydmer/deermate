@@ -241,7 +241,7 @@ func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 		workError(w, e)
 		return
 	}
-	s.evaluationAdmitted(owner, out.ID)
+	s.evaluationAdmitted(owner, out.ID, workString(out, "text"))
 	s.captureRouterMemory(r.Context(), owner, out)
 	respond(w, 200, workPublic(out))
 }

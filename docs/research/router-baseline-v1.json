@@ -201,5 +201,11 @@
       "non-human input"
     ],
     "default_production_notification_budget_verified": false
+  },
+  "timing_instrumentation": {
+    "admission": "declared foreground input only",
+    "first_visible": "one actual settled nonempty foreground projection",
+    "subsequent_polls": "read only, no repeated zero-row updates",
+    "same_for_all_modes": true
   }
 }

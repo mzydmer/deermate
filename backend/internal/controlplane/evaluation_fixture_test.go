@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func evaluationRoutingFixture(t *testing.T, mode string) (*Server, User, browser, workRecord, *atomic.Int64) {
@@ -226,5 +227,66 @@ func TestEvaluationReadContextDoesNotAcquireNativeGrantRequirement(t *testing.T)
 	}
 	if _, err := s.workGrant(s.Store.DB, u.ID, "grant", "demo", "execute"); err == nil {
 		t.Fatal("revoked Native authority accepted")
+	}
+}
+
+func evaluationForegroundTimingFixture(t *testing.T) (*Server, User, workRecord, workRecord) {
+	t.Helper()
+	s, u, b, _, _ := evaluationRoutingFixture(t, "C")
+	headers := map[string]string{"X-Expected-User-Id": u.ID}
+	var items []workRecord
+	for _, body := range []string{
+		`{"operation_id":"timing-start","text":"EVAL_START timing-contract"}`,
+		`{"operation_id":"timing-front","text":"EVAL_FRONT timing-contract"}`,
+	} {
+		response := evaluationRequest(s, b, "POST", "/api/me/router/messages", body, headers)
+		requireStatus(t, response, 200)
+		var item workRecord
+		if err := json.Unmarshal(response.Body.Bytes(), &item); err != nil {
+			t.Fatal(err)
+		}
+		item.State = "settled"
+		item.Data["reply"] = "Synthetic visible reply"
+		items = append(items, item)
+	}
+	return s, u, items[0], items[1]
+}
+
+func TestEvaluationTimingOnlyTracksForegroundAndPreservesFirstClock(t *testing.T) {
+	s, user, start, foreground := evaluationForegroundTimingFixture(t)
+	var count int
+	if err := s.Store.DB.QueryRow("SELECT count(*) FROM deermate_evaluation_timings WHERE owner=?", user.ID).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("timing instrumentation admitted unrelated messages: count=%d err=%v", count, err)
+	}
+	s.evaluationVisible(user.ID, []workRecord{start, foreground})
+	var first, complete int64
+	if err := s.Store.DB.QueryRow("SELECT first_visible_ns,complete_ns FROM deermate_evaluation_timings WHERE owner=? AND inbox=?", user.ID, foreground.ID).Scan(&first, &complete); err != nil || first <= 0 || first != complete {
+		t.Fatalf("actual first/complete clock missing: %d %d %v", first, complete, err)
+	}
+	s.evaluationVisible(user.ID, []workRecord{start, foreground})
+	var repeated int64
+	if err := s.Store.DB.QueryRow("SELECT first_visible_ns FROM deermate_evaluation_timings WHERE owner=? AND inbox=?", user.ID, foreground.ID).Scan(&repeated); err != nil || repeated != first {
+		t.Fatal("polling rewrote the original first-visible clock", err)
+	}
+}
+
+func TestEvaluationVisibleReadDoesNotCompeteWithExistingWriter(t *testing.T) {
+	s, user, start, foreground := evaluationForegroundTimingFixture(t)
+	s.evaluationVisible(user.ID, []workRecord{start, foreground})
+	_, writer := competingWorkWriter(t, s.Store)
+	done := make(chan struct{})
+	go func() {
+		s.evaluationVisible(user.ID, []workRecord{start, foreground})
+		close(done)
+	}()
+	select {
+	case <-done:
+		if err := writer.Rollback(); err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(500 * time.Millisecond):
+		writer.Rollback()
+		<-done
+		t.Fatal("already-visible polling attempted another write while a separate writer held the WAL lock")
 	}
 }

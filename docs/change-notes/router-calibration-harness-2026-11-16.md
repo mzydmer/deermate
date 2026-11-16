@@ -22,3 +22,7 @@ B/C检查点新增共享canonical关联函数，C摄取时关联，测试A/B在R
 normal B01保留真实Go SQLITE_BUSY/503且无Native，B02完成实际任务后因通知输入超预算未达到完整屏障。测试model统一将三组通知工具设为空，完整保留通知messages，不增预算/不截关键正文；拒绝调用前记录实际输入bytes/hash和身份。生产middleware、SQLite和通知实现未改，因此无需客户文档能力变更；需新样本校准后才能记通过。镜像预检附加现有producer label，与harness当前提交分别记录，避免复用控制镜像时混淆生产身份。
 
 B03移除工具后仍首次12,544 bytes超预算，失败保留。经评审接受，增加显式owned-admission-v1通知测试适配：只读复核当前已知run的owner/thread/mcp_notification origin，完整保留原接纳单HumanMessage与哈希，固定短System且无tools；普通历史和重试错误不带入。三个Gateway运行时合同覆盖三组输入哈希一致、错owner/thread/origin、多消息和非Human拒绝，已通过；预算未扩大，未修改生产路径。协议/基线配置、产品技术评估与待发布说明同步限定该证据范围；B04真实通知投递与完整屏障仍待校准。
+
+干净4abb692的B06完整正常链通过并经独立复核：一个Worker/MCP/root/turn/effect、独立测试0、公开MCP完成且通知delivered、Go四操作settled，4.15172秒稳定尾部，通知完整admission哈希与1947bytes模型输入可关联。普通Go mod/vet/full race（36.600s）/无CGO与Linux-tag构建及实际Linux九项顶层合同通过；这是normal校准，不是S1或正式比较。
+
+同源C01 Native/Worker及通知已完成，前台perform/query的OperationalError使原操作uncertain并超时，失败保留；原日志未捕获完整栈，尚不能指定竞争写方。发现测试计时在每次GET中对已可见项执行零匹配UPDATE，两个受控Linux合同先失败后通过：现仅前台接纳建时钟记录，只有首次实际可见时写一次，后续在其他连接持写锁时仍只读且原时钟不变。普通构建仍无测试路由/计时，三组统一新测试策略；这不是取消实际共库竞争或改变生产派单。`continuous_fixture_model.py` 对evaluation配置下的原perform/query异常增加0600私有栈记录并原样抛出，调用一次且不加等待/重试。新版本需要重新检查并校准；原C失败不覆盖，不预称根因全部排除。

@@ -4,6 +4,8 @@
 
 ## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
 
+最新实际状态：干净4abb692的B06完整normal屏障通过，独立复核接受；单Worker/MCP/root/turn/effect、独立测试0、公开MCP completed/delivered、四Go操作settled，4.15172s稳定尾部，通知原admission哈希一致、输入1947bytes。该提交必要Go检查均通过（race36.600s），实际Linux九项顶层合同通过，普通构建仍无evaluation入口。同源C01在前台perform/query出现OperationalError而uncertain/前台超时，Native与通知完成，原样保留。先修正计时fixture每次GET反复零匹配写入的干扰：仅前台建时钟，首次可见后只读；两项Linux合同红→绿，另加原异常私存栈/原样抛出、无重试。新改动的必要检查及同源B/C复验待完成，S1事件与S2故障仍未实现，正式36格未开始。
+
 当前正常链校准：B01/04/05真实SQLite BUSY/503且未进Native，B02/03通知超预算后dead_letter，五次均保留。已停止新卷预试，原ToolMessage/checkpoint仅私存，原卷WAL且接纳标记未持久；受控第二连接写锁稳定复现旧deferred读取→首次写入BUSY(5)与原记录完整回滚。有限候选在workTransaction回调前取得writer intent、回调一次、沿用5s busy/context、无外部重放；22处生产及两处tag回调已核对无外部runtime I/O。五项聚焦合同通过，评审方向接受；详见[说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。普通Go必要检查尚待运行，通过后构建三组共用的新源码镜像，再校准正常B/C；正式批次未开始。
 
 单样本脚本 `scripts/run_router_sample.py` 复用现有prepare/device/ordinary MCP链，接收mode/scenario/seed，目前只接纳非正式normal校准，S1/S2在建栈前拒绝。先创建真实本人work，公开tracking只由已知执行thread的本人list/detail取得；完成条件覆盖Worker、公开MCP及通知、Go原operation/inbox/work、相关runs与模型调用，再观察4s稳定尾部。只读probe去除授权字段，保留真实diff/测试文件哈希和全量调用记录；三个屏障合同测试通过（含Worker完成但tracking/通知未收敛及错owner/替代handle反例）。实际B/C单样本尚待运行；MCP轮询已对齐协议1s。
