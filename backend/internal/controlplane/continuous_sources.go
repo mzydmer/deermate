@@ -430,18 +430,12 @@ func (s *Server) ingestGitHub(ctx context.Context, snapshot workRecord, objects 
 				continue
 			}
 			// Known subscriptions receive bounded context directly. No Router/model call.
-			if workID, err := workExisting(tx, src.Owner, "subscription", workString(event, "thread_key")); err == nil {
-				target, err := workGet(tx, src.Owner, "work", workID)
-				if err == nil && target.State != "closed" && workInt(target, "source_generation") == workInt(src, "generation") {
-					event.Parent = target.ID
-					event.State = "context"
-					if e = workPut(tx, &event); e != nil {
-						return e
-					}
-					target.Data["has_update"] = true
-					if e = workPut(tx, &target); e != nil {
-						return e
-					}
+			if evaluationDirectContext() {
+				attached, err := attachSubscriptionContext(tx, src, &event)
+				if err != nil {
+					return err
+				}
+				if attached {
 					continue
 				}
 			}
@@ -483,6 +477,29 @@ func (s *Server) ingestGitHub(ctx context.Context, snapshot workRecord, objects 
 		delete(src.Data, "error")
 		return workPut(tx, &src)
 	})
+}
+
+// The same canonical attachment is used at ingestion by ordinary builds/C,
+// and after the Router receipt by the explicit A/B evaluation adapter.
+func attachSubscriptionContext(tx *sql.Tx, src workRecord, event *workRecord) (bool, error) {
+	workID, err := workExisting(tx, src.Owner, "subscription", workString(*event, "thread_key"))
+	if err != nil {
+		return false, nil
+	}
+	target, err := workGet(tx, src.Owner, "work", workID)
+	if err != nil || target.State == "closed" || workInt(target, "source_generation") != workInt(src, "generation") {
+		return false, nil
+	}
+	if event.State == "context" && event.Parent == target.ID {
+		return true, nil
+	}
+	event.Parent = target.ID
+	event.State = "context"
+	if err = workPut(tx, event); err != nil {
+		return false, err
+	}
+	target.Data["has_update"] = true
+	return true, workPut(tx, &target)
 }
 
 // Only PRs already subscribed to a current work item are eligible for CI reads.

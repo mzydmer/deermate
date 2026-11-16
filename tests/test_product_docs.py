@@ -92,7 +92,7 @@ def test_deleted_article_does_not_satisfy_impact_review(project):
 
 def test_internal_change_requires_reasoned_note(project):
     path = project / "docs/change-notes/internal.md"
-    path.parent.mkdir()
+    path.parent.mkdir(exist_ok=True)
     paths = {"tests/internal.py", "docs/change-notes/internal.md"}
     path.write_text("结论：无需更新客户文档\n理由：测试\n涉及文件：tests/internal.py\n")
     with pytest.raises(ValueError, match="without public documentation review"):

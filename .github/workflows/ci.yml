@@ -166,6 +166,8 @@ jobs:
       - run: go mod verify
       - run: go vet ./...
       - run: go test -race ./...
+      - name: Verify Linux-only offline Router evaluation contracts
+        run: go test -race -tags=deermate_evaluation ./internal/controlplane -run '^TestEvaluation'
       - run: CGO_ENABLED=0 go build -trimpath ./cmd/deermate
 
   worker:
@@ -183,6 +185,11 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev]'
+      - name: Check offline Router harness and independent aggregation
+        run: ruff check scripts/verify_router_a.py scripts/run_router_sample.py scripts/run_router_evaluation.py scripts/judge_router_evaluation.py scripts/aggregate_router_evaluation.py
+      - name: Verify real loopback ACK-loss socket contracts on Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: PYTHONPATH=tests python tests/router_evaluation_proxy_contract.py -v
       - run: ruff check src tests deploy/testing/tokenizer_cache.py scripts/single_host_backup.py scripts/verify_single_host_restore.py scripts/deerflow_lock.py scripts/frontend_dev.py scripts/design_visual_fixture.py scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py
       - run: python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json
       - run: python -m build --wheel

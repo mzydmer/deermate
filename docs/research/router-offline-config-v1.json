@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "protocol_version": "router-offline-v1-draft1",
+  "runtime_revision_source": "deploy/deerflow.lock",
+  "modes": [
+    "A_single_coordinator_async",
+    "B_all_events_router",
+    "C_bound_subscription_direct"
+  ],
+  "scenarios": [
+    "S1_background_foreground",
+    "S2_lost_admission_ack"
+  ],
+  "paired_order": [
+    {
+      "seed": 1101,
+      "order": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    {
+      "seed": 1102,
+      "order": [
+        "B",
+        "C",
+        "A"
+      ]
+    },
+    {
+      "seed": 1103,
+      "order": [
+        "C",
+        "A",
+        "B"
+      ]
+    },
+    {
+      "seed": 1104,
+      "order": [
+        "A",
+        "C",
+        "B"
+      ]
+    },
+    {
+      "seed": 1105,
+      "order": [
+        "C",
+        "B",
+        "A"
+      ]
+    },
+    {
+      "seed": 1106,
+      "order": [
+        "B",
+        "A",
+        "C"
+      ]
+    }
+  ],
+  "planned_samples": 36,
+  "samples_per_scenario_mode": 6,
+  "limits": {
+    "anchor_timeout_seconds": 30,
+    "foreground_timeout_seconds": 30,
+    "sample_timeout_seconds": 90,
+    "worker_concurrency": 1,
+    "native_roots_per_work": 1,
+    "native_mutation_turns_per_work": 1,
+    "native_delay_seconds": 12,
+    "scripted_model_delay_seconds": 0.05,
+    "model_output_tokens_ceiling": 1024,
+    "model_input_utf8_bytes_ceiling": 12000,
+    "coordinator_call_budget": 20,
+    "assessor_call_budget": 4,
+    "native_budget": 1,
+    "go_queue_tick_seconds": 3,
+    "mcp_poll_interval_seconds": 1,
+    "event_batch_max_count": 20,
+    "event_batch_max_bytes": 16000
+  },
+  "s1_offsets_seconds": {
+    "bound_events": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6
+    ],
+    "foreground_question": 0.25,
+    "unbound_event": 0.7,
+    "wrong_owner_event": 0.8
+  },
+  "s2_offsets_seconds": {
+    "foreground_question": 0.25,
+    "duplicate_logical_input": 0.5
+  },
+  "fault_boundary": "Initial Router/coordinator admission ACK in all modes: real socket close once after matching original run, MCP tracking and confirmed chat journal are durable. B/C waits for the original Router tool-result-linked Native operation; not a Worker admission ACK. Zero response bytes before close, maximum hold 18s inside Go 20s budget. Missing barrier/non-200/observer error cannot count successful injection. Proof collected only after public recovery.",
+  "a_async_baseline_contract_required": true,
+  "b_c_only_bound_branch_diff_required": true,
+  "same_source_authority_and_batching_required": true,
+  "independent_evidence_judge_required": true,
+  "real_duplicate_effect_negative_control_required": true,
+  "all_failures_timeouts_unknown_and_unstarted_retained": true,
+  "quantiles": "nearest-rank ceil(q*n) over observed values; denominator/censoring always separate",
+  "real_provider_calls_authorized": 0,
+  "real_native_turns_authorized": 0,
+  "claims_excluded": [
+    "real_model_quality",
+    "provider_billing",
+    "human_attention",
+    "cloud_capacity",
+    "all_R-EVAL_complete"
+  ],
+  "primary_latency": "service durable admission -> successful actual complete-reply JSON transport flush (client visibility bound, not exact browser timing)",
+  "secondary_latencies": [
+    "client send -> actual complete JSON read containing original foreground reply, runner clock domain",
+    "service transport flush and client read reported separately; no cross-domain subtraction",
+    "queue duration, same service clock domain"
+  ],
+  "clock_domains": {
+    "runner": "runner monotonic; never subtract from Native/service clocks",
+    "service_native": "one Linux monotonic domain for service/native phase durations",
+    "schedule_origin": "runner receipt of actual turn/start event; preserve observation intervals and scheduling drift",
+    "observer_poll_interval_seconds": 0.02
+  },
+  "execution_environment": {
+    "ingress": "fixed-upstream minimal HTTP proxy; loopback only; proxy alone has dual networks",
+    "go_gateway": "internal network only; no external network",
+    "runner": "Mac client/schedule clock domain; service and Native clocks remain same Linux monotonic domain",
+    "same_for_all_modes": true,
+    "work_store_transactions": {
+      "writer_intent_before_callback": true,
+      "callback_invocations_per_attempt": 1,
+      "callback_retries": 0,
+      "busy_timeout_seconds": 5,
+      "request_context_bound": true,
+      "same_source_for_all_modes": true
+    }
+  },
+  "reproducibility_repeat": {
+    "seeds": [
+      1101
+    ],
+    "scenarios": "both",
+    "modes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "samples": 6,
+    "same_frozen_version_required": true,
+    "included_in_primary_36": false
+  },
+  "completion_barrier": {
+    "requires": [
+      "independent Worker verification and terminal state",
+      "owned public MCP tracking terminal",
+      "original Go operations/inbox terminal",
+      "associated runs terminal",
+      "notifications delivered or explicitly terminal with reason"
+    ],
+    "quiet_tail_seconds": 4,
+    "calls_counted_through_barrier": true,
+    "all_modes_same_standard": true,
+    "unsettled": "unknown_or_timeout"
+  },
+  "project_commit_date": "2026-11-16T00:00:00Z",
+  "notification_context": {
+    "adapter": "owned-admission-v1",
+    "same_for_all_modes": true,
+    "source": "current owned run, matching thread and origin_kind=mcp_notification",
+    "messages": "one complete original admitted HumanMessage; no truncation",
+    "system": "fixed brief notification-only instruction",
+    "tools": [],
+    "preserve_original_admission_sha256": true,
+    "reject": [
+      "wrong owner",
+      "wrong thread",
+      "non-notification origin",
+      "multiple messages",
+      "non-human input"
+    ],
+    "default_production_notification_budget_verified": false
+  },
+  "timing_instrumentation": {
+    "admission": "declared foreground input only",
+    "first_visible": "after actual JSON body write and successful transport Flush; failed Flush leaves null",
+    "subsequent_polls": "read only, no repeated zero-row updates",
+    "same_for_all_modes": true,
+    "legacy_name": "first_visible_ns denotes service reply flush, not browser display"
+  },
+  "s1_sender": {
+    "independent_sender_per_offset": true,
+    "client_per_attempt": true,
+    "foreground_reader_independent": true,
+    "actual_drift_retained": true,
+    "failed_timeout_and_unstarted_attempts_retained": true
+  },
+  "s1_outside_owner": {
+    "identity": "second actual authenticated synthetic admin without Worker grants, correct ExpectedID",
+    "expected_event_status": 403,
+    "original_work_read_forbidden": true,
+    "header_mismatch_negative": "separate Go contract, not the outside-owner event"
+  },
+  "artifact_purpose": "Immutable semantic configuration for upcoming frozen offline batch; results and producer recorded separately in batch manifest.",
+  "outer_budget_seconds_per_planned_case": 270
+}

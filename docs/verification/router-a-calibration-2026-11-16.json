@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "issue": 5,
+  "profile": "non-comparative A async functional calibration",
+  "formal_batch": false,
+  "passed": true,
+  "independent_review_accepted": true,
+  "producer_revision": "4180872120422fbb149d6238b81ef56850560606",
+  "checkout_dirty": false,
+  "control_image_id": "sha256:468415ef542ed40571b2215b86d71bdab031ec22546dc6c25cd1bdc41e16275b",
+  "gateway_image_id": "sha256:4279a8fd995fc5da2e4c4eddf45dbb1c905a8640c4c66399600e272129725b86",
+  "nginx_image_id": "sha256:d154f750562b438af461f76a3d08ccbfddb62da13b7d01fc3014c4642f91e746",
+  "gateway_package_source_matches_producer": true,
+  "fixture_source_sha256": {
+    "scripts/verify_router_a.py": "4c5c0d47b842438a7babae7784f086c1f4699ab7e52cee13c06b919d1640cdb5",
+    "tests/router_evaluation_model.py": "4b4dacbdb927034ad1f6e1547dc341a1281f8bf08deda862edda359b824354b2",
+    "tests/fake_codex.py": "1785267f0e1e02e905a78364f9e6be04b57db89a0178ee98d9de17b9eafd7374",
+    "tests/continuous_native_fixture.py": "9798c44be1119b7fdb3f9229183617e3cffa32aa7659be8c9c75dc38f58dcfbe",
+    "backend/internal/controlplane/evaluation_fixture.go": "706218083aa887a7084ad7b93789d4771ce53e8bb5690d969f8cfb42cb26d6d9",
+    "deploy/testing/router-nginx.conf": "46e2e492d0277eae5b42f36bd976818b7484c8938d1f19b33ad01a5b9eab630c"
+  },
+  "image_preflight": {
+    "image_id": "sha256:468415ef542ed40571b2215b86d71bdab031ec22546dc6c25cd1bdc41e16275b",
+    "binary_sha256": "7b49e660a777b83274597e53f8895838403dd8bfeb5edd896c8c194830a73edb",
+    "platform": "linux/amd64",
+    "test_tag": "deermate_evaluation",
+    "container_user": "1000:1000",
+    "network": "none",
+    "capabilities": {
+      "capabilities": [
+        "restore-quarantine-v1"
+      ]
+    }
+  },
+  "clock_scope": "Go and Native CLOCK_MONOTONIC with same Linux boot identity; Mac client durations separate; no cross-domain subtraction",
+  "foreground_admission_to_first_ms": 8632.282956,
+  "client_send_to_first_ms": 8642.038863,
+  "native_duration_ms": 12004.417506,
+  "foreground_visible_before_native_end_ms": 3321.353389,
+  "coordinator_released_before_native_end_ms": 11982.878676,
+  "first_and_complete_same_service_event": true,
+  "first_complete_reason": "Router API exposes the nonempty full reply only at settled; no token streaming measurement claimed",
+  "one_coordinator_thread": true,
+  "mcp_task_count": 1,
+  "worker_task_count": 1,
+  "native_roots": 1,
+  "native_turns": 1,
+  "effects": 1,
+  "worker_status": "completed",
+  "independent_test_exit": 0,
+  "mcp_status_at_final_probe": [
+    "working"
+  ],
+  "mcp_status_limit": "MCP tracking still working at this sample; functional async/Worker proof only, not completed public projection or lost-ACK reconciliation acceptance",
+  "model_calls": [
+    {
+      "operation": "ec9c1fa419f3461e8fd95f050476b74b",
+      "run_id": "0a52bf7b-dd1b-4a0d-9b3c-50e81a8e08cf",
+      "thread_id": "router-ae575bb90be44f489b14a74ca7222980",
+      "role": "coordinator",
+      "input_bytes": 1759
+    },
+    {
+      "operation": "b9a15f24c4684be69e2975f6eedcb365",
+      "run_id": "d01fd9be-1739-48a9-baf1-6c1993b4ed84",
+      "thread_id": "router-ae575bb90be44f489b14a74ca7222980",
+      "role": "coordinator",
+      "input_bytes": 899
+    }
+  ],
+  "model_input_scope": "actual serialized messages incl tool_calls/nonstring content and bound tools schemas; not billable tokens",
+  "app_network_isolation": {
+    "control": {
+      "internal_only": true,
+      "published_ports": 0
+    },
+    "gateway": {
+      "internal_only": true,
+      "published_ports": 0
+    }
+  },
+  "original12_ids_started_at_restart_unchanged": true,
+  "retained_pre_admission_attempts": [
+    {
+      "attempt": "01",
+      "result": "Docker FROM image ID interpreted as repository; no task admitted"
+    },
+    {
+      "attempt": "02",
+      "result": "binary COPY lost executable bit; no task admitted"
+    },
+    {
+      "attempt": "03",
+      "result": "internal-only published control port unavailable on Mac; no account or task admitted"
+    }
+  ],
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "raw_private_evidence_sha256": {
+    "a-calibration-04/calibration.json": "a9a32479c138a8ecfd5ba28b56279d2050f82c56f308f64112f425974f67b6a9",
+    "a-calibration-04/contract-summary.json": "d705c0476de919a6877e3f54987c52afefc51c01faf94384e897ba50d51d6b6e",
+    "a-calibration-source-04.json": "8ac186e4806711bdcef72ac3906a49bedfc6d0d66fbe201771da691be8323f19",
+    "a-calibration-command-04.json": "272076c7edff21dab7cc52d85eb22864bdd5e5f2ca7148ae4b98b78a05f7f84f",
+    "a-calibration-03-network-probe.json": "5040c40c3258604f828f30c1c3ee32f0fa5295febbc3fb7d8b97ba5b8a5857b8",
+    "a-calibration-03-ingress-probe-02.json": "e464b79d73fc483845138546e862a5bb6f20945d99743a561373780eaefec970"
+  },
+  "updated_at": "2026-11-16T19:41:39.449938+00:00",
+  "limits": "Scripted existing FixtureModel and fake Native; no formal A/B/C result, model quality, billing or attention claim; fixture volumes and failed attempts retained."
+}

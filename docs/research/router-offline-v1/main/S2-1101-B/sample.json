@@ -1,0 +1,1174 @@
+{
+  "profile": "single offline S2 calibration",
+  "formal_batch": true,
+  "batch_id": "20f38d87-4d1c-451b-9249-cb136533d10e",
+  "dataset_sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6",
+  "mode": "B",
+  "scenario": "S2",
+  "seed": 1101,
+  "passed": true,
+  "source": {
+    "revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+    "checkout_dirty": false,
+    "file_sha256": {
+      "scripts/run_router_sample.py": "c74f4c4439066948705f6e8dbd7c7dcaade0648d5049d0bc145fff1d07bea075",
+      "scripts/verify_router_a.py": "fe3462c24e901a0a7fe20ce2b88e58ee655434f2d6ddf7ccbab678822e0ce485",
+      "tests/router_evaluation_probe.py": "457bdda262d7ab8bead58f8f8702b5a891f90c9075766de370bd2b4170a6c111",
+      "tests/router_evaluation_proxy.py": "572da3548253325fd75e92a6adc44dc9d3a8e6d696fd02d9b6c41b63427488ec",
+      "tests/router_evaluation_model.py": "b906d93cc2d1e94c57f4e7cc66371f9edb1e9db91f300d17f776de092b8645e5",
+      "tests/fake_codex.py": "d3c90ac1fc29e6f9000521169fdcb06305786e4e4bfef852f9c062a0d8e930ae",
+      "tests/continuous_native_fixture.py": "488295da77e3af9fd3d4479e5d4d49eb7f8db054a486a4ea39c6e4fdc33fd10f",
+      "tests/continuous_fixture_model.py": "c9a4fdb25a9c32ca4e750ce19aba33a9672eae9041ebc5b6fc7295d443fcefe9"
+    }
+  },
+  "project": "deermate-router-b-ac7f62c8-fixture",
+  "logical_operation_id": "s2-1101",
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "scheduled_deliveries": [
+    {
+      "kind": "foreground",
+      "index": 0,
+      "intended_offset_seconds": 0.25,
+      "input": {
+        "operation_id": "front-s2-1101",
+        "text": "EVAL_FRONT s2-1101"
+      },
+      "clock_domain": "runner-monotonic",
+      "attempt_status": "responded",
+      "sent_runner_ns": 848105401240948,
+      "response_status": 200,
+      "received_runner_ns": 848105413044320,
+      "error_kind": null,
+      "drift_ms": 7.812332,
+      "due_runner_ns": 848105393428616,
+      "actor_user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+      "expected_user_id_matches_authenticated_user": true,
+      "receipt": {
+        "id": "5c72bfe2b8d340d7b175b6558b38685e",
+        "kind": "inbox",
+        "parent_id": "router",
+        "state": "pending",
+        "revision": 1,
+        "created_at": 1794869518325,
+        "updated_at": 1794869518325,
+        "data": {
+          "origin": "user",
+          "text": "EVAL_FRONT s2-1101",
+          "work_id": ""
+        }
+      },
+      "completed_runner_ns": 848105413155360
+    },
+    {
+      "kind": "duplicate_start",
+      "index": 0,
+      "intended_offset_seconds": 0.5,
+      "input": {
+        "operation_id": "start-s2-1101",
+        "text": "EVAL_START s2-1101"
+      },
+      "clock_domain": "runner-monotonic",
+      "attempt_status": "responded",
+      "sent_runner_ns": 848105649176336,
+      "response_status": 200,
+      "received_runner_ns": 848105653761420,
+      "error_kind": null,
+      "drift_ms": 5.74772,
+      "due_runner_ns": 848105643428616,
+      "actor_user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+      "expected_user_id_matches_authenticated_user": true,
+      "receipt": {
+        "id": "614aea3a8313417b831a6833f38d5372",
+        "kind": "inbox",
+        "parent_id": "router",
+        "state": "uncertain",
+        "revision": 3,
+        "created_at": 1794869503764,
+        "updated_at": 1794869517949,
+        "data": {
+          "operation_id": "b4880b9cc83549f0a660ae1b33e42dbd",
+          "origin": "user",
+          "text": "EVAL_START s2-1101",
+          "work_id": ""
+        }
+      },
+      "completed_runner_ns": 848105653823078
+    }
+  ],
+  "app_network_isolation": {
+    "control": {
+      "internal_only": true,
+      "published_ports": 0
+    },
+    "gateway": {
+      "internal_only": true,
+      "published_ports": 0
+    }
+  },
+  "owner_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+  "work_id": "750611f005324dd693f678bb6177d414",
+  "fixture_setup": {
+    "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+    "clock_ns": 631074414594895,
+    "direct_context": false,
+    "mode": "B"
+  },
+  "startup_elapsed_seconds": 43.65322106599342,
+  "start_inbox": "614aea3a8313417b831a6833f38d5372",
+  "native_observation_samples": [
+    {
+      "probe_started_runner_ns": 848090847634311,
+      "runner_ns": 848091024464350,
+      "service_ns": 631074750747068,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848091053964578,
+      "runner_ns": 848091247815474,
+      "service_ns": 631074974553681,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848091277479368,
+      "runner_ns": 848091463726155,
+      "service_ns": 631075186213503,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848091490760104,
+      "runner_ns": 848091659171721,
+      "service_ns": 631075386300720,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848091686867824,
+      "runner_ns": 848091882641137,
+      "service_ns": 631075608791594,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848091910338957,
+      "runner_ns": 848092078815029,
+      "service_ns": 631075806962714,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848092108053531,
+      "runner_ns": 848092279045759,
+      "service_ns": 631076006466473,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848092309131971,
+      "runner_ns": 848092480775016,
+      "service_ns": 631076207946740,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848092508536368,
+      "runner_ns": 848092673862707,
+      "service_ns": 631076401745672,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848092697371696,
+      "runner_ns": 848092970710260,
+      "service_ns": 631076693909633,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848092996782555,
+      "runner_ns": 848093274733874,
+      "service_ns": 631076998693937,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848093304538242,
+      "runner_ns": 848093572406353,
+      "service_ns": 631077294849493,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848093600202733,
+      "runner_ns": 848094048063878,
+      "service_ns": 631077771983578,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848094076946773,
+      "runner_ns": 848094457787786,
+      "service_ns": 631078181255334,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848094485519223,
+      "runner_ns": 848094763955559,
+      "service_ns": 631078489008393,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848094792406247,
+      "runner_ns": 848095049206452,
+      "service_ns": 631078775592384,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848095075033312,
+      "runner_ns": 848095361173503,
+      "service_ns": 631079084426508,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848095389349628,
+      "runner_ns": 848095684253225,
+      "service_ns": 631079407884057,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848095710277381,
+      "runner_ns": 848095984249329,
+      "service_ns": 631079709409420,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848096010721435,
+      "runner_ns": 848096343939862,
+      "service_ns": 631080011174147,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848096372139536,
+      "runner_ns": 848096753636277,
+      "service_ns": 631080474189566,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848096778879588,
+      "runner_ns": 848097152687203,
+      "service_ns": 631080877262287,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848097180438393,
+      "runner_ns": 848097455922218,
+      "service_ns": 631081180061720,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848097484607218,
+      "runner_ns": 848097768352497,
+      "service_ns": 631081492462293,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848097792216005,
+      "runner_ns": 848098076260528,
+      "service_ns": 631081797521033,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848098106044308,
+      "runner_ns": 848098388838061,
+      "service_ns": 631082108453320,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848098418108620,
+      "runner_ns": 848098690052428,
+      "service_ns": 631082414905725,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848098718937814,
+      "runner_ns": 848099076488398,
+      "service_ns": 631082788660612,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848099105560003,
+      "runner_ns": 848099459008919,
+      "service_ns": 631083178236504,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848099489114897,
+      "runner_ns": 848099951440694,
+      "service_ns": 631083674791571,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848099977193287,
+      "runner_ns": 848100361083091,
+      "service_ns": 631084082619112,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848100387332581,
+      "runner_ns": 848100566576997,
+      "service_ns": 631084291785330,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848100591034989,
+      "runner_ns": 848100768421956,
+      "service_ns": 631084491531740,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848100788650980,
+      "runner_ns": 848100983352212,
+      "service_ns": 631084705360688,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848101007149939,
+      "runner_ns": 848101209930904,
+      "service_ns": 631084931115820,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848101237682455,
+      "runner_ns": 848101453978587,
+      "service_ns": 631085179889353,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848101479309673,
+      "runner_ns": 848101689143119,
+      "service_ns": 631085414852924,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848101710128746,
+      "runner_ns": 848102050285285,
+      "service_ns": 631085774485497,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848102076409934,
+      "runner_ns": 848102374006078,
+      "service_ns": 631086098510827,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848102400239370,
+      "runner_ns": 848102758406111,
+      "service_ns": 631086482067078,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848102788027040,
+      "runner_ns": 848103080310127,
+      "service_ns": 631086802992807,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848103110241971,
+      "runner_ns": 848103460043217,
+      "service_ns": 631087182798749,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848103485569443,
+      "runner_ns": 848103847836437,
+      "service_ns": 631087572037222,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848103876126712,
+      "runner_ns": 848104248803294,
+      "service_ns": 631087971947247,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848104275787946,
+      "runner_ns": 848104577590937,
+      "service_ns": 631088303886529,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848104604403132,
+      "runner_ns": 848104780947323,
+      "service_ns": 631088505811808,
+      "native_events": 0
+    },
+    {
+      "probe_started_runner_ns": 848104803096672,
+      "runner_ns": 848105143428616,
+      "service_ns": 631088808274731,
+      "native_events": 1
+    }
+  ],
+  "schedule_origin_runner_ns": 848105143428616,
+  "schedule_origin": "runner receipt of actual original Native turn/start",
+  "foreground_inbox": "5c72bfe2b8d340d7b175b6558b38685e",
+  "coordinator_thread": "router-491efc7b07744f03952cce9a00d0b0e5",
+  "tracking_thread": "efb71dcd447444318170c95ff0f34551",
+  "barrier": {
+    "complete": true,
+    "status": "complete",
+    "stable_tail_seconds": 4.11401557805948,
+    "remaining_reasons": [],
+    "samples": 32,
+    "evidence": {
+      "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+      "clock_ns": 631114772851091,
+      "go_records": [
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "5c72bfe2b8d340d7b175b6558b38685e",
+          "kind": "inbox",
+          "state": "settled",
+          "parent": "router",
+          "revision": 4,
+          "data": {
+            "origin": "user",
+            "reply": "EVAL_VISIBLE s2-1101",
+            "work_id": ""
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "614aea3a8313417b831a6833f38d5372",
+          "kind": "inbox",
+          "state": "settled",
+          "parent": "router",
+          "revision": 4,
+          "data": {
+            "origin": "user",
+            "reply": "已记录安排，操作 ID：45294ae8f476438e82a0023883940670",
+            "work_id": ""
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "aacae4a86ec84a25ad98588006041f3e",
+          "kind": "inbox",
+          "state": "settled",
+          "parent": "router",
+          "revision": 4,
+          "data": {
+            "origin": "receipt",
+            "reply": "Synthetic reference received.",
+            "work_id": "750611f005324dd693f678bb6177d414"
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "45294ae8f476438e82a0023883940670",
+          "kind": "operation",
+          "state": "settled",
+          "parent": "750611f005324dd693f678bb6177d414",
+          "revision": 8,
+          "data": {
+            "kind": "execute",
+            "native_session": "1f37774c7d244fc8aa95fde19ed1b69c",
+            "preview": "Fixture patch prepared.",
+            "project": "demo",
+            "run_id": "",
+            "status": "completed",
+            "thread_id": "efb71dcd447444318170c95ff0f34551",
+            "tracking_id": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+            "verified": true
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "b4880b9cc83549f0a660ae1b33e42dbd",
+          "kind": "operation",
+          "state": "settled",
+          "parent": "614aea3a8313417b831a6833f38d5372",
+          "revision": 6,
+          "data": {
+            "event_batch": null,
+            "event_id": "",
+            "event_revision": 0,
+            "inbox_id": "614aea3a8313417b831a6833f38d5372",
+            "kind": "router",
+            "native_session": "",
+            "origin": "user",
+            "preview": "已记录安排，操作 ID：45294ae8f476438e82a0023883940670",
+            "rule_id": "",
+            "rule_revision": 0,
+            "run_id": "78f97343-8ccc-4ba1-a6e1-b0f3dd091bca",
+            "status": "completed",
+            "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+            "tracking_id": "",
+            "verified": false,
+            "work_id": ""
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "f44ddc65bb64463681e9a3cae5049fe5",
+          "kind": "operation",
+          "state": "settled",
+          "parent": "5c72bfe2b8d340d7b175b6558b38685e",
+          "revision": 4,
+          "data": {
+            "event_batch": null,
+            "event_id": "",
+            "event_revision": 0,
+            "inbox_id": "5c72bfe2b8d340d7b175b6558b38685e",
+            "kind": "router",
+            "native_session": "",
+            "origin": "user",
+            "preview": "EVAL_VISIBLE s2-1101",
+            "rule_id": "",
+            "rule_revision": 0,
+            "run_id": "e2e69837-24d5-48a6-b148-a5f3f7c89d48",
+            "status": "completed",
+            "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+            "tracking_id": "",
+            "verified": false,
+            "work_id": ""
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "fac73b181b374bd3bc3db22090f0c84b",
+          "kind": "operation",
+          "state": "settled",
+          "parent": "aacae4a86ec84a25ad98588006041f3e",
+          "revision": 4,
+          "data": {
+            "event_batch": null,
+            "event_id": "",
+            "event_revision": 0,
+            "inbox_id": "aacae4a86ec84a25ad98588006041f3e",
+            "kind": "router",
+            "native_session": "",
+            "origin": "receipt",
+            "preview": "Synthetic reference received.",
+            "rule_id": "",
+            "rule_revision": 0,
+            "run_id": "8e569c65-eb5f-4265-b1b4-bb12d9c342ea",
+            "status": "completed",
+            "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+            "tracking_id": "",
+            "verified": false,
+            "work_id": "750611f005324dd693f678bb6177d414"
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "router",
+          "kind": "router",
+          "state": "active",
+          "parent": "",
+          "revision": 1,
+          "data": {
+            "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5"
+          }
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "settings",
+          "kind": "settings",
+          "state": "enabled",
+          "parent": "",
+          "revision": 1,
+          "data": {}
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "github",
+          "kind": "source",
+          "state": "enabled",
+          "parent": "",
+          "revision": 1,
+          "data": {}
+        },
+        {
+          "owner": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "id": "750611f005324dd693f678bb6177d414",
+          "kind": "work",
+          "state": "active",
+          "parent": "",
+          "revision": 9,
+          "data": {
+            "head": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+            "origin": "interactive",
+            "outcome": "completed",
+            "preview": "Fixture patch prepared.",
+            "project": "demo",
+            "source_generation": 1,
+            "source_id": "github",
+            "stage": "completed",
+            "thread_id": "efb71dcd447444318170c95ff0f34551",
+            "thread_key": "github:fixture/project:7",
+            "title": "Fix the toy addition. EVAL_OPERATION=s2-",
+            "verified": true
+          }
+        }
+      ],
+      "mcp_tasks": [
+        {
+          "id": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+          "user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "thread_id": "efb71dcd447444318170c95ff0f34551",
+          "run_id": "continuous:45294ae8f476438e82a0023883940670",
+          "status": "completed",
+          "remote_task_id": "1a686e7d7fb745c6bf15bc4f6411d9de:c5235052f3364f8b9dceab73f259e13a",
+          "notification_status": "delivered",
+          "notification_run_id": null,
+          "event_version": 1,
+          "notified_version": 1
+        }
+      ],
+      "runs": [
+        {
+          "run_id": "284fef4e-52a1-4415-b27d-79562ab04b84",
+          "thread_id": "efb71dcd447444318170c95ff0f34551",
+          "user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "status": "success",
+          "origin_kind": "mcp_notification",
+          "notification_admission_sha256": "75ce48180885d5dad6241f640ba53fe549512332210ae43e80b37cafcefe91bf"
+        },
+        {
+          "run_id": "78f97343-8ccc-4ba1-a6e1-b0f3dd091bca",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "status": "success",
+          "origin_kind": "extension"
+        },
+        {
+          "run_id": "8e569c65-eb5f-4265-b1b4-bb12d9c342ea",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "status": "success",
+          "origin_kind": "extension"
+        },
+        {
+          "run_id": "e2e69837-24d5-48a6-b148-a5f3f7c89d48",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "user_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+          "status": "success",
+          "origin_kind": "extension"
+        }
+      ],
+      "deliveries": [
+        [
+          "45294ae8f476438e82a0023883940670",
+          1
+        ],
+        [
+          "b4880b9cc83549f0a660ae1b33e42dbd",
+          1
+        ],
+        [
+          "f44ddc65bb64463681e9a3cae5049fe5",
+          1
+        ],
+        [
+          "fac73b181b374bd3bc3db22090f0c84b",
+          1
+        ]
+      ],
+      "worker_tasks": [
+        {
+          "task_id": "c5235052f3364f8b9dceab73f259e13a",
+          "project_id": "demo",
+          "status": "completed",
+          "created_at": "2026-11-16T22:51:57.762816+00:00",
+          "updated_at": "2026-11-16T22:52:10.347751+00:00",
+          "attempt": 1,
+          "root_task_id": null,
+          "parent_task_id": null,
+          "conversation_round": 1,
+          "session_id": "1f37774c7d244fc8aa95fde19ed1b69c",
+          "turn_id": "42733ea698e446799a92b78bf3cbae11",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a",
+          "base_commit": "b6bd7fea9e5c436843b29ea51504883a481ea2a0",
+          "error": null,
+          "result": {
+            "summary": "Fixture patch prepared.",
+            "validation": {
+              "command": [
+                "/app/backend/.venv/bin/python",
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "tests",
+                "-v"
+              ],
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": "test_add (test_answer.Addition.test_add) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+            },
+            "validation_status": "passed",
+            "diff": "diff --git a/answer.py b/answer.py\nindex 12ee743..4693ad3 100644\n--- a/answer.py\n+++ b/answer.py\n@@ -1,2 +1,2 @@\n def add(a, b):\n-    return a - b\n+    return a + b\ndiff --git a/notes.txt b/notes.txt\nnew file mode 100644\nindex 0000000..a54439d\n--- /dev/null\n+++ b/notes.txt\n@@ -0,0 +1 @@\n+offline protocol fixture\n",
+            "attempt": 1,
+            "acceptance": "Configured command exit status; not a correctness guarantee."
+          },
+          "prompt_sha256": "3d30e5d9cf7aee2615851600f456bcb856ee829d68495eab4e6f3cd809b4d209",
+          "logical_markers": [
+            "s2-1101"
+          ],
+          "actual_answer_sha256": "ba1a531f581d2e6094e978ed6f7aca7a8d92eeb62c6e7ad73ee692f7f18bc772",
+          "actual_files_sha256": {
+            ".gitignore": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+            "answer.py": "ba1a531f581d2e6094e978ed6f7aca7a8d92eeb62c6e7ad73ee692f7f18bc772",
+            "notes.txt": "73952c23c6874bff86eecf51e4371a554ce581fc6301e1a43c4c049164d0c9c6",
+            "tests/test_answer.py": "b11035c7a3ba0efba003580751779cee2c1984cc36bc12f08c9a7da90a09cd1c"
+          },
+          "actual_changed_paths": [
+            "answer.py",
+            "notes.txt"
+          ],
+          "actual_diff": "diff --git a/answer.py b/answer.py\nindex 12ee743..4693ad3 100644\n--- a/answer.py\n+++ b/answer.py\n@@ -1,2 +1,2 @@\n def add(a, b):\n-    return a - b\n+    return a + b\n",
+          "actual_test_sha256": "b11035c7a3ba0efba003580751779cee2c1984cc36bc12f08c9a7da90a09cd1c"
+        }
+      ],
+      "native_events": [
+        {
+          "kind": "native_turn_started",
+          "ns": 631088799824440,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "logical_operation": "s2-1101",
+          "root": "1f37774c7d244fc8aa95fde19ed1b69c",
+          "turn": "42733ea698e446799a92b78bf3cbae11",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a"
+        },
+        {
+          "kind": "effect",
+          "ns": 631100800887639,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "logical_operation": "s2-1101",
+          "root": "1f37774c7d244fc8aa95fde19ed1b69c",
+          "turn": "42733ea698e446799a92b78bf3cbae11",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a"
+        },
+        {
+          "kind": "native_turn_finished",
+          "ns": 631100801457407,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "logical_operation": "s2-1101",
+          "root": "1f37774c7d244fc8aa95fde19ed1b69c",
+          "turn": "42733ea698e446799a92b78bf3cbae11",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a",
+          "cancelled": false
+        },
+        {
+          "kind": "validation_finished",
+          "ns": 631101108088393,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "logical_operation": "s2-1101",
+          "root": "1f37774c7d244fc8aa95fde19ed1b69c",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a",
+          "command": [
+            "/app/backend/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v"
+          ],
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "2d23ec250a3c18db6a037dec48e7484a6e53ea54347e6d7dd681350fc4cbc5f8"
+        }
+      ],
+      "native_rpc": [
+        {
+          "id": 1,
+          "method": "initialize"
+        },
+        {
+          "id": null,
+          "method": "initialized"
+        },
+        {
+          "id": 2,
+          "method": "thread/start",
+          "cwd": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a"
+        },
+        {
+          "id": 3,
+          "method": "turn/start",
+          "cwd": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a",
+          "threadId": "1f37774c7d244fc8aa95fde19ed1b69c",
+          "input_text_sha256": "3d30e5d9cf7aee2615851600f456bcb856ee829d68495eab4e6f3cd809b4d209",
+          "logical_markers": [
+            "s2-1101"
+          ]
+        },
+        {
+          "id": 4,
+          "method": "command/exec",
+          "cwd": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/c5235052f3364f8b9dceab73f259e13a",
+          "command": [
+            "/app/backend/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v"
+          ]
+        }
+      ],
+      "model_events": [
+        {
+          "kind": "model_started",
+          "ns": 631082379310165,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": "b4880b9cc83549f0a660ae1b33e42dbd",
+          "inbox": "614aea3a8313417b831a6833f38d5372",
+          "run_id": "78f97343-8ccc-4ba1-a6e1-b0f3dd091bca",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "role": "router",
+          "input_bytes": 2384,
+          "input_measurement": "serialized messages with tool_calls/structured content plus bound tool schemas",
+          "input_sha256": "d8cce08d49d6d7a6e43e874d273296d0ff8c3e4e284a613e8555fb88b9d8c3fd",
+          "mode": "B",
+          "input_kind": "EVAL_START s2-1101"
+        },
+        {
+          "kind": "model_finished",
+          "ns": 631082430032001,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": "b4880b9cc83549f0a660ae1b33e42dbd",
+          "inbox": "614aea3a8313417b831a6833f38d5372",
+          "run_id": "78f97343-8ccc-4ba1-a6e1-b0f3dd091bca",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "role": "router",
+          "mode": "B",
+          "visible": false
+        },
+        {
+          "kind": "model_started",
+          "ns": 631095207294011,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": "f44ddc65bb64463681e9a3cae5049fe5",
+          "inbox": "5c72bfe2b8d340d7b175b6558b38685e",
+          "run_id": "e2e69837-24d5-48a6-b148-a5f3f7c89d48",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "role": "router",
+          "input_bytes": 2418,
+          "input_measurement": "serialized messages with tool_calls/structured content plus bound tool schemas",
+          "input_sha256": "89aed3031159f021d061145bc33d57e31fee2742e8d9867fd1f21821a8877dfd",
+          "mode": "B",
+          "input_kind": "EVAL_FRONT s2-1101"
+        },
+        {
+          "kind": "model_finished",
+          "ns": 631095258041305,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": "f44ddc65bb64463681e9a3cae5049fe5",
+          "inbox": "5c72bfe2b8d340d7b175b6558b38685e",
+          "run_id": "e2e69837-24d5-48a6-b148-a5f3f7c89d48",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "role": "router",
+          "mode": "B",
+          "visible": true
+        },
+        {
+          "kind": "model_started",
+          "ns": 631102106751156,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": null,
+          "inbox": null,
+          "run_id": "284fef4e-52a1-4415-b27d-79562ab04b84",
+          "thread_id": "efb71dcd447444318170c95ff0f34551",
+          "role": "notification",
+          "notification_admission_sha256": "75ce48180885d5dad6241f640ba53fe549512332210ae43e80b37cafcefe91bf",
+          "input_bytes": 1947,
+          "input_measurement": "serialized messages with tool_calls/structured content plus bound tool schemas",
+          "input_sha256": "d440c8792f577b6a549a58dc64d50afbd0ad58560b45ca59534f4e2be4f0100d",
+          "mode": "B",
+          "input_kind": "A durable background MCP"
+        },
+        {
+          "kind": "model_finished",
+          "ns": 631102157566789,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": null,
+          "inbox": null,
+          "run_id": "284fef4e-52a1-4415-b27d-79562ab04b84",
+          "thread_id": "efb71dcd447444318170c95ff0f34551",
+          "role": "notification",
+          "notification_admission_sha256": "75ce48180885d5dad6241f640ba53fe549512332210ae43e80b37cafcefe91bf",
+          "mode": "B",
+          "visible": true
+        },
+        {
+          "kind": "model_started",
+          "ns": 631107108889248,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": "fac73b181b374bd3bc3db22090f0c84b",
+          "inbox": "aacae4a86ec84a25ad98588006041f3e",
+          "run_id": "8e569c65-eb5f-4265-b1b4-bb12d9c342ea",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "role": "router",
+          "input_bytes": 2498,
+          "input_measurement": "serialized messages with tool_calls/structured content plus bound tool schemas",
+          "input_sha256": "f2c039b23be0e5073e053ad110eb972378eec8ef48f949e4fe2d5b2a2a0b4f27",
+          "mode": "B",
+          "input_kind": "Work 750611f005324dd693f"
+        },
+        {
+          "kind": "model_finished",
+          "ns": 631107159870572,
+          "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+          "operation": "fac73b181b374bd3bc3db22090f0c84b",
+          "inbox": "aacae4a86ec84a25ad98588006041f3e",
+          "run_id": "8e569c65-eb5f-4265-b1b4-bb12d9c342ea",
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5",
+          "role": "router",
+          "mode": "B",
+          "visible": true
+        }
+      ],
+      "observation_presence": {
+        "native_events": true,
+        "native_rpc": true,
+        "model_events": true
+      }
+    },
+    "public_tracking": {
+      "thread_id": "efb71dcd447444318170c95ff0f34551",
+      "discovery": "owner public thread task list",
+      "items": [
+        {
+          "task_id": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+          "task_name": "coding",
+          "status": "completed",
+          "created_at": "2026-11-16T22:51:57.850358+00:00",
+          "updated_at": "2026-11-16T22:52:11.755366+00:00",
+          "error": null,
+          "tracking_degraded": false,
+          "cancel_requested": false,
+          "last_polled_at": "2026-11-16T22:52:10.559860+00:00",
+          "last_poll_error": null,
+          "last_cancel_error": null,
+          "cancel_attempt_count": 0,
+          "notification_status": "delivered",
+          "notification_error": null,
+          "notification_attempt_count": 0,
+          "result": {
+            "worker_status": "completed",
+            "session_id": "1f37774c7d244fc8aa95fde19ed1b69c",
+            "attempt": 1,
+            "conversation_id": "1a686e7d7fb745c6bf15bc4f6411d9de:c5235052f3364f8b9dceab73f259e13a",
+            "parent_task_id": null,
+            "conversation_round": 1,
+            "summary": "Fixture patch prepared.",
+            "summary_truncated": false,
+            "validation_status": "passed",
+            "diff_available": true,
+            "diff_command": "deermate diff c5235052f3364f8b9dceab73f259e13a",
+            "acceptance": "Configured command exit status; not a correctness guarantee.",
+            "validation": {
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": "test_add (test_answer.Addition.test_add) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+              "output_truncated": false
+            }
+          },
+          "result_preview": null,
+          "result_truncated": false,
+          "result_artifact": null,
+          "input_required": null
+        }
+      ]
+    },
+    "router_view": {
+      "items": [
+        {
+          "id": "aacae4a86ec84a25ad98588006041f3e",
+          "kind": "inbox",
+          "parent_id": "router",
+          "state": "settled",
+          "revision": 4,
+          "created_at": 1794869532657,
+          "updated_at": 1794869538671,
+          "data": {
+            "operation_id": "fac73b181b374bd3bc3db22090f0c84b",
+            "origin": "receipt",
+            "reply": "Synthetic reference received.",
+            "text": "Work 750611f005324dd693f678bb6177d414 has a new authoritative receipt: completed. Verified: true. Read its references if needed.",
+            "work_id": "750611f005324dd693f678bb6177d414"
+          }
+        },
+        {
+          "id": "5c72bfe2b8d340d7b175b6558b38685e",
+          "kind": "inbox",
+          "parent_id": "router",
+          "state": "settled",
+          "revision": 4,
+          "created_at": 1794869518325,
+          "updated_at": 1794869526702,
+          "data": {
+            "operation_id": "f44ddc65bb64463681e9a3cae5049fe5",
+            "origin": "user",
+            "reply": "EVAL_VISIBLE s2-1101",
+            "text": "EVAL_FRONT s2-1101",
+            "work_id": ""
+          }
+        },
+        {
+          "id": "614aea3a8313417b831a6833f38d5372",
+          "kind": "inbox",
+          "parent_id": "router",
+          "state": "settled",
+          "revision": 4,
+          "created_at": 1794869503764,
+          "updated_at": 1794869520690,
+          "data": {
+            "operation_id": "b4880b9cc83549f0a660ae1b33e42dbd",
+            "origin": "user",
+            "reply": "已记录安排，操作 ID：45294ae8f476438e82a0023883940670",
+            "text": "EVAL_START s2-1101",
+            "work_id": ""
+          }
+        }
+      ],
+      "session": {
+        "id": "router",
+        "kind": "router",
+        "state": "active",
+        "revision": 1,
+        "created_at": 1794869503764,
+        "updated_at": 1794869503764,
+        "data": {
+          "thread_id": "router-491efc7b07744f03952cce9a00d0b0e5"
+        }
+      }
+    },
+    "work": {
+      "id": "750611f005324dd693f678bb6177d414",
+      "kind": "work",
+      "state": "active",
+      "revision": 9,
+      "created_at": 1794869503577,
+      "updated_at": 1794869532657,
+      "data": {
+        "can_cancel": false,
+        "can_execute": true,
+        "executor": "codex",
+        "goal": "Fix the toy addition. EVAL_OPERATION=s2-1101",
+        "grant_id": "7947757e-9b39-48ea-8f44-d50c507098d9",
+        "head": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+        "incarnation": "44bb682b43ca46339645b067505104de",
+        "number": 7,
+        "origin": "interactive",
+        "outcome": "completed",
+        "preview": "Fixture patch prepared.",
+        "project": "demo",
+        "refs": [
+          {
+            "id": "45294ae8f476438e82a0023883940670",
+            "kind": "operation"
+          }
+        ],
+        "server": "deermate",
+        "source_generation": 1,
+        "source_id": "github",
+        "stage": "completed",
+        "thread_id": "efb71dcd447444318170c95ff0f34551",
+        "thread_key": "github:fixture/project:7",
+        "title": "Fix the toy addition. EVAL_OPERATION=s2-",
+        "verified": true
+      }
+    },
+    "runner_observed_ns": 848131048529244
+  },
+  "service_evidence": {
+    "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+    "clock_ns": 631114798605996,
+    "first_equals_complete": "one complete reply projection; not streaming tokens",
+    "items": [
+      {
+        "admitted_ns": 631089155831324,
+        "complete_ns": 631097543209443,
+        "first_visible_ns": 631097543209443,
+        "inbox": "5c72bfe2b8d340d7b175b6558b38685e"
+      }
+    ],
+    "mode": "B",
+    "observation_boundary": "successful flush of actual settled JSON reply after response body write; clock sampled before persistence, not before response write",
+    "visibility_limit": "server flush is a lower bound on client JSON/UI visibility; client complete-read clock is separately recorded and never subtracted from service clock"
+  },
+  "service_admission_to_reply_flush_ms": 8387.378119,
+  "client_send_to_complete_read_ms": 8396.853891,
+  "foreground_sent_runner_ns": 848105401240948,
+  "foreground_complete_read_runner_ns": 848113798094839,
+  "metric_semantics": {
+    "service": "durable admission -> successful flush of actual complete JSON reply",
+    "visibility_limit": "transport boundary; not exact browser display timing",
+    "client": "send -> complete JSON read containing the original foreground marker",
+    "clock_domains": "Linux service and client clocks stay separate; no subtraction",
+    "no_streaming_token_claim": true
+  },
+  "client_send_to_end_barrier_ms": 25647.288296,
+  "runner_clock_domain": "runner-monotonic (never subtracted from Linux service clocks)",
+  "fault_events": [
+    {
+      "kind": "fault_reserved",
+      "ns": 631076491220201,
+      "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+      "original_go_operation": "b4880b9cc83549f0a660ae1b33e42dbd"
+    },
+    {
+      "kind": "durable_barrier",
+      "ns": 631088772505442,
+      "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+      "proof": {
+        "original_go_operation": "b4880b9cc83549f0a660ae1b33e42dbd",
+        "original_go_state": "dispatching",
+        "original_run_id": "78f97343-8ccc-4ba1-a6e1-b0f3dd091bca",
+        "owner_id": "8fa268aa-cb8a-40c9-a80f-911a8db9409b",
+        "coordinator_thread": "router-491efc7b07744f03952cce9a00d0b0e5",
+        "native_operation": "45294ae8f476438e82a0023883940670",
+        "tracking_thread": "efb71dcd447444318170c95ff0f34551",
+        "tracking_id": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+        "remote_handle_sha256": "bbb078d354aa43bb03c288c65ee9b670add5ff31ecc4e4f72b4d5b2816ae548c",
+        "tracking_status_at_barrier": "submitted",
+        "chat_turn_confirmed": true,
+        "chat_head": "mcp-task-a6feb4e2b1a5a4e0e652b874f12041ea",
+        "chat_round": 1,
+        "chat_pending": null
+      },
+      "upstream_status": 200,
+      "upstream_response_bytes": 151
+    },
+    {
+      "kind": "ack_dropped",
+      "ns": 631088774881980,
+      "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+      "original_go_operation": "b4880b9cc83549f0a660ae1b33e42dbd",
+      "response_bytes_sent_to_go": 0
+    },
+    {
+      "kind": "original_query",
+      "ns": 631091516301674,
+      "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+      "original_go_operation": "b4880b9cc83549f0a660ae1b33e42dbd",
+      "upstream_status": 200,
+      "known": true,
+      "run_id": "78f97343-8ccc-4ba1-a6e1-b0f3dd091bca",
+      "status": "completed"
+    }
+  ],
+  "fault_evidence_collected_after_recovery_driver": true,
+  "s2_contract": {
+    "target": "initial Router/coordinator admission ACK",
+    "conditions": {
+      "exactly_one_actual_durable_barrier": true,
+      "exactly_one_actual_ack_drop": true,
+      "no_injection_errors": true,
+      "zero_response_bytes_before_close": true,
+      "barrier_precedes_drop": true,
+      "original_operation_recovered": true,
+      "normal_query_recovers_original_run": true,
+      "duplicate_owner_input_same_original_inbox": true,
+      "public_tracking_recovers_original_task": true,
+      "full_tracking_barrier": true
+    },
+    "passed": true
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "profile": "normal full-chain calibration",
+  "formal_batch": false,
+  "producer_revision": "bb7b91b7564a34c825be4a403758cfd4f720ed7d",
+  "checkout_dirty": false,
+  "control_image_id": "sha256:4ed9bc252bb15fc31469b95a04d340c878af036a3ce281777e52c1cb973683cd",
+  "results": [
+    {
+      "mode": "B",
+      "producer_revision": "bb7b91b7564a34c825be4a403758cfd4f720ed7d",
+      "checkout_dirty": false,
+      "formal_batch": false,
+      "full_barrier_complete": true,
+      "quiet_tail_seconds": 4.5123122070217505,
+      "public_mcp_status": "completed",
+      "public_notification_status": "delivered",
+      "go_operations_settled": 4,
+      "worker_tasks": 1,
+      "native_roots": 1,
+      "native_turns": 1,
+      "effects": 1,
+      "validation_exit_code": 0,
+      "model_calls": 4,
+      "notification_input_bytes": [
+        1947
+      ],
+      "initial_git_commit": "b6bd7fea9e5c436843b29ea51504883a481ea2a0",
+      "raw_sha256": "5793fa2e36fc74c828bec585d7129d9522ced1bb97c2b36d5ef122f3a5ab12f3",
+      "latency_limitation": "Legacy first_visible_ns is pre-response Go projection snapshot before DB.Exec; not exact client receipt or response flush. No formal latency/overlap conclusion from that stamp."
+    },
+    {
+      "mode": "C",
+      "producer_revision": "bb7b91b7564a34c825be4a403758cfd4f720ed7d",
+      "checkout_dirty": false,
+      "formal_batch": false,
+      "full_barrier_complete": true,
+      "quiet_tail_seconds": 4.078307413030416,
+      "public_mcp_status": "completed",
+      "public_notification_status": "delivered",
+      "go_operations_settled": 4,
+      "worker_tasks": 1,
+      "native_roots": 1,
+      "native_turns": 1,
+      "effects": 1,
+      "validation_exit_code": 0,
+      "model_calls": 4,
+      "notification_input_bytes": [
+        1947
+      ],
+      "initial_git_commit": "b6bd7fea9e5c436843b29ea51504883a481ea2a0",
+      "raw_sha256": "7bac12181e9b66f3394ffcc824dcf312d450c8d5fe4ede611ed1abe20d3701df",
+      "latency_limitation": "Legacy first_visible_ns is pre-response Go projection snapshot before DB.Exec; not exact client receipt or response flush. No formal latency/overlap conclusion from that stamp."
+    }
+  ],
+  "scope": "Normal B/C complete tracking barrier only; S1 event table/S2 ACK loss/independent CLI judge/formal36 are not covered",
+  "latency_limit": "Legacy normal first_visible_ns is pre-response Go projection before DB.Exec; no precise browser visibility or formal latency/overlap claim. Raw originals retained.",
+  "necessary_go_checks": {
+    "mod_verify": 0,
+    "vet": 0,
+    "race": 0,
+    "non_cgo_build": 0,
+    "linux_evaluation_build": 0,
+    "linux_tag_test_compile": 0,
+    "controlplane_race_seconds": 37.106,
+    "linux_top_level_contracts_passed": 11
+  },
+  "retained_failed_calibrations": [
+    {
+      "attempt": "normal-b-01",
+      "producer_revision": "c6b959a793a183db61927b27a00c89eabde2a45a",
+      "raw_sha256": "6a5ecc9c9a20ed0110d7aa8a85adbdc6bf48ffa5ac366c648964db23f7d3fb1f",
+      "category": "sqlite_busy_before_native_admission"
+    },
+    {
+      "attempt": "normal-b-02",
+      "producer_revision": "c6b959a793a183db61927b27a00c89eabde2a45a",
+      "raw_sha256": "0d91d62fe1e2a62272ac22ddeffc67370c8932d474eecb8a21ff02b77170f5e3",
+      "category": "notification_input_budget_dead_letter"
+    },
+    {
+      "attempt": "normal-b-03",
+      "producer_revision": "7fd47efa20af1524691b687fa4b096b7910ee6fd",
+      "raw_sha256": "53c2292683f735b86981c5d356a61d5e56640ae3e3a38945afcc7f23f8d57471",
+      "category": "notification_input_budget_dead_letter"
+    },
+    {
+      "attempt": "normal-b-04",
+      "producer_revision": "c2ec9ace4b3d5dee04db773dfc71e9eed93fa91f",
+      "raw_sha256": "5ae7a1af5c8550892c408e0064219e92fedadde091f1a52cec96d936c232239f",
+      "category": "sqlite_busy_before_native_admission"
+    },
+    {
+      "attempt": "normal-b-05",
+      "producer_revision": "c2ec9ace4b3d5dee04db773dfc71e9eed93fa91f",
+      "raw_sha256": "ab02acb6aa3d47354b44d856c2ecef53a49b3550348d2e3f3dc7f0b09deca6e6",
+      "category": "sqlite_busy_before_native_admission"
+    },
+    {
+      "attempt": "normal-c-01",
+      "producer_revision": "4abb69235b6edd561a2f04d643543c98521e1c6e",
+      "raw_sha256": "f7fc3b7eed5b64cb15bb3ddc407e0a63b643db74c399a64000acbd21ce8c97e6",
+      "category": "foreground_operational_error_uncertain"
+    }
+  ],
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "protected_original_containers": {
+    "count": 12,
+    "ids_started_at_restart_counts_unchanged": true,
+    "receipt_sha256": "6ccafaa8870f6124cd395a442b37cd267b49dce162ece7fcc42f77589810c69f"
+  }
+}

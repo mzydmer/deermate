@@ -188,6 +188,8 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [ ] Verify one separately configured live GitHub/model/Codex loop, then deploy with valid access.
 - [ ] Publish R-EVAL-01–05 comparisons and ablations; local functional tests do not establish research gains.
 
+Issue #5 [first offline results](research/router-offline-v1/README.md) use clean producer `7c84904e39f4b3adb0bed3d7430cc9adcb64934e`: 36 planned samples, 33 complete / two unknown / one full-barrier failure; six separate same-version repeats complete. Raw JSON/JSONL, manifests, the real double-effect negative and one-command independent aggregation are public. One execution is unobserved; zero extra roots/effects were observed in 35 executions. Broader R-EVAL comparisons, ablations, real models and user studies remain open.
+
 [Implementation plan](specs/m4-continuous-agent-plan.md) · [Usage](continuous-secretary.md) · [Current evidence](verification/continuous-secretary-2026-11-04.json).
 
 2026-11-04 用户要求取消秘书单独启用：交互与手动工作默认可用，沿用对话模型；设置集中管理本人记忆。见 [专项规格](specs/default-secretary-memory-settings.md)，实现/验收/发布在 STATUS 单独追踪，不改变既有后台/设备授权或整个 P7 验收状态。

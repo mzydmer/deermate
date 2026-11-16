@@ -1,0 +1,40 @@
+{
+  "status": "outcome_unknown",
+  "checks": {
+    "full_completion_and_quiet_tail": true,
+    "internal_only_application_networks": true,
+    "clean_producer": true,
+    "one_original_worker_task": true,
+    "worker_completed_once": true,
+    "fixed_project_snapshot": true,
+    "original_logical_operation": true,
+    "independent_test_succeeded": true,
+    "actual_workspace_files": true,
+    "only_allowed_changes": true,
+    "real_answer_diff": true,
+    "actual_test_unchanged": true,
+    "one_actual_mutation_effect": true,
+    "one_actual_native_turn": true,
+    "same_root_turn_workspace": true,
+    "native_order_and_clock": true,
+    "actual_validation_exit": true
+  },
+  "metrics": {
+    "effects": 1,
+    "roots": 1,
+    "model_calls": 5,
+    "roles_calls": {
+      "router": 4,
+      "notification": 1
+    },
+    "roles_input_bytes": {
+      "router": 10737,
+      "notification": 1947
+    }
+  },
+  "reasons": [
+    "missing_or_invalid_evidence"
+  ],
+  "evidence_error_kind": "KeyError",
+  "sample_sha256": "202c3675f109ffed3bcc20a7e7de71ff379a472b2765595455c16e483ead62f4"
+}

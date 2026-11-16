@@ -1,10 +1,20 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。issue #1/#3/#6/#8 已由独立评审合入并关闭，main 基线22ef5c5；#6默认 GitHub APA/BibTeX与Copy内容也已由评审实测。#4干净4e236fb完成42项实际冷备/新空卷隔离恢复检查，本地验收完成，PR17收尾后等待最终head CI/独立评审，不自行合并或关闭。前三轮中止/失败完整保留。#5首批协议与基线在独立工作区已获评审接受，正在实施harness和非正式校准，正式36格实验尚未运行。未部署本轮变更，原12个容器ID/启动时间/重启数不变。线上基线仍为2026-11-13的组件化工作台与布局修正，原账号、15个话题、模型设置和到期设备授权保留。
+最后核对：2026-11-16。#1/#3/#4/#6/#8已由独立评审合并关闭，main基线9c7ab6d。#5已完成首批离线36项和同版本独立6项复跑，正在交付PR18供最终评审；本执行agent未合并、关闭issue或部署。#7公开Alpha在PR18合并后基于最新main处理。
 
-## 2026-11-16 · 共同冷备与空卷恢复（Issue #4，本地验收完成）
+## 2026-11-16 · Router 首批离线结果（Issue #5，待最终评审）
 
-[PR17](https://github.com/mzydmer/deermate/pull/17)从main22ef5c5收敛，实际producer为干净 `4e236fb1b6b4e2a64bac785d7f8fef8b2179f872`。Go/Gateway镜像以该SHA构建/标记；frontend/nginx复用已保留不可变ID，未声称重建UI。归档离原卷、入口及全部home写入方共同停止，85个文件逐项核验，冻结同一私有归档对象后只写新空卷；未知原操作单独清点、显式承认，原卷不覆盖。
+实际生产源码始终为干净 `7c84904e39f4b3adb0bed3d7430cc9adcb64934e`，不是之后整理报告的HEAD；同SHA控制镜像label/binary VCS、固定上游、dataset/config/harness与环境已冻结。主批次33 complete/2 outcome_unknown/1 failed，六项复跑均complete且与原seed终态及离散计数一致。见[报告与单命令重算](research/router-offline-v1/README.md)、[主JSONL](research/router-offline-v1/main/records.jsonl)、[复跑JSONL](research/router-offline-v1/repeat/records.jsonl)、[来源哈希](research/router-offline-v1/provenance.json)。
+
+每场景每组计划6项：S1 A6/B6/C5，S2 A5/B5/C6。S1-1104-C前台30s未知、S2-1103-A配对503未进入执行、S2-1106-B已查回原run但Go操作/Inbox未收敛，均保留原件/分母，没有重放、补跑或改单组预算。两个收敛失败存在SQLite锁冲突日志，具体竞争写入方未知。主批次额外root/effect为0/35 observed，另1项unobserved；S2完整恢复按观测/计划分别A5/5与5/6、B5/6与5/6、C6/6。不能把query同run单独等同完整恢复。
+
+独立CLI不信任runner/model成功布尔，核对实际RPC/root/turn/workspace、tracked/untracked文件、独立测试及effect。真实两次写入负例同root/test0，仅因effect重复被拒绝；错身份、缺证据、越范围和混用batch的反例未获complete。服务指标仅为durable admission→actual reply flush，客户端complete-read另列，缺失不填零。A/B/C普通异步、绑定事件和真实ACK合同均先校准；早期失败及[正常](verification/router-normal-calibration-2026-11-16.json)/[S1](verification/router-s1-calibration-2026-11-16.json)/[S2](verification/router-s2-calibration-2026-11-16.json)旧producer分别保留。
+
+共享账本writer intent修正仍保持原回调一次、5s busy/context和不重放，范围见[变更说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。默认Go无evaluation开关/路由；通知统一测试适配不冒充默认生产预算。零付费Provider/真实Codex调用，原12容器不变。真实模型质量/账单、用户注意力、其他故障与消融未验收，R-EVAL总体验收保持未勾选。
+
+## 2026-11-16 · 共同冷备与空卷恢复（Issue #4，已合并）
+
+[PR17](https://github.com/mzydmer/deermate/pull/17)最终a7f2415的13项CI全部成功后由独立评审合入main9c7ab6d并关闭issue4；实现从main22ef5c5收敛，实际producer为干净 `4e236fb1b6b4e2a64bac785d7f8fef8b2179f872`。Go/Gateway镜像以该SHA构建/标记；frontend/nginx复用已保留不可变ID，未声称重建UI。归档离原卷、入口及全部home写入方共同停止，85个文件逐项核验，冻结同一私有归档对象后只写新空卷；未知原操作单独清点、显式承认，原卷不覆盖。
 
 第四轮实际Go/Gateway/Worker验收42项全部通过：同owner/话题/任务/Native根及不确定原ID；真实Inbox采集的原文/Thread/message与来源/usage完整对象等于归档共同点；FTS5有效事实可查、快照前已遗忘事实不可召回。实际源快照之后删除事实/撤销status-only合成授权，再在仍冻结的恢复实例重施，事实不可召回且授权已撤销。认证/CSRF/版本门禁保留，四类Go队列与Gateway/MCP自动活动不启动，新工作/设备poll返回503。
 

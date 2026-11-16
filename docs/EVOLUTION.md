@@ -778,3 +778,91 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #4 实际冷备/空卷恢复通过
 
 干净producer4e236fb的第四轮42项实际Go/Gateway/Worker检查通过，归档85个文件、原卷保留、新卷隔离启动；真实Inbox来源全文/关联/usage与共同停写点及冻结源API完全相同，预点遗忘仍不可召回。快照后真实遗忘/撤权在恢复实例保持冻结时重施，六种坏归档CLI均在目标写入前失败。恢复前后完整身份/计数探针一致（原有脚本模型8次、原生协议请求10条，新增0）；原12容器ID/启动时间/重启数不变。导出0.845s、验证0.037s、复制0.886s、准备2.321s、至就绪42.210s分别报告。45项归档/来源回归通过，Go和52项固定部署合同已通过，最终全量/文档检查收尾见收据。01中止、02记忆确认失败、03早期采样失败原卷/日志全部保留。PR17提交脱敏证据供最终head CI/独立评审，不自行合并/关闭/部署；无真实Provider/Native调用。
+
+
+## 2026-11-16 · Issue #5 首批具体对照协议
+
+从已合并main22ef5c5独立提出首批离线协议和机器可读基线：两个场景、六个成对seed、六种轮换顺序，共36格；A具备等价异步后台工具，B/C仅比较绑定直通分支。固定真实Go/Gateway/MCP/Relay/Worker链、独立补丁/测试/身份/副作用判定及重复副作用负例；失败与unknown保留分母，分位数与删失分开。协议先评审，harness/数据集干净提交后才冻结正式运行身份，当前not_run/null无结果。产品评估页、待发布说明、plan和roadmap同步限制，未运行模型/Native或修改既有实例。
+
+
+## 2026-11-16 · Issue #5 协议评审接受
+
+独立评审接受首批协议，要求主指标为服务持久接纳到首次真实可见内容，另报client发出到first/complete与服务排队/完整回复；HTTP接纳不算回复。Mac与Linux的monotonic不能相减，调度原点改为runner观察到真实turn/start事件，保留时间域、观测区间和实际漂移。正式36格仍需A异步/B-C单分支合同及独立judge负例通过后，以干净harness/数据SHA开始；现在仅可做实现和非正式校准。
+
+
+## 2026-11-16 · Issue #5 A切片实施检查点
+
+添加测试专用A协调图适配，复用原FixtureModel、普通MCP和CodingSessionMiddleware/ask_in_chat及Relay/Worker；Go默认构建无入口/模式开关，Linux专用tag有显式fixture/key与同域计时。输入按实际messages及tools schema完整序列化，模型日志绑定operation/run/thread/role；Router只在settled显示整段回复，first/complete记录同一可见事件。01镜像准备与02执行位失败、旧main无capabilities的无卷预检均保留，尚无Native接纳和A通过收据。原RPC/Worker25项与默认入口负例通过；先保存实施，再合入#4新main重建并做真实A合同，不计正式研究结果。
+
+
+## 2026-11-16 · Issue #5 纳入已合并冷备基线
+
+先以6ffe57e保存A切片实施和未完成事实，再正常合并main9c7ab6d，保留#4所有来源/日志/隔离规则及#5协议/源码，产品正文和来源合并后重生成。#4由独立评审核对最终a7f2415的13项CI后合并并关闭；未部署。接续先重新编译普通和Linux evaluation-tag、UID1000/networknone capabilities与二进制元数据预检，再进行新的A非正式实际合同。
+
+
+## 2026-11-16 · Issue #5 隔离入口校准
+
+干净16b5a01的普通Go mod/vet/全race（controlplane35.138s）、普通无CGO与Linux evaluation-tag构建通过，UID1000/networknone capability及镜像内平台/tag/ID预检通过。A03尚未创建账号即出现internal发布端口拒绝；无状态HTTP/最小代理探针定位并验证200，后端始终只接internal。harness改用固定上游最小Nginx入口，仅代理双网loopback，Go/Gateway保留无外网。协议/基线说明执行环境共用，未改变输入/预算，03及探针失败保留，不计正式样本。
+
+
+## 2026-11-16 · Issue #5 A异步合同通过
+
+干净4180872经镜像身份/ELF/tag/UID1000预检和最小隔离入口实际通过A04：Go持久接纳→单协调图→普通MCP/CodingSessionMiddleware/ask_in_chat→Relay/Worker，拿tracking释放原协调轮次，Native12004.4ms运行中同图前台可见（接纳到first8632.3ms，早于Native完成3321.4ms）。一个Worker/MCP任务、一个根/轮次/effect、真实补丁和独立unittest0；无真实Provider/Native。Go/Gateway仅internal，原12守卫一致，所有失败和源卷保留。MCP采样仍working，只证明功能异步/Worker验证，不冒称公开终态对账。独立评审已接受合同，继续B/C与judge真实双effect负例；正式冻结后36格加单列6格同seed复跑，尚未开始正式实验。
+
+
+## 2026-11-16 · Issue #5 B/C路由与权限合同检查点
+
+提取同一canonical订阅关联，C摄取时附加、测试A/B经真实Router回执后附加，保持六事件最终工作归属，不称模型决策。模型context读入口复用原assessmentInputs/assessmentBatch并重核owner/用户版本、来源、rule/event revision；四项Linux tagged顶层合同及B/C/四版本子组在UID1000/networknone/tmpfs通过，独立评审复跑通过。Native撤权仍拒绝新执行，但合法只读context无需新增Native grant。首次loopback与nonce单元fixture错误保留，修fixture未放宽guard。测试Git日期固定、正式结束屏障和同版本单列6格复跑口径同步；B/C完整执行链、judge双effect负例和正式36格未开展。当前阶段提交后交接，避免保留大段未提交代码。
+
+
+本B/C提交前普通Go mod verify/vet/全包race与普通无CGO/Linux evaluation构建通过，controlplane34.973s，覆盖既有来源/订阅与默认无测试入口反例；当前Python fixture/script的Ruff/编译和产品文档、82文件设计/token/7图门禁通过。Go tagged合同的源码以逐文件哈希留证，不把提交后的HEAD倒填为测试生产身份。
+
+
+## 2026-11-16 · Router 单样本完成屏障检查点
+
+新增非正式normal单样本运行器，复用真实Go/Gateway/MCP/Relay/Worker，公开tracking只由本人已知thread的list/detail取得。完成屏障包含Worker验证、原Go operation/inbox/work、公开MCP/通知及相关runs，随后4秒稳定尾部；只读probe保留真实diff、独立测试和全量调用。三个合同测试通过，拒绝仅Worker完成、未收敛通知、错误owner与替代handle。实际B单样本尚待运行，C和S1/S2、独立judge及正式36格仍未开始；生产行为未变。
+
+
+## 2026-11-16 · Router B 预试失败与通知输入适配
+
+干净c6b959a两个normal B预试保留：01在Go工具接纳事务SQLITE_BUSY/503，0 Native；02实际Worker独立验证和公开MCP完成，但通知输入超预算重试后dead_letter，未通过完整完成屏障。测试适配统一三组通知无工具schema并保留原消息/预算上限，超预算拒绝记录实际bytes/hash与身份，未改生产SQLite或通知行为。新版本仍需实跑验证，正式36格未开始。
+
+
+## 2026-11-16 · 统一的原通知接纳输入适配
+
+B03去工具后仍首次12,544 bytes超预算，五次拒绝至dead_letter，失败原样保留。独立评审接受owned-admission-v1用于本离线协议：复核当前owner/run/thread与mcp_notification origin，完整原接纳单HumanMessage、固定短提示/空tools、全文哈希关联，排除普通历史和重试错误；原12,000上限不变。固定Gateway镜像内UID1000/networknone/只读测试源的三个合同通过，三组输入哈希相同，错身份/多消息/非Human拒绝。协议/基线/研究页同步限定为测试适配，B04实际完整屏障尚待运行，不声称默认生产通知预算验收。
+
+
+## 2026-11-16 · 共享账本写锁竞争的有限修正
+
+B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均保留。完整原ToolMessage/checkpoint仅私存，原始日志未记录竞争写方；独立连接控制写锁稳定复现deferred读取后首次写入BUSY(5)与完整回滚。workTransaction现在先取得writer intent，数据库回调只调用一次，沿用5s busy/context，无外部动作重放；22处生产及两处tag回调确认没有等待外部runtime I/O。五项聚焦测试通过，包含真实HTTP原状态全等、显式原token单action/同对象回执和0 runtime派发，方向获评审接受；必要Go全检和新源码B/C完整校准待完成。客户/技术/协议与目录同步，发送/恢复图语义不变，正式36格未开始。
+
+
+## 2026-11-16 · 正常B完整屏障与计时观察器修正
+
+干净4abb692的B06完整normal通过并经独立复核，单任务/根/轮次/effect、独立测试0、公开MCP与通知完成、Go四操作settled及4.15172s稳定尾部，通知1947bytes原admission哈希一致。该提交必要Go检查与Linux九项合同通过。C01同源前台perform/query发生OperationalError，原操作uncertain/前台超时而Native与通知完成，失败保留。两个新Linux合同证明旧计时每次GET反复零匹配写入争夺写锁，修正后仅前台建时钟、首次可见写一次、后续只读且不改原时间；原C日志未能证明具体竞争写方，不能预称全部根因解决。仅evaluation配置下原perform/query异常加0600私存栈并原样抛出，无等待/重试。新版本检查与同源B/C复验待完成，正式样本未开始。
+
+
+## 2026-11-16 · 同源正常B/C完整校准与S1固定事件表代码
+
+干净bb7b91b的B07/C02均经独立复核接受完整屏障，公开MCP/通知/Go/runs收敛，单Worker/root/turn/effect与独立测试0，toy初始提交相同；原12容器保持，旧失败全保留。原normal投影计时仅诊断，见新公开收据。S1代码在peer review后改为各offset独立sender、独立reader、finally保留失败及未发计划，使用第二个真正认证的合成admin/正确ExpectedID测试外owner，旧header错配单列。五项sender/barrier与Linux七项evaluation合同通过并由评审复跑；Go时钟改在实际JSON写出后成功Flush采样，失败为空，明确服务传输指标与真实client complete-read分列，无浏览器精确时刻/流式token声明。S1尚未实际运行，新stage必要检查后按C/B/A校准；S2/judge/负例及正式36+6尚待完成。
+
+
+## 2026-11-16 · S1三组实际校准与S2断连代理合同
+
+干净df8e6c8的A01/B02/C01均经独立复核接受：九项计划及八条件通过，单Worker/MCP/root/turn/effect、验证0和公开完整屏障。B01配对503在Native前回滚，原pair未消费且无device/grant/MCP，失败保留。S2新增固定loopback代理，在原Router run及关联MCP/chat journal持久后真实关闭首次ACK，恢复驱动仅用原请求身份和公开查询；三项实际Linux TCP合同覆盖三模式断连、缺屏障正常转发、错误操作及第二响应不再丢。首轮测试缺kind列导致未arm，修fixture与显式operation数据后通过，未放宽observer。九项runner合同通过；真实S2、judge/真实双effect负例及冻结36+6仍未完成。
+
+
+## 2026-11-16 · S2三组真实恢复与独立判定器初版
+
+干净55d847a的A01/B01/C02均经独立评审接受持久化后0byte真实ACK断连一次、正常原operation查询、重复输入同Inbox和完整屏障；单Worker/MCP/root/turn/effect、验证0，C01启动缺Helm路径的准备失败另保留。原12容器不变，Go源码与df8镜像一致，正式镜像将同freeze重建。新增dataset/语义配置、独立judge/aggregate及freeze/execute CLI；判定不信任runner布尔，采真实RPC/完整工作区文件及验证退出，聚合逐计划身份、缺损unknown、早取观测计数、明确计划/观测分母。真实双effect反例、干净冻结和36+6仍未执行。
+
+
+## 2026-11-16 · 独立判定真实反例首轮与结束身份修正
+
+真实negative01两次actual effect且测试0/同root/完整恢复，被独立judge拒绝；同时发现native结束事件未记workspace，导致多一项身份失败。现从实际finish path补记，保留首轮原件并需新clean正负校准。全量Python473通过/13跳过/1失败为文档测试fixture目录已存在，修测试mkdir兼容已声明source目录，不削弱文档门禁。正式36+6仍未启动。
+
+
+## 2026-11-16 · Router冻结36+6与公开离线结果
+
+干净7c84904为唯一实际producer，Go镜像label/binary VCS相同；主36按固定顺序完整运行，33complete/2unknown/1failed，另6同版本复跑全部complete，终态及Worker/MCP/Go operations/Native turns/modelcalls/root/effect计数一致。S1-1104-C前台30s、S2-1103-A配对503、S2-1106-B原run已查回但Go未收敛均保留，不补跑/改预算。主批次0/35 observed额外root/effect、另1unobserved；query确认与完整恢复分开定义。真实双effect负例同root/test0，仅effect条件拒绝。公开42份逐字节raw、两JSONL、主/复跑清单汇总、负例和制品哈希，单命令可重判；独立评审已复核原件与哈希及两份汇总。两个收敛失败私有日志有SQLite锁冲突，竞争写者未知。实际producer7c的13项CI已通过，后续文档提交另验，不冒充生产SHA。未部署/付费调用，原12容器不变，R-EVAL整体仍未验收。

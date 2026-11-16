@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "issue": 5,
+  "profile": "Linux-tagged Go routing/authority contracts; simulated runtime HTTP response, not pinned Gateway/native end-to-end calibration",
+  "formal_batch": false,
+  "passed": true,
+  "current_stage": "B/C canonical routing contracts and bounded-context reader complete; real B/C execution, judge and formal runner pending",
+  "top_level_tests": 4,
+  "source_sha256": {
+    "backend/internal/controlplane/continuous_sources.go": "416d095c4bf79c85e1424e30cd88154ff1e5708bf3a4eee9f2223aa9ec4272b9",
+    "backend/internal/controlplane/continuous_runtime.go": "4302ffe3036fd78759373edb001626d7f46703e5ce5c9481260425584d2f3049",
+    "backend/internal/controlplane/evaluation_disabled.go": "776d6c8838e8604c9551db08a28712e2e0de1036aa2447cb33c99bccd6198c59",
+    "backend/internal/controlplane/evaluation_fixture.go": "c22909e14c063e9b434093e4cdbc2549e68823a9d07280b001735ab63fc02a92",
+    "backend/internal/controlplane/evaluation_fixture_test.go": "06aec6e8e2274c3f2612b58e402c15c959c49781fc31ae591d04e84a7555cfec",
+    "tests/router_evaluation_model.py": "60013421a3bba0695ae5fee954520700e538b09e6fd6a09c75a7af4a089bb6b7",
+    "tests/continuous_native_fixture.py": "488295da77e3af9fd3d4479e5d4d49eb7f8db054a486a4ea39c6e4fdc33fd10f"
+  },
+  "test_environment": {
+    "platform": "linux/amd64",
+    "build_tag": "deermate_evaluation",
+    "user": "1000:1000",
+    "network": "none",
+    "root_fs": "read-only",
+    "tmpfs": "/tmp",
+    "mount": "compiled test binary only"
+  },
+  "contracts": [
+    "B has no context before actual Go runtime-adapter receipt; six bound events attach to original work after receipt",
+    "C six bound events have same final association and zero Router runtime calls",
+    "forged owner and revoked source cannot attach or invoke runtime",
+    "actual bounded source text available only by canonical operation nonce",
+    "old rule/event revision, source generation and pause reject model context and late attachment",
+    "Native grant revocation blocks new execution while valid read-only context remains allowed"
+  ],
+  "authority_scope": "Existing authoritative subscription determines attachment; no claim of model routing decisions. Model middleware now receives canonical bounded body from original assessmentInputs/assessmentBatch; actual Gateway model-input calibration pending.",
+  "retained_test_diagnostics": [
+    "First tagged test fixture used example.test and correctly hit loopback guard panic; fixed fixture Origin/requests, guard unchanged",
+    "Next context tests loaded sanitized workList projections and overwrote private nonce; fixed test to load canonical workGet before mutation, nonce guard unchanged"
+  ],
+  "private_log_sha256": "949bec06f2fd0854bc212fc2e57978fe49d10b6d36af2bcda2138fcb9419d268",
+  "independent_reviewer_also_passed": true,
+  "updated_at": "2026-11-16T20:08:10.594976+00:00",
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "tested_checkout_dirty": true,
+  "producer_revision": null,
+  "source_identity_scope": "Exact per-file hashes of tested implementation stage; no formal-result producer assigned before freeze",
+  "normal_build_validation": [
+    {
+      "check": "mod-verify",
+      "exit": 0,
+      "seconds": 2.837
+    },
+    {
+      "check": "vet",
+      "exit": 0,
+      "seconds": 2.014
+    },
+    {
+      "check": "race",
+      "exit": 0,
+      "seconds": 42.472
+    },
+    {
+      "check": "normal-build",
+      "exit": 0,
+      "seconds": 2.557
+    },
+    {
+      "check": "evaluation-build",
+      "exit": 0,
+      "seconds": 3.368
+    }
+  ],
+  "normal_source_regression": "All ordinary Go package race tests passed, including existing sources/subscription tests and ordinary-binary absence of test routes/mode flags; controlplane34.973s",
+  "python_validation": "Ruff and py_compile passed for current model/native fixture and calibration script; real B/C Gateway model-context verification pending",
+  "documentation_validation": "Product generation/impact against main9c7ab6; design82 files, tokens and7diagrams passed",
+  "private_go_log_sha256": {
+    "bc-go-mod-verify.log": "b4537ed75f533f993f371954de47e42a793b8e5b0587577de7e27fb3e50696bd",
+    "bc-go-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bc-go-race.log": "4fdef8af928d1962b6a457f1dc962363d007a2b8112f53177a4b9f4451a9add5",
+    "bc-go-normal-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bc-go-evaluation-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

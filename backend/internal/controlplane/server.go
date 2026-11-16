@@ -220,6 +220,7 @@ func (s *Server) protected(admin bool, h http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) routes() {
+	s.evaluationFixtureRoutes()
 	s.continuousRoutes()
 	s.authorizationRoutes()
 	s.memoryRoutes()

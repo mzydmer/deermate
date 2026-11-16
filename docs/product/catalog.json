@@ -159,7 +159,11 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "backend/internal/controlplane/continuous_store.go",
+      "backend/internal/controlplane/continuous_runtime.go",
+      "backend/internal/controlplane/continuous_store_concurrency_test.go",
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md"
     ]
   },
   {
@@ -244,7 +248,11 @@
       "docs/backup-restore.md",
       "scripts/single_host_backup.py",
       "backend/internal/controlplane/server.go",
-      "docs/verification/single-host-restore-2026-11-16.json"
+      "docs/verification/single-host-restore-2026-11-16.json",
+      "backend/internal/controlplane/continuous_store.go",
+      "backend/internal/controlplane/continuous_runtime.go",
+      "backend/internal/controlplane/continuous_store_concurrency_test.go",
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md"
     ]
   },
   {
@@ -290,7 +298,37 @@
       "docs/research/references.md",
       "docs/research/evaluation-record.template.json",
       "scripts/evaluation_record.py",
-      "scripts/verify_citation.py"
+      "scripts/verify_citation.py",
+      "docs/research/router-protocol-v1.md",
+      "docs/research/router-baseline-v1.json",
+      "docs/verification/router-a-calibration-2026-11-16.json",
+      "docs/verification/router-routing-contracts-2026-11-16.json",
+      "backend/internal/controlplane/evaluation_fixture.go",
+      "tests/router_evaluation_model.py",
+      "scripts/verify_router_a.py",
+      "docs/verification/router-normal-calibration-2026-11-16.json",
+      "scripts/run_router_sample.py",
+      "tests/router_evaluation_probe.py",
+      "tests/test_router_sample.py",
+      "tests/router_evaluation_model_contract.py",
+      "docs/verification/router-s1-calibration-2026-11-16.json",
+      "tests/router_evaluation_proxy.py",
+      "tests/router_evaluation_proxy_contract.py",
+      "docs/verification/router-s2-calibration-2026-11-16.json",
+      "docs/research/router-dataset-v1.json",
+      "docs/research/router-offline-config-v1.json",
+      "scripts/run_router_evaluation.py",
+      "scripts/judge_router_evaluation.py",
+      "scripts/aggregate_router_evaluation.py",
+      "tests/test_router_judge.py",
+      "docs/research/router-offline-v1/README.md",
+      "docs/research/router-offline-v1/provenance.json",
+      "docs/research/router-offline-v1/main/manifest.json",
+      "docs/research/router-offline-v1/main/summary.json",
+      "docs/research/router-offline-v1/repeat/manifest.json",
+      "docs/research/router-offline-v1/repeat/summary.json",
+      "docs/research/router-offline-v1/repeat/comparison.json",
+      "docs/research/router-offline-v1/calibration/double-effect/verdict.json"
     ]
   },
   {
@@ -342,7 +380,41 @@
       "docs/backup-restore.md",
       "scripts/single_host_backup.py",
       "backend/internal/controlplane/server.go",
-      "docs/verification/single-host-restore-2026-11-16.json"
+      "docs/verification/single-host-restore-2026-11-16.json",
+      "docs/research/router-protocol-v1.md",
+      "docs/research/router-baseline-v1.json",
+      "docs/verification/router-a-calibration-2026-11-16.json",
+      "docs/verification/router-routing-contracts-2026-11-16.json",
+      "backend/internal/controlplane/evaluation_fixture.go",
+      "tests/router_evaluation_model.py",
+      "scripts/verify_router_a.py",
+      "backend/internal/controlplane/continuous_store.go",
+      "backend/internal/controlplane/continuous_runtime.go",
+      "backend/internal/controlplane/continuous_store_concurrency_test.go",
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md",
+      "docs/verification/router-normal-calibration-2026-11-16.json",
+      "scripts/run_router_sample.py",
+      "tests/router_evaluation_probe.py",
+      "tests/test_router_sample.py",
+      "tests/router_evaluation_model_contract.py",
+      "docs/verification/router-s1-calibration-2026-11-16.json",
+      "tests/router_evaluation_proxy.py",
+      "tests/router_evaluation_proxy_contract.py",
+      "docs/verification/router-s2-calibration-2026-11-16.json",
+      "docs/research/router-dataset-v1.json",
+      "docs/research/router-offline-config-v1.json",
+      "scripts/run_router_evaluation.py",
+      "scripts/judge_router_evaluation.py",
+      "scripts/aggregate_router_evaluation.py",
+      "tests/test_router_judge.py",
+      "docs/research/router-offline-v1/README.md",
+      "docs/research/router-offline-v1/provenance.json",
+      "docs/research/router-offline-v1/main/manifest.json",
+      "docs/research/router-offline-v1/main/summary.json",
+      "docs/research/router-offline-v1/repeat/manifest.json",
+      "docs/research/router-offline-v1/repeat/summary.json",
+      "docs/research/router-offline-v1/repeat/comparison.json",
+      "docs/research/router-offline-v1/calibration/double-effect/verdict.json"
     ]
   }
 ]

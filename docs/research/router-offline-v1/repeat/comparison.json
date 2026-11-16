@@ -1,0 +1,138 @@
+{
+  "included_in_primary_36": false,
+  "same_frozen_producer": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+  "pairs": [
+    {
+      "scenario": "S1",
+      "mode": "A",
+      "seed": 1101,
+      "main_status": "complete",
+      "repeat_status": "complete",
+      "terminal_status_equal": true,
+      "discrete_metrics": {
+        "effects": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        },
+        "roots": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        }
+      }
+    },
+    {
+      "scenario": "S1",
+      "mode": "B",
+      "seed": 1101,
+      "main_status": "complete",
+      "repeat_status": "complete",
+      "terminal_status_equal": true,
+      "discrete_metrics": {
+        "effects": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        },
+        "roots": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        }
+      }
+    },
+    {
+      "scenario": "S1",
+      "mode": "C",
+      "seed": 1101,
+      "main_status": "complete",
+      "repeat_status": "complete",
+      "terminal_status_equal": true,
+      "discrete_metrics": {
+        "effects": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        },
+        "roots": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        }
+      }
+    },
+    {
+      "scenario": "S2",
+      "mode": "A",
+      "seed": 1101,
+      "main_status": "complete",
+      "repeat_status": "complete",
+      "terminal_status_equal": true,
+      "discrete_metrics": {
+        "effects": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        },
+        "roots": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        }
+      }
+    },
+    {
+      "scenario": "S2",
+      "mode": "B",
+      "seed": 1101,
+      "main_status": "complete",
+      "repeat_status": "complete",
+      "terminal_status_equal": true,
+      "discrete_metrics": {
+        "effects": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        },
+        "roots": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        }
+      }
+    },
+    {
+      "scenario": "S2",
+      "mode": "C",
+      "seed": 1101,
+      "main_status": "complete",
+      "repeat_status": "complete",
+      "terminal_status_equal": true,
+      "discrete_metrics": {
+        "effects": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        },
+        "roots": {
+          "main": 1,
+          "repeat": 1,
+          "both_observed": true,
+          "equal": true
+        }
+      }
+    }
+  ]
+}

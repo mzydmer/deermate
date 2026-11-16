@@ -1,0 +1,1205 @@
+{
+  "schema_version": 1,
+  "producer_revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+  "dataset_sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6",
+  "kind": "repeat",
+  "planned_n": 6,
+  "groups": [
+    {
+      "scenario": "S1",
+      "mode": "A",
+      "planned_n": 1,
+      "complete_n": 1,
+      "verified_completion_rate": 1.0,
+      "statuses": {
+        "complete": 1
+      },
+      "latencies": {
+        "service_admission_to_reply_flush_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            8330.281329
+          ],
+          "p50": 8330.281329,
+          "p95": 8330.281329,
+          "max": 8330.281329,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "client_send_to_complete_read_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            8338.493136
+          ],
+          "p50": 8338.493136,
+          "p95": 8338.493136,
+          "max": 8338.493136,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "foreground_queue_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5778.77009
+          ],
+          "p50": 5778.77009,
+          "p95": 5778.77009,
+          "max": 5778.77009,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "native_validation_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            12208.879942
+          ],
+          "p50": 12208.879942,
+          "p95": 12208.879942,
+          "max": 12208.879942,
+          "algorithm": "nearest-rank ceil(q*n)"
+        }
+      },
+      "overlap_n": 1,
+      "overlap_denominator": 1,
+      "extra_effects": 0,
+      "extra_roots": 0,
+      "effect_observed_n": 1,
+      "call_observed_n": 1,
+      "model_calls_observed_total": 5,
+      "role_call_totals": {
+        "coordinator": 4,
+        "notification": 1
+      },
+      "role_input_bytes_totals": {
+        "coordinator": 8261,
+        "notification": 1947
+      },
+      "recovered_original_n": null,
+      "duplicate_execution_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "duplicate_effect_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "original_recovery_rate": null
+    },
+    {
+      "scenario": "S1",
+      "mode": "B",
+      "planned_n": 1,
+      "complete_n": 1,
+      "verified_completion_rate": 1.0,
+      "statuses": {
+        "complete": 1
+      },
+      "latencies": {
+        "service_admission_to_reply_flush_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5316.927118
+          ],
+          "p50": 5316.927118,
+          "p95": 5316.927118,
+          "max": 5316.927118,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "client_send_to_complete_read_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5324.666588
+          ],
+          "p50": 5324.666588,
+          "p95": 5324.666588,
+          "max": 5324.666588,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "foreground_queue_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            2920.02833
+          ],
+          "p50": 2920.02833,
+          "p95": 2920.02833,
+          "max": 2920.02833,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "native_validation_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            12138.850655
+          ],
+          "p50": 12138.850655,
+          "p95": 12138.850655,
+          "max": 12138.850655,
+          "algorithm": "nearest-rank ceil(q*n)"
+        }
+      },
+      "overlap_n": 1,
+      "overlap_denominator": 1,
+      "extra_effects": 0,
+      "extra_roots": 0,
+      "effect_observed_n": 1,
+      "call_observed_n": 1,
+      "model_calls_observed_total": 6,
+      "role_call_totals": {
+        "router": 5,
+        "notification": 1
+      },
+      "role_input_bytes_totals": {
+        "router": 14965,
+        "notification": 1947
+      },
+      "recovered_original_n": null,
+      "duplicate_execution_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "duplicate_effect_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "original_recovery_rate": null
+    },
+    {
+      "scenario": "S1",
+      "mode": "C",
+      "planned_n": 1,
+      "complete_n": 1,
+      "verified_completion_rate": 1.0,
+      "statuses": {
+        "complete": 1
+      },
+      "latencies": {
+        "service_admission_to_reply_flush_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5192.793393
+          ],
+          "p50": 5192.793393,
+          "p95": 5192.793393,
+          "max": 5192.793393,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "client_send_to_complete_read_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5200.298236
+          ],
+          "p50": 5200.298236,
+          "p95": 5200.298236,
+          "max": 5200.298236,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "foreground_queue_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            2791.863689
+          ],
+          "p50": 2791.863689,
+          "p95": 2791.863689,
+          "max": 2791.863689,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "native_validation_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            12165.600071
+          ],
+          "p50": 12165.600071,
+          "p95": 12165.600071,
+          "max": 12165.600071,
+          "algorithm": "nearest-rank ceil(q*n)"
+        }
+      },
+      "overlap_n": 1,
+      "overlap_denominator": 1,
+      "extra_effects": 0,
+      "extra_roots": 0,
+      "effect_observed_n": 1,
+      "call_observed_n": 1,
+      "model_calls_observed_total": 5,
+      "role_call_totals": {
+        "router": 4,
+        "notification": 1
+      },
+      "role_input_bytes_totals": {
+        "router": 10737,
+        "notification": 1947
+      },
+      "recovered_original_n": null,
+      "duplicate_execution_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "duplicate_effect_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "original_recovery_rate": null
+    },
+    {
+      "scenario": "S2",
+      "mode": "A",
+      "planned_n": 1,
+      "complete_n": 1,
+      "verified_completion_rate": 1.0,
+      "statuses": {
+        "complete": 1
+      },
+      "latencies": {
+        "service_admission_to_reply_flush_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            7275.765953
+          ],
+          "p50": 7275.765953,
+          "p95": 7275.765953,
+          "max": 7275.765953,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "client_send_to_complete_read_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            7289.065216
+          ],
+          "p50": 7289.065216,
+          "p95": 7289.065216,
+          "max": 7289.065216,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "foreground_queue_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            4699.967539
+          ],
+          "p50": 4699.967539,
+          "p95": 4699.967539,
+          "max": 4699.967539,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "native_validation_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            12198.438524
+          ],
+          "p50": 12198.438524,
+          "p95": 12198.438524,
+          "max": 12198.438524,
+          "algorithm": "nearest-rank ceil(q*n)"
+        }
+      },
+      "overlap_n": 1,
+      "overlap_denominator": 1,
+      "extra_effects": 0,
+      "extra_roots": 0,
+      "effect_observed_n": 1,
+      "call_observed_n": 1,
+      "model_calls_observed_total": 3,
+      "role_call_totals": {
+        "coordinator": 2,
+        "notification": 1
+      },
+      "role_input_bytes_totals": {
+        "coordinator": 3146,
+        "notification": 1947
+      },
+      "recovered_original_n": 1,
+      "duplicate_execution_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "duplicate_effect_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "original_recovery_rate": {
+        "affected_n": 1,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 1.0,
+        "planned_rate": 1.0
+      }
+    },
+    {
+      "scenario": "S2",
+      "mode": "B",
+      "planned_n": 1,
+      "complete_n": 1,
+      "verified_completion_rate": 1.0,
+      "statuses": {
+        "complete": 1
+      },
+      "latencies": {
+        "service_admission_to_reply_flush_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            8035.762765
+          ],
+          "p50": 8035.762765,
+          "p95": 8035.762765,
+          "max": 8035.762765,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "client_send_to_complete_read_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            8049.638404
+          ],
+          "p50": 8049.638404,
+          "p95": 8049.638404,
+          "max": 8049.638404,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "foreground_queue_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5865.764473
+          ],
+          "p50": 5865.764473,
+          "p95": 5865.764473,
+          "max": 5865.764473,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "native_validation_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            12147.253467
+          ],
+          "p50": 12147.253467,
+          "p95": 12147.253467,
+          "max": 12147.253467,
+          "algorithm": "nearest-rank ceil(q*n)"
+        }
+      },
+      "overlap_n": 1,
+      "overlap_denominator": 1,
+      "extra_effects": 0,
+      "extra_roots": 0,
+      "effect_observed_n": 1,
+      "call_observed_n": 1,
+      "model_calls_observed_total": 4,
+      "role_call_totals": {
+        "router": 3,
+        "notification": 1
+      },
+      "role_input_bytes_totals": {
+        "router": 7300,
+        "notification": 1947
+      },
+      "recovered_original_n": 1,
+      "duplicate_execution_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "duplicate_effect_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "original_recovery_rate": {
+        "affected_n": 1,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 1.0,
+        "planned_rate": 1.0
+      }
+    },
+    {
+      "scenario": "S2",
+      "mode": "C",
+      "planned_n": 1,
+      "complete_n": 1,
+      "verified_completion_rate": 1.0,
+      "statuses": {
+        "complete": 1
+      },
+      "latencies": {
+        "service_admission_to_reply_flush_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            7911.27322
+          ],
+          "p50": 7911.27322,
+          "p95": 7911.27322,
+          "max": 7911.27322,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "client_send_to_complete_read_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            7919.208331
+          ],
+          "p50": 7919.208331,
+          "p95": 7919.208331,
+          "max": 7919.208331,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "foreground_queue_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            5675.96626
+          ],
+          "p50": 5675.96626,
+          "p95": 5675.96626,
+          "max": 5675.96626,
+          "algorithm": "nearest-rank ceil(q*n)"
+        },
+        "native_validation_ms": {
+          "planned_n": 1,
+          "observed_n": 1,
+          "censored_n": 0,
+          "values": [
+            12196.780363
+          ],
+          "p50": 12196.780363,
+          "p95": 12196.780363,
+          "max": 12196.780363,
+          "algorithm": "nearest-rank ceil(q*n)"
+        }
+      },
+      "overlap_n": 1,
+      "overlap_denominator": 1,
+      "extra_effects": 0,
+      "extra_roots": 0,
+      "effect_observed_n": 1,
+      "call_observed_n": 1,
+      "model_calls_observed_total": 4,
+      "role_call_totals": {
+        "router": 3,
+        "notification": 1
+      },
+      "role_input_bytes_totals": {
+        "router": 7300,
+        "notification": 1947
+      },
+      "recovered_original_n": 1,
+      "duplicate_execution_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "duplicate_effect_rate": {
+        "affected_n": 0,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 0.0,
+        "planned_rate": 0.0
+      },
+      "original_recovery_rate": {
+        "affected_n": 1,
+        "observed_n": 1,
+        "planned_n": 1,
+        "unobserved_n": 0,
+        "observed_rate": 1.0,
+        "planned_rate": 1.0
+      }
+    }
+  ],
+  "paired": [
+    {
+      "scenario": "S1",
+      "contrast": "B-A",
+      "metric": "service_admission_to_reply_flush_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": -3013.354211
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          -3013.354211
+        ],
+        "p50": -3013.354211,
+        "p95": -3013.354211,
+        "max": -3013.354211,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S1",
+      "contrast": "B-A",
+      "metric": "client_send_to_complete_read_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": -3013.826547999999
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          -3013.826547999999
+        ],
+        "p50": -3013.826547999999,
+        "p95": -3013.826547999999,
+        "max": -3013.826547999999,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S1",
+      "contrast": "C-B",
+      "metric": "service_admission_to_reply_flush_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": -124.13372499999969
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          -124.13372499999969
+        ],
+        "p50": -124.13372499999969,
+        "p95": -124.13372499999969,
+        "max": -124.13372499999969,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S1",
+      "contrast": "C-B",
+      "metric": "client_send_to_complete_read_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": -124.36835200000041
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          -124.36835200000041
+        ],
+        "p50": -124.36835200000041,
+        "p95": -124.36835200000041,
+        "max": -124.36835200000041,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S2",
+      "contrast": "B-A",
+      "metric": "service_admission_to_reply_flush_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": 759.9968120000003
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          759.9968120000003
+        ],
+        "p50": 759.9968120000003,
+        "p95": 759.9968120000003,
+        "max": 759.9968120000003,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S2",
+      "contrast": "B-A",
+      "metric": "client_send_to_complete_read_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": 760.5731880000003
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          760.5731880000003
+        ],
+        "p50": 760.5731880000003,
+        "p95": 760.5731880000003,
+        "max": 760.5731880000003,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S2",
+      "contrast": "C-B",
+      "metric": "service_admission_to_reply_flush_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": -124.48954500000036
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          -124.48954500000036
+        ],
+        "p50": -124.48954500000036,
+        "p95": -124.48954500000036,
+        "max": -124.48954500000036,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    },
+    {
+      "scenario": "S2",
+      "contrast": "C-B",
+      "metric": "client_send_to_complete_read_ms",
+      "pairs": [
+        {
+          "seed": 1101,
+          "difference": -130.43007300000045
+        }
+      ],
+      "summary": {
+        "planned_n": 1,
+        "observed_n": 1,
+        "censored_n": 0,
+        "values": [
+          -130.43007300000045
+        ],
+        "p50": -130.43007300000045,
+        "p95": -130.43007300000045,
+        "max": -130.43007300000045,
+        "algorithm": "nearest-rank ceil(q*n)"
+      }
+    }
+  ],
+  "samples": [
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "A",
+      "order": 1,
+      "sample_path": "S1-1101-A/sample.json",
+      "verdict": {
+        "status": "complete",
+        "checks": {
+          "full_completion_and_quiet_tail": true,
+          "internal_only_application_networks": true,
+          "clean_producer": true,
+          "original_frozen_batch_and_dataset": true,
+          "frozen_source": true,
+          "frozen_runtime_files": true,
+          "frozen_dataset": true,
+          "one_original_worker_task": true,
+          "worker_completed_once": true,
+          "fixed_project_snapshot": true,
+          "original_logical_operation": true,
+          "independent_test_succeeded": true,
+          "actual_workspace_files": true,
+          "only_allowed_changes": true,
+          "real_answer_diff": true,
+          "actual_test_unchanged": true,
+          "one_actual_mutation_effect": true,
+          "one_actual_native_turn": true,
+          "same_root_turn_workspace": true,
+          "native_order_and_clock": true,
+          "actual_validation_exit": true,
+          "actual_inbound_rpc_identity": true,
+          "same_original_public_tracking": true,
+          "all_original_go_records_settled": true,
+          "work_verified": true,
+          "runs_success_and_owned": true,
+          "model_calls_complete_and_bounded": true,
+          "actual_model_run_binding": true,
+          "actual_original_foreground_reply": true,
+          "reply_timing_same_domain": true,
+          "all_planned_sends_retained": true,
+          "seven_original_owned_events": true,
+          "bound_context_same_original_work": true,
+          "real_outside_owner_forbidden": true,
+          "unbound_not_attached": true,
+          "unbound_actual_router_read": true,
+          "bound_mode_factor": true,
+          "exact_original_event_bodies": true
+        },
+        "metrics": {
+          "effects": 1,
+          "roots": 1,
+          "model_calls": 5,
+          "roles_calls": {
+            "coordinator": 4,
+            "notification": 1
+          },
+          "roles_input_bytes": {
+            "coordinator": 8261,
+            "notification": 1947
+          },
+          "service_admission_to_reply_flush_ms": 8330.281329,
+          "reply_flush_before_validation": true,
+          "foreground_queue_ms": 5778.77009,
+          "client_send_to_complete_read_ms": 8338.493136,
+          "native_validation_ms": 12208.879942
+        },
+        "reasons": []
+      },
+      "sample_sha256": "cb0f15393cbf393ab8c4485433ce542dd3cf0a207a1233a32fbae930a239db33"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "B",
+      "order": 2,
+      "sample_path": "S1-1101-B/sample.json",
+      "verdict": {
+        "status": "complete",
+        "checks": {
+          "full_completion_and_quiet_tail": true,
+          "internal_only_application_networks": true,
+          "clean_producer": true,
+          "original_frozen_batch_and_dataset": true,
+          "frozen_source": true,
+          "frozen_runtime_files": true,
+          "frozen_dataset": true,
+          "one_original_worker_task": true,
+          "worker_completed_once": true,
+          "fixed_project_snapshot": true,
+          "original_logical_operation": true,
+          "independent_test_succeeded": true,
+          "actual_workspace_files": true,
+          "only_allowed_changes": true,
+          "real_answer_diff": true,
+          "actual_test_unchanged": true,
+          "one_actual_mutation_effect": true,
+          "one_actual_native_turn": true,
+          "same_root_turn_workspace": true,
+          "native_order_and_clock": true,
+          "actual_validation_exit": true,
+          "actual_inbound_rpc_identity": true,
+          "same_original_public_tracking": true,
+          "all_original_go_records_settled": true,
+          "work_verified": true,
+          "runs_success_and_owned": true,
+          "model_calls_complete_and_bounded": true,
+          "actual_model_run_binding": true,
+          "actual_original_foreground_reply": true,
+          "reply_timing_same_domain": true,
+          "all_planned_sends_retained": true,
+          "seven_original_owned_events": true,
+          "bound_context_same_original_work": true,
+          "real_outside_owner_forbidden": true,
+          "unbound_not_attached": true,
+          "unbound_actual_router_read": true,
+          "bound_mode_factor": true,
+          "exact_original_event_bodies": true
+        },
+        "metrics": {
+          "effects": 1,
+          "roots": 1,
+          "model_calls": 6,
+          "roles_calls": {
+            "router": 5,
+            "notification": 1
+          },
+          "roles_input_bytes": {
+            "router": 14965,
+            "notification": 1947
+          },
+          "service_admission_to_reply_flush_ms": 5316.927118,
+          "reply_flush_before_validation": true,
+          "foreground_queue_ms": 2920.02833,
+          "client_send_to_complete_read_ms": 5324.666588,
+          "native_validation_ms": 12138.850655
+        },
+        "reasons": []
+      },
+      "sample_sha256": "99e3da21695964c1649c043ed20a7af408cfa3c116328cf277ea8ec1ebdac35c"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "C",
+      "order": 3,
+      "sample_path": "S1-1101-C/sample.json",
+      "verdict": {
+        "status": "complete",
+        "checks": {
+          "full_completion_and_quiet_tail": true,
+          "internal_only_application_networks": true,
+          "clean_producer": true,
+          "original_frozen_batch_and_dataset": true,
+          "frozen_source": true,
+          "frozen_runtime_files": true,
+          "frozen_dataset": true,
+          "one_original_worker_task": true,
+          "worker_completed_once": true,
+          "fixed_project_snapshot": true,
+          "original_logical_operation": true,
+          "independent_test_succeeded": true,
+          "actual_workspace_files": true,
+          "only_allowed_changes": true,
+          "real_answer_diff": true,
+          "actual_test_unchanged": true,
+          "one_actual_mutation_effect": true,
+          "one_actual_native_turn": true,
+          "same_root_turn_workspace": true,
+          "native_order_and_clock": true,
+          "actual_validation_exit": true,
+          "actual_inbound_rpc_identity": true,
+          "same_original_public_tracking": true,
+          "all_original_go_records_settled": true,
+          "work_verified": true,
+          "runs_success_and_owned": true,
+          "model_calls_complete_and_bounded": true,
+          "actual_model_run_binding": true,
+          "actual_original_foreground_reply": true,
+          "reply_timing_same_domain": true,
+          "all_planned_sends_retained": true,
+          "seven_original_owned_events": true,
+          "bound_context_same_original_work": true,
+          "real_outside_owner_forbidden": true,
+          "unbound_not_attached": true,
+          "unbound_actual_router_read": true,
+          "bound_mode_factor": true,
+          "exact_original_event_bodies": true
+        },
+        "metrics": {
+          "effects": 1,
+          "roots": 1,
+          "model_calls": 5,
+          "roles_calls": {
+            "router": 4,
+            "notification": 1
+          },
+          "roles_input_bytes": {
+            "router": 10737,
+            "notification": 1947
+          },
+          "service_admission_to_reply_flush_ms": 5192.793393,
+          "reply_flush_before_validation": true,
+          "foreground_queue_ms": 2791.863689,
+          "client_send_to_complete_read_ms": 5200.298236,
+          "native_validation_ms": 12165.600071
+        },
+        "reasons": []
+      },
+      "sample_sha256": "4a46885963fd9ecbc516480560a5978a23e978087a816679547fc32ef9b03358"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "A",
+      "order": 4,
+      "sample_path": "S2-1101-A/sample.json",
+      "verdict": {
+        "status": "complete",
+        "checks": {
+          "full_completion_and_quiet_tail": true,
+          "internal_only_application_networks": true,
+          "clean_producer": true,
+          "original_frozen_batch_and_dataset": true,
+          "frozen_source": true,
+          "frozen_runtime_files": true,
+          "frozen_dataset": true,
+          "one_original_worker_task": true,
+          "worker_completed_once": true,
+          "fixed_project_snapshot": true,
+          "original_logical_operation": true,
+          "independent_test_succeeded": true,
+          "actual_workspace_files": true,
+          "only_allowed_changes": true,
+          "real_answer_diff": true,
+          "actual_test_unchanged": true,
+          "one_actual_mutation_effect": true,
+          "one_actual_native_turn": true,
+          "same_root_turn_workspace": true,
+          "native_order_and_clock": true,
+          "actual_validation_exit": true,
+          "actual_inbound_rpc_identity": true,
+          "same_original_public_tracking": true,
+          "all_original_go_records_settled": true,
+          "work_verified": true,
+          "runs_success_and_owned": true,
+          "model_calls_complete_and_bounded": true,
+          "actual_model_run_binding": true,
+          "actual_original_foreground_reply": true,
+          "reply_timing_same_domain": true,
+          "all_planned_sends_retained": true,
+          "actual_durable_barrier_and_drop_once": true,
+          "no_failed_injection": true,
+          "zero_bytes_real_drop_after_durable": true,
+          "proof_collected_after_public_recovery": true,
+          "same_original_coordinator_recovered": true,
+          "normal_original_query_after_drop": true,
+          "duplicate_input_same_identity": true
+        },
+        "metrics": {
+          "effects": 1,
+          "roots": 1,
+          "model_calls": 3,
+          "roles_calls": {
+            "coordinator": 2,
+            "notification": 1
+          },
+          "roles_input_bytes": {
+            "coordinator": 3146,
+            "notification": 1947
+          },
+          "recovery_observed": true,
+          "service_admission_to_reply_flush_ms": 7275.765953,
+          "reply_flush_before_validation": true,
+          "foreground_queue_ms": 4699.967539,
+          "client_send_to_complete_read_ms": 7289.065216,
+          "native_validation_ms": 12198.438524
+        },
+        "reasons": []
+      },
+      "sample_sha256": "4f497defd2a7338add685e5cf47a2eef8e139f23e231546236d3b8765072fe65"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "B",
+      "order": 5,
+      "sample_path": "S2-1101-B/sample.json",
+      "verdict": {
+        "status": "complete",
+        "checks": {
+          "full_completion_and_quiet_tail": true,
+          "internal_only_application_networks": true,
+          "clean_producer": true,
+          "original_frozen_batch_and_dataset": true,
+          "frozen_source": true,
+          "frozen_runtime_files": true,
+          "frozen_dataset": true,
+          "one_original_worker_task": true,
+          "worker_completed_once": true,
+          "fixed_project_snapshot": true,
+          "original_logical_operation": true,
+          "independent_test_succeeded": true,
+          "actual_workspace_files": true,
+          "only_allowed_changes": true,
+          "real_answer_diff": true,
+          "actual_test_unchanged": true,
+          "one_actual_mutation_effect": true,
+          "one_actual_native_turn": true,
+          "same_root_turn_workspace": true,
+          "native_order_and_clock": true,
+          "actual_validation_exit": true,
+          "actual_inbound_rpc_identity": true,
+          "same_original_public_tracking": true,
+          "all_original_go_records_settled": true,
+          "work_verified": true,
+          "runs_success_and_owned": true,
+          "model_calls_complete_and_bounded": true,
+          "actual_model_run_binding": true,
+          "actual_original_foreground_reply": true,
+          "reply_timing_same_domain": true,
+          "all_planned_sends_retained": true,
+          "actual_durable_barrier_and_drop_once": true,
+          "no_failed_injection": true,
+          "zero_bytes_real_drop_after_durable": true,
+          "proof_collected_after_public_recovery": true,
+          "same_original_coordinator_recovered": true,
+          "normal_original_query_after_drop": true,
+          "duplicate_input_same_identity": true
+        },
+        "metrics": {
+          "effects": 1,
+          "roots": 1,
+          "model_calls": 4,
+          "roles_calls": {
+            "router": 3,
+            "notification": 1
+          },
+          "roles_input_bytes": {
+            "router": 7300,
+            "notification": 1947
+          },
+          "recovery_observed": true,
+          "service_admission_to_reply_flush_ms": 8035.762765,
+          "reply_flush_before_validation": true,
+          "foreground_queue_ms": 5865.764473,
+          "client_send_to_complete_read_ms": 8049.638404,
+          "native_validation_ms": 12147.253467
+        },
+        "reasons": []
+      },
+      "sample_sha256": "184c189952ee6c9ec4f8145343a4d823e5f12d7d35293d63f7c1d197beb40a3b"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "C",
+      "order": 6,
+      "sample_path": "S2-1101-C/sample.json",
+      "verdict": {
+        "status": "complete",
+        "checks": {
+          "full_completion_and_quiet_tail": true,
+          "internal_only_application_networks": true,
+          "clean_producer": true,
+          "original_frozen_batch_and_dataset": true,
+          "frozen_source": true,
+          "frozen_runtime_files": true,
+          "frozen_dataset": true,
+          "one_original_worker_task": true,
+          "worker_completed_once": true,
+          "fixed_project_snapshot": true,
+          "original_logical_operation": true,
+          "independent_test_succeeded": true,
+          "actual_workspace_files": true,
+          "only_allowed_changes": true,
+          "real_answer_diff": true,
+          "actual_test_unchanged": true,
+          "one_actual_mutation_effect": true,
+          "one_actual_native_turn": true,
+          "same_root_turn_workspace": true,
+          "native_order_and_clock": true,
+          "actual_validation_exit": true,
+          "actual_inbound_rpc_identity": true,
+          "same_original_public_tracking": true,
+          "all_original_go_records_settled": true,
+          "work_verified": true,
+          "runs_success_and_owned": true,
+          "model_calls_complete_and_bounded": true,
+          "actual_model_run_binding": true,
+          "actual_original_foreground_reply": true,
+          "reply_timing_same_domain": true,
+          "all_planned_sends_retained": true,
+          "actual_durable_barrier_and_drop_once": true,
+          "no_failed_injection": true,
+          "zero_bytes_real_drop_after_durable": true,
+          "proof_collected_after_public_recovery": true,
+          "same_original_coordinator_recovered": true,
+          "normal_original_query_after_drop": true,
+          "duplicate_input_same_identity": true
+        },
+        "metrics": {
+          "effects": 1,
+          "roots": 1,
+          "model_calls": 4,
+          "roles_calls": {
+            "router": 3,
+            "notification": 1
+          },
+          "roles_input_bytes": {
+            "router": 7300,
+            "notification": 1947
+          },
+          "recovery_observed": true,
+          "service_admission_to_reply_flush_ms": 7911.27322,
+          "reply_flush_before_validation": true,
+          "foreground_queue_ms": 5675.96626,
+          "client_send_to_complete_read_ms": 7919.208331,
+          "native_validation_ms": 12196.780363
+        },
+        "reasons": []
+      },
+      "sample_sha256": "5e6d02180fbcf460207a17a4118407d03a0498f461ed526237eed513f1b73b6f"
+    }
+  ],
+  "limitations": [
+    "Offline fixed scripted Provider and fake Native protocol only.",
+    "Small observed sample, no population significance or performance generalization.",
+    "Missing timings are censored, never zero; queries do not count as mutations.",
+    "No real model quality, billing, human attention or cloud capacity claims."
+  ]
+}

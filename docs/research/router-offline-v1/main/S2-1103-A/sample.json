@@ -1,0 +1,96 @@
+{
+  "profile": "single offline S2 calibration",
+  "formal_batch": true,
+  "batch_id": "20f38d87-4d1c-451b-9249-cb136533d10e",
+  "dataset_sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6",
+  "mode": "A",
+  "scenario": "S2",
+  "seed": 1103,
+  "passed": false,
+  "source": {
+    "revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+    "checkout_dirty": false,
+    "file_sha256": {
+      "scripts/run_router_sample.py": "c74f4c4439066948705f6e8dbd7c7dcaade0648d5049d0bc145fff1d07bea075",
+      "scripts/verify_router_a.py": "fe3462c24e901a0a7fe20ce2b88e58ee655434f2d6ddf7ccbab678822e0ce485",
+      "tests/router_evaluation_probe.py": "457bdda262d7ab8bead58f8f8702b5a891f90c9075766de370bd2b4170a6c111",
+      "tests/router_evaluation_proxy.py": "572da3548253325fd75e92a6adc44dc9d3a8e6d696fd02d9b6c41b63427488ec",
+      "tests/router_evaluation_model.py": "b906d93cc2d1e94c57f4e7cc66371f9edb1e9db91f300d17f776de092b8645e5",
+      "tests/fake_codex.py": "d3c90ac1fc29e6f9000521169fdcb06305786e4e4bfef852f9c062a0d8e930ae",
+      "tests/continuous_native_fixture.py": "488295da77e3af9fd3d4479e5d4d49eb7f8db054a486a4ea39c6e4fdc33fd10f",
+      "tests/continuous_fixture_model.py": "c9a4fdb25a9c32ca4e750ce19aba33a9672eae9041ebc5b6fc7295d443fcefe9"
+    }
+  },
+  "project": "deermate-router-a-09ef8955-fixture",
+  "logical_operation_id": "s2-1103",
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "scheduled_deliveries": [
+    {
+      "kind": "foreground",
+      "index": 0,
+      "intended_offset_seconds": 0.25,
+      "input": {
+        "operation_id": "front-s2-1103",
+        "text": "EVAL_FRONT s2-1103"
+      },
+      "clock_domain": "runner-monotonic",
+      "attempt_status": "not_started",
+      "sent_runner_ns": null,
+      "response_status": null,
+      "received_runner_ns": null,
+      "error_kind": null,
+      "drift_ms": null,
+      "due_runner_ns": null
+    },
+    {
+      "kind": "duplicate_start",
+      "index": 0,
+      "intended_offset_seconds": 0.5,
+      "input": {
+        "operation_id": "start-s2-1103",
+        "text": "EVAL_START s2-1103"
+      },
+      "clock_domain": "runner-monotonic",
+      "attempt_status": "not_started",
+      "sent_runner_ns": null,
+      "response_status": null,
+      "received_runner_ns": null,
+      "error_kind": null,
+      "drift_ms": null,
+      "due_runner_ns": null
+    }
+  ],
+  "app_network_isolation": {
+    "control": {
+      "internal_only": true,
+      "published_ports": 0
+    },
+    "gateway": {
+      "internal_only": true,
+      "published_ports": 0
+    }
+  },
+  "owner_id": "5c6103f2-08be-4cb3-b1c3-8e12766d3b5d",
+  "failure_kind": "RuntimeError",
+  "failure_message": "Fixture API POST agent-devices/pair: 503",
+  "retained_failure_probe": {
+    "clock_domain": "linux-monotonic:b23dbc79-a383-42a6-aea0-8aa436857ee0",
+    "clock_ns": 631593193578610,
+    "go_records": [],
+    "mcp_tasks": [],
+    "runs": [],
+    "deliveries": [],
+    "worker_tasks": [],
+    "native_events": [],
+    "native_rpc": [],
+    "model_events": [],
+    "observation_presence": {
+      "native_events": false,
+      "native_rpc": false,
+      "model_events": false
+    }
+  },
+  "fault_events": [],
+  "fault_evidence_collected_after_recovery_driver": true
+}

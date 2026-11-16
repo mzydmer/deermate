@@ -1,0 +1,62 @@
+{
+  "status": "failed",
+  "checks": {
+    "full_completion_and_quiet_tail": true,
+    "internal_only_application_networks": true,
+    "clean_producer": true,
+    "one_original_worker_task": true,
+    "worker_completed_once": true,
+    "fixed_project_snapshot": true,
+    "original_logical_operation": true,
+    "independent_test_succeeded": true,
+    "actual_workspace_files": true,
+    "only_allowed_changes": true,
+    "real_answer_diff": true,
+    "actual_test_unchanged": true,
+    "one_actual_mutation_effect": false,
+    "one_actual_native_turn": true,
+    "same_root_turn_workspace": true,
+    "native_order_and_clock": true,
+    "actual_validation_exit": true,
+    "actual_inbound_rpc_identity": true,
+    "same_original_public_tracking": true,
+    "all_original_go_records_settled": true,
+    "work_verified": true,
+    "runs_success_and_owned": true,
+    "model_calls_complete_and_bounded": true,
+    "actual_model_run_binding": true,
+    "actual_original_foreground_reply": true,
+    "reply_timing_same_domain": true,
+    "all_planned_sends_retained": true,
+    "actual_durable_barrier_and_drop_once": true,
+    "no_failed_injection": true,
+    "zero_bytes_real_drop_after_durable": true,
+    "proof_collected_after_public_recovery": true,
+    "same_original_coordinator_recovered": true,
+    "normal_original_query_after_drop": true,
+    "duplicate_input_same_identity": true
+  },
+  "metrics": {
+    "effects": 2,
+    "roots": 1,
+    "model_calls": 4,
+    "roles_calls": {
+      "router": 3,
+      "notification": 1
+    },
+    "roles_input_bytes": {
+      "router": 7300,
+      "notification": 1947
+    },
+    "recovery_observed": true,
+    "service_admission_to_reply_flush_ms": 8294.962562,
+    "reply_flush_before_validation": true,
+    "foreground_queue_ms": 6122.214741,
+    "client_send_to_complete_read_ms": 8304.466448,
+    "native_validation_ms": 12143.641225
+  },
+  "reasons": [
+    "one_actual_mutation_effect"
+  ],
+  "sample_sha256": "60129a2a35ad1390dcb846a8e7316cfadff12a363bfeb109f3b905cb0dbb0673"
+}
