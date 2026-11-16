@@ -292,7 +292,12 @@
       "scripts/evaluation_record.py",
       "scripts/verify_citation.py",
       "docs/research/router-protocol-v1.md",
-      "docs/research/router-baseline-v1.json"
+      "docs/research/router-baseline-v1.json",
+      "docs/verification/router-a-calibration-2026-11-16.json",
+      "docs/verification/router-routing-contracts-2026-11-16.json",
+      "backend/internal/controlplane/evaluation_fixture.go",
+      "tests/router_evaluation_model.py",
+      "scripts/verify_router_a.py"
     ]
   },
   {
@@ -346,7 +351,12 @@
       "backend/internal/controlplane/server.go",
       "docs/verification/single-host-restore-2026-11-16.json",
       "docs/research/router-protocol-v1.md",
-      "docs/research/router-baseline-v1.json"
+      "docs/research/router-baseline-v1.json",
+      "docs/verification/router-a-calibration-2026-11-16.json",
+      "docs/verification/router-routing-contracts-2026-11-16.json",
+      "backend/internal/controlplane/evaluation_fixture.go",
+      "tests/router_evaluation_model.py",
+      "scripts/verify_router_a.py"
     ]
   }
 ]

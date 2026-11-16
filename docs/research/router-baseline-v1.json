@@ -162,5 +162,19 @@
     "samples": 6,
     "same_frozen_version_required": true,
     "included_in_primary_36": false
-  }
+  },
+  "completion_barrier": {
+    "requires": [
+      "independent Worker verification and terminal state",
+      "owned public MCP tracking terminal",
+      "original Go operations/inbox terminal",
+      "associated runs terminal",
+      "notifications delivered or explicitly terminal with reason"
+    ],
+    "quiet_tail_seconds": 4,
+    "calls_counted_through_barrier": true,
+    "all_modes_same_standard": true,
+    "unsettled": "unknown_or_timeout"
+  },
+  "project_commit_date": "2026-11-16T00:00:00Z"
 }

@@ -13,3 +13,6 @@
 
 
 校准03的服务内健康通过，但internal-only控制面发布端口在Mac拒绝连接，尚未创建账号或任务。无状态HTTP探针证实internal监听可用、仅internal发布端口不可达；独立最小代理双网入口的第二次无卷探针200且后端始终只有internal。新harness复用既有Nginx镜像和固定上游最小配置，只有代理双网/loopback，Go与Gateway无外网，不改daemon/全局路由；三组共享此执行环境，不改输入或预算。首个代理探针未就绪记录也保留，未当作通过。
+
+
+B/C检查点新增共享canonical关联函数，C摄取时关联，测试A/B在Router完成后按既有权威订阅确定性附加；普通构建仍C且无测试入口/模式开关。专用context reader沿用原assessmentInputs/assessmentBatch及owner/用户版本/来源/规则/event revision检查；模型收到相同有界批次正文，未以“模型自行路由”宣传。Linux tagged四项顶层合同与失效子组通过，初次Origin和nonce测试fixture错误均保留且不放宽guard。已固定测试项目Git日期以便后续验证相同snapshot；B/C真实链、独立judge及36格仍未运行，不能称研究结果。新增产品技术页/待发布状态仅说明实际检查范围；默认来源回归和完整Go检查另记录。

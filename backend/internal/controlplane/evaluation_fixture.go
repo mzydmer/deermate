@@ -31,6 +31,78 @@ func evaluationClock() int64 {
 	return stamp.Nano()
 }
 
+func (s *Server) evaluationRoutedContext(tx *sql.Tx, op workRecord) error {
+	if evaluationDirectContext() || workString(op, "origin") != "event" {
+		return nil
+	}
+	source, _, err := s.evaluationEventBatch(tx, op)
+	if err != nil {
+		return nil
+	}
+	refs, _ := op.Data["event_batch"].([]any)
+	for _, raw := range refs {
+		ref, ok := raw.(map[string]any)
+		if !ok {
+			return ErrConflict
+		}
+		id, _ := ref["id"].(string)
+		item, err := workGet(tx, op.Owner, "event", id)
+		if err != nil {
+			return err
+		}
+		if _, err = attachSubscriptionContext(tx, source, &item); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Server) evaluationEventBatch(tx *sql.Tx, op workRecord) (workRecord, string, error) {
+	u, err := scanUser(tx.QueryRow("SELECT "+userColumns+" FROM users WHERE id=?", op.Owner))
+	if err != nil || u.Disabled || u.NeedsSetup || u.Role != "admin" || int64(u.Version) != workInt(op, "_user_version") || !s.cfg.ContinuousEnabled || !workEnabled(tx, op.Owner) {
+		return workRecord{}, "", ErrConflict
+	}
+	event, rule, err := assessmentInputs(tx, op.Owner, workString(op, "event_id"), workString(op, "rule_id"))
+	if err != nil || event.Revision != workInt(op, "event_revision") || rule.Revision != workInt(op, "rule_revision") {
+		return workRecord{}, "", ErrConflict
+	}
+	batch, err := assessmentBatch(tx, op.Owner, event, rule, op.Data["event_batch"])
+	if err != nil {
+		return workRecord{}, "", err
+	}
+	source, err := workGet(tx, op.Owner, "source", workString(event, "source_id"))
+	return source, batch, err
+}
+
+func (s *Server) evaluationContext(w http.ResponseWriter, r *http.Request) {
+	var owner string
+	if s.Store.DB.QueryRow("SELECT owner FROM deermate_work_records WHERE kind='operation' AND id=?", r.PathValue("id")).Scan(&owner) != nil {
+		workError(w, ErrNotFound)
+		return
+	}
+	op, err := workGet(s.Store.DB, owner, "operation", r.PathValue("id"))
+	if err != nil {
+		workError(w, err)
+		return
+	}
+	nonce := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if nonce == "" || subtle.ConstantTimeCompare([]byte(nonce), []byte(workString(op, "_nonce"))) != 1 {
+		fail(w, 403, "operation_required", "Canonical operation capability required")
+		return
+	}
+	if workString(op, "kind") != "router" || workString(op, "origin") != "event" || !slicesWorkState(op.State, "dispatching", "acknowledged", "uncertain") {
+		workError(w, ErrConflict)
+		return
+	}
+	var batch string
+	err = s.Store.workTransaction(r.Context(), func(tx *sql.Tx) error { _, value, e := s.evaluationEventBatch(tx, op); batch = value; return e })
+	if err != nil {
+		workError(w, err)
+		return
+	}
+	respond(w, 200, map[string]any{"context": batch, "event_refs": op.Data["event_batch"]})
+}
+
 func (s *Server) evaluationAdmitted(owner, inbox string) {
 	if os.Getenv("DEERMATE_EVALUATION_MODE") == "" {
 		return
@@ -81,6 +153,7 @@ func (s *Server) evaluationFixtureRoutes() {
 			next(w, r)
 		})
 	}
+	s.mux.HandleFunc("POST /internal/deermate/evaluation-context/{id}", s.evaluationContext)
 	s.mux.HandleFunc("POST /__deermate_evaluation/setup", guard(func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
 			Work string `json:"work_id"`

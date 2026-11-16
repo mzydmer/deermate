@@ -352,6 +352,11 @@ func (s *Server) deliverWork(ctx context.Context, snapshot workRecord) {
 				return e
 			}
 			inbox.State = current.State
+			if terminal && result.Status == "completed" {
+				if e = s.evaluationRoutedContext(tx, current); e != nil {
+					return e
+				}
+			}
 			if terminal {
 				inbox.Data["reply"] = safeWorkText(result.Preview, 2000)
 				if reply := workString(current, "reply"); reply != "" {

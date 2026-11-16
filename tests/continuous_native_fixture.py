@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -30,6 +31,13 @@ def prepare_settings():
             " def test_add(self): self.assertEqual(add(2,3),5)\n"
         )
         (repo / ".gitignore").write_text("__pycache__/\n")
+        git_environment = None
+        if os.environ.get("DEERMATE_EVALUATION_CONFIG"):
+            evaluation = json.loads(Path(os.environ["DEERMATE_EVALUATION_CONFIG"]).read_text())
+            assert evaluation["profile"] == "router-offline-v1"
+            git_environment = os.environ.copy()
+            stamp = evaluation["project_commit_date"]
+            git_environment.update(GIT_AUTHOR_DATE=stamp, GIT_COMMITTER_DATE=stamp)
         for args in (
             ["init", "-q"],
             ["add", "."],
@@ -43,7 +51,7 @@ def prepare_settings():
                 "fixture",
             ],
         ):
-            subprocess.run(["git", "-C", str(repo), *args], check=True)
+            subprocess.run(["git", "-C", str(repo), *args], env=git_environment, check=True)
     settings = Settings(
         state_dir=ROOT / "state",
         task_timeout_seconds=60,

@@ -51,6 +51,14 @@ S2 代理以已保存的 operation 对应 tracking 为触发条件，不能在 A
 
 每个样本总上限 90s；单次前台回复观察 30s。明确终态、失败、超时、unknown 均结束采样并落盘。外层预算 36×90s 加实际启动时间，超外层预算时尚未运行的格子保留 `not_started_budget`，不能只汇总已成功格子。
 
+## 实际模型输入与完成屏障
+
+A/B对已绑定事件的最终附加是测试适配中的“已有权威订阅确定性附加”，不声称模型自行决定工作归属。B必须先经过真实Router完成，之前不能成为context；C在摄取时直接附加且绑定事件零新增Router。A/B模型真实接收相同批次的有界事件原文，使用原assessmentInputs/assessmentBatch复核owner、来源、规则及event/rule revision；完成后的附加再次复核，失效则不附加。Native授权撤销阻止新增执行，不额外阻止仍合法的只读context。普通构建保留默认C合同，专用测试适配不得扩大公开功能。
+
+模型输入计数/上限包含实际序列化messages（含tool_calls和非string内容）与绑定工具schema；按operation/run/thread/role关联日志，事件批次另记引用与context哈希。当前Router API在settled时才返回非空整段回复，因此first与complete为同一服务事件，不称为流式首token。
+
+正式样本只有在Worker独立验证及终态、MCP本人公开tracking终态、应有Go原operation/inbox终态、关联runs终态及通知投递全部核对后才进入完成屏障；之后再观察4s（超过Go tick与MCP poll）确保没有迟到模型/执行调用。调用数覆盖该屏障，A与B/C采用相同完成标准；任何层未收敛保留unknown/timeout，不能只靠Workercompleted结束。A用原请求已知的coordinator thread和正常本人MCP list/detail接口发现原tracking，B/C用原work的公开执行thread；禁止从私有观察器注入task句柄或重放。
+
 ## 配对、顺序和失败保留
 
 每个场景用同样六个配对 seed：1101–1106，每 seed 依次运行 A/B/C，顺序按下表轮换。共 2×6×3=36 个计划样本，各场景各配置六次，不少于五次。相同 seed 的公开输入和延迟完全相同；seed 只决定已声明的 toy ID/内容变体，不改变延迟来偏向某配置。

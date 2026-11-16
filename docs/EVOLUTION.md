@@ -808,3 +808,11 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #5 A异步合同通过
 
 干净4180872经镜像身份/ELF/tag/UID1000预检和最小隔离入口实际通过A04：Go持久接纳→单协调图→普通MCP/CodingSessionMiddleware/ask_in_chat→Relay/Worker，拿tracking释放原协调轮次，Native12004.4ms运行中同图前台可见（接纳到first8632.3ms，早于Native完成3321.4ms）。一个Worker/MCP任务、一个根/轮次/effect、真实补丁和独立unittest0；无真实Provider/Native。Go/Gateway仅internal，原12守卫一致，所有失败和源卷保留。MCP采样仍working，只证明功能异步/Worker验证，不冒称公开终态对账。独立评审已接受合同，继续B/C与judge真实双effect负例；正式冻结后36格加单列6格同seed复跑，尚未开始正式实验。
+
+
+## 2026-11-16 · Issue #5 B/C路由与权限合同检查点
+
+提取同一canonical订阅关联，C摄取时附加、测试A/B经真实Router回执后附加，保持六事件最终工作归属，不称模型决策。模型context读入口复用原assessmentInputs/assessmentBatch并重核owner/用户版本、来源、rule/event revision；四项Linux tagged顶层合同及B/C/四版本子组在UID1000/networknone/tmpfs通过，独立评审复跑通过。Native撤权仍拒绝新执行，但合法只读context无需新增Native grant。首次loopback与nonce单元fixture错误保留，修fixture未放宽guard。测试Git日期固定、正式结束屏障和同版本单列6格复跑口径同步；B/C完整执行链、judge双effect负例和正式36格未开展。当前阶段提交后交接，避免保留大段未提交代码。
+
+
+本B/C提交前普通Go mod verify/vet/全包race与普通无CGO/Linux evaluation构建通过，controlplane34.973s，覆盖既有来源/订阅与默认无测试入口反例；当前Python fixture/script的Ruff/编译和产品文档、82文件设计/token/7图门禁通过。Go tagged合同的源码以逐文件哈希留证，不把提交后的HEAD倒填为测试生产身份。
