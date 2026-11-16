@@ -42,20 +42,43 @@ Memory is on by default for new accounts; existing choices are preserved. Coding
 
 ## Get started
 
-For the full local workspace, use **macOS, Docker Desktop, Python 3.12+, Git, and Helm 3.18+ (3.x)**. The local Compose helper is currently macOS-specific; see the [platform notes](docs/local-docker.md) before building.
+For the full local workspace, use **macOS, Docker Desktop, Python 3.12+, Git, Helm 3.18+ (3.x), and Codex CLI on PATH**. The helper checks for Codex during the first `init` and starts a host Worker and a generated-key SSH development connection during `up`. See the [platform notes](docs/local-docker.md#主机预检).
+
+If Codex is missing, follow the [official OpenAI installation instructions](https://learn.chatgpt.com/docs/codex/cli#install-codex) (macOS: `curl -fsSL https://chatgpt.com/codex/install.sh | sh`), then open a terminal where `command -v codex` succeeds.
 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[dev]'
-python scripts/local_docker.py init
-python scripts/local_docker.py build
-python scripts/local_docker.py up
+python -m pip install -e '.[dev]' 'cryptography==48.0.1'
 ```
 
-Open **http://localhost:2026**, create the first administrator, and configure a chat model. Install and sign in to Codex on the execution machine when you want to run coding tasks. The first build downloads the pinned DeerFlow and image dependencies.
+The dependency constraint uses a published binary wheel for the supported Intel Mac; newer source-only versions may require OpenSSL build tools. See the [dependency notes](docs/local-docker.md#主机预检).
+
+Run the host preflight. This block stops at the first failed check:
+
+```bash
+(
+  set -e
+  command -v codex || { echo "Codex CLI is missing; install it before init." >&2; exit 1; }
+  docker info --format '{{.OSType}}/{{.Architecture}}'
+  helm version --short
+)
+```
+
+After the preflight succeeds, start the workspace:
+
+```bash
+(
+  set -e
+  python scripts/local_docker.py init
+  python scripts/local_docker.py build
+  python scripts/local_docker.py up
+)
+```
+
+Open **http://localhost:2026**. On a fresh profile, reaching the first-administrator setup page completes the startup check; create your administrator to finish setup. Startup submits no model requests or Native turns and does not require Codex sign-in. Configure a chat model when ready to use the assistant. Before coding tasks, check `codex login status`; optional [live verification](docs/local-docker.md#可选真实执行验收) is a separate step that consumes Codex quota. The first build downloads the pinned DeerFlow and image dependencies.
 
 | Deployment | Guide |
 | --- | --- |

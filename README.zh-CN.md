@@ -42,20 +42,43 @@ DeerMate 是一个可自托管的个人助手：基于 **DeerFlow**，由 **Go �
 
 ## 开始使用
 
-完整本地工作台需要 **macOS、Docker Desktop、Python 3.12+、Git 和 Helm 3.18+（3.x）**。本地 Compose 脚本目前面向 macOS，搭建前请先看[平台说明](docs/local-docker.md)。
+完整本地工作台需要 **macOS、Docker Desktop、Python 3.12+、Git、Helm 3.18+（3.x），以及 PATH 中可用的 Codex CLI**。脚本首次 `init` 就检查 Codex，`up` 会启动本机 Worker 和使用生成密钥的 SSH 开发连接。先看[平台说明](docs/local-docker.md#主机预检)。
+
+缺少 Codex 时，按 [OpenAI 官方安装说明](https://learn.chatgpt.com/docs/codex/cli#install-codex)安装（macOS：`curl -fsSL https://chatgpt.com/codex/install.sh | sh`），然后在能通过 `command -v codex` 的终端继续。
 
 ```bash
 git clone https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[dev]'
-python scripts/local_docker.py init
-python scripts/local_docker.py build
-python scripts/local_docker.py up
+python -m pip install -e '.[dev]' 'cryptography==48.0.1'
 ```
 
-打开 **http://localhost:2026**，创建首个管理员并配置聊天模型。需要执行代码时，再在执行设备安装并登录 Codex。首次构建会下载固定版本的 DeerFlow 和镜像依赖。
+此依赖约束使用已发布的 Intel Mac 二进制 wheel；更新的仅源码版本可能需要 OpenSSL 构建工具，见[依赖说明](docs/local-docker.md#主机预检)。
+
+先做主机预检，任一检查失败即停止当前命令块：
+
+```bash
+(
+  set -e
+  command -v codex || { echo "缺少 Codex CLI，请先安装再执行 init。" >&2; exit 1; }
+  docker info --format '{{.OSType}}/{{.Architecture}}'
+  helm version --short
+)
+```
+
+预检通过后启动工作台：
+
+```bash
+(
+  set -e
+  python scripts/local_docker.py init
+  python scripts/local_docker.py build
+  python scripts/local_docker.py up
+)
+```
+
+打开 **http://localhost:2026**。新 profile 显示首个管理员初始化页即通过启动检查，创建自己的管理员后完成安装。启动不提交模型请求或 Native 轮次，也不要求 Codex 已登录。需要与助手对话时再配置聊天模型；执行代码前，用 `codex login status` 核对登录。可选的[真实执行验收](docs/local-docker.md#可选真实执行验收)是独立步骤，会使用 Codex 额度。首次构建会下载固定版本的 DeerFlow 和镜像依赖。
 
 | 部署方式 | 说明 |
 | --- | --- |

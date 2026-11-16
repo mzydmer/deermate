@@ -72,7 +72,10 @@ def initialize(model):
     if not profile.exists():
         codex = shutil.which("codex")
         if not codex:
-            raise ack.DeploymentError("Install and sign in to Codex on the host first.")
+            raise ack.DeploymentError(
+                "Codex CLI not found on PATH. Install Codex CLI before local_docker.py init; "
+                "check codex login status before running a native task."
+            )
         ack.private_write(
             profile,
             json.dumps({"model": model, "codex": codex, "worker_port": 18777, "ssh_port": 19822}),
@@ -667,7 +670,8 @@ def main():
             native_stop("worker")
             print("Stopped only this local profile; named volumes and state retained.")
         else:
-            print("Local profile initialized. Run build, then up, then verify --live.")
+            print("Local profile initialized. Run build and up, then open http://localhost:2026.")
+            print("Optional verify --live invokes Codex and consumes model quota.")
     except (ack.DeploymentError, OSError, ValueError, httpx.HTTPError) as error:
         print(
             f"Local run failed ({type(error).__name__}); inspect private local logs.",
