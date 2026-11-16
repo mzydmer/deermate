@@ -1,5 +1,6 @@
 """Offline protocol fixture. This is not a Codex implementation or a live model demo."""
 
+import hashlib
 import json
 import os
 import subprocess
@@ -179,4 +180,13 @@ for line in sys.stdin:
                 "stdout": completed.stdout,
                 "stderr": completed.stderr,
             }
+            evaluation_event(
+                "validation_finished",
+                root=session_id,
+                workspace=params["cwd"],
+                command=params["command"],
+                exit_code=completed.returncode,
+                stdout_sha256=hashlib.sha256(completed.stdout.encode()).hexdigest(),
+                stderr_sha256=hashlib.sha256(completed.stderr.encode()).hexdigest(),
+            )
     send({"id": message["id"], "result": result})

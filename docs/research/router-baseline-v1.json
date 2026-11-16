@@ -8,9 +8,9 @@
   "producer_revision": null,
   "harness_sha256": null,
   "dataset": {
-    "version": null,
-    "artifact": null,
-    "sha256": null
+    "version": "router-toy-add-v1",
+    "artifact": "docs/research/router-dataset-v1.json",
+    "sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6"
   },
   "results": {
     "artifact": null,

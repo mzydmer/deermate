@@ -313,7 +313,14 @@
       "tests/router_evaluation_model_contract.py",
       "docs/verification/router-s1-calibration-2026-11-16.json",
       "tests/router_evaluation_proxy.py",
-      "tests/router_evaluation_proxy_contract.py"
+      "tests/router_evaluation_proxy_contract.py",
+      "docs/verification/router-s2-calibration-2026-11-16.json",
+      "docs/research/router-dataset-v1.json",
+      "docs/research/router-offline-config-v1.json",
+      "scripts/run_router_evaluation.py",
+      "scripts/judge_router_evaluation.py",
+      "scripts/aggregate_router_evaluation.py",
+      "tests/test_router_judge.py"
     ]
   },
   {
@@ -384,7 +391,14 @@
       "tests/router_evaluation_model_contract.py",
       "docs/verification/router-s1-calibration-2026-11-16.json",
       "tests/router_evaluation_proxy.py",
-      "tests/router_evaluation_proxy_contract.py"
+      "tests/router_evaluation_proxy_contract.py",
+      "docs/verification/router-s2-calibration-2026-11-16.json",
+      "docs/research/router-dataset-v1.json",
+      "docs/research/router-offline-config-v1.json",
+      "scripts/run_router_evaluation.py",
+      "scripts/judge_router_evaluation.py",
+      "scripts/aggregate_router_evaluation.py",
+      "tests/test_router_judge.py"
     ]
   }
 ]

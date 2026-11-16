@@ -87,6 +87,12 @@ def preflight_control(args):
         .get("Labels", {})
         .get("io.deermate.evaluation.source-dirty"),
         "binary_sha256": digest,
+        "binary_vcs_revision": next(
+            (v.split("=", 1)[1] for v in build.split() if v.startswith("vcs.revision=")), None
+        ),
+        "binary_vcs_modified": next(
+            (v.split("=", 1)[1] for v in build.split() if v.startswith("vcs.modified=")), None
+        ),
         "platform": "linux/amd64",
         "test_tag": "deermate_evaluation",
         "container_user": "1000:1000",
@@ -139,10 +145,13 @@ def prepare(args, work, project, key):
         "mode": getattr(args, "mode", "A"),
         "logical_operation_id": getattr(args, "logical_operation_id", "calibration-a-1101"),
         "native_delay_seconds": 12,
-        "formal_batch": False,
+        "formal_batch": getattr(args, "formal_batch", False),
         "project_commit_date": "2026-11-16T00:00:00Z",
         "notification_context_adapter": "owned-admission-v1",
         "scenario": getattr(args, "scenario", "normal"),
+        "duplicate_effect_negative_control": getattr(
+            args, "duplicate_effect_negative_control", False
+        ),
     }
     (runtime / "evaluation.json").write_text(json.dumps(cfg) + "\n")
     config = yaml.safe_load((runtime / "config.yaml").read_text())

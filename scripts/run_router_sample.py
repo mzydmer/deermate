@@ -570,6 +570,9 @@ def await_barrier(api, gateway, thread, work_id, mode, owner, directory, deadlin
 
 def run(args):
     os.umask(0o077)
+    if getattr(args, "formal_batch", False) and args.duplicate_effect_negative_control:
+        raise ValueError("Negative controls must stay separate from formal batches")
+    startup_started = time.monotonic()
     if args.port == 2026 or not 1024 <= args.port <= 65535:
         raise ValueError("Use a separate unprivileged fixture port")
     args.logical_operation_id = args.scenario.lower() + "-" + str(args.seed)
@@ -607,7 +610,9 @@ def run(args):
     gateway = project + "-gateway-1"
     result = {
         "profile": "single offline " + args.scenario + " calibration",
-        "formal_batch": False,
+        "formal_batch": getattr(args, "formal_batch", False),
+        "batch_id": getattr(args, "batch_id", None),
+        "dataset_sha256": getattr(args, "dataset_sha256", None),
         "mode": args.mode,
         "scenario": args.scenario,
         "seed": args.seed,
@@ -662,6 +667,7 @@ def run(args):
                 }
                 result["scheduled_deliveries"] = s1_plan(cfg, args.seed)
             sample_deadline = time.monotonic() + 90
+            result["startup_elapsed_seconds"] = time.monotonic() - startup_started
             start = api(
                 "POST",
                 "me/router/messages",
@@ -747,6 +753,8 @@ def run(args):
                 else None
             )
             result["client_send_to_complete_read_ms"] = (first - runner_send) / 1e6
+            result["foreground_sent_runner_ns"] = runner_send
+            result["foreground_complete_read_runner_ns"] = first
             result["metric_semantics"] = {
                 "service": "durable admission -> successful flush of actual complete JSON reply",
                 "visibility_limit": "transport boundary; not exact browser display timing",
@@ -810,7 +818,7 @@ def run(args):
         json.dumps(
             {
                 "passed": result["passed"],
-                "formal_batch": False,
+                "formal_batch": result["formal_batch"],
                 "mode": args.mode,
                 "receipt": str(directory / "sample.json"),
                 "barrier": result["barrier"]["status"],
@@ -825,6 +833,10 @@ if __name__ == "__main__":
     parser.add_argument("--mode", choices=("A", "B", "C"), required=True)
     parser.add_argument("--scenario", choices=("normal", "S1", "S2"), default="normal")
     parser.add_argument("--seed", type=int, default=1101)
+    parser.add_argument("--duplicate-effect-negative-control", action="store_true")
+    parser.add_argument("--formal-batch", action="store_true")
+    parser.add_argument("--batch-id")
+    parser.add_argument("--dataset-sha256")
     parser.add_argument("--images-config", type=Path, required=True)
     parser.add_argument("--control-image", required=True)
     parser.add_argument("--control-image-id", required=True)

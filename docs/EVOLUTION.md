@@ -851,3 +851,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · S1三组实际校准与S2断连代理合同
 
 干净df8e6c8的A01/B02/C01均经独立复核接受：九项计划及八条件通过，单Worker/MCP/root/turn/effect、验证0和公开完整屏障。B01配对503在Native前回滚，原pair未消费且无device/grant/MCP，失败保留。S2新增固定loopback代理，在原Router run及关联MCP/chat journal持久后真实关闭首次ACK，恢复驱动仅用原请求身份和公开查询；三项实际Linux TCP合同覆盖三模式断连、缺屏障正常转发、错误操作及第二响应不再丢。首轮测试缺kind列导致未arm，修fixture与显式operation数据后通过，未放宽observer。九项runner合同通过；真实S2、judge/真实双effect负例及冻结36+6仍未完成。
+
+
+## 2026-11-16 · S2三组真实恢复与独立判定器初版
+
+干净55d847a的A01/B01/C02均经独立评审接受持久化后0byte真实ACK断连一次、正常原operation查询、重复输入同Inbox和完整屏障；单Worker/MCP/root/turn/effect、验证0，C01启动缺Helm路径的准备失败另保留。原12容器不变，Go源码与df8镜像一致，正式镜像将同freeze重建。新增dataset/语义配置、独立judge/aggregate及freeze/execute CLI；判定不信任runner布尔，采真实RPC/完整工作区文件及验证退出，聚合逐计划身份、缺损unknown、早取观测计数、明确计划/观测分母。真实双effect反例、干净冻结和36+6仍未执行。

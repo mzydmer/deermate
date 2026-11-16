@@ -46,6 +46,24 @@ def lines(path):
     return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
 
 
+def native_rpc():
+    records = []
+    for original in lines(ROOT / "continuous-native-fixture/native/trace.jsonl"):
+        if not original.get("method"):
+            continue
+        params = original.get("params", {})
+        row = {"id": original.get("id"), "method": original["method"]}
+        row.update(
+            {key: params[key] for key in ("cwd", "threadId", "turnId", "command") if key in params}
+        )
+        if original["method"] == "turn/start":
+            text = "".join(v.get("text", "") for v in params.get("input", []))
+            row["input_text_sha256"] = hashlib.sha256(text.encode()).hexdigest()
+            row["logical_markers"] = re.findall(r"EVAL_OPERATION=([A-Za-z0-9_-]+)", text)
+        records.append(row)
+    return records
+
+
 def collect():
     with sqlite3.connect((ROOT / "data/deerflow.db").as_uri() + "?mode=ro", uri=True) as db:
         db.row_factory = sqlite3.Row
@@ -109,6 +127,23 @@ def collect():
                             answer.read_bytes()
                         ).hexdigest()
                     workspace = Path(item["workspace"])
+
+                    def git(*args, location=workspace):
+                        return subprocess.check_output(["git", "-C", str(location), *args])
+
+                    paths = git("ls-files", "--cached", "--others", "--exclude-standard", "-z")
+                    names = sorted(set(v.decode() for v in paths.split(b"\0") if v))
+                    item["actual_files_sha256"] = {
+                        name: hashlib.sha256((workspace / name).read_bytes()).hexdigest()
+                        if (workspace / name).is_file() and not (workspace / name).is_symlink()
+                        else None
+                        for name in names
+                    }
+                    changed = git("diff", "HEAD", "--name-only", "-z")
+                    untracked = git("ls-files", "--others", "--exclude-standard", "-z")
+                    item["actual_changed_paths"] = sorted(
+                        set(v.decode() for v in (changed + untracked).split(b"\0") if v)
+                    )
                     item["actual_diff"] = subprocess.check_output(
                         ["git", "-C", str(workspace), "diff", "HEAD"], text=True
                     )
@@ -126,5 +161,13 @@ def collect():
         "deliveries": deliveries,
         "worker_tasks": workers,
         "native_events": lines(ROOT / "continuous-native-fixture/native/evaluation-events.jsonl"),
+        "native_rpc": native_rpc(),
         "model_events": lines(ROOT / "evaluation-model.jsonl"),
+        "observation_presence": {
+            "native_events": (
+                ROOT / "continuous-native-fixture/native/evaluation-events.jsonl"
+            ).exists(),
+            "native_rpc": (ROOT / "continuous-native-fixture/native/trace.jsonl").exists(),
+            "model_events": (ROOT / "evaluation-model.jsonl").exists(),
+        },
     }

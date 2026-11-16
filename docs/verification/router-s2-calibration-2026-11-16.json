@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "profile": "real durable coordinator admission ACK loss calibration",
+  "formal_batch": false,
+  "producer_revision": "55d847a757ccb99653c35cb86ec1ff0bda1325f2",
+  "control_binary_producer_revision": "df8e6c8194a4dd93fd1452a5cf8fbef58003f626",
+  "control_image_id": "sha256:5fac98c499409447bc1fcd0adeea76e07ec49a9c47ea0c35a2f17a11aa7c983d",
+  "control_source_unchanged_since_binary_producer": true,
+  "results": [
+    {
+      "attempt": "s2-a-01",
+      "mode": "A",
+      "producer_revision": "55d847a757ccb99653c35cb86ec1ff0bda1325f2",
+      "checkout_dirty": false,
+      "formal_batch": false,
+      "full_barrier_complete": true,
+      "quiet_tail_seconds": 4.09683442406822,
+      "fault_kinds": [
+        "fault_reserved",
+        "durable_barrier",
+        "ack_dropped",
+        "original_query"
+      ],
+      "conditions": {
+        "exactly_one_actual_durable_barrier": true,
+        "exactly_one_actual_ack_drop": true,
+        "no_injection_errors": true,
+        "zero_response_bytes_before_close": true,
+        "barrier_precedes_drop": true,
+        "original_operation_recovered": true,
+        "normal_query_recovers_original_run": true,
+        "duplicate_owner_input_same_original_inbox": true,
+        "public_tracking_recovers_original_task": true,
+        "full_tracking_barrier": true
+      },
+      "worker_tasks": 1,
+      "mcp_tasks": 1,
+      "native_turns": 1,
+      "effects": 1,
+      "validation_exit_code": 0,
+      "raw_sha256": "e4d3ad93e5150722bc494456dab105d98fd93baf763646adb4eef76109aee7d1"
+    },
+    {
+      "attempt": "s2-b-01",
+      "mode": "B",
+      "producer_revision": "55d847a757ccb99653c35cb86ec1ff0bda1325f2",
+      "checkout_dirty": false,
+      "formal_batch": false,
+      "full_barrier_complete": true,
+      "quiet_tail_seconds": 4.412102214992046,
+      "fault_kinds": [
+        "fault_reserved",
+        "durable_barrier",
+        "ack_dropped",
+        "original_query"
+      ],
+      "conditions": {
+        "exactly_one_actual_durable_barrier": true,
+        "exactly_one_actual_ack_drop": true,
+        "no_injection_errors": true,
+        "zero_response_bytes_before_close": true,
+        "barrier_precedes_drop": true,
+        "original_operation_recovered": true,
+        "normal_query_recovers_original_run": true,
+        "duplicate_owner_input_same_original_inbox": true,
+        "public_tracking_recovers_original_task": true,
+        "full_tracking_barrier": true
+      },
+      "worker_tasks": 1,
+      "mcp_tasks": 1,
+      "native_turns": 1,
+      "effects": 1,
+      "validation_exit_code": 0,
+      "raw_sha256": "ed3cc79d153293a3e58f0409996d3ca7baf23a25f2dff825e25b14b7eb487204"
+    },
+    {
+      "attempt": "s2-c-02",
+      "mode": "C",
+      "producer_revision": "55d847a757ccb99653c35cb86ec1ff0bda1325f2",
+      "checkout_dirty": false,
+      "formal_batch": false,
+      "full_barrier_complete": true,
+      "quiet_tail_seconds": 4.41811102302745,
+      "fault_kinds": [
+        "fault_reserved",
+        "durable_barrier",
+        "ack_dropped",
+        "original_query"
+      ],
+      "conditions": {
+        "exactly_one_actual_durable_barrier": true,
+        "exactly_one_actual_ack_drop": true,
+        "no_injection_errors": true,
+        "zero_response_bytes_before_close": true,
+        "barrier_precedes_drop": true,
+        "original_operation_recovered": true,
+        "normal_query_recovers_original_run": true,
+        "duplicate_owner_input_same_original_inbox": true,
+        "public_tracking_recovers_original_task": true,
+        "full_tracking_barrier": true
+      },
+      "worker_tasks": 1,
+      "mcp_tasks": 1,
+      "native_turns": 1,
+      "effects": 1,
+      "validation_exit_code": 0,
+      "raw_sha256": "0e29fca32f24ca2209a704901cf00a0c8085007382ddcb1a690e55e9e1163a5e"
+    }
+  ],
+  "retained_preparation_failures": [
+    {
+      "attempt": "s2-c-01",
+      "reason": "launch PATH omitted existing Helm binary; failed prepare before account/tasks",
+      "log_sha256": "bfee69c586e95bb83ac8bf3b55e3a344974b95be250090ea526142e68e47a8c6"
+    }
+  ],
+  "scope": "A/B/C real S2 calibrations independently reviewed; not frozen formal samples. CLI judge, actual double-effect negative and formal36 + separate6 remain pending.",
+  "driver": "Only original public coordinator/work thread and original operation identities; observer proof collected after driver completion.",
+  "real_provider_calls": 0,
+  "real_native_calls": 0
+}

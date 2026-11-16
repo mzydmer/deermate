@@ -1,6 +1,6 @@
 # Router 离线对照协议 v1（协议已接受，实验未运行）
 
-- 状态：Accepted protocol（2026-11-16 独立评审）；A异步、正常B/C及S1三组校准通过；S2/独立judge/负例与正式批次未完成。
+- 状态：Accepted protocol（2026-11-16 独立评审）；A异步、正常B/C及S1三组校准通过；S2三组实际校准通过；独立judge/负例与正式批次未完成。
 - 跟踪：[Issue #5](https://github.com/mzydmer/deermate/issues/5)。
 - 需求：R-EVAL-01–05；CONT-05/06/08/10/13/15；NFR-004/005/006/010。
 - 基线：[router-baseline-v1.json](router-baseline-v1.json)。实际 producer SHA、数据集 SHA 和结果尚为空。
@@ -118,6 +118,6 @@ S1每个固定offset独立发送并持有独立客户端，前台观察器独立
 4. 按固定 36 格运行并保留全部结果，单条计划命令从 raw 聚合和独立复判。公开协议、数据、脱敏原始样本、negative control、聚合代码/输出与失败边界；原私密材料留本地。
 5. 更新研究页面/STATUS/EVOLUTION/roadmap 和引用记录；只标记本批实际覆盖的 R-EVAL 子集。引用召回消融、合批消融、其他故障点与真实模型/用户研究另立协议，不勾选整个 R-EVAL-01–05。
 
-计划命令为 `scripts/run_router_evaluation.py`、`scripts/judge_router_evaluation.py` 和 `scripts/aggregate_router_evaluation.py`；这些文件当前尚不存在，不能当作已可运行说明。最终命令和参数须随 harness 提交后替换本段。
+现有命令为 `scripts/run_router_evaluation.py freeze|execute --root <新目录> --images-config <离线镜像profile> --control-image <同freeze镜像tag> --control-image-id <不可变ID>`（可加 `--go`）；freeze只在干净源码且镜像label/compiled VCS一致时写一次manifest，执行前再次核对。`scripts/judge_router_evaluation.py --sample <raw> --dataset docs/research/router-dataset-v1.json --output <新verdict>`独立判定；`scripts/aggregate_router_evaluation.py --manifest <manifest> --directory <batch> --output <新summary>`逐计划行重判。缺损JSON/错scene-mode-seed-logical ID保留失败/unknown，真实计数先于完整性检查提取。正式批次仍未启动，须先通过真实双effect负例。固定数据为 `router-dataset-v1.json`，语义配置为 `router-offline-config-v1.json`；主批次和 `--kind repeat --repeat-of <原manifest>` 的六格分列，不恢复或重放已启动批次。
 
 正式批次后，以同一冻结harness/数据/配置单独复跑seed1101的两个场景×A/B/C六格，核对离散mutation/root计数与终态；复跑manifest和结果单列，不能混入主36格。差异和失败同样保留，不以重复取代主批次失败。

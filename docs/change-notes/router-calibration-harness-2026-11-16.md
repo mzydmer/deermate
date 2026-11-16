@@ -33,3 +33,6 @@ bb7同源B07/C02均达到完整正常屏障，已获独立复核接受，见rout
 
 
 S1实际三组已通过并经独立评审接受，公开收据保留df8 producer及B01配对回滚失败。S2新增 tests/router_evaluation_proxy.py、tests/router_evaluation_proxy_contract.py 并接入 scripts/run_router_sample.py 与 verify_router_a.py；固定loopback上游、只读持久屏障、零字节真实socket关闭一次，18s小于原Go20s预算。公开恢复结束后才采集proof，不向驱动传私有句柄；缺屏障/上游失败/observer错误不得成功。真实TCP三项及runner九项合同通过，实际S2尚待校准。仅显式Linux隔离fixture，未改产品路由/授权/恢复，技术评估和待发布状态已同步，不增加客户能力声明；生产架构图不变。
+
+
+S2三组实际校准已获独立复核接受，收据保存clean55d与复用df8 Go producer分工。新增 scripts/run_router_evaluation.py、judge_router_evaluation.py、aggregate_router_evaluation.py、tests/test_router_judge.py 和 dataset/config；采集器补入真实入站RPC脱敏字段、tracked与untracked文件哈希、实际command/exec验证退出，fake Codex仅evaluation追加验证事件。计划身份/非法JSON/重复effect早取数/nearest-rank及分母由合同核对，真实双effect校准尚待运行。CI新增Linux tag与真实TCP合同，保持原Go race和Mac RPC门禁。均为合成隔离评估，不变更产品路由、权限或客户操作，产品评估/日志状态同步，生产架构图不变。

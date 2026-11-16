@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "version": "router-toy-add-v1",
+  "profile": "router-offline-v1",
+  "initial_git_commit": "b6bd7fea9e5c436843b29ea51504883a481ea2a0",
+  "project_commit_date": "2026-11-16T00:00:00Z",
+  "allowed_changed_paths": [
+    "answer.py",
+    "notes.txt"
+  ],
+  "final_files_sha256": {
+    ".gitignore": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+    "answer.py": "ba1a531f581d2e6094e978ed6f7aca7a8d92eeb62c6e7ad73ee692f7f18bc772",
+    "notes.txt": "73952c23c6874bff86eecf51e4371a554ce581fc6301e1a43c4c049164d0c9c6",
+    "tests/test_answer.py": "b11035c7a3ba0efba003580751779cee2c1984cc36bc12f08c9a7da90a09cd1c"
+  },
+  "validation_command": [
+    "/app/backend/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106
+  ],
+  "scenarios": [
+    "S1",
+    "S2"
+  ],
+  "goal_template": "Fix the toy addition. EVAL_OPERATION={scenario_lower}-{seed}",
+  "native_delay_seconds": 12,
+  "scripted_model_delay_seconds": 0.05,
+  "s1": {
+    "bound_issue": 7,
+    "unbound_issue": 8,
+    "bound_body_template": "Bound {seed}/{index}: reference only for the original work.",
+    "bound_offsets_seconds": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6
+    ],
+    "foreground_offset_seconds": 0.25,
+    "unbound_offset_seconds": 0.7,
+    "outside_owner_offset_seconds": 0.8
+  },
+  "s2": {
+    "foreground_offset_seconds": 0.25,
+    "duplicate_start_offset_seconds": 0.5,
+    "fault": "initial Router/coordinator admission ACK after run/MCP/chat journal durable, actual zero-byte socket close once"
+  },
+  "expected_mutations": 1,
+  "same_frozen_version_repeat_samples": 6,
+  "no_live_provider_or_native": true
+}
