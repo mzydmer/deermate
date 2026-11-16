@@ -8,6 +8,10 @@
 
 产品文档不发布接口参考、部署指南、私人凭据或本地日志。内部工程文档保留原职责，不自动进入网页导航。参考点金文档中心的读者分流方式，内容必须依据 DeerMate 自身实现编写。
 
+产品 Markdown 的内联链接以源文件为基准使用相对路径：同目录文章如 `./quickstart.md`，跨目录文章如 `../technical/architecture.md`；图示如 `../../../frontend/overlay/public/deermate/docs/diagrams/quickstart.svg`，直接引用已提交的受管 SVG。文章目标必须登记在 `catalog.json`，图示只能位于现有受管目录。生成器检查文件存在和每一级路径，先拒绝符号链接，再消解 `..`；不接受越界、网站根路径、本地查询串/片段或引用式链接定义。HTTPS 外链保持原样，图示 alt、描述与 SVG 内容安全检查继续生效。
+
+生成器将这些源链接转换为现有 `/docs/<slug>` 和 `/deermate/docs/diagrams/<name>.svg`，同一份 Markdown 因而可供 GitHub 与自托管站点阅读。不得为不同入口复制正文或手工修改生成 JSON。离线运行 `python scripts/product_docs.py` 检查本地目标；现有文档 CI 同时运行 `tests/test_product_docs.py` 的兄弟/跨目录、缺件、未登记、越界及符号链接反例。
+
 ## 每次变更必须走的流程
 
 1. 开始前读 AGENTS、STATUS 与本文件，识别受影响的需求、用户操作和技术不变量。

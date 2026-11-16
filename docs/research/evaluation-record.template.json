@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "template_only": true,
+  "software": {
+    "repository": "https://github.com/mzydmer/deermate",
+    "citation": "CITATION.cff",
+    "release_tag": null,
+    "identity_scope": "record_initialization_checkout",
+    "code_revision": null,
+    "permanent_source_url": null,
+    "deerflow_revision": null
+  },
+  "dataset": {
+    "version": null,
+    "artifact": null,
+    "sha256": null
+  },
+  "results": {
+    "version": null,
+    "artifact": null,
+    "sha256": null,
+    "provenance_status": "not_provided",
+    "software_revision": null,
+    "dataset_sha256": null
+  },
+  "experiment": {
+    "status": "not_run",
+    "protocol_version": null,
+    "configuration_sha256": null,
+    "environment": null,
+    "aggregation_command": null,
+    "failure_and_unknown_samples_retained": null
+  }
+}

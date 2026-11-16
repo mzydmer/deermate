@@ -2,7 +2,7 @@
 
 设备接入与执行授权共同决定 Agent 能在哪里完成哪些工作。授权能力已完成本地验收，并在既有云端实例通过登录、权限与管理页面检查。实际设备接入和执行仍需本机确认，其他实例须核对版本。
 
-![ 设备授权：连接与执行就绪分别确认](/deermate/docs/diagrams/authorization.svg)
+![ 设备授权：连接与执行就绪分别确认](../../../frontend/overlay/public/deermate/docs/diagrams/authorization.svg)
 
 连接可达、授权有效和执行就绪是三个事实。到期或撤销后的在途任务遵守原策略。
 

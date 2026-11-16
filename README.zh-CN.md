@@ -119,6 +119,8 @@ DeerMate 研究怎样让私人助手跨 Agent 会话、跨个人设备持续推�
 
 系统与验收工具已有实现，对比研究尚未完成。功能验收不等于已经证明质量、速度或人工监督成本改善。[研究 Spec](docs/specs/m4-continuous-agent.md) · [评估计划](docs/product/technical/evaluation.md)
 
+引用项目请使用 [CITATION.cff](CITATION.cff)。[引用与复现说明](docs/research/references.md)解释本项目取舍，原始固定版本见[既有研究来源](docs/specs/m4-continuous-agent.md#15-调研依据与已接受选择)。实验报告还需记录完整源码提交及数据集/结果版本。
+
 ## 当前进展
 
 **工作台 v2 已发布到既有线上实例。** 助手、记忆管理、Go 登录/API 与 Codex 适配均有实现和验收记录。真实模型、原生多轮、浏览器与部署验证分别记录范围，见[验证索引](docs/verification/README.md)。

@@ -7,23 +7,95 @@ import re
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = Path("docs/product")
 OUTPUT = Path("frontend/overlay/src/components/deermate/product-docs.generated.json")
 GROUPS = {"guide", "technical", "changelog"}
+LINK = re.compile(r"(!?)\[([^\]]*)\]\(([^)]+)\)")
+DIAGRAMS = Path("frontend/overlay/public/deermate/docs/diagrams")
+
+
+def local_file(path, root, scope, description):
+    """Inspect every lexical component before collapsing .. or reading content."""
+    try:
+        parts = path.relative_to(root).parts
+    except ValueError:
+        raise ValueError(f"Escaping {description}") from None
+    target = root
+    for part in parts:
+        target = target.parent if part == ".." else target / part
+        if not target.is_relative_to(root):
+            raise ValueError(f"Escaping {description}")
+        if target.is_symlink():
+            raise ValueError(f"Symlink {description}")
+    target = target.resolve()
+    if not target.is_relative_to(scope):
+        raise ValueError(f"Escaping {description}")
+    if not target.is_file():
+        raise ValueError(f"Missing {description}")
+    return target
+
+
+def public_links(markdown, source, registered, root):
+    """Map checked repository-relative destinations to existing public URLs."""
+
+    def replace(match):
+        image, label, href = match.groups()
+        description = f"documentation link in {source.name}: {href}"
+        if re.search(r"\s|\\", href):
+            raise ValueError(f"Unsupported {description}")
+        url = urlsplit(href)
+        if not image and url.scheme == "https" and url.netloc:
+            return match.group()
+        if url.scheme or url.netloc or url.query or url.fragment or href.startswith("/"):
+            raise ValueError(f"Unsupported {description}")
+        decoded = unquote(url.path)
+        if not decoded or re.search(r"[\x00-\x20\\]", decoded):
+            raise ValueError(f"Unsupported {description}")
+        candidate = source.parent / decoded
+        if image:
+            if not label.strip() or not re.fullmatch(r"[a-z-]+\.svg", candidate.name):
+                raise ValueError(f"Unsupported diagram image: {href}")
+            target = local_file(candidate, root, root / DIAGRAMS, f"diagram asset: {href}")
+            if target.parent != root / DIAGRAMS:
+                raise ValueError(f"Unsupported diagram image: {href}")
+            route = "/deermate/docs/diagrams/" + target.name
+        else:
+            target = local_file(candidate, root, root / CONTENT, description)
+            if target not in registered:
+                raise ValueError(f"Broken {description}; target is not catalogued")
+            route = "/docs/" + registered[target]
+        return f"{image}[{label}]({route})"
+
+    return LINK.sub(replace, markdown)
 
 
 def compile_docs(root=ROOT):
-    catalog = json.loads((root / CONTENT / "catalog.json").read_text())
+    root = root.resolve()
+    catalog_path = local_file(
+        root / CONTENT / "catalog.json", root, root / CONTENT, "documentation catalog"
+    )
+    catalog = json.loads(catalog_path.read_text())
     slugs = [page["slug"] for page in catalog]
+    for slug in slugs:
+        if not re.fullmatch(r"(?:guide|technical)/[a-z-]+|changelog", slug):
+            raise ValueError(f"Invalid documentation slug: {slug}")
     if len(set(slugs)) != len(slugs):
         raise ValueError("Duplicate documentation slug")
+    registered = {
+        local_file(
+            root / CONTENT / f"{slug}.md",
+            root,
+            root / CONTENT,
+            f"documentation article: {slug}",
+        ): slug
+        for slug in slugs
+    }
     pages = []
     for page in catalog:
         slug = page["slug"]
-        if not re.fullmatch(r"(?:guide|technical)/[a-z-]+|changelog", slug):
-            raise ValueError(f"Invalid documentation slug: {slug}")
         if page["group"] not in GROUPS or not slug.startswith(page["group"]):
             raise ValueError(f"Invalid documentation group: {slug}")
         datetime.date.fromisoformat(page["updated"])
@@ -42,12 +114,20 @@ def compile_docs(root=ROOT):
             raise ValueError(f"Expected one document title: {slug}")
         if re.search(r"^#{3,6} |<[^>]+>", markdown, re.M):
             raise ValueError(f"Use h2 sections, plain Markdown and no embedded HTML: {slug}")
+        if re.search(r"^\s{0,3}\[[^\]]+\]:", markdown, re.M):
+            raise ValueError(
+                f"Use inline documentation links instead of reference definitions: {slug}"
+            )
+        markdown = public_links(markdown, path, registered, root)
         for alt, href in re.findall(r"!\[([^\]]*)\]\(([^)]+)\)", markdown):
             if not alt.strip() or not re.fullmatch(r"/deermate/docs/diagrams/[a-z-]+\.svg", href):
                 raise ValueError(f"Unsupported diagram image: {href}")
-            asset = root / "frontend/overlay/public" / href.lstrip("/")
-            if not asset.is_file() or asset.is_symlink():
-                raise ValueError(f"Missing diagram asset: {href}")
+            asset = local_file(
+                root / "frontend/overlay/public" / href.lstrip("/"),
+                root,
+                root / DIAGRAMS,
+                f"diagram asset: {href}",
+            )
             svg = ET.fromstring(asset.read_text())
             safe_tags = {
                 "svg",
