@@ -117,7 +117,7 @@ DeerMate explores persistent coordination across agent sessions and personal dev
 | Can work recover without duplicate side effects? | Persistent operation identity, one native root per conversation, and explicit uncertainty. |
 | Can personal context remain useful and correctable? | Source-bound memory, limited retrieval, scope checks, and deletion barriers. |
 
-The system and acceptance fixtures are implemented; comparative research results are still pending. Functional checks do not establish a quality, speed, or supervision-cost improvement. [Research spec](docs/specs/m4-continuous-agent.md) · [Evaluation plan](docs/product/technical/evaluation.md)
+The [first offline Router study](docs/research/router-offline-v1/README.md) reports 36 planned samples: 33 complete, two unknown and one full-barrier failure; six separate same-version repeats passed. It publishes raw JSON/JSONL, manifests, an independent judge and a real duplicate-effect negative control. These scripted toy results do not establish real-model quality, billing or human-attention gains. [Research spec](docs/specs/m4-continuous-agent.md) · [Evaluation methods](docs/product/technical/evaluation.md)
 
 Cite [DeerMate as software](CITATION.cff). [Citation and reproducibility](docs/research/references.md) explains this project's choices alongside the [fixed upstream research sources](docs/specs/m4-continuous-agent.md#15-调研依据与已接受选择). Experimental reports also need the full source commit and dataset/results versions.
 

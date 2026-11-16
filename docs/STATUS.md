@@ -1,18 +1,16 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议、A异步及同源正常B/C完整屏障已接受；同源S1 A/B/C实际固定事件表与完整屏障已通过并获独立复核。S2三组真实ACK丢失与原身份恢复也已通过并获独立复核；judge真实反例/冻结/36+6格仍待完成，没有正式比较结果；原12实例、旧失败卷及归档保留。
+最后核对：2026-11-16。#1/#3/#4/#6/#8已由独立评审合并关闭，main基线9c7ab6d。#5已完成首批离线36项和同版本独立6项复跑，正在交付PR18供最终评审；本执行agent未合并、关闭issue或部署。#7公开Alpha在PR18合并后基于最新main处理。
 
-## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
+## 2026-11-16 · Router 首批离线结果（Issue #5，待最终评审）
 
-同一干净 `bb7b91b7564a34c825be4a403758cfd4f720ed7d` 的B07/C02正常完整链均通过并获独立复核接受：单Worker/MCP/root/turn/effect、独立验证0、公开MCP/通知完成、四Go操作settled、相关runs成功；稳定尾部4.5123s/4.0783s，toy初始提交相同，原12容器不变。见[收据](verification/router-normal-calibration-2026-11-16.json)。bb7必要Go检查均通过（race37.106s）及实际Linux11项顶层合同；原normal计时是响应前投影快照，仅诊断。旧B01/04/05接纳前SQLite BUSY/503、B02/03通知超预算dead_letter、C01前台OperationalError/uncertain均保留，未为碰成功重放原mutation。
+实际生产源码始终为干净 `7c84904e39f4b3adb0bed3d7430cc9adcb64934e`，不是之后整理报告的HEAD；同SHA控制镜像label/binary VCS、固定上游、dataset/config/harness与环境已冻结。主批次33 complete/2 outcome_unknown/1 failed，六项复跑均complete且与原seed终态及离散计数一致。见[报告与单命令重算](research/router-offline-v1/README.md)、[主JSONL](research/router-offline-v1/main/records.jsonl)、[复跑JSONL](research/router-offline-v1/repeat/records.jsonl)、[来源哈希](research/router-offline-v1/provenance.json)。
 
-此前A04普通MCP后台异步合同已由独立评审接受，保留[原收据](verification/router-a-calibration-2026-11-16.json)；它当时仅观察到Worker完成，不能替代当前完整MCP/Go/通知屏障。B/C共享权威订阅关联，C摄取时附加、A/B真实Router完成后确定性附加，绝不声称模型自行决定归属；[路由合同](verification/router-routing-contracts-2026-11-16.json)验证来源/规则/事件版本及合法只读context不新增Native授权要求。
+每场景每组计划6项：S1 A6/B6/C5，S2 A5/B5/C6。S1-1104-C前台30s未知、S2-1103-A配对503未进入执行、S2-1106-B已查回原run但Go操作/Inbox未收敛，均保留原件/分母，没有重放、补跑或改单组预算。两个收敛失败存在SQLite锁冲突日志，具体竞争写入方未知。主批次额外root/effect为0/35 observed，另1项unobserved；S2完整恢复按观测/计划分别A5/5与5/6、B5/6与5/6、C6/6。不能把query同run单独等同完整恢复。
 
-共享账本修正先取得writer intent、原DB回调一次、保持5s busy/context，不重试外部动作；22处生产及两处tag回调核对无外部runtime I/O，五项并发/回滚/原token单action合同通过，见[说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。三组统一owned-admission-v1通知适配保持完整原admission HumanMessage/哈希、短提示/空tools，12,000 bytes不变，三项Gateway合同及独立复跑通过；这不是默认生产通知预算验收。计时重复GET零匹配写锁干扰已消除，旧失败保留，原C01具体竞争写方未被完整原栈记录，不能预称全部根因。
+独立CLI不信任runner/model成功布尔，核对实际RPC/root/turn/workspace、tracked/untracked文件、独立测试及effect。真实两次写入负例同root/test0，仅因effect重复被拒绝；错身份、缺证据、越范围和混用batch的反例未获complete。服务指标仅为durable admission→actual reply flush，客户端complete-read另列，缺失不填零。A/B/C普通异步、绑定事件和真实ACK合同均先校准；早期失败及[正常](verification/router-normal-calibration-2026-11-16.json)/[S1](verification/router-s1-calibration-2026-11-16.json)/[S2](verification/router-s2-calibration-2026-11-16.json)旧producer分别保留。
 
-当前S1代码加入九个固定offset各自独立sender/独立前台reader、finally全计划落盘、实际第二账号正确ExpectedID、原工作读取/事件接纳403及七事件归属/有界正文证据。五项sender/barrier测试和Linux七项evaluation顶层合同通过，独立评审已复跑；服务时钟在JSON实际写出、成功Flush后采样，失败Flush为null，指标明确为service admission→reply flush，客户端另报实际complete-read，两域不相减、不称浏览器精确时间。干净df8e6c8的实际A01/B02/C01均完整通过并获独立复核，九次计划、八条件及单Worker/MCP/root/turn/effect与验证0核对；必要Go全检通过（race36.344s）。见[S1收据](verification/router-s1-calibration-2026-11-16.json)。B01配对503/SQLITE_BUSY在Native前回滚，原pair未消费且0device/grant/MCP，失败保留，未重放原mutation。S2固定loopback代理三项真实TCP合同通过，干净55d847a的A01/B01/C02实际十条件及完整屏障均通过并获独立复核，见[S2收据](verification/router-s2-calibration-2026-11-16.json)；Go源码与复用df8镜像一致，正式冻结将以同freeze重建。独立judge/聚合CLI及dataset/config已实现初版，真实双effect首轮测试0且两次写入被拒绝，同时发现结束事件漏记workspace已补真实path；新clean正负校准、干净harness/dataset冻结、正式36格及同版本独立6格仍未完成，不能称比较结果。
-
-[协议](research/router-protocol-v1.md)与[基线](research/router-baseline-v1.json)保留六配对seed、全部六顺序、两个场景、失败/unknown/未启动分母及nearest-rank算法。只读观察器不得向恢复驱动注入私有task句柄；正式任务仅在Worker验证、本人公开MCP、原Go operation/inbox、runs和通知全部核对并观察4s后判完成。默认Go无evaluation路由/开关；所有实际调用使用合成Native/Provider，零付费，未部署或改变既有权限。完整事件/故障比较、真实模型与用户研究均未开展，R-EVAL总验收仍未勾选。
+共享账本writer intent修正仍保持原回调一次、5s busy/context和不重放，范围见[变更说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。默认Go无evaluation开关/路由；通知统一测试适配不冒充默认生产预算。零付费Provider/真实Codex调用，原12容器不变。真实模型质量/账单、用户注意力、其他故障与消融未验收，R-EVAL总体验收保持未勾选。
 
 ## 2026-11-16 · 共同冷备与空卷恢复（Issue #4，已合并）
 

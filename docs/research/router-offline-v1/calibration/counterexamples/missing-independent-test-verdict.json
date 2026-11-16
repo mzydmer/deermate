@@ -1,0 +1,30 @@
+{
+  "status": "outcome_unknown",
+  "checks": {
+    "full_completion_and_quiet_tail": true,
+    "internal_only_application_networks": true,
+    "clean_producer": true,
+    "one_original_worker_task": true,
+    "worker_completed_once": true,
+    "fixed_project_snapshot": true,
+    "original_logical_operation": true
+  },
+  "metrics": {
+    "effects": 1,
+    "roots": 1,
+    "model_calls": 5,
+    "roles_calls": {
+      "router": 4,
+      "notification": 1
+    },
+    "roles_input_bytes": {
+      "router": 10737,
+      "notification": 1947
+    }
+  },
+  "reasons": [
+    "missing_or_invalid_evidence"
+  ],
+  "evidence_error_kind": "KeyError",
+  "sample_sha256": "61767ec34f271824195e86e0f7ba6b6153510fd91a8749afe2617db1e1e60988"
+}

@@ -30,6 +30,10 @@ python scripts/evaluation_record.py --output .deermate/evaluation/record.json
 
 这只初始化[模板](evaluation-record.template.json)：`template_only` 仍为 true，`experiment.status` 为 `not_run`；不会调用模型、执行实验或推断比较指标。真正运行后，由研究者填写协议、配置、环境、统计方法和失败样本。未产生的数据/结果版本保持 null，不能用骨架宣称完成了 R-EVAL。cffconvert 的本机 APA-like/BibTeX 检查比较标题、集体署名与仓库身份，GitHub 的 APA/BibTeX 界面与格式另外验证。
 
+## 已公开的首批离线结果
+
+[Router offline v1](router-offline-v1/README.md)公开36项主批次及独立6项复跑。实际生产源码为 [`7c84904e39f4b3adb0bed3d7430cc9adcb64934e`](https://github.com/mzydmer/deermate/tree/7c84904e39f4b3adb0bed3d7430cc9adcb64934e)；数据集、配置、raw JSON/JSONL、汇总和清单哈希见[provenance](router-offline-v1/provenance.json)。主批次33完成/2未知/1失败，复跑6项完成；报告整理时的HEAD不替代该生产SHA。模板的null/not_run仍表示模板自身，不用于描述这份已运行结果。
+
 ## 机制来源与本项目取舍
 
 固定来源及具体链接集中保存在 [M4.5 研究来源](../specs/m4-continuous-agent.md#15-调研依据与已接受选择)。原始条目保留以下版本，后续更新追加取舍而不覆盖历史：

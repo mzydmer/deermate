@@ -861,3 +861,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · 独立判定真实反例首轮与结束身份修正
 
 真实negative01两次actual effect且测试0/同root/完整恢复，被独立judge拒绝；同时发现native结束事件未记workspace，导致多一项身份失败。现从实际finish path补记，保留首轮原件并需新clean正负校准。全量Python473通过/13跳过/1失败为文档测试fixture目录已存在，修测试mkdir兼容已声明source目录，不削弱文档门禁。正式36+6仍未启动。
+
+
+## 2026-11-16 · Router冻结36+6与公开离线结果
+
+干净7c84904为唯一实际producer，Go镜像label/binary VCS相同；主36按固定顺序完整运行，33complete/2unknown/1failed，另6同版本复跑全部complete，终态及Worker/MCP/Go operations/Native turns/modelcalls/root/effect计数一致。S1-1104-C前台30s、S2-1103-A配对503、S2-1106-B原run已查回但Go未收敛均保留，不补跑/改预算。主批次0/35 observed额外root/effect、另1unobserved；query确认与完整恢复分开定义。真实双effect负例同root/test0，仅effect条件拒绝。公开42份逐字节raw、两JSONL、主/复跑清单汇总、负例和制品哈希，单命令可重判；独立评审已复核原件与哈希及两份汇总。两个收敛失败私有日志有SQLite锁冲突，竞争写者未知。实际producer7c的13项CI已通过，后续文档提交另验，不冒充生产SHA。未部署/付费调用，原12容器不变，R-EVAL整体仍未验收。

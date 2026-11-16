@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "protocol_version": "router-offline-v1-draft1",
-  "status": "accepted_protocol_pre_calibration",
-  "experiment_status": "not_run",
+  "status": "completed_first_offline_batch",
+  "experiment_status": "completed_with_failures",
   "review_baseline_revision": "22ef5c548f134dbd28dd4e0e290538a569390c65",
   "runtime_revision_source": "deploy/deerflow.lock",
-  "producer_revision": null,
-  "harness_sha256": null,
+  "producer_revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+  "harness_sha256": "bd01a9e4ed82126f1f8b9072e1aff9f906addb14e56acab760a12e4006c54045",
   "dataset": {
     "version": "router-toy-add-v1",
     "artifact": "docs/research/router-dataset-v1.json",
     "sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6"
   },
   "results": {
-    "artifact": null,
-    "sha256": null
+    "artifact": "docs/research/router-offline-v1/main/summary.json",
+    "sha256": "76c48f8b3737443a9a7e61deafd249e14b1fc7bd8ae19da22eaa955eda982dc7"
   },
   "modes": [
     "A_single_coordinator_async",
@@ -220,5 +220,11 @@
     "expected_event_status": 403,
     "original_work_read_forbidden": true,
     "header_mismatch_negative": "separate Go contract, not the outside-owner event"
+  },
+  "separate_repeat_results": {
+    "artifact": "docs/research/router-offline-v1/repeat/summary.json",
+    "sha256": "dc25e40ccd33cb3cca7445aee998ca55281dc1ee58b03457cc9ce0a8dc5c2eb8",
+    "samples": 6,
+    "included_in_primary_36": false
   }
 }

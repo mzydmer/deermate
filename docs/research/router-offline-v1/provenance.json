@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "producer_revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+  "harness_sha256": "bd01a9e4ed82126f1f8b9072e1aff9f906addb14e56acab760a12e4006c54045",
+  "dataset": {
+    "artifact": "docs/research/router-dataset-v1.json",
+    "sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6"
+  },
+  "config": {
+    "artifact": "docs/research/router-offline-config-v1.json",
+    "sha256": "53f8bc508f482f083aba546a1e05746e8e3129ac459719a44ed281f20ee1a4a9"
+  },
+  "calibration": [
+    {
+      "kind": "positive",
+      "source_attempt": "judge-positive-s1-02",
+      "sample_sha256": "bb32fd1669b1d971ac29a9b2d79b6adaf3c993bcb8deca17c0854f64729849bd",
+      "verdict_status": "complete",
+      "reasons": []
+    },
+    {
+      "kind": "double-effect",
+      "source_attempt": "judge-negative-03",
+      "sample_sha256": "60129a2a35ad1390dcb846a8e7316cfadff12a363bfeb109f3b905cb0dbb0673",
+      "verdict_status": "failed",
+      "reasons": [
+        "one_actual_mutation_effect"
+      ]
+    }
+  ],
+  "retained_calibration_attempts": [
+    {
+      "attempt": "s1-b-01",
+      "artifact_kind": "private original sample/log",
+      "sha256": "0745df9bc714a78852cc1e5c1add9c2378bd2330599e3afdba1488c91ede2538",
+      "included_in_formal_samples": false
+    },
+    {
+      "attempt": "s2-c-01",
+      "artifact_kind": "private original sample/log",
+      "sha256": "bfee69c586e95bb83ac8bf3b55e3a344974b95be250090ea526142e68e47a8c6",
+      "included_in_formal_samples": false
+    },
+    {
+      "attempt": "judge-negative-01",
+      "artifact_kind": "private original sample/log",
+      "sha256": "b14f65cd22b7d91e595e548cd8c131dfb8b248a664ff2f0515a7b88c3b56e244",
+      "included_in_formal_samples": false
+    },
+    {
+      "attempt": "judge-negative-02",
+      "artifact_kind": "private original sample/log",
+      "sha256": "ad1cab91a5e535945d0866560c7af9f1bc45ecac887f1905cc4ece1c8e08c9c4",
+      "included_in_formal_samples": false
+    },
+    {
+      "attempt": "judge-positive-s1-01",
+      "artifact_kind": "private original sample/log",
+      "sha256": "959f97e274a9cc1b95a803ee4cdf3dddd7ff22bfc5cb78bea5129ecd2f69245b",
+      "included_in_formal_samples": false
+    }
+  ],
+  "main_planned_samples": 36,
+  "repeat_planned_samples": 6,
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "scope": "Real Go/Gateway/MCP/Relay/Worker with scripted Provider and fake Native protocol.",
+  "copied_files_are_byte_identical_to_private_raws": true,
+  "artifact_sha256": {
+    "calibration/counterexamples/calibration-as-formal-verdict.json": "0abae97ef0e0fcad5ecf4ad65c3d6e07f71d257e5195394dd56ec62346d011a5",
+    "calibration/counterexamples/calibration-as-formal.json": "bb32fd1669b1d971ac29a9b2d79b6adaf3c993bcb8deca17c0854f64729849bd",
+    "calibration/counterexamples/false-runner-claim-verdict.json": "c25f5f6943745376598d5bb813dd5e9fd10d4a95729d5ba64481008f8dcf0244",
+    "calibration/counterexamples/false-runner-claim.json": "5fc65e9140bfa59eb80cce3da72b54012b46bca45fa91c63be7508808a81e186",
+    "calibration/counterexamples/missing-independent-test-verdict.json": "eb5ebd5f66a0ab2b0b1d66abecbea92a7c3b82fb2ac29b0e2bae87391565b9e5",
+    "calibration/counterexamples/missing-independent-test.json": "61767ec34f271824195e86e0f7ba6b6153510fd91a8749afe2617db1e1e60988",
+    "calibration/counterexamples/missing-rpc-evidence-verdict.json": "c9dd7922d6fc140fe54e0be4b66547283b6266f1409a253f99ba004b83e0b626",
+    "calibration/counterexamples/missing-rpc-evidence.json": "202c3675f109ffed3bcc20a7e7de71ff379a472b2765595455c16e483ead62f4",
+    "calibration/counterexamples/out-of-scope-verdict.json": "56cf68c8a3f224603d9307e71b91b6fecfc55c67c7f3dcaa57e492ec232fff74",
+    "calibration/counterexamples/out-of-scope.json": "4c7ac061e14bc6ebdedb4287221a0a9ef4a82a877fe5568302b285c892234b4e",
+    "calibration/counterexamples/outside-owner-verdict.json": "145691cfd2bf226a0db6518b4b53bed38244114cc533c86b8117b382cbb4d510",
+    "calibration/counterexamples/outside-owner.json": "aa19fe77a962fe582916aedca45472f18ff57614e3461b74b758fcf638af5700",
+    "calibration/counterexamples/receipt.json": "e71abc1be8d2cea4985fc38661bcc7d4d5ba94b2462a680b93e5f98da8ed34ee",
+    "calibration/counterexamples/wrong-root-verdict.json": "83072aec2657934dedc4ccf9ac697ebb842f1fd02d011efc7f78d23c89f75d77",
+    "calibration/counterexamples/wrong-root.json": "c477a1a2172408bf28c07ba99b723774af66f4151edd95a6ba0ee55a84b80d0b",
+    "calibration/double-effect/sample.json": "60129a2a35ad1390dcb846a8e7316cfadff12a363bfeb109f3b905cb0dbb0673",
+    "calibration/double-effect/verdict.json": "2ffc7244fb37bd5b5e4d9c993dfaead570fb1060686475e8aea48012bb3e5075",
+    "calibration/positive/sample.json": "bb32fd1669b1d971ac29a9b2d79b6adaf3c993bcb8deca17c0854f64729849bd",
+    "calibration/positive/verdict.json": "fdc602a93d64a83ebdf19adf932a356612b745ee360c6ec5e7493198d71e5a2f",
+    "main/S1-1101-A/sample.json": "c6fbc6d107a165286289b27d885457c028fb3e95241a917c191cc2687830c339",
+    "main/S1-1101-B/sample.json": "997bd335c4e4c850bed57b72e9b5336b094fd8caa74f9c4f8f5b72ccd8d00a8a",
+    "main/S1-1101-C/sample.json": "15948fb59d42bad3ca58f8943c7c8ac1db85b2f2cebc90c7b9b5a2559d0d97d7",
+    "main/S1-1102-A/sample.json": "ed6ea72ffb1062284a86f74774e67ec47b6933097866f8771a1c76968ebf1b72",
+    "main/S1-1102-B/sample.json": "954d6b990377b3dff92bf777edd92743a8f5cde9fff428368191d653fc38364f",
+    "main/S1-1102-C/sample.json": "4e266100c9593a8fdffc8f1c74a84d19fa60d9fbcbded62389353e84a4b57272",
+    "main/S1-1103-A/sample.json": "e4be11e3c519b5180315c8bfe908d6d34f6712d8044ce040b64edca345726d15",
+    "main/S1-1103-B/sample.json": "3ff24c2461bb64e897a9d760f9b739dcf121cb17a739e0c0407fd6017005de44",
+    "main/S1-1103-C/sample.json": "63fa1c4980496ba8cfb2b35efdabf2fe5edea7003945026e5b2d1eb4ab288fde",
+    "main/S1-1104-A/sample.json": "fc595a0f73297f515b800de68110308d7183bdaf857aa43f6005203bd6986e02",
+    "main/S1-1104-B/sample.json": "d0deaef1266b1fd99233eca45359dfc20adcd189676259f6054e08190f7f9b6c",
+    "main/S1-1104-C/sample.json": "456cce20d00187ef6e51582935b4b697612600378232cb1f15a18d953d1f7141",
+    "main/S1-1105-A/sample.json": "90c646eafe7de3de27c3ba16a5a2373c104b20513a1e255b4b6446f696114a4c",
+    "main/S1-1105-B/sample.json": "ba54d1c1304970e4495e3f4ca3c94378b172166d0ef5981bb2ea66e013ab5572",
+    "main/S1-1105-C/sample.json": "2bb1c770a071de8d5a7b33e3b45b3b7c3311d90c538b3e445cd51cac7086ca1e",
+    "main/S1-1106-A/sample.json": "98bfe82178822460e5adeb23af5ee7c23696ee38922987b95b792238c82de749",
+    "main/S1-1106-B/sample.json": "50e7987717831ef986bf462bd7de37c020271f5dad45d07ba34b87336ee1fa7c",
+    "main/S1-1106-C/sample.json": "af2d5599544d206acb7c1594668d52d9fb5f1b37a28cf8aa53f6554f3474cea6",
+    "main/S2-1101-A/sample.json": "5004605be50a73a080ae88340cf360be17c6daa7b49789b303ed522be5d52cca",
+    "main/S2-1101-B/sample.json": "d7dda36ba2025383a9dc68bd9392c03a38bb9392ded99cb2e0f7eca672fd4198",
+    "main/S2-1101-C/sample.json": "9777c1d7e04be0c9bc280c107d2a17baf364a951afcc110f0832824b4661e27f",
+    "main/S2-1102-A/sample.json": "45e1e24d4610859fa67719445591ffda9e94c6945bb0b719cacc9a9564f72417",
+    "main/S2-1102-B/sample.json": "05b3885280274a6c6b4ad228d2eb13bc01d6f21873de193bf67d478166ef9191",
+    "main/S2-1102-C/sample.json": "e628a095f4fc6735f31e015391d0fb26cd55f1b747da987a423b39e70d3aa24b",
+    "main/S2-1103-A/sample.json": "ee364fdf2f3f46575b8c1c693d4b78ce765bdd728873c1d2f56a0c3f1c0b1bb8",
+    "main/S2-1103-B/sample.json": "aaf4558dceb03d9cc07820dc16d55d229fd69b42342716b2995028297b76d6a1",
+    "main/S2-1103-C/sample.json": "36efc74472f15fe4ffb394a57ef639515d632ac1a0c4a50138547ca974d44235",
+    "main/S2-1104-A/sample.json": "67880e3a8e43b11ebba0c4117095240f4dd5509a8d1737db43ff70afbe6323e2",
+    "main/S2-1104-B/sample.json": "4f5dbcfd9d0b35cf652ea2d21363f92ae698c769edbd7554d6716d525acea0c9",
+    "main/S2-1104-C/sample.json": "029390cfb3d021da1d0887b8aac5d80e147db0dbe3ecce5eba3af5cde1e66725",
+    "main/S2-1105-A/sample.json": "523eeb7203b8da99c78cf6b82a584d9395bf8f96850a22b486974f61500a84e6",
+    "main/S2-1105-B/sample.json": "7bd2d33830a2bf195377a22cccde6bab1a2b7babf1e969e6b5a8e8a449f70c1b",
+    "main/S2-1105-C/sample.json": "f4aede4f2058ca645a238c684922c059dd53f907c5aeda2d4687036b16f408d9",
+    "main/S2-1106-A/sample.json": "7b554ec94362472efc0a99548a5afea386b8de8f384e6ae7e1fcfa37d1af37f1",
+    "main/S2-1106-B/sample.json": "b2551dec04d0edc6ad99bac3810cb58e1e0ec3d82bf08a4bb0ef40253188477b",
+    "main/S2-1106-C/sample.json": "111a9248df7855ab595922320978fd0efd6f45e6c95dad8e2dd9aba10dd08690",
+    "main/execution-complete.json": "88e64fc82b5a9bb03855bf80a3200d2791ece1b8d62b0eab3374739276e1c9bf",
+    "main/execution-started.json": "1c9ca7aa4bafb5c74db4a5c19b97b60c707ac2d301e09261e7d5d79c3d4e5968",
+    "main/manifest.json": "4eec37551806683cd842c66d13afc69dc8609c7b6a917addc5f8870a943d0390",
+    "main/records.jsonl": "1db7ada1a47229d78dbcd51485d1fde3d37645d8f0832af0b39e407e80d25c9d",
+    "main/summary.json": "76c48f8b3737443a9a7e61deafd249e14b1fc7bd8ae19da22eaa955eda982dc7",
+    "repeat/S1-1101-A/sample.json": "cb0f15393cbf393ab8c4485433ce542dd3cf0a207a1233a32fbae930a239db33",
+    "repeat/S1-1101-B/sample.json": "99e3da21695964c1649c043ed20a7af408cfa3c116328cf277ea8ec1ebdac35c",
+    "repeat/S1-1101-C/sample.json": "4a46885963fd9ecbc516480560a5978a23e978087a816679547fc32ef9b03358",
+    "repeat/S2-1101-A/sample.json": "4f497defd2a7338add685e5cf47a2eef8e139f23e231546236d3b8765072fe65",
+    "repeat/S2-1101-B/sample.json": "184c189952ee6c9ec4f8145343a4d823e5f12d7d35293d63f7c1d197beb40a3b",
+    "repeat/S2-1101-C/sample.json": "5e6d02180fbcf460207a17a4118407d03a0498f461ed526237eed513f1b73b6f",
+    "repeat/comparison.json": "ca21840deaf1a6f93fb5fa4ba31fb39422f7cb4b8df48944b4597cc8d91eef31",
+    "repeat/execution-complete.json": "7ef9295cfafbfd48c60e925b4d522262667db25774801896d2c62d4d008a5cec",
+    "repeat/execution-started.json": "e82d9a4438d9583f94b01d0118da0105ab041fc7a7787363cbe604fdb305d02c",
+    "repeat/manifest.json": "0bd235cdba586feb51903d955b398117326b12be7d442d7dfb30132c5c8f4ae4",
+    "repeat/records.jsonl": "c08cfda67ca547711f92b15c4276eff5eaca5d3c5d2ae8760ef753861b3aa118",
+    "repeat/summary.json": "dc25e40ccd33cb3cca7445aee998ca55281dc1ee58b03457cc9ce0a8dc5c2eb8"
+  }
+}

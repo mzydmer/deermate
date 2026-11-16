@@ -1,0 +1,61 @@
+{
+  "status": "failed",
+  "checks": {
+    "full_completion_and_quiet_tail": true,
+    "internal_only_application_networks": true,
+    "clean_producer": true,
+    "one_original_worker_task": true,
+    "worker_completed_once": true,
+    "fixed_project_snapshot": true,
+    "original_logical_operation": true,
+    "independent_test_succeeded": true,
+    "actual_workspace_files": true,
+    "only_allowed_changes": true,
+    "real_answer_diff": true,
+    "actual_test_unchanged": true,
+    "one_actual_mutation_effect": true,
+    "one_actual_native_turn": true,
+    "same_root_turn_workspace": true,
+    "native_order_and_clock": true,
+    "actual_validation_exit": true,
+    "actual_inbound_rpc_identity": true,
+    "same_original_public_tracking": false,
+    "all_original_go_records_settled": true,
+    "work_verified": true,
+    "runs_success_and_owned": true,
+    "model_calls_complete_and_bounded": true,
+    "actual_model_run_binding": true,
+    "actual_original_foreground_reply": true,
+    "reply_timing_same_domain": true,
+    "all_planned_sends_retained": true,
+    "seven_original_owned_events": true,
+    "bound_context_same_original_work": true,
+    "real_outside_owner_forbidden": true,
+    "unbound_not_attached": true,
+    "unbound_actual_router_read": true,
+    "bound_mode_factor": true,
+    "exact_original_event_bodies": true
+  },
+  "metrics": {
+    "effects": 1,
+    "roots": 1,
+    "model_calls": 5,
+    "roles_calls": {
+      "router": 4,
+      "notification": 1
+    },
+    "roles_input_bytes": {
+      "router": 10737,
+      "notification": 1947
+    },
+    "service_admission_to_reply_flush_ms": 5732.16452,
+    "reply_flush_before_validation": true,
+    "foreground_queue_ms": 3130.268477,
+    "client_send_to_complete_read_ms": 5744.740584,
+    "native_validation_ms": 12160.826454
+  },
+  "reasons": [
+    "same_original_public_tracking"
+  ],
+  "sample_sha256": "aa19fe77a962fe582916aedca45472f18ff57614e3461b74b758fcf638af5700"
+}

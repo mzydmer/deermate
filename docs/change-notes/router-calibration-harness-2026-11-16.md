@@ -40,3 +40,8 @@ S2三组实际校准已获独立复核接受，收据保存clean55d与复用df8 
 真实negative01已产生两次answer写入、同root/turn、Workercompleted/test0和完整恢复，judge拒绝；额外暴露结束事件缺workspace，现从finish真实path补记，不放松身份校验，新clean正负例待跑。全量Python首次473通过/13跳过/1失败：catalog引入change-notes来源后，文档测试fixture预建该目录，测试自身mkdir未允许既存；改tests/test_product_docs.py的fixture建目录为exist_ok，不变更影响检查或反例断言。正式未启动/源码变化占位行补逻辑ID并保留明确not_started状态。
 
 独立batch绑定测试逐项拒绝formal=false、不同batch ID和不同dataset SHA；同源主批次/复跑不能混用。仅补验已有判定条件，未增加运行时功能、阈值或客户操作。
+
+
+收尾公开docs/research/router-offline-v1的42份合成raw、JSONL、冻结清单/汇总、独立正负例及来源哈希；更新双语README、research引用/协议/基线、SPEC/plan/roadmap/STATUS/EVOLUTION和产品evaluation/changelog/catalog，重生成产品JSON。未改冻结运行时/阈值或补跑失败样本，实际producer固定7c84904。生产架构与交互未变，七图无需重绘；新增材料只说明脚本toy实验及其失败/删失边界，不宣称真实质量/费用/注意力或容量收益。
+
+最终文档收尾验证：product_docs生成/相对main9c7ab6影响检查、design/token与七图门禁通过；文档/独立judge/单样本调度63项通过。公开main/repeat aggregate CLI重算与两份已发布summary逐字节一致。冻结producer7c的13项CI已由独立评审核对通过；本次后续报告提交单独接受最终CI。

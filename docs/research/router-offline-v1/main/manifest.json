@@ -1,0 +1,433 @@
+{
+  "schema_version": 1,
+  "batch_id": "20f38d87-4d1c-451b-9249-cb136533d10e",
+  "kind": "main",
+  "formal_batch": true,
+  "producer_revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+  "checkout_dirty": false,
+  "dataset": {
+    "artifact": "docs/research/router-dataset-v1.json",
+    "sha256": "cfd1139bb9d068b9056db1f748abd1d4406ec370718d068e9f918821dd6493a6"
+  },
+  "config": {
+    "artifact": "docs/research/router-offline-config-v1.json",
+    "sha256": "53f8bc508f482f083aba546a1e05746e8e3129ac459719a44ed281f20ee1a4a9"
+  },
+  "runtime_file_sha256": {
+    "scripts/run_router_sample.py": "c74f4c4439066948705f6e8dbd7c7dcaade0648d5049d0bc145fff1d07bea075",
+    "scripts/verify_router_a.py": "fe3462c24e901a0a7fe20ce2b88e58ee655434f2d6ddf7ccbab678822e0ce485",
+    "tests/router_evaluation_probe.py": "457bdda262d7ab8bead58f8f8702b5a891f90c9075766de370bd2b4170a6c111",
+    "tests/router_evaluation_proxy.py": "572da3548253325fd75e92a6adc44dc9d3a8e6d696fd02d9b6c41b63427488ec",
+    "tests/router_evaluation_model.py": "b906d93cc2d1e94c57f4e7cc66371f9edb1e9db91f300d17f776de092b8645e5",
+    "tests/fake_codex.py": "d3c90ac1fc29e6f9000521169fdcb06305786e4e4bfef852f9c062a0d8e930ae",
+    "tests/continuous_native_fixture.py": "488295da77e3af9fd3d4479e5d4d49eb7f8db054a486a4ea39c6e4fdc33fd10f",
+    "tests/continuous_fixture_model.py": "c9a4fdb25a9c32ca4e750ce19aba33a9672eae9041ebc5b6fc7295d443fcefe9"
+  },
+  "harness_file_sha256": {
+    "scripts/run_router_sample.py": "c74f4c4439066948705f6e8dbd7c7dcaade0648d5049d0bc145fff1d07bea075",
+    "scripts/verify_router_a.py": "fe3462c24e901a0a7fe20ce2b88e58ee655434f2d6ddf7ccbab678822e0ce485",
+    "tests/router_evaluation_probe.py": "457bdda262d7ab8bead58f8f8702b5a891f90c9075766de370bd2b4170a6c111",
+    "tests/router_evaluation_proxy.py": "572da3548253325fd75e92a6adc44dc9d3a8e6d696fd02d9b6c41b63427488ec",
+    "tests/router_evaluation_model.py": "b906d93cc2d1e94c57f4e7cc66371f9edb1e9db91f300d17f776de092b8645e5",
+    "tests/fake_codex.py": "d3c90ac1fc29e6f9000521169fdcb06305786e4e4bfef852f9c062a0d8e930ae",
+    "tests/continuous_native_fixture.py": "488295da77e3af9fd3d4479e5d4d49eb7f8db054a486a4ea39c6e4fdc33fd10f",
+    "tests/continuous_fixture_model.py": "c9a4fdb25a9c32ca4e750ce19aba33a9672eae9041ebc5b6fc7295d443fcefe9",
+    "scripts/run_router_evaluation.py": "224484df33a77f0f1f102de5ac83e63dc65155a65939012590a41c45368fadfd",
+    "scripts/judge_router_evaluation.py": "8d9d6d6d02913aa5f0cf2adea3ed1a979d1afcee83257db1f60c12b845532094",
+    "scripts/aggregate_router_evaluation.py": "62201e8f7ac22f46e9d42eb96a2b99fea2e8bb302a2473ef9b5ffdb686026624",
+    "scripts/prepare_continuous_fixture.py": "cb99b3a37570ae5c34d3355273c679582c3755a74bab4c40ce44c295fe1692b8",
+    "scripts/single_host.py": "cf7a87344dcadafd314e13ba9caa94dc786548836e8bab1ea763b331c725651b",
+    "deploy/testing/router-nginx.conf": "46e2e492d0277eae5b42f36bd976818b7484c8938d1f19b33ad01a5b9eab630c",
+    "deploy/deerflow.lock": "ceb1d3d775b8a813446d6fecd56daa3c5198a02407ea9485f07db1b5c5a9d50a",
+    "backend/.dockerignore": "ed4db93ba95c8d731d028995d7595337e3816ac8d5bd77620fabb54667d2284c",
+    "backend/README.md": "a86feeac8a14da33a417547561d108388abbc203ffba423ae26cb8376674e92d",
+    "backend/cmd/deermate/main.go": "035dff668f656ef55504abd60087b0b572a1b920b5ff726385b5799c68676a59",
+    "backend/go.mod": "3c27eef9709fd9bafdcb8e6c955c495eea03781934b6cfb44e0800f3ec9ad849",
+    "backend/go.sum": "95f48d199777fa00a7c3ea1baee4219ecf3e91bdccfdcfba935d842ce38c8fe5",
+    "backend/internal/controlplane/admin.go": "72ba0c68f3b0a59bb44aa04ca90dce2a6d455e054b374b596065873f01e6e6fb",
+    "backend/internal/controlplane/admin.html": "4861e5f2d16510ad2f334a39288ce1dfb6ecf67a2c9f36c396f56b993d4cb4b0",
+    "backend/internal/controlplane/authorizations.go": "911d6c539e674bd0cadb543dbe7c39cba6f34fa9d96c835f08949a3c9748f04b",
+    "backend/internal/controlplane/authorizations.html": "68fb15cb55aeadbbb0b1c55f7a030f04edcbe81f255c9fad27903d78831c4122",
+    "backend/internal/controlplane/authorizations_test.go": "5d16f2d94b6950239366dd1e685289313ecc749a3a9795a74932d7fed0c719fe",
+    "backend/internal/controlplane/briefing.go": "8b9cfbfb8cc7b3ca4e029d9191d54759f154e3320b18429963e80108773b5000",
+    "backend/internal/controlplane/briefing_actions.go": "c7df373fb6b7f2e6fd586abf5e0e41930db4dcb59bcd80be679eb57a6bfd9cf5",
+    "backend/internal/controlplane/briefing_actions_test.go": "8f3880e42deb7dc6c7126d12b06218b177c23ae5c30df2cbe6efb44b7029b8d1",
+    "backend/internal/controlplane/briefing_suggestions.go": "fbe654f4d3d25ba04f12b400952c0f7ee87ca0e0b3e63eeec1ef072a7ad7b55f",
+    "backend/internal/controlplane/briefing_test.go": "2f88af317926fbb07d1e54896014c8e30f10b4b994b5beca50efd0fa3892690f",
+    "backend/internal/controlplane/continuous_api.go": "9a340e2abf1a121f7b7c799d5a3bd4a87c3349bdf38b22f701813cf710c94df6",
+    "backend/internal/controlplane/continuous_assessment.go": "4b49867905b15ba8cbf8fc22e54ca34b6eb15ca3ac557fbea2d8aa1cf1de5b3c",
+    "backend/internal/controlplane/continuous_defaults.go": "e20b8244977668508a1788c6085893455d53908ef282496a38fa233d61a8e8bf",
+    "backend/internal/controlplane/continuous_defaults_test.go": "613082b7711b77833b06d67e87da1168bffbc970a3e4bd7a55dc0ba0a1afe2d7",
+    "backend/internal/controlplane/continuous_recall.go": "23ce3e1c2d304c5951daa74cd3049ecf882148adeda345ca042564f9034088f2",
+    "backend/internal/controlplane/continuous_runtime.go": "7b4ee255fa18433f214281770c2b999256999278d1e18ede9afc5083fb6d69eb",
+    "backend/internal/controlplane/continuous_sources.go": "416d095c4bf79c85e1424e30cd88154ff1e5708bf3a4eee9f2223aa9ec4272b9",
+    "backend/internal/controlplane/continuous_store.go": "d7e91ba8257d17258b3106a7844b675e26a4637baaf55b8278b0cceab39a13bf",
+    "backend/internal/controlplane/continuous_store_concurrency_test.go": "4917f36fa1bc792c8727639f5b5bcd26934922d7ff3c54959138e75c888a3c4b",
+    "backend/internal/controlplane/continuous_test.go": "51e18fb4f6c8e4a45aefceeff75351b192863051b419f77930e6b0a81960e9de",
+    "backend/internal/controlplane/design-components.css": "f1690ed7367b1f3cf16e8d3fb5ffbece82069b167bec5debab8f08792dd29eee",
+    "backend/internal/controlplane/design-tokens.css": "8267639b3e4f07fc59a5790eff9260dd688df004442ba7d130a41d0db01cc56d",
+    "backend/internal/controlplane/evaluation_disabled.go": "98f76f0a6ee42048077be642826d148be43266c7d7c6097b750750e04ed9f36e",
+    "backend/internal/controlplane/evaluation_disabled_test.go": "bf84fc2575a00b11d73a70d79d00c65dae355e5ff16a478139416f9b871eabbd",
+    "backend/internal/controlplane/evaluation_fixture.go": "d8e76864aca80c14b587b34fe925bad16967e1d8a0fb459b7321fa49dc8a6d0b",
+    "backend/internal/controlplane/evaluation_fixture_test.go": "6f379038897c6fdcf020a7944ff566a1cd6a5ae42f6f18da135886999a7a8150",
+    "backend/internal/controlplane/memory.go": "7ffef06e6614a702151a802fa25c4ca2961830d6921ad8dbfce3623eece17917",
+    "backend/internal/controlplane/memory_activity.go": "007c604851c2fcc75ef90b4f174c0e7f547ef689c2e7abe1e0db61506f1de60b",
+    "backend/internal/controlplane/memory_capture.go": "2eae67ed373adccaefc569d27fb0a39423dbbda1ac284ba35f22e49402543398",
+    "backend/internal/controlplane/memory_capture_test.go": "55822937753ca1678035cc0e4665dab2fa02073dbcc3c9a5fa73453dd36c23ae",
+    "backend/internal/controlplane/memory_history.go": "d3734b43603572b7bc716a0dfaaba440ede1e841c4a5b84c7aec7258a08c1929",
+    "backend/internal/controlplane/memory_history_test.go": "9338283e3e0d842c7edcbf873296f866e79a8c0f4508cc624a5d1e53a781674a",
+    "backend/internal/controlplane/memory_jobs.go": "f6ca97ea94236454343d8413944121c11836fad3b4a6cb0d9b1795045eee911c",
+    "backend/internal/controlplane/memory_jobs_test.go": "4b797dc79cf45c19c2c8952ca06c5d9696382d342267493349c13f1164430a62",
+    "backend/internal/controlplane/memory_natural.go": "82e12db8388ec22d61922302fc238ddd238ff54ba60498b131d00a2ed161d6ca",
+    "backend/internal/controlplane/memory_natural_test.go": "598cb244c088b444ba41a8eb1fa7fd72819cf194dd87b9b28ecfbc7eac38a27a",
+    "backend/internal/controlplane/memory_scopes.go": "337f38e56c46fd720a618e88e065899c5bc6230008f9e96f118353b2bc8f9f9a",
+    "backend/internal/controlplane/memory_store.go": "c1bc80aea75f41287615628b7b152f13d3a89ac0ea68d5321213fd88708922a9",
+    "backend/internal/controlplane/memory_test.go": "d9cb159e804c1b77e06c62cea994160ac2556a4666c519220f16b4c9c69c21a9",
+    "backend/internal/controlplane/observability.go": "1764845f6b50507315f2e1dd96df03b95b324d5050a4e14cfe3ce9ef0ca75325",
+    "backend/internal/controlplane/observability_test.go": "5a4a5609dbfee59053b9d9f6e912219025b5be34987ad06de28a26a8a0d29fae",
+    "backend/internal/controlplane/restore_test.go": "f68868acdc320f9193bdcf0f3859de77ac36fc09786c2c8c3ca246af68b631ce",
+    "backend/internal/controlplane/runtime.go": "cd847657d40e5019cbd6013c767e13e8d4cc3b844e6bcaf0f547572fa8fd202b",
+    "backend/internal/controlplane/server.go": "81c2a8bca412f8aa8aa964314d33833df3218d6693ee157c7c282468928b28b1",
+    "backend/internal/controlplane/server_test.go": "ef31aee8fd4bd5f917bfce9ab491e81a5b555d6e6d0b6e547f82422a3dc33ffd",
+    "backend/internal/controlplane/store.go": "62f804d5312b50f7383ee878017a2229c1302dbde668384d3fcdca9cb8e63ad3",
+    "backend/internal/controlplane/workspace_memory.go": "5d970df54258334933e6f806b85ea1707095dfc97168a9151df0dd96e0147c51",
+    "backend/internal/controlplane/workspace_memory_test.go": "b291f488f5e0f5aca817b4153c8561f4b95a42fa74ddfe625209683dd7af40e5",
+    "backend/internal/controlplane/workspace_snapshot.go": "12b4247b8368e71966d58d0f396528a010fd9201430ed78768dc28c903038abf",
+    "backend/internal/controlplane/workspace_snapshot_test.go": "82b1c3dd1f5d240f1f17b5b2dde766f2466462e4c9b8ad5f5910456100f21a45",
+    "backend/internal/observability/http.go": "172a7c93c40f2501c682286415dcc268b641325dd8104e789dd4479dcec337f3",
+    "backend/internal/observability/http_test.go": "f233f6e8ce95982ebc4c10c8bffd7b5162f44a2902b8147cb68427f8f197ba09",
+    "backend/internal/observability/telemetry.go": "aba7d41f20fa920ec88d73be96d59fb49ea6f2b5540c69de1276ca97213408af",
+    "backend/internal/observability/telemetry_test.go": "979d6782adfa10f6922973185a90cc7530242bc752431b11f7e83b9db8ae190c"
+  },
+  "harness_sha256": "bd01a9e4ed82126f1f8b9072e1aff9f906addb14e56acab760a12e4006c54045",
+  "upstream_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "control": {
+    "image_id": "sha256:ff4b2d83add1a93fb5e53e7688b3730e52abebfe84f4db11883dadc7223da18e",
+    "producer_revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+    "producer_source_dirty": "false",
+    "binary_sha256": "345e12873a6b558c54453225a69696748e9077fca66ee552c9c76825c9b9bece",
+    "binary_vcs_revision": "7c84904e39f4b3adb0bed3d7430cc9adcb64934e",
+    "binary_vcs_modified": "false",
+    "platform": "linux/amd64",
+    "test_tag": "deermate_evaluation",
+    "container_user": "1000:1000",
+    "network": "none",
+    "capabilities": {
+      "capabilities": [
+        "restore-quarantine-v1"
+      ]
+    }
+  },
+  "gateway_image_id": "sha256:4279a8fd995fc5da2e4c4eddf45dbb1c905a8640c4c66399600e272129725b86",
+  "gateway_package_sha256": {
+    "__init__.py": "066ceff24061421990b42cf10bff8b923f134124313ee6cc88b7bb4e5be93853",
+    "api.py": "8993f4a1c4006fb8770e5d19254116f83e81070e488719ce9b83822e8ffaf87b",
+    "authorization.py": "60ace949095bc5cb940a10dcfd5e983dcda1ef35871b2f889bf16cedc8f72809",
+    "bridge.py": "06de72656d2f051dd8c9a9431b9e8d50729bd1168cc57bd56577e65bdddc7dbe",
+    "briefing.py": "00d591bdcbbd754bd0fb5183709c87c0094c72bd46db8e6c4f8f588949cfd0f4",
+    "briefing_middleware.py": "6b201707019780b16434b99c38d8b201f08e0eac2edba38d136847d597900ccb",
+    "chat_sessions.py": "85df9522ca5f6407c78838ad44c180e9fd3aba32f6d82b7a611db83a3365eabd",
+    "cli.py": "510800eec07e5ee4e8b6b1f3b2f63438b81b9cd6eb61360ca0082c9e5d670028",
+    "codex.py": "63f3fd1a87e036ee07fb0a6446a3fc08b6576d8cc6b847018f050abe89f9d9d6",
+    "config.py": "a1d8bcea983e13c91dfc1bcdd2051275c143028bb78d698e5b89c2c5a08933f7",
+    "continuous.py": "14aa2f0808ba21e67a9718c5644470206e4623a06470bb55d703b44937d7ef70",
+    "continuous_middleware.py": "3ce45cf8397a2d38ea1370440291d422c385690beebb95ea4d6518be28c8daaf",
+    "conversation.py": "9d5abae3ef9e85a7a959f506e51a8fd12f00cb3aaff36fbcd8e0871909f188b3",
+    "deerflow_tools.py": "71dd684c3bafc60b6d4188fd997bf462a9f56d597fe5d0de29e8db0ee638fe31",
+    "device_connector.py": "c96f8f8af5e4be85ba58c3a856622a3c097922b26dfd47cc9e62fc6e4f916cd9",
+    "gateway.py": "8b7379acbb1b4091de6acff4f6a9edacf3fd2982a8adb88dacc02eb63f2fd0b1",
+    "mcp_server.py": "445fbba477cb71984a723b4681953c87bf80679e1c88f131cb1d02587dfd9312",
+    "memory.py": "35aba9518a69a2b32a0cc710069cab618dffc6c196ddbc79d0aed2f6f787d9fe",
+    "memory_extraction.py": "d9a7bba5d21bdda261c2e2059ade62c876505e8d77ff7a690b479dfd343d8563",
+    "memory_middleware.py": "719394b50d35626d267719a2c0d617648d1b832e68406bffb9ebf7d824403ee2",
+    "models.py": "a3095fc04d421fcd5e86df0ddedc14ec28357613d5ca80d6865c500806f109dd",
+    "observability_middleware.py": "5165ae981dfe12fbd27570c408f0ef42df4eb536b3088eabd4cc259ba4662014",
+    "preflight.py": "96b386301a71927c3d875d17a8837b3e8e855f28730997289032d769920e13a8",
+    "protocol.py": "9c0508911be603684acfe6f5d310dc833029e55af2482a9408e231359b190b50",
+    "relay.py": "4657fe9d02c772308f2eb7e37680468ead236cfa2cacd9761a0c98949fd2a463",
+    "remote_config.py": "628137cb75ad464b997484e28ce5acdd01621995716c715fdbc5e4204276435a",
+    "rpc.py": "5a22f76f28eaa222e0c0bb7e757f3ab8ea738241a49bf013c6abd2d2388a98db",
+    "runtime_telemetry.py": "0cbf55b79d413b1f1cb55bb67f2f7fc179dfdefaf8f0838ae8ea456ea4e68c68",
+    "session_middleware.py": "c46708ba1e99d43ea9b05eced67aa0de762ceb93d474a38b669254d88f117cc6",
+    "ssh.py": "9601c80df9ed36c568187a3a2cb020083b746cb449e36119de9ef992cd6d4f33",
+    "store.py": "0cd8709b9989d17ef631d3a9e7847e3d2a0016de0ca1b9488a7343717ba9dd63",
+    "telemetry.py": "7a06327f3c52b8d26c7a3f06c5a74cde27dd6b1e58e82c7ff5399d12b4199cea",
+    "tooling.py": "d7873b05d959d5ed5dfcccca9bd15fd6adb1a353b5dda1b1460b52597efe3fa3",
+    "web_tools.py": "6922742c5cec6432fdf072242eedababcd3acc67d3b22cec6dcce0f1ef74d0ec",
+    "work_reports.py": "86b6c13c7477183ebdd73fc572a625108a2e9df26d9e0f15b31dac550493fa4e",
+    "worker.py": "6f527d655c81e61e98d27231621efc689cddd88eebc06ce810441c600f6f95f7",
+    "workspace.py": "db426c842f44733de8ed155e40cd9d51c86a1b27744f091f967dccc3e714cc17"
+  },
+  "images_config_sha256": "16e0daf4944830aba3a1817d64c09fabc89f38628bf1bc8daaec28736118c509",
+  "environment": {
+    "python": "3.12.15 (main, Oct 21 2026, 17:39:18) [Clang 23.1.3 ]",
+    "platform": "macOS-26.5.1-x86_64-i386-64bit",
+    "machine": "x86_64",
+    "cpu_count": 12,
+    "go": "go version go1.27.3 darwin/amd64",
+    "docker": "29.9.2",
+    "docker_cpus": "12",
+    "docker_memory_bytes": "8321818624"
+  },
+  "planned": [
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "A",
+      "order": 1,
+      "sample_path": "S1-1101-A/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "B",
+      "order": 2,
+      "sample_path": "S1-1101-B/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "C",
+      "order": 3,
+      "sample_path": "S1-1101-C/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1102,
+      "mode": "B",
+      "order": 4,
+      "sample_path": "S1-1102-B/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1102,
+      "mode": "C",
+      "order": 5,
+      "sample_path": "S1-1102-C/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1102,
+      "mode": "A",
+      "order": 6,
+      "sample_path": "S1-1102-A/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1103,
+      "mode": "C",
+      "order": 7,
+      "sample_path": "S1-1103-C/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1103,
+      "mode": "A",
+      "order": 8,
+      "sample_path": "S1-1103-A/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1103,
+      "mode": "B",
+      "order": 9,
+      "sample_path": "S1-1103-B/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1104,
+      "mode": "A",
+      "order": 10,
+      "sample_path": "S1-1104-A/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1104,
+      "mode": "C",
+      "order": 11,
+      "sample_path": "S1-1104-C/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1104,
+      "mode": "B",
+      "order": 12,
+      "sample_path": "S1-1104-B/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1105,
+      "mode": "C",
+      "order": 13,
+      "sample_path": "S1-1105-C/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1105,
+      "mode": "B",
+      "order": 14,
+      "sample_path": "S1-1105-B/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1105,
+      "mode": "A",
+      "order": 15,
+      "sample_path": "S1-1105-A/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1106,
+      "mode": "B",
+      "order": 16,
+      "sample_path": "S1-1106-B/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1106,
+      "mode": "A",
+      "order": 17,
+      "sample_path": "S1-1106-A/sample.json"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1106,
+      "mode": "C",
+      "order": 18,
+      "sample_path": "S1-1106-C/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "A",
+      "order": 19,
+      "sample_path": "S2-1101-A/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "B",
+      "order": 20,
+      "sample_path": "S2-1101-B/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "C",
+      "order": 21,
+      "sample_path": "S2-1101-C/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1102,
+      "mode": "B",
+      "order": 22,
+      "sample_path": "S2-1102-B/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1102,
+      "mode": "C",
+      "order": 23,
+      "sample_path": "S2-1102-C/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1102,
+      "mode": "A",
+      "order": 24,
+      "sample_path": "S2-1102-A/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1103,
+      "mode": "C",
+      "order": 25,
+      "sample_path": "S2-1103-C/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1103,
+      "mode": "A",
+      "order": 26,
+      "sample_path": "S2-1103-A/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1103,
+      "mode": "B",
+      "order": 27,
+      "sample_path": "S2-1103-B/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1104,
+      "mode": "A",
+      "order": 28,
+      "sample_path": "S2-1104-A/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1104,
+      "mode": "C",
+      "order": 29,
+      "sample_path": "S2-1104-C/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1104,
+      "mode": "B",
+      "order": 30,
+      "sample_path": "S2-1104-B/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1105,
+      "mode": "C",
+      "order": 31,
+      "sample_path": "S2-1105-C/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1105,
+      "mode": "B",
+      "order": 32,
+      "sample_path": "S2-1105-B/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1105,
+      "mode": "A",
+      "order": 33,
+      "sample_path": "S2-1105-A/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1106,
+      "mode": "B",
+      "order": 34,
+      "sample_path": "S2-1106-B/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1106,
+      "mode": "A",
+      "order": 35,
+      "sample_path": "S2-1106-A/sample.json"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1106,
+      "mode": "C",
+      "order": 36,
+      "sample_path": "S2-1106-C/sample.json"
+    }
+  ],
+  "repeat_of_manifest_sha256": null,
+  "outer_budget_seconds": 9720,
+  "per_case_process_timeout_seconds": 270,
+  "sample_deadline_seconds": 90,
+  "warm_state": "Images and pinned BPE cache warm; each owner/home/workspace fresh.",
+  "real_provider_calls": 0,
+  "real_native_calls": 0
+}

@@ -117,7 +117,7 @@ DeerMate 研究怎样让私人助手跨 Agent 会话、跨个人设备持续推�
 | 断线恢复后，能否避免重复副作用？ | 持久操作身份、固定原生会话、显式未知状态。 |
 | 记忆能否有用、可追溯、可纠正？ | 规范来源、有界召回、范围检查和遗忘屏障。 |
 
-系统与验收工具已有实现，对比研究尚未完成。功能验收不等于已经证明质量、速度或人工监督成本改善。[研究 Spec](docs/specs/m4-continuous-agent.md) · [评估计划](docs/product/technical/evaluation.md)
+[首批 Router 离线实验](docs/research/router-offline-v1/README.md)已运行 36 项：33 项完成、2 项未知、1 项完整屏障失败；另有同版本独立六项复跑全部通过。公开原始 JSON/JSONL、清单、独立判定器和真实重复副作用负例。脚本 toy 结果不代表真实模型质量、账单或注意力收益。[研究 Spec](docs/specs/m4-continuous-agent.md) · [评估方法](docs/product/technical/evaluation.md)
 
 引用项目请使用 [CITATION.cff](CITATION.cff)。[引用与复现说明](docs/research/references.md)解释本项目取舍，原始固定版本见[既有研究来源](docs/specs/m4-continuous-agent.md#15-调研依据与已接受选择)。实验报告还需记录完整源码提交及数据集/结果版本。
 

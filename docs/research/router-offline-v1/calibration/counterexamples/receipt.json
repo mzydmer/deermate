@@ -1,0 +1,75 @@
+{
+  "original_raw_sha256": "bb32fd1669b1d971ac29a9b2d79b6adaf3c993bcb8deca17c0854f64729849bd",
+  "cases": [
+    {
+      "case": "wrong-root",
+      "expected_complete": false,
+      "actual_status": "failed",
+      "reasons": [
+        "same_root_turn_workspace",
+        "actual_inbound_rpc_identity"
+      ],
+      "effects_observed": 1,
+      "raw_sha256": "c477a1a2172408bf28c07ba99b723774af66f4151edd95a6ba0ee55a84b80d0b"
+    },
+    {
+      "case": "missing-independent-test",
+      "expected_complete": false,
+      "actual_status": "outcome_unknown",
+      "reasons": [
+        "missing_or_invalid_evidence"
+      ],
+      "effects_observed": 1,
+      "raw_sha256": "61767ec34f271824195e86e0f7ba6b6153510fd91a8749afe2617db1e1e60988"
+    },
+    {
+      "case": "outside-owner",
+      "expected_complete": false,
+      "actual_status": "failed",
+      "reasons": [
+        "same_original_public_tracking"
+      ],
+      "effects_observed": 1,
+      "raw_sha256": "aa19fe77a962fe582916aedca45472f18ff57614e3461b74b758fcf638af5700"
+    },
+    {
+      "case": "out-of-scope",
+      "expected_complete": false,
+      "actual_status": "failed",
+      "reasons": [
+        "actual_workspace_files",
+        "only_allowed_changes"
+      ],
+      "effects_observed": 1,
+      "raw_sha256": "4c7ac061e14bc6ebdedb4287221a0a9ef4a82a877fe5568302b285c892234b4e"
+    },
+    {
+      "case": "missing-rpc-evidence",
+      "expected_complete": false,
+      "actual_status": "outcome_unknown",
+      "reasons": [
+        "missing_or_invalid_evidence"
+      ],
+      "effects_observed": 1,
+      "raw_sha256": "202c3675f109ffed3bcc20a7e7de71ff379a472b2765595455c16e483ead62f4"
+    },
+    {
+      "case": "false-runner-claim",
+      "expected_complete": true,
+      "actual_status": "complete",
+      "reasons": [],
+      "effects_observed": 1,
+      "raw_sha256": "5fc65e9140bfa59eb80cce3da72b54012b46bca45fa91c63be7508808a81e186"
+    },
+    {
+      "case": "calibration-as-formal",
+      "expected_complete": false,
+      "actual_status": "failed",
+      "reasons": [
+        "original_frozen_batch_and_dataset"
+      ],
+      "effects_observed": 1,
+      "raw_sha256": "bb32fd1669b1d971ac29a9b2d79b6adaf3c993bcb8deca17c0854f64729849bd"
+    }
+  ]
+}

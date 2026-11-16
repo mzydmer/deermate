@@ -1,0 +1,60 @@
+{
+  "planned_n": 6,
+  "elapsed_seconds": 529.2489063449902,
+  "rows": [
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "A",
+      "order": 1,
+      "sample_path": "S1-1101-A/sample.json",
+      "process_status": "process_finished",
+      "sample_sha256": "cb0f15393cbf393ab8c4485433ce542dd3cf0a207a1233a32fbae930a239db33"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "B",
+      "order": 2,
+      "sample_path": "S1-1101-B/sample.json",
+      "process_status": "process_finished",
+      "sample_sha256": "99e3da21695964c1649c043ed20a7af408cfa3c116328cf277ea8ec1ebdac35c"
+    },
+    {
+      "scenario": "S1",
+      "seed": 1101,
+      "mode": "C",
+      "order": 3,
+      "sample_path": "S1-1101-C/sample.json",
+      "process_status": "process_finished",
+      "sample_sha256": "4a46885963fd9ecbc516480560a5978a23e978087a816679547fc32ef9b03358"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "A",
+      "order": 4,
+      "sample_path": "S2-1101-A/sample.json",
+      "process_status": "process_finished",
+      "sample_sha256": "4f497defd2a7338add685e5cf47a2eef8e139f23e231546236d3b8765072fe65"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "B",
+      "order": 5,
+      "sample_path": "S2-1101-B/sample.json",
+      "process_status": "process_finished",
+      "sample_sha256": "184c189952ee6c9ec4f8145343a4d823e5f12d7d35293d63f7c1d197beb40a3b"
+    },
+    {
+      "scenario": "S2",
+      "seed": 1101,
+      "mode": "C",
+      "order": 6,
+      "sample_path": "S2-1101-C/sample.json",
+      "process_status": "process_finished",
+      "sample_sha256": "5e6d02180fbcf460207a17a4118407d03a0498f461ed526237eed513f1b73b6f"
+    }
+  ]
+}
