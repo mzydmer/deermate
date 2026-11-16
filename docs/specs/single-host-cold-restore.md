@@ -1,6 +1,6 @@
 # 单机共同冷备与隔离恢复
 
-- **Status:** Accepted; implementation and actual restoration pending verification.
+- **Status:** Implemented; local 42-check synthetic restoration verified from clean 4e236fb, independent review/merge pending.
 - **Requirement IDs:** NFR-005–007/010、FR-007/023/028–032。
 - **Tracking:** [Issue #4](https://github.com/mzydmer/deermate/issues/4)
 - **Updated:** 2026-11-16
