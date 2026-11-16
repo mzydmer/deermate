@@ -310,7 +310,10 @@
       "scripts/run_router_sample.py",
       "tests/router_evaluation_probe.py",
       "tests/test_router_sample.py",
-      "tests/router_evaluation_model_contract.py"
+      "tests/router_evaluation_model_contract.py",
+      "docs/verification/router-s1-calibration-2026-11-16.json",
+      "tests/router_evaluation_proxy.py",
+      "tests/router_evaluation_proxy_contract.py"
     ]
   },
   {
@@ -378,7 +381,10 @@
       "scripts/run_router_sample.py",
       "tests/router_evaluation_probe.py",
       "tests/test_router_sample.py",
-      "tests/router_evaluation_model_contract.py"
+      "tests/router_evaluation_model_contract.py",
+      "docs/verification/router-s1-calibration-2026-11-16.json",
+      "tests/router_evaluation_proxy.py",
+      "tests/router_evaluation_proxy_contract.py"
     ]
   }
 ]

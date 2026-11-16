@@ -180,3 +180,59 @@ def test_s1_unstarted_slots_remain_explicit_after_deadline(monkeypatch, tmp_path
     assert len(rows) == 9 and len((tmp_path / "schedule.jsonl").read_text().splitlines()) == 9
     assert all(v["attempt_status"] == "not_started_deadline" for v in rows)
     assert all(v["sent_runner_ns"] is None and v["response_status"] is None for v in rows)
+
+
+def test_s2_duplicate_is_independent_and_uses_exact_original_owner_input(monkeypatch, tmp_path):
+    cfg = {"logical_operation_id": "s2-1101"}
+    duplicate_sent = Event()
+    requests = []
+
+    def handle(request):
+        body = json.loads(request.content)
+        requests.append((request.url.path, body))
+        if body["operation_id"] == "front-s2-1101":
+            assert duplicate_sent.wait(2), "duplicate was gated on foreground HTTP response"
+            return httpx.Response(200, json={"id": "front-inbox"})
+        duplicate_sent.set()
+        return httpx.Response(200, json={"id": "original-inbox"})
+
+    actual_client = httpx.Client
+    monkeypatch.setattr(
+        sample.httpx,
+        "Client",
+        lambda **kwargs: actual_client(**kwargs, transport=httpx.MockTransport(handle)),
+    )
+    main = SimpleNamespace(
+        base_url="http://localhost:22045", cookies={}, headers={"X-Expected-User-Id": "owner"}
+    )
+    result = {"scheduled_deliveries": sample.s2_plan(cfg)}
+    sample.run_scheduled(
+        main,
+        lambda *_: {"items": [{"id": "front-inbox", "data": {"reply": "EVAL_VISIBLE s2-1101"}}]},
+        cfg,
+        time.monotonic_ns(),
+        time.monotonic() + 5,
+        tmp_path,
+        result,
+    )
+    assert requests == [
+        (
+            "/api/me/router/messages",
+            {"operation_id": "front-s2-1101", "text": "EVAL_FRONT s2-1101"},
+        ),
+        (
+            "/api/me/router/messages",
+            {"operation_id": "start-s2-1101", "text": "EVAL_START s2-1101"},
+        ),
+    ]
+    assert len((tmp_path / "schedule.jsonl").read_text().splitlines()) == 2
+    assert all(v["attempt_status"] == "responded" for v in result["scheduled_deliveries"])
+
+
+@pytest.mark.parametrize("kind", ["barrier_not_reached", "upstream_not_success", "observer_error"])
+def test_s2_failed_injection_never_counts_as_recovery(kind):
+    verdict = sample.s2_contract({"fault_events": [{"kind": kind}]})
+    assert not verdict["passed"]
+    assert not verdict["conditions"]["exactly_one_actual_durable_barrier"]
+    assert not verdict["conditions"]["exactly_one_actual_ack_drop"]
+    assert not verdict["conditions"]["no_injection_errors"]

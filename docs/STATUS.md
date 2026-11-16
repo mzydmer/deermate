@@ -1,6 +1,6 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议、A异步及同源正常B/C完整屏障已接受；当前S1固定事件表代码/合同已完成，准备新stage检查与实际C/B/A校准。S2/judge/冻结/36+6格仍待完成，没有正式比较结果；原12实例、旧失败卷及归档保留。
+最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议、A异步及同源正常B/C完整屏障已接受；同源S1 A/B/C实际固定事件表与完整屏障已通过并获独立复核。S2代理TCP合同通过，真实S2/judge/冻结/36+6格仍待完成，没有正式比较结果；原12实例、旧失败卷及归档保留。
 
 ## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
 
@@ -10,7 +10,7 @@
 
 共享账本修正先取得writer intent、原DB回调一次、保持5s busy/context，不重试外部动作；22处生产及两处tag回调核对无外部runtime I/O，五项并发/回滚/原token单action合同通过，见[说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。三组统一owned-admission-v1通知适配保持完整原admission HumanMessage/哈希、短提示/空tools，12,000 bytes不变，三项Gateway合同及独立复跑通过；这不是默认生产通知预算验收。计时重复GET零匹配写锁干扰已消除，旧失败保留，原C01具体竞争写方未被完整原栈记录，不能预称全部根因。
 
-当前S1代码加入九个固定offset各自独立sender/独立前台reader、finally全计划落盘、实际第二账号正确ExpectedID、原工作读取/事件接纳403及七事件归属/有界正文证据。五项sender/barrier测试和Linux七项evaluation顶层合同通过，独立评审已复跑；服务时钟在JSON实际写出、成功Flush后采样，失败Flush为null，指标明确为service admission→reply flush，客户端另报实际complete-read，两域不相减、不称浏览器精确时间。新S1 stage必要Go全检和实际C/B/A校准待执行；S2代理、独立judge/真实双effect负例、干净harness/dataset冻结、正式36格及同版本独立6格仍未完成，不能称比较结果。
+当前S1代码加入九个固定offset各自独立sender/独立前台reader、finally全计划落盘、实际第二账号正确ExpectedID、原工作读取/事件接纳403及七事件归属/有界正文证据。五项sender/barrier测试和Linux七项evaluation顶层合同通过，独立评审已复跑；服务时钟在JSON实际写出、成功Flush后采样，失败Flush为null，指标明确为service admission→reply flush，客户端另报实际complete-read，两域不相减、不称浏览器精确时间。干净df8e6c8的实际A01/B02/C01均完整通过并获独立复核，九次计划、八条件及单Worker/MCP/root/turn/effect与验证0核对；必要Go全检通过（race36.344s）。见[S1收据](verification/router-s1-calibration-2026-11-16.json)。B01配对503/SQLITE_BUSY在Native前回滚，原pair未消费且0device/grant/MCP，失败保留，未重放原mutation。S2固定loopback代理已通过真实TCP三项合同，运行器已接入；实际S2、独立judge/真实双effect负例、干净harness/dataset冻结、正式36格及同版本独立6格仍未完成，不能称比较结果。
 
 [协议](research/router-protocol-v1.md)与[基线](research/router-baseline-v1.json)保留六配对seed、全部六顺序、两个场景、失败/unknown/未启动分母及nearest-rank算法。只读观察器不得向恢复驱动注入私有task句柄；正式任务仅在Worker验证、本人公开MCP、原Go operation/inbox、runs和通知全部核对并观察4s后判完成。默认Go无evaluation路由/开关；所有实际调用使用合成Native/Provider，零付费，未部署或改变既有权限。完整事件/故障比较、真实模型与用户研究均未开展，R-EVAL总验收仍未勾选。
 

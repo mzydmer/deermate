@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Run one fresh offline normal/S1 calibration through the complete tracking barrier.
+"""Run one fresh offline calibration through the complete tracking barrier.
 
-S1 sends the fixed reviewed event table; S2 awaits its durable ACK-loss proxy.
+S1 sends the reviewed event table; S2 loses one durable coordinator admission ACK.
 Calibration runs are never included in the frozen formal sample matrix.
 """
 
@@ -200,12 +200,25 @@ def s1_plan(cfg, seed):
     return rows
 
 
-def run_s1(client, api, cfg, seed, anchor_ns, deadline, directory, result, outside):
+def s2_plan(cfg):
+    foreground = next(v for v in s1_plan(cfg, 0) if v["kind"] == "foreground")
+    duplicate = dict(foreground)
+    duplicate.update(
+        kind="duplicate_start",
+        intended_offset_seconds=0.5,
+        input={
+            "operation_id": "start-" + cfg["logical_operation_id"],
+            "text": "EVAL_START " + cfg["logical_operation_id"],
+        },
+    )
+    return [foreground, duplicate]
+
+
+def run_scheduled(client, api, cfg, anchor_ns, deadline, directory, result, outside=None):
     """Each offset owns a sender; HTTP responses never gate later input sends."""
     foreground = {}
     ready = Event()
-    deliveries = result.get("scheduled_deliveries") or s1_plan(cfg, seed)
-    result["scheduled_deliveries"] = deliveries
+    deliveries = result["scheduled_deliveries"]
     result["schedule_origin_runner_ns"] = anchor_ns
     result["schedule_origin"] = "runner receipt of actual original Native turn/start"
     log_lock = Lock()
@@ -236,14 +249,14 @@ def run_s1(client, api, cfg, seed, anchor_ns, deadline, directory, result, outsi
                 time.sleep(max(0, (due - time.monotonic_ns()) / 1e9))
                 if time.monotonic() >= deadline:
                     record["attempt_status"] = "not_started_deadline"
-                    raise TimeoutError("Common S1 deadline exhausted before this send")
+                    raise TimeoutError("Common sample deadline exhausted before this send")
                 sent = time.monotonic_ns()
                 record.update(
                     sent_runner_ns=sent, drift_ms=(sent - due) / 1e6, attempt_status="sent"
                 )
                 path = (
                     "/api/me/router/messages"
-                    if kind == "foreground"
+                    if kind in {"foreground", "duplicate_start"}
                     else "/__deermate_evaluation/events"
                 )
                 response = sending.post(
@@ -284,9 +297,9 @@ def run_s1(client, api, cfg, seed, anchor_ns, deadline, directory, result, outsi
         try:
             while not ready.wait(0.02):
                 if time.monotonic() >= deadline:
-                    raise TimeoutError("No foreground admission before the common S1 deadline")
+                    raise TimeoutError("No foreground admission before the common sample deadline")
             if not foreground:
-                raise RuntimeError("S1 foreground admission failed; see the retained schedule")
+                raise RuntimeError("Foreground admission failed; see the retained schedule")
             result["foreground_inbox"] = foreground["inbox"]
             first, view = observe_foreground(
                 api,
@@ -298,8 +311,93 @@ def run_s1(client, api, cfg, seed, anchor_ns, deadline, directory, result, outsi
             for future in futures:
                 future.result()
     if any(row["error_kind"] for row in deliveries):
-        raise RuntimeError("At least one S1 delivery failed; all attempts are retained")
+        raise RuntimeError("At least one scheduled delivery failed; all attempts are retained")
     return {"id": foreground["inbox"]}, foreground["runner_send"], first, view
+
+
+def run_s1(client, api, cfg, seed, anchor_ns, deadline, directory, result, outside):
+    result.setdefault("scheduled_deliveries", s1_plan(cfg, seed))
+    return run_scheduled(client, api, cfg, anchor_ns, deadline, directory, result, outside)
+
+
+def collect_fault(gateway):
+    # Called only after the public recovery driver has finished (or failed).
+    # The driver cannot consume the observer's tracking IDs or run handles.
+    return fixture.docker_python(
+        gateway,
+        "import json;from pathlib import Path;"
+        "p=Path('/app/backend/.deer-flow/evaluation-fault.jsonl');"
+        "print(json.dumps([json.loads(v) for v in p.read_text().splitlines()] "
+        "if p.exists() else []))",
+    )
+
+
+def s2_contract(result):
+    events = result["fault_events"]
+    barriers = [v for v in events if v["kind"] == "durable_barrier"]
+    drops = [v for v in events if v["kind"] == "ack_dropped"]
+    conditions = {
+        "exactly_one_actual_durable_barrier": len(barriers) == 1,
+        "exactly_one_actual_ack_drop": len(drops) == 1,
+        "no_injection_errors": not any(
+            v["kind"]
+            in {
+                "observer_error",
+                "barrier_not_reached",
+                "upstream_not_success",
+                "upstream_not_admitted",
+                "proxy_request_error",
+            }
+            for v in events
+        ),
+    }
+    if len(barriers) == len(drops) == 1:
+        durable, drop = barriers[0], drops[0]
+        proof = durable["proof"]
+        original = proof["original_go_operation"]
+        final = result["barrier"]
+        operations = [v for v in final["evidence"]["go_records"] if v["kind"] == "operation"]
+        op = next((v for v in operations if v["id"] == original), None)
+        duplicate = next(
+            v for v in result["scheduled_deliveries"] if v["kind"] == "duplicate_start"
+        )
+        conditions.update(
+            zero_response_bytes_before_close=drop.get("response_bytes_sent_to_go") == 0,
+            barrier_precedes_drop=(
+                durable["clock_domain"] == drop["clock_domain"] and durable["ns"] <= drop["ns"]
+            ),
+            original_operation_recovered=(
+                op is not None
+                and op["parent"] == result["start_inbox"]
+                and op["state"] == "settled"
+                and op["owner"] == result["owner_id"]
+                and op["data"].get("run_id") == proof["original_run_id"]
+            ),
+            normal_query_recovers_original_run=any(
+                v["kind"] == "original_query"
+                and v["ns"] > drop["ns"]
+                and v["clock_domain"] == drop["clock_domain"]
+                and v.get("upstream_status") == 200
+                and v.get("known") is True
+                and v.get("original_go_operation") == original
+                and v.get("run_id") == proof["original_run_id"]
+                for v in events
+            ),
+            duplicate_owner_input_same_original_inbox=(
+                duplicate.get("response_status") == 200
+                and duplicate.get("receipt", {}).get("id") == result["start_inbox"]
+            ),
+            public_tracking_recovers_original_task=(
+                {v["task_id"] for v in final["public_tracking"]["items"]} == {proof["tracking_id"]}
+                and final["public_tracking"]["thread_id"] == proof["tracking_thread"]
+            ),
+            full_tracking_barrier=final["complete"],
+        )
+    return {
+        "target": "initial Router/coordinator admission ACK",
+        "conditions": conditions,
+        "passed": all(conditions.values()),
+    }
 
 
 def s1_contract(barrier, deliveries, work_id, owner, mode):
@@ -472,8 +570,6 @@ def await_barrier(api, gateway, thread, work_id, mode, owner, directory, deadlin
 
 def run(args):
     os.umask(0o077)
-    if args.scenario not in {"normal", "S1"}:
-        raise ValueError("S2 requires the separately calibrated durable ACK-loss proxy")
     if args.port == 2026 or not 1024 <= args.port <= 65535:
         raise ValueError("Use a separate unprivileged fixture port")
     args.logical_operation_id = args.scenario.lower() + "-" + str(args.seed)
@@ -494,6 +590,7 @@ def run(args):
                     fixture.ROOT / "tests" / name
                     for name in (
                         "router_evaluation_probe.py",
+                        "router_evaluation_proxy.py",
                         "router_evaluation_model.py",
                         "fake_codex.py",
                         "continuous_native_fixture.py",
@@ -523,6 +620,8 @@ def run(args):
     }
     if args.scenario == "S1":
         result["scheduled_deliveries"] = s1_plan(cfg, args.seed)
+    elif args.scenario == "S2":
+        result["scheduled_deliveries"] = s2_plan(cfg)
     try:
         subprocess.run([str(bundle / "start.sh")], check=True, stdout=subprocess.DEVNULL)
         result["app_network_isolation"] = isolation(project)
@@ -591,12 +690,11 @@ def run(args):
             else:
                 raise RuntimeError("The actual original Native turn did not start")
             result["native_observation_samples"] = observations
-            if args.scenario == "S1":
-                front, runner_send, first, view = run_s1(
+            if args.scenario in {"S1", "S2"}:
+                front, runner_send, first, view = run_scheduled(
                     client,
                     api,
                     cfg,
-                    args.seed,
                     observations[-1]["runner_ns"],
                     sample_deadline,
                     directory,
@@ -682,6 +780,11 @@ def run(args):
                     args.mode,
                 )
                 result["passed"] = result["passed"] and result["s1_contract"]["passed"]
+            elif args.scenario == "S2":
+                result["fault_events"] = collect_fault(gateway)
+                result["fault_evidence_collected_after_recovery_driver"] = True
+                result["s2_contract"] = s2_contract(result)
+                result["passed"] = result["passed"] and result["s2_contract"]["passed"]
     except Exception as error:
         result["failure_kind"] = type(error).__name__
         result["failure_message"] = str(error)[:500]
@@ -691,6 +794,12 @@ def run(args):
             result["failure_probe_error_kind"] = type(probe_error).__name__
         raise
     finally:
+        if args.scenario == "S2" and "fault_events" not in result:
+            try:
+                result["fault_events"] = collect_fault(gateway)
+                result["fault_evidence_collected_after_recovery_driver"] = True
+            except Exception as fault_error:
+                result["fault_evidence_error_kind"] = type(fault_error).__name__
         save(directory / "sample.json", result)
         subprocess.run(
             ["docker", "compose", "--project-directory", str(bundle), "stop", "--timeout", "60"],

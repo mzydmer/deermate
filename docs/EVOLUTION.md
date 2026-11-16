@@ -846,3 +846,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · 同源正常B/C完整校准与S1固定事件表代码
 
 干净bb7b91b的B07/C02均经独立复核接受完整屏障，公开MCP/通知/Go/runs收敛，单Worker/root/turn/effect与独立测试0，toy初始提交相同；原12容器保持，旧失败全保留。原normal投影计时仅诊断，见新公开收据。S1代码在peer review后改为各offset独立sender、独立reader、finally保留失败及未发计划，使用第二个真正认证的合成admin/正确ExpectedID测试外owner，旧header错配单列。五项sender/barrier与Linux七项evaluation合同通过并由评审复跑；Go时钟改在实际JSON写出后成功Flush采样，失败为空，明确服务传输指标与真实client complete-read分列，无浏览器精确时刻/流式token声明。S1尚未实际运行，新stage必要检查后按C/B/A校准；S2/judge/负例及正式36+6尚待完成。
+
+
+## 2026-11-16 · S1三组实际校准与S2断连代理合同
+
+干净df8e6c8的A01/B02/C01均经独立复核接受：九项计划及八条件通过，单Worker/MCP/root/turn/effect、验证0和公开完整屏障。B01配对503在Native前回滚，原pair未消费且无device/grant/MCP，失败保留。S2新增固定loopback代理，在原Router run及关联MCP/chat journal持久后真实关闭首次ACK，恢复驱动仅用原请求身份和公开查询；三项实际Linux TCP合同覆盖三模式断连、缺屏障正常转发、错误操作及第二响应不再丢。首轮测试缺kind列导致未arm，修fixture与显式operation数据后通过，未放宽observer。九项runner合同通过；真实S2、judge/真实双effect负例及冻结36+6仍未完成。

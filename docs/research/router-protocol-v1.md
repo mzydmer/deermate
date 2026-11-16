@@ -1,6 +1,6 @@
 # Router 离线对照协议 v1（协议已接受，实验未运行）
 
-- 状态：Accepted protocol（2026-11-16 独立评审）；harness/基线合同和负例尚待实现校准，本批实验未运行。
+- 状态：Accepted protocol（2026-11-16 独立评审）；A异步、正常B/C及S1三组校准通过；S2/独立judge/负例与正式批次未完成。
 - 跟踪：[Issue #5](https://github.com/mzydmer/deermate/issues/5)。
 - 需求：R-EVAL-01–05；CONT-05/06/08/10/13/15；NFR-004/005/006/010。
 - 基线：[router-baseline-v1.json](router-baseline-v1.json)。实际 producer SHA、数据集 SHA 和结果尚为空。
@@ -47,6 +47,8 @@ A 具备相同后台能力、Worker 并发和查询能力，不调用同步 `wai
 | --- | --- | --- |
 | S1 `background-foreground` | 本人明确修复 toy 加法；t0+0.10/0.20/0.30/0.40/0.50/0.60s 投递六条同 Thread 的已绑定更新，+0.25s 提交一个独立前台问题；+0.70s 一个无绑定只读事件，+0.80s 一个外 owner 事件 | 实际前台回复时刻相对 Native 完成；一个原根/轮次、补丁和独立测试通过；绑定更新归原工作，越 owner 不接纳，无绑定事件不获执行权；记录所有角色调用和合批结果 |
 | S2 `lost-admission-ack` | 同样的一次变更；在 Gateway 已持久保存相同 operation 的 run、MCP tracking 与 chat journal 后，fixture HTTP 故障代理丢弃第一次 Go→Gateway admission 的成功回执并断连；+0.25s 同一前台问题，+0.50s 再投递相同逻辑输入 | 三组均穿过相同“持久追踪已存在、Go 未收到回执”屏障；只查原操作，不重放 mutation；原 run/task/root 可核对，或明确保留 unknown；恢复后独立测试和副作用计数验证 |
+
+S2 丢失的是三组的初始 Router/coordinator admission ACK；B/C另等该原Router的 `_tool_result` 所关联Native operation的MCP/chat journal持久化，不称Worker admission ACK丢失。固定代理仅转发到同Gateway的loopback:8001，在Go的20s预算内最多等待18s，不先发任何响应字节，持久化齐备后真实关闭socket一次。若屏障未达、上游非200或observer错误，不能计成功注入或成功恢复；第二次响应不再丢弃。故障证明只在公开恢复驱动结束后采集。
 
 S2 代理以已保存的 operation 对应 tracking 为触发条件，不能在 A 尚未接纳、B/C 已接纳的不同阶段丢包。代理可以观察只读持久状态以确认屏障，但恢复驱动只能使用原请求已知的 operation/thread 和正常本人查询接口；不能把观察器私下发现的 Worker handle 注入恢复流程。如果缺少可用的原结果核对接口，就记 `outcome_unknown`，不创建新根；此样本安全不重放可以通过，但**验证完成率仍计未完成**。
 

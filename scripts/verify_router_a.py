@@ -131,6 +131,7 @@ def prepare(args, work, project, key):
         "fake_codex.py",
         "router_evaluation_model.py",
         "router_evaluation_probe.py",
+        "router_evaluation_proxy.py",
     ):
         shutil.copyfile(ROOT / "tests" / name, runtime / name)
     cfg = {
@@ -211,6 +212,12 @@ def prepare(args, work, project, key):
     compose["services"]["gateway"]["environment"]["DEERMATE_EVALUATION_CONFIG"] = (
         "/etc/deermate/evaluation.json"
     )
+    if cfg["scenario"] == "S2":
+        control["environment"]["DEERMATE_RUNTIME_URL"] = "http://gateway:8002"
+        compose["services"]["gateway"]["entrypoint"] = [
+            "/app/backend/.venv/bin/python",
+            "/etc/deermate/router_evaluation_proxy.py",
+        ]
     (bundle / "compose.yaml").write_text(yaml.safe_dump(compose, sort_keys=False))
     env = bundle / ".env"
     lines = env.read_text().splitlines()

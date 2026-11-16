@@ -30,3 +30,6 @@ B03移除工具后仍首次12,544 bytes超预算，失败保留。经评审接�
 bb7同源B07/C02均达到完整正常屏障，已获独立复核接受，见router-normal-calibration收据；旧投影计时仅诊断。S1新代码独立调度九个固定项，前台reader独立，各项finally落盘且未发送保留；新增测试用阻塞前台HTTP验证后续仍发送，并保留真实503和全部未发送项。另以现有Go管理API创建第二个合成已认证admin，正确ExpectedID、无Worker授权，验证原工作读取403及事件接纳403；旧header错配仅独立反例。模型保留实际有界事件正文与哈希，operator fixture事件回执返回原事件ID/状态/归属便于核对，未扩生产API。
 
 服务计时hook移到实际JSON写出后，成功Flush才取时刻，随后存DB；失败Flush不记数，追加真实HTTP writer顺序/失败合同。指标改名service admission→reply flush，客户端另报真实complete-read值，服务点不能宣传浏览器精确可见。普通hook仍no-op，只有tag fixture Flush。合成只读token0600置于新home，由静态GitHub transport读取，防止>60s校准因缺fixture token而失效，不调用外部GitHub。当前S1仅代码/合同通过，实际S1、S2代理、judge/负例和正式批次尚待完成；所有模式共享实现、权限和预算。
+
+
+S1实际三组已通过并经独立评审接受，公开收据保留df8 producer及B01配对回滚失败。S2新增 tests/router_evaluation_proxy.py、tests/router_evaluation_proxy_contract.py 并接入 scripts/run_router_sample.py 与 verify_router_a.py；固定loopback上游、只读持久屏障、零字节真实socket关闭一次，18s小于原Go20s预算。公开恢复结束后才采集proof，不向驱动传私有句柄；缺屏障/上游失败/observer错误不得成功。真实TCP三项及runner九项合同通过，实际S2尚待校准。仅显式Linux隔离fixture，未改产品路由/授权/恢复，技术评估和待发布状态已同步，不增加客户能力声明；生产架构图不变。

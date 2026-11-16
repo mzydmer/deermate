@@ -113,7 +113,7 @@
     "foreground_question": 0.25,
     "duplicate_logical_input": 0.5
   },
-  "fault_boundary": "After Gateway run/MCP tracking/chat journal are durable, before Go receives admission ACK; drop first response only",
+  "fault_boundary": "Initial Router/coordinator admission ACK in all modes: real socket close once after matching original run, MCP tracking and confirmed chat journal are durable. B/C waits for the original Router tool-result-linked Native operation; not a Worker admission ACK. Zero response bytes before close, maximum hold 18s inside Go 20s budget. Missing barrier/non-200/observer error cannot count successful injection. Proof collected only after public recovery.",
   "a_async_baseline_contract_required": true,
   "b_c_only_bound_branch_diff_required": true,
   "same_source_authority_and_batching_required": true,
