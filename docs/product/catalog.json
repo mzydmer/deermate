@@ -164,7 +164,12 @@
       "docs/local-worker.md",
       "src/deermate/rpc.py",
       "src/deermate/worker.py",
-      "docs/verification/worker-lifecycle-2026-11-16.json"
+      "docs/verification/worker-lifecycle-2026-11-16.json",
+      "docs/specs/single-host-cold-restore.md",
+      "docs/backup-restore.md",
+      "scripts/single_host_backup.py",
+      "backend/internal/controlplane/server.go",
+      "docs/verification/single-host-restore-2026-11-16.json"
     ]
   },
   {
@@ -210,7 +215,12 @@
       "docs/local-worker.md",
       "src/deermate/rpc.py",
       "src/deermate/worker.py",
-      "docs/verification/worker-lifecycle-2026-11-16.json"
+      "docs/verification/worker-lifecycle-2026-11-16.json",
+      "docs/specs/single-host-cold-restore.md",
+      "docs/backup-restore.md",
+      "scripts/single_host_backup.py",
+      "backend/internal/controlplane/server.go",
+      "docs/verification/single-host-restore-2026-11-16.json"
     ]
   },
   {
@@ -279,7 +289,12 @@
       "docs/local-worker.md",
       "src/deermate/rpc.py",
       "src/deermate/worker.py",
-      "docs/verification/worker-lifecycle-2026-11-16.json"
+      "docs/verification/worker-lifecycle-2026-11-16.json",
+      "docs/specs/single-host-cold-restore.md",
+      "docs/backup-restore.md",
+      "scripts/single_host_backup.py",
+      "backend/internal/controlplane/server.go",
+      "docs/verification/single-host-restore-2026-11-16.json"
     ]
   }
 ]

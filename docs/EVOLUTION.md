@@ -714,3 +714,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #1 本地全量与固定 Gateway 补齐
 
 本机全量 376 passed / 13 skipped，最后 RPC/Worker 25 项通过（独立评审另有 25 项通过）；现有 CI 范围 Ruff、最终 wheel、文档/七图/设计/token 与 133 个相对链接核对通过。固定驱动 2 项，真实固定 Gateway local 22 项 / SSH 30 项全部通过，保持同一上游锁；原生执行仅离线 fixture，没有模型或真实 Codex。额外 Linux runtime 探针 RPC 10 项通过、合计 34 项通过，但镜像没有 Git 导致 18 项 Worker/API fixture 错误，该尝试不算完整 Linux Worker 通过，原 Linux3.11/Mac3.12 CI 保留。PR #16 开放评审，本地证据补齐见[收据](verification/worker-lifecycle-2026-11-16.json)；不为 CI 状态快照追提交，不自行合并、关闭或部署。
+
+
+## 2026-11-16 · Issue #4 冷备与恢复实现
+
+从 #1 最终实现纳入 main c1531ed 后单独开发，选择性参考旧未提交草稿，未改旧工作区。新增共同停写冷备、离卷归档、逐文件/全 Tar 元数据与完整清单验证，恢复冻结同一私有对象再向新卷复制，原卷保留。阶段评审发现绝对只读隔离无法补施快照后的遗忘/撤权，现保留所有执行与自动队列冻结，仅沿用已有权限开放限定确定性删除/撤销，并加入实际后点变化重施的演练。39 项 Python 反例、Go 全包 race/vet/mod/无CGO、52 项固定部署合同通过。先提交与草稿 PR，后按干净源码 SHA 构建真实镜像/冷备恢复；当前未完成的计数/耗时/真实 API 项见[收据](verification/single-host-restore-2026-11-16.json)。未触碰原12实例、未运行模型或真实Native。

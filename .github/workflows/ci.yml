@@ -153,7 +153,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[dev]'
-      - run: ruff check src tests scripts/deerflow_lock.py scripts/frontend_dev.py scripts/design_visual_fixture.py scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py
+      - run: ruff check src tests scripts/single_host_backup.py scripts/verify_single_host_restore.py scripts/deerflow_lock.py scripts/frontend_dev.py scripts/design_visual_fixture.py scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py
       - run: python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json
       - run: python -m build --wheel
       - uses: actions/upload-artifact@v4
@@ -194,6 +194,16 @@ jobs:
           --frontend-image registry.example.invalid/deermate-ci/deermate-frontend:ci
           --config .deermate/ack/config.yaml
           --receipt .deermate/verification/ack-image-ci.json
+      - name: Build offline toy Worker image and verify cold restore
+        run: |
+          docker build --file deploy/testing/Dockerfile.restore \
+            --build-arg GATEWAY_IMAGE=registry.example.invalid/deermate-ci/deermate-gateway:ci \
+            --tag deermate-restore-test-gateway:ci deploy/testing
+          python scripts/verify_single_host_restore.py \
+            --images-config .deermate/ack/config.yaml \
+            --gateway-test-image deermate-restore-test-gateway:ci \
+            --work-dir .deermate/verification/cold-restore \
+            --receipt .deermate/verification/single-host-restore.json
       - uses: actions/upload-artifact@v4
         with:
           name: ack-package-verification
@@ -201,6 +211,7 @@ jobs:
             .deermate/ack/review.yaml
             .deermate/ack/build-receipt.json
             .deermate/verification/ack-image-ci.json
+            .deermate/verification/single-host-restore.json
           include-hidden-files: true
 
   deerflow-contract:

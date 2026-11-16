@@ -1,6 +1,8 @@
 """Explicit offline fixture only; never installed in the production wheel."""
 
 import asyncio
+import json
+import time
 
 from deerflow_extension_api import BackendAction, PluginContribution
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
@@ -14,6 +16,14 @@ class FixtureModel(FakeMessagesListChatModel):
 
     def bind_tools(self, tools, **kwargs):
         return self
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        from deermate.briefing import database
+
+        path = database().parent.parent / "fixture-model-calls.jsonl"
+        with path.open("a") as log:
+            log.write(json.dumps({"model": "offline-fixture", "time_ns": time.time_ns()}) + "\n")
+        return super()._generate(messages, stop=stop, run_manager=run_manager, **kwargs)
 
 
 def fixture_model(name):

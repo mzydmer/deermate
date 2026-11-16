@@ -1,0 +1,11 @@
+# Test-only derivative. The real Worker stays on its enrolled device.
+ARG GATEWAY_IMAGE=deermate-gateway:restore-input
+FROM ${GATEWAY_IMAGE}
+USER 0:0
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' \
+      /etc/apt/sources.list.d/debian.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+LABEL io.deermate.fixture="cold-restore-offline-native"
+USER 1000:1000

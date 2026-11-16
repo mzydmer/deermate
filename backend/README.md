@@ -37,6 +37,8 @@ python scripts/verify_go_control.py --restart
 
 `up` takes an online SQLite backup at `data/backups/before-go-control.db` inside the existing home volume before first cutover. It preserves user IDs, password hashes, task ownership and preferences. Sign in again once: legacy browser JWTs are replaced with revocable opaque sessions. Keep the backup private. Rollback requires stopping the profile, backing up current state, then restoring deliberately; `down` does not restore or delete data.
 
+That first-cutover file is a single-database, in-volume copy. Use the [common cold snapshot runbook](../docs/backup-restore.md) for home/checkpoints/DeerMem/journals and an off-volume archive. Restored instances set `DEERMATE_RESTORE_QUARANTINE=true`: all four background queues and new dispatches stay frozen, while existing authentication/CSRF/owner/version checks still protect reads and the narrow memory-delete/authorization-revoke maintenance path. The `/deermate capabilities` CLI reports `restore-quarantine-v1`; older images without this capability are refused before target creation.
+
 ## API modules
 
 | Module | Routes |
