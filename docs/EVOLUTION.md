@@ -721,3 +721,10 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #8 CI runner 容量结果更正
 
 补充实现 7651f77 的最终远端事实：push run 43914594729 为 12/12 success；PR run 43914707490 为 11 success、macOS cancelled，独立评审者查到 hosted runner 未能分配的注释，API 中该 Mac job 无步骤。先前记录的“Mac 排队”为当时观测，不代表最终成功。取消不计为通过，也未据此跳过 Mac 或改产品；最终证据 head 仍由独立评审者等自身 CI 合格后合并。两组 run 的逐项状态与外部容量原因已分开保存在[收据](verification/repository-doc-links-2026-11-16.json)。
+
+
+## 2026-11-16 · Issue #6 软件引用初始校验
+
+新增 CFF 1.2.0/software 与许可证既有集体署名，省略未发布元数据；双语研究入口和固定来源说明同步。cffconvert 2.0.0 在独立旧 jsonschema 环境验证四个缺字段反例及 APA-like/BibTeX 身份，MCP 依赖未改变。记录骨架捕获当前干净 checkout 的完整 SHA，但不把它冒充旧结果生产版本；结果关联保持 null/unverified，有实际不同提交的回归。53 项测试及既有门禁通过，第一次文档生成未刷新的一项失败已保留并在重生成后通过。真实 CLI 记录与 GitHub 分支导航待首个提交后完成，[当前收据](verification/software-citation-2026-11-16.json)明确未完成项。未调用模型/Native 或发布软件版本。
+
+另据独立评审者，#8 最终 a28e797 的 push CI43917933797 Mac RPC 清理测试出现实际 PermissionError，不能解释为容量取消或宣称重跑修复；已调整后续队列优先 #1，从最新 main 独立处理，本 #6 不修改该范围。

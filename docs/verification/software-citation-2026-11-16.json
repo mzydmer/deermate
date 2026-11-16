@@ -1,0 +1,102 @@
+{
+  "issue": "https://github.com/mzydmer/deermate/issues/6",
+  "updated_at": "2026-11-16T17:39:26.486642+00:00",
+  "task_start_sha": "a28e7973dfc14853f2a6898b1b0e315a51d4ac9d",
+  "current_main_sha": "47c9d1a156d3db3c388871e60dafe386ce7cc10b",
+  "depends_on_pr": 14,
+  "complete": false,
+  "status": "local CFF and record contracts verified; actual clean-checkout CLI example pending first commit",
+  "cff": {
+    "passed": true,
+    "converter_version": "2.0.0",
+    "cff_version": "1.2.0",
+    "type": "software",
+    "authors": [
+      {
+        "name": "DeerMate contributors"
+      }
+    ],
+    "repository": "https://github.com/mzydmer/deermate",
+    "publication_fields_omitted": true,
+    "required_field_exit_codes": {
+      "cff-version": 1,
+      "message": 1,
+      "title": 1,
+      "authors": 1
+    },
+    "exports": {
+      "apalike": "DeerMate contributors DeerMate URL: https://github.com/mzydmer/deermate",
+      "bibtex": "@misc{YourReferenceHere,\nauthor = {DeerMate contributors},\ntitle = {DeerMate},\nurl = {https://github.com/mzydmer/deermate}\n}"
+    },
+    "limits": "Local CFF/APA-like/BibTeX checks; real GitHub citation UI/export is a separate check."
+  },
+  "dependency_isolation": {
+    "main_environment": {
+      "mcp": "1.30.0",
+      "jsonschema": "4.26.0"
+    },
+    "isolated_converter_environment": {
+      "cffconvert": "2.0.0",
+      "jsonschema": "3.2.0",
+      "ruamel.yaml": "0.19.1"
+    },
+    "diagnostic": "Initial metadata probe resolved the venv Python symlink to its base interpreter and lost venv discovery; using the venv executable path fixed the probe. No packages were changed."
+  },
+  "checks": [
+    {
+      "command": "python -m pytest -q tests/test_evaluation_record.py tests/test_product_docs.py",
+      "result": "53 passed"
+    },
+    {
+      "command": "python scripts/verify_citation.py --cffconvert .deermate/citation-tools/bin/cffconvert --receipt .deermate/citation-verification.json",
+      "result": "passed; four required-field samples exit 1, both local export identities match"
+    },
+    {
+      "command": "ruff check scripts/evaluation_record.py scripts/verify_citation.py tests/test_evaluation_record.py",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/product_docs.py --write; python scripts/product_docs.py --base a28e7973dfc14853f2a6898b1b0e315a51d4ac9d",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/design_gate.py; python scripts/sync_design_tokens.py --check; python scripts/product_doc_diagrams.py",
+      "result": "passed"
+    },
+    {
+      "command": "relative file-link checks for both READMEs and references; compare prior fixed research URLs; git cat-file exact source example",
+      "result": "passed; prior fixed sources retained and example SHA is an actual commit"
+    }
+  ],
+  "initial_diagnostics": [
+    "First combined test pass was 52 passed/1 failed because generated documentation had not yet been regenerated; after regeneration all 53 passed.",
+    "An isolated-environment version probe initially resolved the venv interpreter symlink to its base Python; using its lexical executable path restored correct metadata discovery without package changes."
+  ],
+  "record_contract": {
+    "full_source_sha_from_actual_clean_checkout": true,
+    "scope": "record_initialization_checkout",
+    "old_result_source_regression": "two real fixture commits differ; supplied old result is not assigned current HEAD",
+    "results_provenance_status": "unverified",
+    "results_software_revision": null,
+    "results_dataset_sha256": null,
+    "template_only": true,
+    "experiment_status": "not_run"
+  },
+  "pending": [
+    "actual clean-checkout evaluation_record CLI example after committing implementation",
+    "actual GitHub branch README citation/source navigation"
+  ],
+  "post_merge_check": "Real GitHub Cite this repository APA/BibTeX UI/export is verified by the independent reviewer after CFF reaches default branch; not claimed here.",
+  "public_release_claimed": false,
+  "new_model_requests": 0,
+  "new_native_turns": 0,
+  "production_changed": false,
+  "checked_file_sha256": {
+    "CITATION.cff": "c0b15a8f6dc9f45232a4dbac0c6e68f15cf51710d365b6b440b53fd5d7862073",
+    "scripts/verify_citation.py": "455c3a28c28120fa45b2eaaa6479c850424984723ef03361dd0c4754606371ff",
+    "scripts/evaluation_record.py": "c6b351fbd739a3e67e909ed605a4791001281d1ee2f833304ad2c7c9160747f2",
+    "tests/test_evaluation_record.py": "8e4b1fb8d53cbe997b8117814a78222efac1e4ae9bacded7e6d535fbf9390079",
+    "docs/research/evaluation-record.template.json": "fafbfb1ed278ff020d73fce83b54f255deb130c5fd7232960e2c4a8e11afe379",
+    "docs/research/references.md": "f1d407edd8065e2d35cb034b4836ceefd1a16fe7c55a1e6f4fa517ce1db75e0a"
+  }
+}

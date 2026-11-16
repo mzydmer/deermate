@@ -262,7 +262,13 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "CITATION.cff",
+      "LICENSE",
+      "docs/research/references.md",
+      "docs/research/evaluation-record.template.json",
+      "scripts/evaluation_record.py",
+      "scripts/verify_citation.py"
     ]
   },
   {
@@ -299,7 +305,13 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "CITATION.cff",
+      "LICENSE",
+      "docs/research/references.md",
+      "docs/research/evaluation-record.template.json",
+      "scripts/evaluation_record.py",
+      "scripts/verify_citation.py"
     ]
   }
 ]

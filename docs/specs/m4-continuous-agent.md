@@ -336,7 +336,7 @@ DSH 的精确日志读取可能重放整份日志，本方案不能据此宣称�
 
 ## 15. 调研依据与已接受选择
 
-研究问题和目标架构见[中文 README](../../README.zh-CN.md#research) / [English README](../../README.md#research)；配套 plan 的 R-EVAL-01–R-EVAL-05 定义受控对照、消融和复现材料。它们是拟开展的系统研究，不以现有组件收据宣称 Router 性能优势。
+研究问题和目标架构见[中文 README](../../README.zh-CN.md#研究方向) / [English README](../../README.md#research)；配套 plan 的 R-EVAL-01–R-EVAL-05 定义受控对照、消融和复现材料。它们是拟开展的系统研究，不以现有组件收据宣称 Router 性能优势。
 
 - [DSH 原型领域模型](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/001-domain.md)、[授权](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/002-authorization.md)、[执行](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/003-execution.md)、[主会话/执行者角色](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/8c32a9dc5d72c033816c6a8110b37f40cf94fba4/docs/004-prompts.md)：采用 Router/Worker 分工、异步回报、订阅直通、观察模式和可靠投递；不照搬多工单执行扇出、无边界宿主 shell 或仅提示词的合并条件。
 - [DSH 会话查询](https://github.com/deepseek-ai/deepseek-harness/blob/8bd073392eef6f54e921a093b95076248eb08cbb/packages/session-query/session-query/README.md)：借鉴精确读取和关系追溯，同时落实调用方权限和分段开销。
@@ -345,6 +345,8 @@ DSH 的精确日志读取可能重放整份日志，本方案不能据此宣称�
 - [计算/状态/环境解耦](https://www.anthropic.com/research/managed-agents)、[多 Agent 调研系统](https://www.anthropic.com/research/multi-agent-research-system)：保持云端协调与设备执行边界，并按任务价值限制并发和成本。
 
 用户已于 2026-11-03 批准实施：**保留 Go + DeerFlow + 现有 Worker；独立 Router/Worker 角色、异步回报及已关联 Thread 直通；V1 单仓库/Codex；先 observe 后 opt-in auto；原生绑定不变；先有界引用召回；先程序监测；站外写入和其他执行器后续。** 设计接受不代替 CONT 验收，历史收据与本轮证据分别记录。
+
+2026-11-16 的 issue #6 增加[软件引用与复现说明](../research/references.md)及记录模板：CFF 标记软件、沿用许可证集体署名，公开版本由实际发布决定。初始化记录写入当前干净 checkout 的完整源码 SHA 与唯一 DeerFlow 锁；结果生产 SHA/数据集关联须由原始运行证据核验，不能把整理时 HEAD 赋给旧结果。原始固定来源与上述研究假设保留，不据元数据校验宣称 R-EVAL 已开展。
 
 ## 2026-11-04 · 实现映射
 

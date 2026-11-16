@@ -119,6 +119,8 @@ DeerMate explores persistent coordination across agent sessions and personal dev
 
 The system and acceptance fixtures are implemented; comparative research results are still pending. Functional checks do not establish a quality, speed, or supervision-cost improvement. [Research spec](docs/specs/m4-continuous-agent.md) · [Evaluation plan](docs/product/technical/evaluation.md)
 
+Cite [DeerMate as software](CITATION.cff). [Citation and reproducibility](docs/research/references.md) explains this project's choices alongside the [fixed upstream research sources](docs/specs/m4-continuous-agent.md#15-调研依据与已接受选择). Experimental reports also need the full source commit and dataset/results versions.
+
 ## Current scope
 
 **Workspace v2 is released to the existing hosted installation.** The assistant, memory management, Go login/API, and Codex adapter have implementation and verification evidence. Real-provider memory, native multi-turn, browser, and deployment checks have separate scopes in the [verification index](docs/verification/README.md).

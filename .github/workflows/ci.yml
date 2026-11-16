@@ -12,6 +12,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  software-citation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Install pinned citation converter in its own environment
+        run: |
+          python -m venv .deermate/citation-tools
+          .deermate/citation-tools/bin/python -m pip install cffconvert==2.0.0
+      - run: ruff check scripts/verify_citation.py scripts/evaluation_record.py tests/test_evaluation_record.py
+      - run: python -m pytest -q tests/test_evaluation_record.py
+      - name: Validate real CFF, required-field counterexamples and both exports
+        run: python scripts/verify_citation.py --cffconvert .deermate/citation-tools/bin/cffconvert --receipt .deermate/citation-verification.json
+      - name: Capture actual clean source identity without running an experiment
+        run: python scripts/evaluation_record.py --output .deermate/evaluation-record.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: software-citation
+          path: |
+            .deermate/citation-verification.json
+            .deermate/evaluation-record.json
+
   design-system:
     runs-on: ubuntu-latest
     steps:
