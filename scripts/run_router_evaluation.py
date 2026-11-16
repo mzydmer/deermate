@@ -304,6 +304,7 @@ def execute(args):
                     "scenario": item["scenario"],
                     "mode": item["mode"],
                     "seed": item["seed"],
+                    "logical_operation_id": item["scenario"].lower() + "-" + str(item["seed"]),
                     "source": {"revision": manifest["producer_revision"]},
                 },
             )

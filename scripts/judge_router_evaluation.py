@@ -66,6 +66,13 @@ def observed_counts(raw):
 
 def judge(raw, dataset, manifest=None):
     checks, metrics = {}, observed_counts(raw)
+    if raw.get("sample_status") in {"not_started_budget", "not_started_source_changed"}:
+        return {
+            "status": raw["sample_status"],
+            "checks": {},
+            "metrics": metrics,
+            "reasons": [raw["sample_status"]],
+        }
 
     def require(name, value):
         checks[name] = bool(value)

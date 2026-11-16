@@ -856,3 +856,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · S2三组真实恢复与独立判定器初版
 
 干净55d847a的A01/B01/C02均经独立评审接受持久化后0byte真实ACK断连一次、正常原operation查询、重复输入同Inbox和完整屏障；单Worker/MCP/root/turn/effect、验证0，C01启动缺Helm路径的准备失败另保留。原12容器不变，Go源码与df8镜像一致，正式镜像将同freeze重建。新增dataset/语义配置、独立judge/aggregate及freeze/execute CLI；判定不信任runner布尔，采真实RPC/完整工作区文件及验证退出，聚合逐计划身份、缺损unknown、早取观测计数、明确计划/观测分母。真实双effect反例、干净冻结和36+6仍未执行。
+
+
+## 2026-11-16 · 独立判定真实反例首轮与结束身份修正
+
+真实negative01两次actual effect且测试0/同root/完整恢复，被独立judge拒绝；同时发现native结束事件未记workspace，导致多一项身份失败。现从实际finish path补记，保留首轮原件并需新clean正负校准。全量Python473通过/13跳过/1失败为文档测试fixture目录已存在，修测试mkdir兼容已声明source目录，不削弱文档门禁。正式36+6仍未启动。

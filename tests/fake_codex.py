@@ -119,7 +119,13 @@ def finish(turn_id, prompt, path, sid):
                 },
             }
         )
-    evaluation_event("native_turn_finished", root=sid, turn=turn_id, cancelled=stop.is_set())
+    evaluation_event(
+        "native_turn_finished",
+        root=sid,
+        turn=turn_id,
+        workspace=str(path),
+        cancelled=stop.is_set(),
+    )
     send(
         {
             "method": "turn/completed",

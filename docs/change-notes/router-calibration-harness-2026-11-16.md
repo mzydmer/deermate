@@ -36,3 +36,5 @@ S1实际三组已通过并经独立评审接受，公开收据保留df8 producer
 
 
 S2三组实际校准已获独立复核接受，收据保存clean55d与复用df8 Go producer分工。新增 scripts/run_router_evaluation.py、judge_router_evaluation.py、aggregate_router_evaluation.py、tests/test_router_judge.py 和 dataset/config；采集器补入真实入站RPC脱敏字段、tracked与untracked文件哈希、实际command/exec验证退出，fake Codex仅evaluation追加验证事件。计划身份/非法JSON/重复effect早取数/nearest-rank及分母由合同核对，真实双effect校准尚待运行。CI新增Linux tag与真实TCP合同，保持原Go race和Mac RPC门禁。均为合成隔离评估，不变更产品路由、权限或客户操作，产品评估/日志状态同步，生产架构图不变。
+
+真实negative01已产生两次answer写入、同root/turn、Workercompleted/test0和完整恢复，judge拒绝；额外暴露结束事件缺workspace，现从finish真实path补记，不放松身份校验，新clean正负例待跑。全量Python首次473通过/13跳过/1失败：catalog引入change-notes来源后，文档测试fixture预建该目录，测试自身mkdir未允许既存；改tests/test_product_docs.py的fixture建目录为exist_ok，不变更影响检查或反例断言。正式未启动/源码变化占位行补逻辑ID并保留明确not_started状态。
