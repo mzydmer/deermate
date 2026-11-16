@@ -9,14 +9,126 @@ import sqlite3
 import subprocess
 import sys
 import tarfile
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from scripts import single_host_backup as backup
+from scripts import verify_single_host_restore as acceptance
 
 IDENTITY = "00000000-0000-4000-8000-000000000001"
 UPSTREAM = "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+
+
+def captured_source_database(path):
+    db = sqlite3.connect(path)
+    db.executescript("""
+        CREATE TABLE deermate_memory_refs(
+            owner,id,status,source_id,scope,expires_at,updated_at);
+        CREATE TABLE deermate_memory_sources(
+            owner,operation_id,run_id,invalidated_at,message_id,thread_id,message_hash,observed_at);
+        CREATE TABLE deermate_work_records(owner,kind,id,data);
+        CREATE TABLE deermate_memory_usage(owner,fact_id,thread_id,last_used);
+        CREATE TABLE threads_meta(
+            thread_id,user_id,incarnation,project_id,display_name,metadata_json);
+        INSERT INTO deermate_memory_refs VALUES('owner','fact','active','op','personal',0,101);
+        INSERT INTO threads_meta VALUES(
+            'thread','owner','incarnation','','old title','{"title":"秘书"}');
+    """)
+    text = "请记住：我偏好青竹色界面"
+    db.execute(
+        "INSERT INTO deermate_memory_sources VALUES(?,?,?,?,?,?,?,?)",
+        (
+            "owner",
+            "op",
+            "inbox:message",
+            0,
+            "message",
+            "thread",
+            hashlib.sha256(text.encode()).hexdigest(),
+            100,
+        ),
+    )
+    db.execute(
+        "INSERT INTO deermate_work_records VALUES('owner','inbox','message',?)",
+        (
+            json.dumps(
+                {
+                    "text": text,
+                    "origin": "user",
+                    "_memory_eligible": True,
+                    "_memory_thread": "thread",
+                }
+            ),
+        ),
+    )
+    db.commit()
+    return db
+
+
+def test_source_expectation_uses_archived_common_point_and_preserves_full_source(tmp_path):
+    path = tmp_path / "state.db"
+    with captured_source_database(path) as db:
+        early = acceptance.memory_source_from_db(db, "owner", "fact")
+        db.execute("INSERT INTO deermate_memory_usage VALUES('owner','fact','thread',102)")
+        db.commit()
+    archive = tmp_path / "snapshot.tar.gz"
+    snapshot(archive, files={"home/data/deerflow.db": path.read_bytes()})
+    frozen = acceptance.snapshot_memory_source(archive, "owner", "fact")
+    assert early["uses"] == []
+    assert frozen == {
+        **early,
+        "uses": [{"thread_id": "thread", "title": "秘书", "included_at": 102}],
+    }
+    assert frozen["text"] == "请记住：我偏好青竹色界面"
+    assert frozen["message_id"] == "message" and frozen["thread_id"] == "thread"
+    # A later change on the source cannot replace the archived expectation.
+    with sqlite3.connect(path) as db:
+        db.execute("UPDATE deermate_memory_refs SET status='deleted'")
+    assert acceptance.snapshot_memory_source(archive, "owner", "fact") == frozen
+
+
+def test_source_expectation_reads_committed_uncheckpointed_archived_wal(tmp_path):
+    path = tmp_path / "wal.db"
+    with captured_source_database(path) as db:
+        assert db.execute("PRAGMA journal_mode=WAL").fetchone()[0] == "wal"
+        db.execute("PRAGMA wal_autocheckpoint=0")
+        db.execute("INSERT INTO deermate_memory_usage VALUES('owner','fact','thread',103)")
+        db.commit()
+        wal = Path(str(path) + "-wal")
+        assert wal.stat().st_size > 0
+        bare = tmp_path / "without-wal.db"
+        bare.write_bytes(path.read_bytes())
+        with sqlite3.connect(bare) as copied:
+            assert copied.execute("SELECT count(*) FROM deermate_memory_usage").fetchone()[0] == 0
+        archive = tmp_path / "wal.tar.gz"
+        snapshot(
+            archive,
+            files={
+                "home/data/deerflow.db": path.read_bytes(),
+                "home/data/deerflow.db-wal": wal.read_bytes(),
+            },
+        )
+        source = acceptance.snapshot_memory_source(archive, "owner", "fact")
+        assert source["uses"] == [
+            {"thread_id": "thread", "title": "秘书", "included_at": 103},
+        ]
+
+
+@pytest.mark.parametrize("change", ["owner", "source", "text", "binding"])
+def test_cold_point_source_requires_actual_owner_text_and_binding(tmp_path, change):
+    with captured_source_database(tmp_path / "state.db") as db:
+        if change == "owner":
+            db.execute("UPDATE deermate_memory_sources SET owner='other'")
+        elif change == "source":
+            db.execute("DELETE FROM deermate_memory_sources")
+        elif change == "text":
+            db.execute("UPDATE deermate_memory_sources SET message_hash='different'")
+        else:
+            db.execute("UPDATE deermate_memory_sources SET thread_id='other'")
+        with pytest.raises(RuntimeError):
+            acceptance.memory_source_from_db(db, "owner", "fact")
 
 
 def snapshot(

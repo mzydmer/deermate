@@ -63,6 +63,8 @@ POST /api/agent-authorizations/GRANT_ID/revocations
 
 ## 可复现演练
 
+来源验收通过真实 Inbox 明确记忆请求产生事实，要求原文、owner、Thread、message 与哈希关联一致。预期对象取自已验证归档的共同停写点，连同归档存在的 WAL/SHM/journal 私有副本读取，包含当时完整使用记录；早期 API 样本仅作诊断，不能用其较早的 `uses` 列表判定恢复丢失。早期、归档预期、冻结源 API 和恢复 API 对象均保留在私有演练目录，完整逐字段比较。
+
 ```bash
 python scripts/verify_single_host_restore.py \
   --images-config .deermate/ack/config.yaml \

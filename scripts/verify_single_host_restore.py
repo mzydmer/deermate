@@ -6,9 +6,11 @@ import hashlib
 import io
 import json
 import os
+import sqlite3
 import subprocess
 import sys
 import tarfile
+import tempfile
 import time
 import uuid
 from contextlib import contextmanager
@@ -103,6 +105,86 @@ def network_fixture(bundle, subnets):
     for name, subnet in zip(("default", "edge"), subnets, strict=True):
         data["networks"][name]["ipam"] = {"config": [{"subnet": subnet}]}
     path.write_text(yaml.safe_dump(data, sort_keys=False))
+
+
+def memory_source_from_db(db, owner, fact):
+    """Expected public source for this fixture's captured inbox at the cold point."""
+    db.row_factory = sqlite3.Row
+    ref = db.execute(
+        "SELECT * FROM deermate_memory_refs WHERE owner=? AND id=? AND status='active'",
+        (owner, fact),
+    ).fetchone()
+    if ref is None:
+        raise RuntimeError("Cold point does not contain the active fixture fact")
+    source = db.execute(
+        "SELECT * FROM deermate_memory_sources WHERE owner=? AND operation_id=?",
+        (owner, ref["source_id"]),
+    ).fetchone()
+    if source is None or not source["run_id"].startswith("inbox:") or source["invalidated_at"]:
+        raise RuntimeError("The fixture requires an actual available inbox source")
+    inbox = db.execute(
+        "SELECT data FROM deermate_work_records WHERE owner=? AND kind='inbox' AND id=?",
+        (owner, source["message_id"]),
+    ).fetchone()
+    data = json.loads(inbox["data"]) if inbox else {}
+    text = data.get("text", "")
+    if (
+        data.get("origin") != "user"
+        or not data.get("_memory_eligible")
+        or data.get("_memory_thread") != source["thread_id"]
+        or source["run_id"] != "inbox:" + source["message_id"]
+        or hashlib.sha256(text.encode()).hexdigest() != source["message_hash"]
+    ):
+        raise RuntimeError("Cold-point source text or its owner/thread/message binding changed")
+    uses = []
+    for row in db.execute(
+        "SELECT u.thread_id,u.last_used,t.incarnation,t.project_id,t.display_name,t.metadata_json "
+        "FROM deermate_memory_usage u JOIN threads_meta t "
+        "ON t.thread_id=u.thread_id AND t.user_id=u.owner "
+        "WHERE u.owner=? AND u.fact_id=? ORDER BY u.last_used DESC LIMIT 10",
+        (owner, fact),
+    ):
+        metadata = json.loads(row["metadata_json"] or "{}")
+        if row["incarnation"] and not row["project_id"] and not metadata.get("deerflow_archived"):
+            uses.append(
+                {
+                    "thread_id": row["thread_id"],
+                    "title": metadata.get("title") or row["display_name"] or "",
+                    "included_at": row["last_used"],
+                }
+            )
+    return {
+        "fact_id": fact,
+        "scope": ref["scope"],
+        "expires_at": ref["expires_at"],
+        "updated_at": ref["updated_at"],
+        "kind": "inbox",
+        "state": "available",
+        "text": text,
+        "thread_id": source["thread_id"],
+        "message_id": source["message_id"],
+        "observed_at": source["observed_at"],
+        "uses": uses,
+    }
+
+
+def snapshot_memory_source(snapshot, owner, fact):
+    # Read the verified, closed database from the frozen archive, not the live
+    # source or an API sample collected before the final common stopping point.
+    with tempfile.TemporaryDirectory(prefix="deermate-source-proof-") as directory:
+        path = Path(directory) / "deerflow.db"
+        with single_host_backup.validated_snapshot(snapshot) as (archive, _, _):
+            for suffix in ("", "-wal", "-shm", "-journal"):
+                name = "home/data/deerflow.db" + suffix
+                try:
+                    member = archive.getmember(name)
+                except KeyError:
+                    if not suffix:
+                        raise
+                    continue
+                Path(str(path) + suffix).write_bytes(archive.extractfile(member).read())
+        with sqlite3.connect(path) as db:
+            return memory_source_from_db(db, owner, fact)
 
 
 def actual_invalid_archives(snapshot, work, project, port):
@@ -249,11 +331,11 @@ def verify(args):
             response = client.patch(
                 "/api/me/personal-profile",
                 json={
-                    "auto_capture_enabled": False,
+                    "auto_capture_enabled": True,
                     "expected_revision": profile["revision"],
                 },
             )
-            check("synthetic_capture_paused_before_backup", response.status_code == 200)
+            check("synthetic_capture_enabled_for_actual_source", response.status_code == 200)
 
             def api(method, path, body=None, status=200):
                 r = client.request(method, "/api/" + path, json=body)
@@ -286,15 +368,48 @@ def verify(args):
                 check("memory_delivery_completed", operation["status"] == "completed")
                 return operation
 
-            valid = delivery(
+            capture_started = time.monotonic()
+            source_text = "请记住：我偏好青竹色界面"
+            source_inbox = api(
                 "POST",
-                "me/memories",
+                "me/router/messages",
+                {"operation_id": "restore-source-" + suffix, "text": source_text},
+            )
+            valid = None
+            deadline = time.monotonic() + 30
+            while time.monotonic() < deadline:
+                view = api("POST", "me/memories/search", {"query": "青竹", "offset": 0})
+                references = [v for v in view["references"] if v["status"] == "active"]
+                if len(view["items"]) == 1 and len(references) == 1:
+                    valid = api("GET", "me/memory-operations/" + references[0]["source_id"])
+                    if valid["status"] == "completed":
+                        break
+                time.sleep(0.2)
+            check(
+                "actual_inbox_memory_delivery_completed", valid and valid["status"] == "completed"
+            )
+            memory_deliveries.append(
                 {
-                    "operation_id": "restore-valid-" + suffix,
-                    "category": "preference",
-                    "content": "合成恢复事实：偏好青竹色界面",
-                    "expected_revision": 0,
-                },
+                    "id": valid["id"],
+                    "kind": "INBOX",
+                    "initial_status": "accepted_inbox",
+                    "final_status": valid["status"],
+                    "seconds": round(time.monotonic() - capture_started, 3),
+                }
+            )
+            early_source = api("GET", "me/memories/" + valid["fact_id"] + "/source")
+            (work / "early-source-api.json").write_text(json.dumps(early_source, indent=2) + "\n")
+            check(
+                "actual_source_full_text_and_inbox_binding",
+                early_source.get("kind") == "inbox"
+                and early_source.get("text") == source_text
+                and early_source.get("message_id") == source_inbox["id"],
+            )
+            profile = api("GET", "me/personal-profile")
+            api(
+                "PATCH",
+                "me/personal-profile",
+                {"auto_capture_enabled": False, "expected_revision": profile["revision"]},
             )
             forgotten = delivery(
                 "POST",
@@ -326,7 +441,6 @@ def verify(args):
             baseline_memory = api("POST", "me/memories/search", {"query": "青竹", "offset": 0})[
                 "items"
             ]
-            baseline_source = api("GET", "me/memories/" + valid["fact_id"] + "/source")
             check("valid_source_readable_before_snapshot", len(baseline_memory) == 1)
             original_worker = docker_python(original, PROBE)["worker_tasks"]
             native_roots = {v["session_id"] for v in original_worker if v["session_id"]}
@@ -434,6 +548,14 @@ d.commit();print(json.dumps({'inserted':True}))
         snapshot = work / "state.tar.gz"
         exported = single_host_backup.backup(source, snapshot, acknowledge_inflight=True)
         verified = single_host_backup.verify_snapshot(snapshot)
+        baseline_source = snapshot_memory_source(snapshot, uid, valid["fact_id"])
+        (work / "cold-point-source.json").write_text(json.dumps(baseline_source, indent=2) + "\n")
+        check(
+            "cold_point_preserves_actual_source_text_and_binding",
+            baseline_source["text"] == source_text
+            and baseline_source["message_id"] == source_inbox["id"]
+            and baseline_source["thread_id"] == early_source["thread_id"],
+        )
         check(
             "snapshot_retains_original_unknown_id",
             {"id": unknown, "state": "uncertain"} in verified["inflight_inventory"]["operations"],
@@ -450,6 +572,17 @@ d.commit();print(json.dumps({'inserted':True}))
             check(
                 "source_post_point_changes_keep_quarantine",
                 review.get("/health/ready").headers.get("X-DeerMate-Restore-Quarantine") == "true",
+            )
+            frozen_source = review.get("/api/me/memories/" + valid["fact_id"] + "/source")
+            (work / "frozen-source-api.json").write_text(
+                json.dumps(
+                    {"status": frozen_source.status_code, "source": frozen_source.json()}, indent=2
+                )
+                + "\n"
+            )
+            check(
+                "source_api_matches_archived_cold_point",
+                frozen_source.status_code == 200 and frozen_source.json() == baseline_source,
             )
             deletion = review.request(
                 "DELETE", "/api/me/memories/" + valid["fact_id"], json=forget_after_point
@@ -504,6 +637,12 @@ d.commit();print(json.dumps({'inserted':True}))
                 lost.status_code == 200 and lost.json()["items"] == [],
             )
             source_reply = client.get("/api/me/memories/" + valid["fact_id"] + "/source")
+            (work / "restored-source-api.json").write_text(
+                json.dumps(
+                    {"status": source_reply.status_code, "source": source_reply.json()}, indent=2
+                )
+                + "\n"
+            )
             check(
                 "same_memory_source_restored",
                 source_reply.status_code == 200 and source_reply.json() == baseline_source,
@@ -596,6 +735,15 @@ d.commit();print(json.dumps({'inserted':True}))
                 "reapplied_while_dispatch_frozen": True,
             },
             "memory_delivery_records": memory_deliveries,
+            "memory_source": {
+                "kind": "actual_captured_inbox",
+                "expectation": "verified archive at common cold point",
+                "full_object_matches": True,
+                "text_sha256": hashlib.sha256(source_text.encode()).hexdigest(),
+                "message_id": source_inbox["id"],
+                "thread_id": baseline_source["thread_id"],
+                "uses_at_cold_point": len(baseline_source["uses"]),
+            },
             "dispatch_counters_before_restore": before,
             "dispatch_counters_after_restore": final,
             "checks": checks,

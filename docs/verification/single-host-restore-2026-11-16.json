@@ -3,12 +3,12 @@
   "updated_at": "2026-11-16T18:25:40.857268+00:00",
   "base": "c1531eda797ebb1e4fbe5a212e8c7244a4b185ef",
   "complete": false,
-  "status": "Implementation and offline counterexamples complete; commit/draft PR precede clean-source image builds and actual cold-restore rehearsal.",
+  "status": "Implementation/offline counterexamples complete; third real rehearsal failed a pre-cold-point source baseline comparison. Cold-point source verifier corrected; next clean-source rehearsal pending.",
   "scope": "Standard single-host cold snapshot, off-volume archive, frozen whole-archive validation and new quarantined volume; private synthetic fixture only.",
   "offline_checks": [
     {
       "command": "python -m pytest -q tests/test_single_host_backup.py",
-      "result": "39 passed; malformed metadata, manifest completeness, path replacement and real CLI mode rejection included"
+      "result": "45 passed; includes actual uncheckpointed WAL, source text/owner/thread counterexamples and early-sample usage drift"
     },
     {
       "command": "go mod verify; go vet ./...; go test -race ./...; CGO_ENABLED=0 go build",
@@ -26,15 +26,14 @@
   "retained_diagnostics": [
     "Initial test fixture set devmajor/devminor attributes that tarfile did not serialize for regular files. Actual raw-header counterexamples now modify bytes with valid checksum.",
     "A follow-up raw fixture assertion incorrectly expected the reader to erase device fields; corrected to assert actual encoded value.",
-    "Initial deletion test expected deleted refs from the active-reference listing; corrected to check empty active references and canonical deleted row."
+    "Initial deletion test expected deleted refs from the active-reference listing; corrected to check empty active references and canonical deleted row.",
+    "Third clean b21e725 rehearsal completed actual cold backup, six malformed-archive rejection probes and fresh-volume startup. Strict source DTO comparison failed. Archive and restored API DTO match completely, including one usage recorded after the early sample; original early DTO was not retained. Volumes and failure log retained, not counted as a pass. New verifier stores all DTOs and requires actual captured inbox source text/binding from the common archived point."
   ],
   "pending": [
-    "clean committed source identity, draft PR and immutable candidate images",
-    "real source/target Compose/API cold backup and empty-volume restoration",
-    "six actual bad-archive/no-target probes",
-    "actual post-snapshot forgetting/revocation reapplied while dispatch frozen",
-    "actual counters/timings and original12-container before/after guard",
-    "final current-source full Python/docs/design/wheel checks and final-head CI"
+    "new clean committed harness and immutable image labels",
+    "fourth real cold/empty-volume rehearsal including complete source DTO and post-point safety reapplication",
+    "final counters/timings and original12 guard",
+    "final-head CI/independent review"
   ],
   "model_requests": 0,
   "real_native_turns": 0,
@@ -44,10 +43,10 @@
   "private_archive_published": false,
   "checked_source_sha256": {
     "scripts/single_host_backup.py": "774301c20c9e325019dd02d835832caa8b337773af7128972de7d91b35459e7a",
-    "scripts/verify_single_host_restore.py": "4dea8214f6fbba62f241ff8983929a8f73e5937fc7f0881808a9f36e4d0f1a8c",
+    "scripts/verify_single_host_restore.py": "54748cb8a6a159203d45fb241ab9ed6a427fa904446d2fd494fd2b99ccf7df40",
     "backend/internal/controlplane/server.go": "be0d418dc0f80fcef3ee640c89f8c31a6ef647e4ddbe8e02461a67ea2e0240e0",
     "backend/internal/controlplane/memory.go": "7ffef06e6614a702151a802fa25c4ca2961830d6921ad8dbfce3623eece17917",
     "backend/internal/controlplane/restore_test.go": "f68868acdc320f9193bdcf0f3859de77ac36fc09786c2c8c3ca246af68b631ce",
-    "tests/test_single_host_backup.py": "ed6931ef64796c5e8f4ed00e0e24f910aa01d503d1b98af80d67df9e58713bf2"
+    "tests/test_single_host_backup.py": "89b81045ed1528dc22c693325ffc07b187f28d2c783b0b4e55b891deeed10a40"
   }
 }
