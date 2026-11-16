@@ -1,6 +1,7 @@
 """Offline protocol fixture. This is not a Codex implementation or a live model demo."""
 
 import json
+import os
 import subprocess
 import sys
 import threading
@@ -15,6 +16,25 @@ stops = {}
 inputs = {}
 workspace = None
 session_id = None
+evaluation = None
+if os.environ.get("DEERMATE_EVALUATION_CONFIG"):
+    evaluation = json.loads(Path(os.environ["DEERMATE_EVALUATION_CONFIG"]).read_text())
+    assert evaluation["profile"] == "router-offline-v1"
+
+
+def evaluation_event(kind, **fields):
+    if evaluation is None:
+        return
+    event = {
+        "kind": kind,
+        "ns": time.monotonic_ns(),
+        "clock_domain": "linux-monotonic:"
+        + Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+        "logical_operation": evaluation["logical_operation_id"],
+        **fields,
+    }
+    with (storage / "evaluation-events.jsonl").open("a") as out:
+        out.write(json.dumps(event) + "\n")
 
 
 def send(message):
@@ -60,6 +80,10 @@ def finish(turn_id, prompt, path, sid):
         if "slow" in prompt
         else 0.08
     )
+    if evaluation is not None:
+        delay = evaluation["native_delay_seconds"]
+        assert 0 <= delay <= 12
+        assert "EVAL_OPERATION=" + evaluation["logical_operation_id"] in prompt
     end = time.monotonic() + delay
     while time.monotonic() < end and not stop.is_set():
         time.sleep(0.01)
@@ -69,6 +93,10 @@ def finish(turn_id, prompt, path, sid):
             send({"method": "item/started", "params": {"threadId": sid, "item": item}})
         if "bad-fix" not in prompt:
             (path / "answer.py").write_text("def add(a, b):\n    return a + b\n")
+            evaluation_event("effect", root=sid, turn=turn_id, workspace=str(path))
+            if evaluation and evaluation.get("duplicate_effect_negative_control"):
+                (path / "answer.py").write_text("def add(a, b):\n    return a + b\n")
+                evaluation_event("effect", root=sid, turn=turn_id, workspace=str(path))
         (path / "notes.txt").write_text("offline protocol fixture\n")
         if "trace-tools" in prompt:
             send(
@@ -90,6 +118,7 @@ def finish(turn_id, prompt, path, sid):
                 },
             }
         )
+    evaluation_event("native_turn_finished", root=sid, turn=turn_id, cancelled=stop.is_set())
     send(
         {
             "method": "turn/completed",
@@ -128,6 +157,9 @@ for line in sys.stdin:
             result = {"thread": {"id": session_id, "status": {"type": "idle"}}}
         case "turn/start":
             turn_id = uuid.uuid4().hex
+            evaluation_event(
+                "native_turn_started", root=session_id, turn=turn_id, workspace=str(workspace)
+            )
             stops[turn_id] = threading.Event()
             send({"id": message["id"], "result": {"turn": {"id": turn_id}}})
             threading.Thread(

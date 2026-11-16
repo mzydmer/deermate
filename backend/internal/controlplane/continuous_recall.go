@@ -209,6 +209,7 @@ func (s *Server) routerView(w http.ResponseWriter, r *http.Request) {
 		workError(w, e)
 		return
 	}
+	s.evaluationVisible(owner, items)
 	respond(w, 200, map[string]any{"session": workPublic(router), "items": items})
 }
 func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
@@ -240,6 +241,7 @@ func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 		workError(w, e)
 		return
 	}
+	s.evaluationAdmitted(owner, out.ID)
 	s.captureRouterMemory(r.Context(), owner, out)
 	respond(w, 200, workPublic(out))
 }

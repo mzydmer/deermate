@@ -765,3 +765,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #5 协议评审接受
 
 独立评审接受首批协议，要求主指标为服务持久接纳到首次真实可见内容，另报client发出到first/complete与服务排队/完整回复；HTTP接纳不算回复。Mac与Linux的monotonic不能相减，调度原点改为runner观察到真实turn/start事件，保留时间域、观测区间和实际漂移。正式36格仍需A异步/B-C单分支合同及独立judge负例通过后，以干净harness/数据SHA开始；现在仅可做实现和非正式校准。
+
+
+## 2026-11-16 · Issue #5 A切片实施检查点
+
+添加测试专用A协调图适配，复用原FixtureModel、普通MCP和CodingSessionMiddleware/ask_in_chat及Relay/Worker；Go默认构建无入口/模式开关，Linux专用tag有显式fixture/key与同域计时。输入按实际messages及tools schema完整序列化，模型日志绑定operation/run/thread/role；Router只在settled显示整段回复，first/complete记录同一可见事件。01镜像准备与02执行位失败、旧main无capabilities的无卷预检均保留，尚无Native接纳和A通过收据。原RPC/Worker25项与默认入口负例通过；先保存实施，再合入#4新main重建并做真实A合同，不计正式研究结果。

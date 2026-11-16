@@ -430,7 +430,7 @@ func (s *Server) ingestGitHub(ctx context.Context, snapshot workRecord, objects 
 				continue
 			}
 			// Known subscriptions receive bounded context directly. No Router/model call.
-			if workID, err := workExisting(tx, src.Owner, "subscription", workString(event, "thread_key")); err == nil {
+			if workID, err := workExisting(tx, src.Owner, "subscription", workString(event, "thread_key")); err == nil && evaluationDirectContext() {
 				target, err := workGet(tx, src.Owner, "work", workID)
 				if err == nil && target.State != "closed" && workInt(target, "source_generation") == workInt(src, "generation") {
 					event.Parent = target.ID

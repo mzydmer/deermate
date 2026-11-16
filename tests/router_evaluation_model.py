@@ -1,0 +1,215 @@
+"""Test-only A/B/C adapter around the existing offline FixtureModel.
+
+Never installed in the production wheel. A uses the ordinary guarded coding
+tool; B/C retain the production Router tool. No extra execution runtime.
+"""
+
+import asyncio
+import hashlib
+import json
+import time
+from contextvars import ContextVar
+from pathlib import Path
+
+from continuous_fixture_model import FixtureModel as ExistingFixtureModel
+from continuous_fixture_model import install as install_existing_fixture
+from langchain.agents.middleware import hook_config
+from langchain_core.messages import AIMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.utils.function_calling import convert_to_openai_tool
+
+from deermate import continuous_middleware
+from deermate.session_middleware import CodingSessionMiddleware
+
+STATE = Path("/app/backend/.deer-flow")
+CONFIG = Path("/etc/deermate/evaluation.json")
+MODEL_IDENTITY = ContextVar("evaluation_model_identity", default=None)
+
+
+def configuration():
+    value = json.loads(CONFIG.read_text())
+    if value["profile"] != "router-offline-v1" or value["mode"] not in {"A", "B", "C"}:
+        raise PermissionError("Explicit offline evaluation profile required")
+    return value
+
+
+def record(kind, **fields):
+    stamp = time.monotonic_ns()
+    value = {
+        "kind": kind,
+        "ns": stamp,
+        "clock_domain": "linux-monotonic:"
+        + Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+        **fields,
+    }
+    with (STATE / "evaluation-model.jsonl").open("a") as out:
+        out.write(json.dumps(value, ensure_ascii=False) + "\n")
+    return stamp
+
+
+class FixtureModel(ExistingFixtureModel):
+    tool_schemas: list[dict] = []
+
+    def bind_tools(self, tools, **kwargs):
+        model = super().bind_tools(tools, **kwargs)
+        return model.model_copy(update={"tool_schemas": [convert_to_openai_tool(t) for t in tools]})
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        cfg = configuration()
+        identity = MODEL_IDENTITY.get()
+        if not identity or not identity["run_id"] or not identity["thread_id"]:
+            raise PermissionError("Every fixture model call needs its actual run/thread identity")
+        payload = {
+            "messages": [m.model_dump(mode="json") for m in messages],
+            "tools": self.tool_schemas,
+        }
+        encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()
+        human = next((m.content for m in reversed(messages) if m.type == "human"), "")
+        if len(encoded) > 12000:
+            raise ValueError("Evaluation input budget exceeded")
+        record(
+            "model_started",
+            **identity,
+            input_bytes=len(encoded),
+            input_measurement=(
+                "serialized messages with tool_calls/structured content plus bound tool schemas"
+            ),
+            input_sha256=hashlib.sha256(encoded).hexdigest(),
+            mode=cfg["mode"],
+            input_kind=human[:24] if isinstance(human, str) else "structured",
+        )
+        time.sleep(0.05)
+        if identity["role"] == "notification":
+            answer = AIMessage(content="Synthetic task notification received.")
+        elif human.startswith("EVAL_START "):
+            logical = cfg["logical_operation_id"]
+            if cfg["mode"] == "A":
+                call = {
+                    "name": "deermate_submit_task",
+                    "args": {
+                        "project_id": "demo",
+                        "prompt": "Fix the toy addition. EVAL_OPERATION=" + logical,
+                        "idempotency_key": logical,
+                    },
+                    "id": "eval-start-" + logical,
+                    "type": "tool_call",
+                }
+            else:
+                call = {
+                    "name": "secretary_route",
+                    "args": {
+                        "action": "execute",
+                        "work_id": cfg["work_id"],
+                        "text": "Fix the toy addition. EVAL_OPERATION=" + logical,
+                    },
+                    "id": "eval-start-" + logical,
+                    "type": "tool_call",
+                }
+            answer = AIMessage(content="", tool_calls=[call])
+        elif human.startswith("EVAL_FRONT "):
+            answer = AIMessage(content="EVAL_VISIBLE " + cfg["logical_operation_id"])
+        else:
+            answer = AIMessage(content="Synthetic reference received.")
+        record("model_finished", **identity, mode=cfg["mode"], visible=bool(answer.content))
+        return ChatResult(generations=[ChatGeneration(message=answer)])
+
+
+def fixture_model(name):
+    if name != "continuous-fixture":
+        raise PermissionError("Only the existing offline model profile is allowed")
+    return FixtureModel()
+
+
+class FixtureMiddleware(continuous_middleware.ContinuousMiddleware):
+    @hook_config(can_jump_to=["end"])
+    async def abefore_model(self, state, runtime):
+        # End this coordinator turn at the ordinary background tool receipt.
+        # The Worker/ordinary MCP tracker continue independently as usual.
+        last = state.get("messages", [])[-1:]
+        if (
+            configuration()["mode"] == "A"
+            and last
+            and last[0].type == "tool"
+            and last[0].name == "deermate_submit_task"
+        ):
+            receipt = json.loads(last[0].content)
+            record(
+                "coordinator_released", task_id=receipt.get("task_id"), status=receipt.get("status")
+            )
+            return {"jump_to": "end"}
+
+    async def awrap_model_call(self, request, handler):
+        cfg = configuration()
+        op = await asyncio.to_thread(continuous_middleware.profile, request.runtime)
+        context = request.runtime.context or {}
+        identity = {
+            "operation": op["id"] if op else None,
+            "inbox": op["parent"] if op else None,
+            "run_id": context.get("run_id"),
+            "thread_id": op["data"]["thread_id"] if op else context.get("thread_id"),
+            "role": ("coordinator" if cfg["mode"] == "A" else op["data"]["kind"])
+            if op
+            else "notification",
+        }
+        token = MODEL_IDENTITY.set(identity)
+        try:
+            if cfg["mode"] != "A":
+                return await super().awrap_model_call(request, handler)
+            return await self._single_coordinator(request, handler, op)
+        finally:
+            MODEL_IDENTITY.reset(token)
+
+    async def _single_coordinator(self, request, handler, op):
+        bounded = await asyncio.to_thread(continuous_middleware.restricted, request, op)
+        # Preserve canonical owner/version/admission, context and model budget.
+        # Only the explicit owner start receives the ordinary async coding tool.
+        start = (
+            op
+            and op["data"].get("origin") == "user"
+            and op["data"].get("message", "").startswith("EVAL_START ")
+        )
+        tools = []
+        if start:
+            tools = [t for t in request.tools if t.name == "deermate_submit_task"]
+            if len(tools) != 1:
+                raise PermissionError("The ordinary guarded MCP task tool is unavailable")
+        return await handler(bounded.override(tools=tools))
+
+    async def aafter_model(self, state, runtime):
+        if configuration()["mode"] != "A":
+            return await super().aafter_model(state, runtime)
+        op = await asyncio.to_thread(continuous_middleware.profile, runtime)
+        calls = getattr(state["messages"][-1], "tool_calls", [])
+        if calls and (
+            len(calls) != 1
+            or calls[0]["name"] != "deermate_submit_task"
+            or not op
+            or op["data"].get("origin") != "user"
+            or not op["data"].get("message", "").startswith("EVAL_START ")
+        ):
+            raise PermissionError("Evaluation A cannot execute external/foreground content")
+
+    async def awrap_tool_call(self, request, handler):
+        if configuration()["mode"] != "A":
+            return await super().awrap_tool_call(request, handler)
+        op = await asyncio.to_thread(continuous_middleware.profile, request.runtime)
+        if (
+            not op
+            or op["data"].get("origin") != "user"
+            or not op["data"].get("message", "").startswith("EVAL_START ")
+            or request.tool_call["name"] != "deermate_submit_task"
+        ):
+            raise PermissionError("Explicit canonical owner start required")
+        record("ordinary_tool_started", operation=op["id"], thread=op["data"]["thread_id"])
+
+        async def forbidden(_):
+            raise AssertionError("The unguarded MCP handler must never run")
+
+        result = await CodingSessionMiddleware().awrap_tool_call(request, forbidden)
+        record("ordinary_tool_returned", operation=op["id"], thread=op["data"]["thread_id"])
+        return result
+
+
+def install(registry, config):
+    install_existing_fixture(registry, config)
+    continuous_middleware.bounded_model = fixture_model
