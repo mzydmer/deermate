@@ -721,3 +721,20 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #8 CI runner 容量结果更正
 
 补充实现 7651f77 的最终远端事实：push run 43914594729 为 12/12 success；PR run 43914707490 为 11 success、macOS cancelled，独立评审者查到 hosted runner 未能分配的注释，API 中该 Mac job 无步骤。先前记录的“Mac 排队”为当时观测，不代表最终成功。取消不计为通过，也未据此跳过 Mac 或改产品；最终证据 head 仍由独立评审者等自身 CI 合格后合并。两组 run 的逐项状态与外部容量原因已分开保存在[收据](verification/repository-doc-links-2026-11-16.json)。
+
+
+## 2026-11-16 · Issue #1 退出竞态与停止确认
+
+从 main 47c9d1a 独立处理已报告的 Mac RPC 清理 PermissionError，不继承未合并 #8/#6。真实子进程回收/异步发布门控配合明确注入的 EPERM/ESRCH，复现旧失败边界；活进程拒绝不得忽略，组身份变化不得跟随，TERM/KILL 与退出核对有界，错误时也释放读取任务。Worker 无法确认清理时保留原任务/会话/轮次和显式恢复，不自动重放。
+
+阶段评审发现初始修复仍可能先发 COMPLETED 再降为恢复，新增阻塞 close 的真实验证成功反例确认此问题。现证据先以非终态保存，清理确认后才发布 task.finished；拒绝/中断保留证据与未知状态。旧 M1 本地指南与路线图改用当前默认分支，明确历史真实云到家庭记录、本次离线门控和新 live 验收的不同范围。最终测试/构建与交付进度见[收据](verification/worker-lifecycle-2026-11-16.json)。没有模型/Native 调用、设备授权变更或应用部署。
+
+
+## 2026-11-16 · Issue #1 本地全量与固定 Gateway 补齐
+
+本机全量 376 passed / 13 skipped，最后 RPC/Worker 25 项通过（独立评审另有 25 项通过）；现有 CI 范围 Ruff、最终 wheel、文档/七图/设计/token 与 133 个相对链接核对通过。固定驱动 2 项，真实固定 Gateway local 22 项 / SSH 30 项全部通过，保持同一上游锁；原生执行仅离线 fixture，没有模型或真实 Codex。额外 Linux runtime 探针 RPC 10 项通过、合计 34 项通过，但镜像没有 Git 导致 18 项 Worker/API fixture 错误，该尝试不算完整 Linux Worker 通过，原 Linux3.11/Mac3.12 CI 保留。PR #16 开放评审，本地证据补齐见[收据](verification/worker-lifecycle-2026-11-16.json)；不为 CI 状态快照追提交，不自行合并、关闭或部署。
+
+
+## 2026-11-16 · Issue #1 合入与 #8 依赖收敛
+
+独立评审核对 #1 最终 3f6691f 的 12/12 CI（run43923807735，含 Mac），将 PR16 合并为 main c1531ed 并按 completed 关闭 issue1。#8 在原实现与本地/分支证据保留的前提下纳入该 main；文档冲突合并双方正文、来源与待发布日志，生成文件由唯一源重建，RPC/Worker 修复不回退。新的合入提交 CI 由独立评审核对，未重做 #8 镜像/浏览器验收，未部署。

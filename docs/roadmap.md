@@ -23,9 +23,9 @@ Tracking issue: [Python worker and Codex session lifecycle · #1](https://github
 - [x] Interrupt and continue without a duplicate native session (offline tests and live Codex).
 - [x] Prove duplicate submission returns the same task handle.
 
-Verification: a real Codex repair passed independently executed validation and returned a patch. A live interruption and continuation preserved the native thread ID. Offline protocol tests cover restart recovery, pending input, denied capabilities, deadlines, and idempotency. See [local-worker.md](local-worker.md) for the precise scope. The video remains a concept storyboard until a recorded live walkthrough is added.
+Verification: the historical 2026-10-25 real Codex repair passed independent validation and returned a patch; live interruption/continuation preserved its native thread ID. The 2026-11-16 repair separately covers real subprocess exit/publication races and injected signal-error boundaries offline. Unconfirmed cleanup preserves identity as `recovery_required`, refuses unconfirmed recovery and creates no new native thread/turn on restart. See [local-worker.md](local-worker.md) and its dated receipts; current live compatibility is not inferred from these offline tests. Existing concept films remain labeled concept material; later workbench recordings have their own [scope](media.md).
 
-Exit criterion: a reproducible local walkthrough that runs on a clean machine with documented prerequisites. Replace the concept film with a labeled live demo when ready.
+Exit criterion: a reproducible local walkthrough with documented prerequisites. The current default-branch instructions replace the obsolete feature-branch prerequisite; fresh install/workbench startup evidence is in issue #3's [receipt](verification/local-onboarding-2026-11-16.json), distinct from a native task run. New live recordings or compatibility checks require their own actual evidence.
 
 ## M2 — Connect DeerFlow to a remote worker
 

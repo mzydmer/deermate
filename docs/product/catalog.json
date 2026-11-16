@@ -53,7 +53,7 @@
     "group": "guide",
     "title": "对话与任务结果",
     "description": "理解同一会话的连续追问、执行状态和独立验证。",
-    "updated": "2026-11-13",
+    "updated": "2026-11-16",
     "status": "使用指南",
     "sources": [
       "docs/chat-sessions.md",
@@ -65,7 +65,11 @@
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "design.md",
       "docs/specs/frontend-overhaul.md",
-      "docs/verification/live-walkthrough-2026-11-13.json"
+      "docs/verification/live-walkthrough-2026-11-13.json",
+      "docs/local-worker.md",
+      "src/deermate/rpc.py",
+      "src/deermate/worker.py",
+      "docs/verification/worker-lifecycle-2026-11-16.json"
     ]
   },
   {
@@ -163,7 +167,7 @@
     "group": "guide",
     "title": "常见问题",
     "description": "处理连接异常、结果未知、执行受阻和内容失效。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-16",
     "status": "使用指南",
     "sources": [
       "docs/SPEC.md",
@@ -172,7 +176,11 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "docs/local-worker.md",
+      "src/deermate/rpc.py",
+      "src/deermate/worker.py",
+      "docs/verification/worker-lifecycle-2026-11-16.json"
     ]
   },
   {
@@ -222,7 +230,11 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "docs/local-worker.md",
+      "src/deermate/rpc.py",
+      "src/deermate/worker.py",
+      "docs/verification/worker-lifecycle-2026-11-16.json"
     ]
   },
   {
@@ -299,7 +311,11 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "docs/local-worker.md",
+      "src/deermate/rpc.py",
+      "src/deermate/worker.py",
+      "docs/verification/worker-lifecycle-2026-11-16.json"
     ]
   }
 ]

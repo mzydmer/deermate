@@ -1,6 +1,6 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。本轮 issue #8 已完成离线、本地生产站点与 GitHub 分支渲染验收，等待独立评审；尚未合并或发布。issue #3 已由独立评审者合并到 main，未部署应用。线上基线：组件化工作台已发布；2026-11-13 在一个临时话题中提交两轮真实模型请求，网页读取成功，终端未执行，本机授权已过期且未续期。PR #11/#12 各自 12 项 CI 全通过，已合入 main 并仅更新线上前端；输入区高度、底部提示和手机统计入口修复经真实话题 390/768/1440px 浅深色、26 项 HTTPS/API 复验通过。原账号、15 个话题（含本次临时话题）、模型设置和授权保留；发布说明 `03feb47` 已同步，12 项 main CI 全通过；最终文档/资源 24 项、HTTPS/API 26 项、真实话题 6 项复验通过，五服务健康。
+最后核对：2026-11-16。本轮 issue #1 从 main 47c9d1a 独立修复 RPC 退出竞态及 Worker 清理/终态顺序，局部反例已复现，本机全量与固定 Gateway local/SSH 通过，PR #16 等待独立评审及最终 CI；尚未合并或发布。issue #3 已由独立评审合并，#8/#6 在各自分支待合入，未继承其未合并代码。线上基线：组件化工作台已发布；2026-11-13 在一个临时话题中提交两轮真实模型请求，网页读取成功，终端未执行，本机授权已过期且未续期。PR #11/#12 各自 12 项 CI 全通过，已合入 main 并仅更新线上前端；输入区高度、底部提示和手机统计入口修复经真实话题 390/768/1440px 浅深色、26 项 HTTPS/API 复验通过。原账号、15 个话题（含本次临时话题）、模型设置和授权保留；发布说明 `03feb47` 已同步，12 项 main CI 全通过；最终文档/资源 24 项、HTTPS/API 26 项、真实话题 6 项复验通过，五服务健康。
 
 ## 2026-11-16 · GitHub 产品文档路径（Issue #8，本地与分支验收完成）
 
@@ -10,6 +10,16 @@
 
 [PR #14](https://github.com/mzydmer/deermate/pull/14) 只含 #8；基线 `47c9d1a`，实现 `7651f77` 的 [push CI](https://github.com/mzydmer/deermate/actions/runs/43914594729) 为 12/12 成功；[PR CI](https://github.com/mzydmer/deermate/actions/runs/43914707490) 为 11 项成功，Mac 未取得 hosted runner 而取消、未执行测试，该 PR run 不能计为通过。最终收据提交的 CI 另以其实际 head 为准。等待独立评审合并，再由评审者核对 GitHub 默认分支入口；本执行 agent 不合并、关闭 issue 或部署。
 
+已纳入最新 main `c1531eda797ebb1e4fbe5a212e8c7244a4b185ef`，保留 #1 RPC/Worker 停止确认与终态顺序修复；#8 路径实现和已有验收不重做。旧 a28e797 的 push Mac 真实 PermissionError 与另一个无步骤取消分开看待，不能将旧失败归为容量；本次整合头需核对自己的 CI。默认分支图示/导航由独立评审合并后复验。
+
+## 2026-11-16 · Worker/session 生命周期（Issue #1，本机全量通过）
+
+该 #1 修复分支起点为当时最新 main `47c9d1a`，不依赖 PR14/15。独立评审报告 #8 push CI43917933797 的 Mac malformed-json 测试在清理中 PermissionError，这是实际失败；另一个未取得 runner、无步骤的取消不算通过。保留 11 月 12 日同类历史记录，未以重跑声称已修复。
+
+真实子进程已被 child watcher 回收、仅延迟 asyncio 退出状态发布的门控反例，确定复现旧 EPERM 错误路径；EPERM/ESRCH 的边界使用明确注入，不能称本机自然重现了云端内核错误。只核对本实例的实际退出，活进程拒绝仍传播，组身份变化不跟随，TERM 超时仅升级本实例组。读任务在错误时也释放；无法确认停止的 Worker 原任务进入 recovery_required，保留会话/轮次/工作区，重启无新 thread/turn 或自动重放。
+
+阶段评审又发现先发布 COMPLETED 再清理失败的短暂错误接纳：新增真实验证成功但 close 阻塞的门控反例先失败，现先存证据、待清理确认才发布终态；清理被取消或拒绝时保留证据并要求显式恢复。本机全量 376 passed / 13 skipped，最终 RPC/Worker 25 项通过，Ruff/wheel 与文档/七图/设计/token 门禁通过；初次额外 Linux 探针因运行时镜像没有 Git 导致 18 项 fixture 错误，已分开记录，不能当作 Linux Worker 通过。固定驱动 2 项、实际 Gateway local 22 项 / SSH 30 项全部通过，锁与干净上游均为 a1b89d0；覆盖三轮同一原生根、取消确认、重启/失联、撤权不误报停止及恢复不重放。PR #16 最终 3f6691f 的 [12/12 CI](https://github.com/mzydmer/deermate/actions/runs/43923807735) 全通过，独立评审已合入 main c1531ed 并关闭 issue1；最终交付见[收据](verification/worker-lifecycle-2026-11-16.json)，未完成项明确列出。local-worker/roadmap 删除过时功能分支与未部署陈述，历史真实验收和本次离线验证分开；产品 FAQ/对话/可靠性与待发布日志同步。未调用模型/真实 Codex、未恢复授权或部署；后续合入与 CI 由独立评审处理。
+
 ## 2026-11-16 · 本地快速开始（Issue #3，已合并）
 
 从 `8381d0c` 独立分支修改双语 README、[本地指南](local-docker.md)及初始化提示：Codex CLI 路径检查先于首次 init，认证在真实执行前另查，首次启动与使用额度的 `verify --live` 分开。两种语言的依赖与启动命令相同；预检块在首个错误处退出。产品快速开始、待发布日志及目录/生成数据已同步，既有线上和个人实例未升级。
@@ -18,7 +28,7 @@
 
 完整五镜像构建及真实 `up` 退出 0，四个应用容器健康。为保留已占用 2026 的个人实例，使用独立 Compose 项目/卷、宿主 22063、Worker 18793 和 SSH 19843；真实 Chromium 在本次 nginx 的隔离网络命名空间打开 `http://localhost:2026/setup`，管理员表单可见，页面异常/写请求均为 0。浏览器前后数据库相同：users、runs、mcp_tasks、记忆模型作业/预算、持续工作/预算和 Worker tasks/events/requests/conversation_heads 均为 0；Worker 子进程为 0，新增模型请求/Native 轮次为 0。原有 12 个应用容器 ID、启动时间与重启次数保留，main 工作区干净。Gateway 安装源码哈希与本 worktree 相同，Gateway/前端镜像的上游标签与锁一致。[最终收据](verification/local-onboarding-2026-11-16.json)保留隔离方式、命令、镜像、源哈希和首次依赖失败。原端口 2026 没有被重新绑定，未查询供应方账单，也不以此声明新模型/Native 兼容性验收。
 
-[PR #13](https://github.com/mzydmer/deermate/pull/13) 最终 head `363949b` 的 [12 项远端 CI](https://github.com/mzydmer/deermate/actions/runs/43912497252) 全通过，独立评审者已合并为 main `47c9d1a`，issue #3 按 completed 关闭；这不是应用线上发布。本执行 agent 未执行合并、关闭或部署。未运行付费 live 验收；隔离环境、镜像及缓存保留供后续任务复用。
+[PR #13](https://github.com/mzydmer/deermate/pull/13) 最终 `363949b` 的 [12 项远端 CI](https://github.com/mzydmer/deermate/actions/runs/43912497252) 全通过，独立评审者已合并为 main `47c9d1a` 并关闭 issue #3；本执行 agent 未合并、关闭或部署。未运行付费 live 验收；隔离环境、镜像及缓存保留供后续任务复用。
 
 ## 2026-11-13 · 线上实际执行与交互走查
 
