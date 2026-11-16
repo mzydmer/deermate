@@ -728,3 +728,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 新增 CFF 1.2.0/software 与许可证既有集体署名，省略未发布元数据；双语研究入口和固定来源说明同步。cffconvert 2.0.0 在独立旧 jsonschema 环境验证四个缺字段反例及 APA-like/BibTeX 身份，MCP 依赖未改变。记录骨架捕获当前干净 checkout 的完整 SHA，但不把它冒充旧结果生产版本；结果关联保持 null/unverified，有实际不同提交的回归。53 项测试及既有门禁通过，第一次文档生成未刷新的一项失败已保留并在重生成后通过。真实 CLI 记录与 GitHub 分支导航待首个提交后完成，[当前收据](verification/software-citation-2026-11-16.json)明确未完成项。未调用模型/Native 或发布软件版本。
 
 另据独立评审者，#8 最终 a28e797 的 push CI43917933797 Mac RPC 清理测试出现实际 PermissionError，不能解释为容量取消或宣称重跑修复；已调整后续队列优先 #1，从最新 main 独立处理，本 #6 不修改该范围。
+
+
+## 2026-11-16 · Issue #6 实际 CLI 与分支导航补证
+
+在干净提交 176bb80294a2af7b4330c040928010f46560b714 实际运行记录 CLI，完整源码 SHA/永久链接/上游锁及纯 fixture 数据与结果哈希均匹配；生产身份字段仍 null/unverified，实验仍 not_run。重复输出拒绝且原文件未变。Chromium 从两份 README 普通同页点击引用说明、模板和 CFF，六次导航、十次页面响应均 200。草稿 PR #15 明确依赖 #14，默认分支正式引用 UI 由独立评审合入后验证，不形成等待循环；本地证据已补齐，立即转入最新 main 的独立 #1 RPC 修复。见[收据](verification/software-citation-2026-11-16.json)。未运行模型/Native、未发布版本、未合并或部署。

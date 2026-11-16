@@ -1,11 +1,11 @@
 {
   "issue": "https://github.com/mzydmer/deermate/issues/6",
-  "updated_at": "2026-11-16T17:39:26.486642+00:00",
+  "updated_at": "2026-11-16T17:43:58.549361+00:00",
   "task_start_sha": "a28e7973dfc14853f2a6898b1b0e315a51d4ac9d",
   "current_main_sha": "47c9d1a156d3db3c388871e60dafe386ce7cc10b",
   "depends_on_pr": 14,
   "complete": false,
-  "status": "local CFF and record contracts verified; actual clean-checkout CLI example pending first commit",
+  "status": "Local contracts, actual clean-checkout CLI and GitHub branch navigation passed; default-branch citation UI deferred to independent reviewer after merge.",
   "cff": {
     "passed": true,
     "converter_version": "2.0.0",
@@ -83,8 +83,7 @@
     "experiment_status": "not_run"
   },
   "pending": [
-    "actual clean-checkout evaluation_record CLI example after committing implementation",
-    "actual GitHub branch README citation/source navigation"
+    "Independent reviewer verifies real default-branch GitHub citation UI and APA/BibTeX exports after merge."
   ],
   "post_merge_check": "Real GitHub Cite this repository APA/BibTeX UI/export is verified by the independent reviewer after CFF reaches default branch; not claimed here.",
   "public_release_claimed": false,
@@ -98,5 +97,150 @@
     "tests/test_evaluation_record.py": "8e4b1fb8d53cbe997b8117814a78222efac1e4ae9bacded7e6d535fbf9390079",
     "docs/research/evaluation-record.template.json": "fafbfb1ed278ff020d73fce83b54f255deb130c5fd7232960e2c4a8e11afe379",
     "docs/research/references.md": "f1d407edd8065e2d35cb034b4836ceefd1a16fe7c55a1e6f4fa517ce1db75e0a"
+  },
+  "local_complete": true,
+  "pr": "https://github.com/mzydmer/deermate/pull/15",
+  "implementation_commit": "176bb80294a2af7b4330c040928010f46560b714",
+  "actual_cli": {
+    "passed": true,
+    "source_commit": "176bb80294a2af7b4330c040928010f46560b714",
+    "permanent_source_url": "https://github.com/mzydmer/deermate/tree/176bb80294a2af7b4330c040928010f46560b714",
+    "dataset_version": "fixture-v1",
+    "results_version": "fixture-results-v1",
+    "producing_source_claimed": false,
+    "producer_fields_remain_null": true,
+    "result_provenance": "unverified",
+    "fixture_only": true,
+    "experiments_executed": 0,
+    "existing_output_exit_code": 1,
+    "existing_output_unchanged": true,
+    "record_sha256": "af8c911f341b717a829d95f97a269681459cd010c9f19cfbbfffac44e18c22fc",
+    "command": "python scripts/evaluation_record.py --output .deermate/issue6/example-record.json --dataset .deermate/issue6/example-inputs/dataset.jsonl --dataset-version fixture-v1 --results .deermate/issue6/example-inputs/results.json --results-version fixture-results-v1",
+    "record": {
+      "schema_version": 1,
+      "template_only": true,
+      "software": {
+        "repository": "https://github.com/mzydmer/deermate",
+        "citation": "CITATION.cff",
+        "release_tag": null,
+        "identity_scope": "record_initialization_checkout",
+        "code_revision": "176bb80294a2af7b4330c040928010f46560b714",
+        "permanent_source_url": "https://github.com/mzydmer/deermate/tree/176bb80294a2af7b4330c040928010f46560b714",
+        "deerflow_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+      },
+      "dataset": {
+        "version": "fixture-v1",
+        "artifact": "dataset.jsonl",
+        "sha256": "b834bd073e8fa0e4bd2d0cc1112fbecf4d17c3a0b7741ec5f90632eb1842a97a"
+      },
+      "results": {
+        "version": "fixture-results-v1",
+        "artifact": "results.json",
+        "sha256": "44362fa1e6e700db3cd87427a57ab97e9ef441a7df319ce20644c76ebdaebf20",
+        "provenance_status": "unverified",
+        "software_revision": null,
+        "dataset_sha256": null
+      },
+      "experiment": {
+        "status": "not_run",
+        "protocol_version": null,
+        "configuration_sha256": null,
+        "environment": null,
+        "aggregation_command": null,
+        "failure_and_unknown_samples_retained": null
+      }
+    }
+  },
+  "github_branch_navigation": {
+    "passed": true,
+    "ref": "fix/issue-6-software-citation",
+    "browser_version": "151.0.7922.34",
+    "navigation": [
+      {
+        "href": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/references.md",
+        "target": "",
+        "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/references.md",
+        "mode": "normal same-tab click"
+      },
+      {
+        "href": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/evaluation-record.template.json",
+        "target": "",
+        "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/evaluation-record.template.json",
+        "mode": "normal same-tab click"
+      },
+      {
+        "href": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/CITATION.cff",
+        "target": "",
+        "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/CITATION.cff",
+        "mode": "normal same-tab click"
+      },
+      {
+        "href": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/references.md",
+        "target": "",
+        "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/references.md",
+        "mode": "normal same-tab click"
+      },
+      {
+        "href": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/evaluation-record.template.json",
+        "target": "",
+        "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/evaluation-record.template.json",
+        "mode": "normal same-tab click"
+      },
+      {
+        "href": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/CITATION.cff",
+        "target": "",
+        "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-6-software-citation/CITATION.cff",
+        "mode": "normal same-tab click"
+      }
+    ],
+    "responses": [
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/README.md",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/references.md",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/evaluation-record.template.json",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/README.md",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/CITATION.cff",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/README.zh-CN.md",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/references.md",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/docs/research/evaluation-record.template.json",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/README.zh-CN.md",
+        "status": 200
+      },
+      {
+        "path": "/mzydmer/deermate/blob/fix/issue-6-software-citation/CITATION.cff",
+        "status": 200
+      }
+    ],
+    "default_branch_citation_ui_verified": false
+  },
+  "private_evidence_sha256": {
+    ".deermate/issue6/example-record.json": "af8c911f341b717a829d95f97a269681459cd010c9f19cfbbfffac44e18c22fc",
+    ".deermate/issue6/example-cli-result.json": "1957c6ed6f702c1fcd8a74c3e3ceb33d2607340f2e6150fbb0fdaf9b716db6bc",
+    ".deermate/issue6/github-links.json": "58c00be0bef5b1831d94efa897344988dc60cbb6f811ff5be08225baa9544462",
+    ".deermate/issue6/github_citation_links.cjs": "4ea1df385bd35a0cc9e617a3860f9cecd7b3c3176e0ec668beea41a9ceb91721"
   }
 }
