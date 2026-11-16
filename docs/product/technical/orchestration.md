@@ -8,7 +8,7 @@
 
 原生执行在独立 lane 中等待，避免长期任务独占秘书输入通道。已关联执行 Thread 的事件进入原工作上下文；范围外请求以 handoff 表达，不能扩大授权。
 
-![ 一轮执行的接纳与反馈](/deermate/docs/diagrams/execution.svg)
+![ 一轮执行的接纳与反馈](../../../frontend/overlay/public/deermate/docs/diagrams/execution.svg)
 
 图 2：一次明确执行的主路径。任何门禁不满足都应拒绝接纳；未知结果按下图核对。
 
@@ -41,7 +41,7 @@
 
 这一机制追求可核对的受限投递，不构成任意分布式副作用的全局 exactly-once 保证。
 
-![ 结果未知时：核对原操作，不自动重发](/deermate/docs/diagrams/recovery.svg)
+![ 结果未知时：核对原操作，不自动重发](../../../frontend/overlay/public/deermate/docs/diagrams/recovery.svg)
 
 图 3：不确定恢复分支。取消请求同样需要等待执行端确认，不能由断线推断已停止。
 

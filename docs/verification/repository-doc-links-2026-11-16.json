@@ -1,0 +1,228 @@
+{
+  "issue": "https://github.com/mzydmer/deermate/issues/8",
+  "updated_at": "2026-11-16T17:05:11.345360+00:00",
+  "task_base_sha": "47c9d1a156d3db3c388871e60dafe386ce7cc10b",
+  "complete": false,
+  "status": "offline migration and target guards verified; production frontend/GitHub rendering in progress",
+  "inventory_before": {
+    "articles": 14,
+    "image_references": 7,
+    "unique_svg_files": [
+      "architecture.svg",
+      "authorization.svg",
+      "execution.svg",
+      "memory.svg",
+      "observability.svg",
+      "quickstart.svg",
+      "recovery.svg"
+    ],
+    "document_link_references": 16,
+    "references": [
+      {
+        "source": "docs/product/guide/authorization.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/authorization.svg"
+      },
+      {
+        "source": "docs/product/guide/continuous.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/guide/continuous.md",
+        "image": false,
+        "href": "/docs/guide/memory"
+      },
+      {
+        "source": "docs/product/guide/continuous.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/quickstart"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/conversations"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/focus"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/memory"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/technical/architecture"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/quickstart.svg"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/authorization"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/conversations"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/focus"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/memory"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/continuous"
+      },
+      {
+        "source": "docs/product/technical/architecture.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/architecture.svg"
+      },
+      {
+        "source": "docs/product/technical/architecture.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/observability.svg"
+      },
+      {
+        "source": "docs/product/technical/architecture.md",
+        "image": false,
+        "href": "/docs/technical/evaluation"
+      },
+      {
+        "source": "docs/product/technical/evaluation.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/technical/memory.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/memory.svg"
+      },
+      {
+        "source": "docs/product/technical/orchestration.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/execution.svg"
+      },
+      {
+        "source": "docs/product/technical/orchestration.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/recovery.svg"
+      }
+    ]
+  },
+  "migration": {
+    "changed_articles": [
+      "guide/authorization",
+      "guide/continuous",
+      "guide/overview",
+      "guide/quickstart",
+      "technical/architecture",
+      "technical/evaluation",
+      "technical/memory",
+      "technical/orchestration"
+    ],
+    "converted_references": {
+      "documents": 16,
+      "images": 7
+    }
+  },
+  "route_contract": {
+    "articles": 14,
+    "all_site_link_and_image_destinations_unchanged": true,
+    "only_intended_body_changes": [
+      "changelog"
+    ],
+    "pure_source_path_migration_pre_changelog_was_byte_identical": true,
+    "images": 7
+  },
+  "checks": [
+    {
+      "command": "python -m pytest -q tests/test_product_docs.py",
+      "result": "46 passed, including six actual CLI failure cases with a minimal environment"
+    },
+    {
+      "command": "ruff check scripts/product_docs.py tests/test_product_docs.py",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/product_docs.py --write; python scripts/product_docs.py --base 47c9d1a156d3db3c388871e60dafe386ce7cc10b",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/design_gate.py; python scripts/sync_design_tokens.py --check; python scripts/product_doc_diagrams.py",
+      "result": "passed; seven diagrams match"
+    }
+  ],
+  "initial_test_failure": {
+    "passed": 40,
+    "failed": 6,
+    "cause": "New CLI fixtures used mkdir without exist_ok although catalog evidence had already created the scripts directory. Fixed fixture setup; all six CLI cases then passed."
+  },
+  "security_coverage": [
+    "registered sibling/cross-directory/percent-encoded article links",
+    "unchanged HTTPS query/fragment links",
+    "missing or uncatalogued articles",
+    "website-root/protocol/query/fragment rejection for local targets",
+    "encoded traversal and absolute paths",
+    "file and parent-directory symlinks",
+    "external symlink followed by .. back to a registered target",
+    "no outside-file read before rejection",
+    "missing SVG and unsafe script SVG",
+    "reference-definition bypass rejection"
+  ],
+  "pending": [
+    "production frontend image and local site navigation/SVG rendering",
+    "actual GitHub README-to-guide navigation and quickstart SVG rendering"
+  ],
+  "new_model_requests": 0,
+  "new_native_turns": 0,
+  "runtime_reuse": {
+    "source_sha256": "2317bfe74711ee9f83554eca95a90cded63317a13bac04b2614c8a1cd9a07701",
+    "matches_issue3_running_gateway": true
+  },
+  "checked_file_sha256": {
+    "scripts/product_docs.py": "b34d245652036da7b934e557b0d239b41eb56a5acd34b7b11297c93e4ea89b0c",
+    "tests/test_product_docs.py": "4711940be11bc52a285656fdd4137391b92e4a8ea323630bfeb5c8c154d34eb0",
+    ".github/workflows/ci.yml": "d6c1fe9ffc4358671a1d188c744bd0361f8751f66eea273c73d259cb10343b0e",
+    "docs/DOCUMENTATION_POLICY.md": "9dd0c9b87e5c16b9092bcc5bb6a1c867a23eb62c0af3cd015f4224e464d02b24",
+    "frontend/overlay/src/components/deermate/product-docs.generated.json": "f05cf21a633d80309217ed8599e98f436221a8728bbb58b4d8dbd762b16699bc"
+  },
+  "svg_sha256": {
+    "architecture.svg": "5a6c57e1a0429a02316113d03c40f0cb384df9f17941ec25ca197bdf01bad2c7",
+    "authorization.svg": "c06fc3a4a140a682a4962f410bdc33e23a893c9a5ffe3400beed5b1ec9769593",
+    "execution.svg": "b1e634ab3e67013c537bcddb37801f7b2570efb61627d24680a01cb41161c509",
+    "memory.svg": "0d50c24ddc21d34e0f81e106751de262d652eb8b80244bf9dd8402398b122860",
+    "observability.svg": "533ac75fee340da17893850eb45244c42d574375afec27614beee06780baaf19",
+    "quickstart.svg": "78ab70745a0e7afa0abf498c8e075b7165aefbefcfad0b5c71cc76b11e72ade9",
+    "recovery.svg": "e3498169a7a74451cf1f4a510b31fd0e1cf7d4f37022cd0a6e5105662891631d"
+  },
+  "limits": [
+    "No production or personal-instance deployment",
+    "No provider or Native execution acceptance; only documentation and isolated rendering"
+  ]
+}
