@@ -7,3 +7,6 @@
 统计输入将实际 messages（含tool_calls和非string内容）与绑定工具schema序列化后计数/限额；模型日志绑定operation/run/thread/role。Go和Native用Linux monotonic加boot_id，runner用自身时间域。当前Router读取接口只在settled时呈现完整回复，首次可见与完整回复因此是同一个实际服务事件，不代表流式首token。
 
 校准01在镜像准备失败，02在容器执行位失败，均未接纳任务；旧main22ef不支持capabilities的无卷小预检也保留，不算协议失败或正式样本。普通构建无测试入口反例通过，RPC/Worker默认路径25项通过，Linux evaluation-tag已编译；合入#4后需重新构建/预检并完成真实A合同。失败卷/日志保留，不改整个bundle权限。
+
+
+现已正常合入main9c7ab6d；capabilities来自该已合并基线。新启动前先核对tag与给定不可变ID、从镜像只读取出二进制核对Linux/amd64及evaluation build tag，再以UID1000/networknone运行capabilities，全部通过才建校准卷。COPY只对二进制使用0555，不放宽bundle。尚待重新构建及实际A合同。

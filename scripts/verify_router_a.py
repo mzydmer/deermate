@@ -1,11 +1,13 @@
 """Non-comparative calibration: real Go -> one async coordinator -> MCP -> Worker."""
 
 import argparse
+import hashlib
 import json
 import os
 import secrets
 import shutil
 import subprocess
+import tempfile
 import time
 import uuid
 from pathlib import Path
@@ -35,6 +37,56 @@ def docker_python(gateway, code, data=None):
             input=json.dumps(data) if data is not None else "",
         )
     )
+
+
+def preflight_control(args):
+    image = json.loads(command(["docker", "image", "inspect", args.control_image]))[0]
+    if (
+        image["Id"] != args.control_image_id
+        or image["Os"] != "linux"
+        or image["Architecture"] != "amd64"
+    ):
+        raise RuntimeError("Control image identity/platform differs from the prepared fixture")
+    helper = command(["docker", "create", "--network=none", image["Id"], "capabilities"])
+    try:
+        with tempfile.TemporaryDirectory(prefix="deermate-evaluation-image-") as directory:
+            binary = Path(directory) / "deermate"
+            subprocess.run(["docker", "cp", helper + ":/deermate", str(binary)], check=True)
+            build = command([args.go, "version", "-m", str(binary)])
+            if not all(
+                v in build for v in ["-tags=deermate_evaluation", "GOOS=linux", "GOARCH=amd64"]
+            ):
+                raise RuntimeError("Image binary does not contain the Linux evaluation build tag")
+            digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+    finally:
+        subprocess.run(["docker", "rm", helper], check=True, stdout=subprocess.DEVNULL)
+    capabilities = json.loads(
+        command(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--network=none",
+                "--read-only",
+                "--user=1000:1000",
+                "--cap-drop=ALL",
+                image["Id"],
+                "capabilities",
+            ],
+            timeout=12,
+        )
+    )
+    if "restore-quarantine-v1" not in capabilities["capabilities"]:
+        raise RuntimeError("Control image predates the merged capability command")
+    return {
+        "image_id": image["Id"],
+        "binary_sha256": digest,
+        "platform": "linux/amd64",
+        "test_tag": "deermate_evaluation",
+        "container_user": "1000:1000",
+        "network": "none",
+        "capabilities": capabilities,
+    }
 
 
 PROBE = r"""
@@ -238,10 +290,11 @@ def verify(args):
     os.umask(0o077)
     if args.port == 2026 or not 1024 <= args.port <= 65535:
         raise ValueError("Use a separate unprivileged fixture port")
-    command(["docker", "image", "inspect", args.control_image])
-    command(["docker", "run", "--rm", "--network=none", args.control_image, "capabilities"])
+    preflight = preflight_control(args)
+    args.control_image = preflight["image_id"]
     work = args.work_dir.absolute()
     work.mkdir(parents=True, mode=0o700, exist_ok=False)
+    (work / "image-preflight.json").write_text(json.dumps(preflight, indent=2) + "\n")
     project = "deermate-router-a-" + uuid.uuid4().hex[:8] + "-fixture"
     key = secrets.token_urlsafe(32)
     bundle, cfg = prepare(args, work, project, key)
@@ -398,6 +451,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--images-config", type=Path, required=True)
     parser.add_argument("--control-image", required=True)
+    parser.add_argument("--control-image-id", required=True)
+    parser.add_argument("--go", default="go")
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--port", type=int, default=22045)
     parser.add_argument("--subnet", default="192.168.240.0/24")
