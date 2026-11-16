@@ -51,7 +51,7 @@ docker compose stop
 docker compose start
 ```
 
-应用账户、SQLite 与 managed-model 密钥保存在 `home` 命名卷，保留该卷和 bundle 的内部密钥。升级先做可恢复的 SQLite 在线备份/一致性备份；不要在运行中只拷贝一个 db 文件，也不要用 `down --volumes` 日常升级。当前 bundle 不自动备份、不自动更新镜像，也不自动连接家中 Worker。
+应用账户、SQLite、DeerMem/FTS5、checkpoints、运行时 journal 与 managed-model 密钥保存在 `home` 命名卷，保留该卷和 bundle 的内部密钥。升级先建立跨库/文件共同恢复点，不能在运行中只拷贝一个 db 文件，也不要用 `down --volumes` 日常升级。[冷备与空卷恢复](backup-restore.md)工具在维护停写后离卷保存，完整校验后恢复到新隔离实例；原卷保留。恢复冻结执行和自动队列，只允许必要的受限遗忘/撤权维护，完成原操作、来源、密钥及授权核对后才考虑开放。工具不定时自动备份、不自动更新镜像或连接家中 Worker。
 
 模型调用单独计费。首次购买活动/优惠券不等于同价续费；确认首年价格、续费价格、券是否可分次使用和自动续费状态。单机停机或容器停止未必停止套餐计费。真实云主机、网络、磁盘余量、模型调用与家庭链路需在目标服务器分别验收；[当前状态](STATUS.md)记录实际证据范围。
 

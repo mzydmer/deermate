@@ -120,6 +120,9 @@ func (s *Store) fillMemoryHistory(ctx context.Context, owner string, threads []s
 }
 
 func (s *Server) RunMemoryHistoryQueue(ctx context.Context) {
+	if s.cfg.RestoreQuarantine {
+		return
+	}
 	ticker := time.NewTicker(15 * time.Second)
 	defer ticker.Stop()
 	for {
