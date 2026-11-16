@@ -803,3 +803,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #5 隔离入口校准
 
 干净16b5a01的普通Go mod/vet/全race（controlplane35.138s）、普通无CGO与Linux evaluation-tag构建通过，UID1000/networknone capability及镜像内平台/tag/ID预检通过。A03尚未创建账号即出现internal发布端口拒绝；无状态HTTP/最小代理探针定位并验证200，后端始终只接internal。harness改用固定上游最小Nginx入口，仅代理双网loopback，Go/Gateway保留无外网。协议/基线说明执行环境共用，未改变输入/预算，03及探针失败保留，不计正式样本。
+
+
+## 2026-11-16 · Issue #5 A异步合同通过
+
+干净4180872经镜像身份/ELF/tag/UID1000预检和最小隔离入口实际通过A04：Go持久接纳→单协调图→普通MCP/CodingSessionMiddleware/ask_in_chat→Relay/Worker，拿tracking释放原协调轮次，Native12004.4ms运行中同图前台可见（接纳到first8632.3ms，早于Native完成3321.4ms）。一个Worker/MCP任务、一个根/轮次/effect、真实补丁和独立unittest0；无真实Provider/Native。Go/Gateway仅internal，原12守卫一致，所有失败和源卷保留。MCP采样仍working，只证明功能异步/Worker验证，不冒称公开终态对账。独立评审已接受合同，继续B/C与judge真实双effect负例；正式冻结后36格加单列6格同seed复跑，尚未开始正式实验。

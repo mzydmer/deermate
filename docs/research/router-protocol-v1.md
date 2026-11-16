@@ -96,9 +96,11 @@ S2 代理以已保存的 operation 对应 tracking 为触发条件，不能在 A
 ## 实施、冻结和交付门槛
 
 1. 协议与基线已获独立评审接受；先实现专用 Provider/Native、A/B/C 适配、runner、独立 judge 和 aggregator，补齐上述首次可见响应与时间域口径。
-2. 先跑非对照的基线合同和判定器负例，保留日志。通过后提交全部 harness、数据集和配置，要求工作区干净，记录完整 producer SHA、上游锁、数据集/配置/harness 哈希、Python/Go/Docker/机器和镜像不可变 ID。
+2. A非对照合同已通过并获独立评审接受（[收据](../verification/router-a-calibration-2026-11-16.json)）；继续B/C最小差异合同和判定器负例，保留日志。通过后提交全部 harness、数据集和配置，要求工作区干净，记录完整 producer SHA、上游锁、数据集/配置/harness 哈希、Python/Go/Docker/机器和镜像不可变 ID。
 3. 第一个正式样本启动前写一次不可覆盖的 batch manifest；其 producer SHA 必须含本次实际运行的 harness 和数据。结果文件记录 producer 和 dataset SHA，不能使用整理时 HEAD 反推生产身份。
 4. 按固定 36 格运行并保留全部结果，单条计划命令从 raw 聚合和独立复判。公开协议、数据、脱敏原始样本、negative control、聚合代码/输出与失败边界；原私密材料留本地。
 5. 更新研究页面/STATUS/EVOLUTION/roadmap 和引用记录；只标记本批实际覆盖的 R-EVAL 子集。引用召回消融、合批消融、其他故障点与真实模型/用户研究另立协议，不勾选整个 R-EVAL-01–05。
 
 计划命令为 `scripts/run_router_evaluation.py`、`scripts/judge_router_evaluation.py` 和 `scripts/aggregate_router_evaluation.py`；这些文件当前尚不存在，不能当作已可运行说明。最终命令和参数须随 harness 提交后替换本段。
+
+正式批次后，以同一冻结harness/数据/配置单独复跑seed1101的两个场景×A/B/C六格，核对离散mutation/root计数与终态；复跑manifest和结果单列，不能混入主36格。差异和失败同样保留，不以重复取代主批次失败。
