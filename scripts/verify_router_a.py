@@ -311,6 +311,19 @@ def verify(args):
     }
     try:
         subprocess.run([str(bundle / "start.sh")], check=True, stdout=subprocess.DEVNULL)
+        isolation = {}
+        for service in ("control", "gateway"):
+            container = json.loads(command(["docker", "inspect", project + "-" + service + "-1"]))[
+                0
+            ]
+            networks = list(container["NetworkSettings"]["Networks"])
+            if len(networks) != 1 or container["HostConfig"].get("PortBindings"):
+                raise RuntimeError("App runtime unexpectedly has an ingress/external network")
+            network = json.loads(command(["docker", "network", "inspect", networks[0]]))[0]
+            if not network["Internal"]:
+                raise RuntimeError("App runtime requires an internal-only network")
+            isolation[service] = {"internal_only": True, "published_ports": 0}
+        result["app_network_isolation"] = isolation
         owner = json.loads((bundle / "owner.json").read_text())
         with httpx.Client(
             base_url=f"http://localhost:{args.port}", trust_env=False, timeout=20
