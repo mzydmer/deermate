@@ -4,6 +4,9 @@ import json
 import os
 import signal
 
+STOP_TIMEOUT_SECONDS = 3
+EXIT_RECONCILIATION_SECONDS = 0.2
+
 
 class RpcError(RuntimeError):
     pass
@@ -95,19 +98,38 @@ class AppServer:
     async def respond(self, request_id, result: dict):
         await self.send({"id": request_id, "result": result})
 
-    async def close(self):
-        if self.process and self.process.returncode is None:
-            # Only this instance's owned process group is signalled, never a persisted PID.
-            with contextlib.suppress(ProcessLookupError):
-                os.killpg(self.process.pid, signal.SIGTERM)
+    async def _signal_owned_group(self, sig):
+        process = self.process
+        if process.returncode is not None:
+            return
+        try:
+            # start_new_session owns this group. Never follow a changed group or
+            # signal a persisted PID or the Worker's own process group.
+            if os.getpgid(process.pid) != process.pid:
+                raise RpcError("app-server process group changed; stop unconfirmed")
+            os.killpg(process.pid, sig)
+        except (ProcessLookupError, PermissionError) as error:
+            # The OS can reap the child before asyncio publishes its returncode.
+            # Only an actual exit confirmation resolves a signal error. A live
+            # permission denial still propagates after this bounded reconciliation.
             try:
-                await asyncio.wait_for(self.process.wait(), 3)
+                await asyncio.wait_for(process.wait(), EXIT_RECONCILIATION_SECONDS)
             except TimeoutError:
-                with contextlib.suppress(ProcessLookupError):
-                    os.killpg(self.process.pid, signal.SIGKILL)
-                await self.process.wait()
-        for task in (self.reader, self.stderr_reader):
-            if task:
-                task.cancel()
-                with contextlib.suppress(asyncio.CancelledError, Exception):
-                    await task
+                raise error from None
+
+    async def close(self):
+        try:
+            if self.process and self.process.returncode is None:
+                await self._signal_owned_group(signal.SIGTERM)
+                try:
+                    await asyncio.wait_for(self.process.wait(), STOP_TIMEOUT_SECONDS)
+                except TimeoutError:
+                    await self._signal_owned_group(signal.SIGKILL)
+                    await asyncio.wait_for(self.process.wait(), STOP_TIMEOUT_SECONDS)
+        finally:
+            # Reader cleanup must also run when termination is denied/unconfirmed.
+            for task in (self.reader, self.stderr_reader):
+                if task:
+                    task.cancel()
+                    with contextlib.suppress(asyncio.CancelledError, Exception):
+                        await task

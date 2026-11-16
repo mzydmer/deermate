@@ -44,7 +44,7 @@
 | FR-007 | 服务重启保留任务与会话身份；先前运行中的任务进入显式恢复状态，不能自动重放副作用 | M1 已实现本地恢复 |
 | FR-008 | 支持可识别的原生表单问题与回答；不支持的能力明确拒绝，不自动代替用户授权 | M1 已实现处理路径；表单路径仅离线验证 |
 | FR-009 | 本地 API 具有 bearer 鉴权、Host/Origin 检查、请求体大小限制和受限查询分页 | M1 已实现 |
-| FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 已实现本地范围 |
+| FR-010 | 任务时限、并发限制、取消确认与异常输出处理；结果不确定时不能误报成功或停止 | M1 本地范围；进程退出/异步回收竞态需核对实际退出，无法确认清理时保留原身份并要求显式恢复 |
 | FR-011 | 根据职责、项目权限、设备能力和在线状态筛选执行者，再进行专职路由 | M2 已实现只读连接/身份/协议预检；项目授权、容量及自动路由仍规划 |
 | FR-012 | 通过 Python MCP 工具接入 DeerFlow 后台任务跟踪，映射 submit/status/cancel 与结构化结果 | M2.1 已实现；M2.3 fixture 与 M2.5 容器/真实 Codex 链路通过；后续正式云端 HTTP run 的真实模型选工具、家庭独立结果与通知通过 |
 | FR-013 | 使用校验主机身份的 SSH 连接远程 Python Worker；定义密钥生命周期与断线恢复 | M2.2 已实现；同机 fixture 验证断线/撤权/取消；另已验证受限云端 OpenSSH→Mac 出站反向链路、真实派单和断线恢复，通用配对与实际到期另验 |
@@ -131,7 +131,7 @@
 | AC-M1-02 | 修复任务返回 native session、diff 和独立验证输出，原 checkout 保持不变 | [test_worker.py](../tests/test_worker.py)、[live_smoke.py](../scripts/live_smoke.py) |
 | AC-M1-03 | 中断与继续复用同一 native session | worker 离线测试及 `live_smoke.py --live --lifecycle` 的既有本地验证记录 |
 | AC-M1-04 | 重启后的运行中任务要求显式恢复，不自动创建新原生会话 | store/worker 恢复测试；硬崩溃与跨机器恢复尚未实测 |
-| AC-M1-05 | 验证失败、无验证、权限拒绝、超时、异常协议不能伪装成验证成功 | [test_worker.py](../tests/test_worker.py)、[test_rpc.py](../tests/test_rpc.py) |
+| AC-M1-05 | 验证失败、无验证、权限拒绝、超时、异常协议不能伪装成验证成功；进程退出竞态与清理拒绝不能误报停止，未知保留原任务/会话且不自动重放 | [test_worker.py](../tests/test_worker.py)、[test_rpc.py](../tests/test_rpc.py) |
 | AC-M1-06 | 无 token、非本地主机、浏览器来源、超大请求或任意执行命令被拒绝 | [test_api.py](../tests/test_api.py) |
 | AC-M2-01 | DeerFlow 提交后返回稳定任务 ID，后台查询与取消不依赖模型记忆 | 本地及 SSH 两种实际 Gateway 路径通过：SQL/进程重启、原始查询/取消、Worker 失联恢复；模型选工具由测试入口代替，见[M2.3](specs/m2-gateway-ssh-demo.md) |
 | AC-M2-02 | 远程断线、重连、撤权和取消状态真实可见，未知副作用不重放 | SSH 协议及完整 Gateway 链路的同机 fixture 范围通过；撤权后不假称已取消、恢复授权后确认先前取消，且无新原生会话/轮次；另有实际云端受限账号/家庭反向链路断线恢复与只读核对，见[家庭链路](specs/m2-home-reverse-link.md)；实际到期仍待观察。基础 fixture 见[M2.2](specs/m2-ssh-worker.md)与[M2.3](specs/m2-gateway-ssh-demo.md) |

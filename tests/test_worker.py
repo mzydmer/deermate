@@ -1,10 +1,13 @@
 import asyncio
+import errno
 import json
+import os
+import signal
 import sys
 
 import pytest
 
-from deermate.models import ResumeTask, State, SubmitTask
+from deermate.models import Conflict, ResumeTask, State, SubmitTask
 from deermate.worker import Worker
 
 
@@ -187,6 +190,139 @@ async def test_cancellation_stops_validation_process(settings):
         assert stopped.result is None
         assert "owned process stopped" in stopped.error
     finally:
+        await worker.close()
+
+
+@pytest.mark.parametrize("cancel_requested", [True, False])
+async def test_unconfirmed_cleanup_requires_recovery_without_replaying(
+    settings, monkeypatch, cancel_requested
+):
+    release = settings.state_dir.parent / "release-validation"
+    settings.projects["demo"].test_command = [
+        sys.executable,
+        "-c",
+        f"from pathlib import Path; import time\n"
+        f"while not Path({str(release)!r}).exists(): time.sleep(0.01)\n",
+    ]
+    worker = Worker(settings)
+    await worker.start()
+    process = None
+    cleanup_entered, release_cleanup = asyncio.Event(), asyncio.Event()
+    real_killpg = os.killpg
+
+    def deny_signal(group, sig):
+        if process and group == process.pid:
+            raise PermissionError(errno.EPERM, "fixture signal denied")
+        return real_killpg(group, sig)
+
+    try:
+        task = submit(worker)
+        async with asyncio.timeout(5):
+            while task.task_id not in worker.validating:  # noqa: ASYNC110
+                await asyncio.sleep(0.02)
+        before = worker.store.get(task.task_id)
+        adapter = worker.adapters[task.task_id]
+        process = adapter.rpc.process
+        close_adapter = adapter.close
+
+        async def gated_close():
+            cleanup_entered.set()
+            await release_cleanup.wait()
+            await close_adapter()
+
+        with monkeypatch.context() as patch:
+            patch.setattr(os, "killpg", deny_signal)
+            if cancel_requested:
+                await worker.cancel(task.task_id)
+            else:
+                patch.setattr(adapter, "close", gated_close)
+                release.touch()
+                async with asyncio.timeout(3):
+                    await cleanup_entered.wait()
+                during_cleanup = worker.store.get(task.task_id)
+                assert during_cleanup.status == State.RUNNING
+                assert during_cleanup.result["validation_status"] == "passed"
+                assert not any(
+                    row["type"] == "task.finished" for row in worker.store.events(task.task_id)
+                )
+                release_cleanup.set()
+            saved = await wait_for(worker, task.task_id, {State.RECOVERY_REQUIRED})
+        assert saved.session_id == before.session_id
+        assert saved.turn_id == before.turn_id
+        assert saved.workspace == before.workspace and saved.attempt == before.attempt
+        assert "stop unconfirmed" in saved.error
+        if cancel_requested:
+            assert saved.result is None
+        else:
+            assert saved.result["validation"]["exit_code"] == 0
+            assert saved.result["validation_status"] == "passed"
+        assert process.returncode is None
+        assert not worker.store.queued()
+        assert any(
+            row["type"] == "task.cleanup_unconfirmed" for row in worker.store.events(task.task_id)
+        )
+        assert not any(
+            row["type"] == "task.finished" for row in worker.store.events(task.task_id)
+        )
+        with pytest.raises(Conflict, match="recovery"):
+            worker.store.resume(task.task_id, ResumeTask(message="fix", idempotency_key="unsafe"))
+        await worker.close()
+        worker = Worker(settings)
+        await worker.start()
+        assert worker.store.get(task.task_id).status == State.RECOVERY_REQUIRED
+        assert not worker.store.queued() and not worker.running
+        trace = [
+            json.loads(line)
+            for line in (settings.state_dir.parent / "native/trace.jsonl").read_text().splitlines()
+        ]
+        assert len([row for row in trace if row.get("method") == "thread/start"]) == 1
+        assert len([row for row in trace if row.get("method") == "turn/start"]) == 1
+    finally:
+        release_cleanup.set()
+        if process and process.returncode is None:
+            real_killpg(process.pid, signal.SIGKILL)
+            await process.wait()
+        await worker.close()
+
+
+async def test_shutdown_during_cleanup_retains_evidence_without_finishing(settings, monkeypatch):
+    from deermate.codex import CodexAdapter
+
+    entered, blocked = asyncio.Event(), asyncio.Event()
+    adapters = []
+
+    async def gated_close(adapter):
+        adapters.append(adapter)
+        entered.set()
+        await blocked.wait()
+
+    monkeypatch.setattr(CodexAdapter, "close", gated_close)
+    worker = Worker(settings)
+    await worker.start()
+    try:
+        task = submit(worker)
+        async with asyncio.timeout(5):
+            await entered.wait()
+        before = worker.store.get(task.task_id)
+        assert before.status == State.RUNNING
+        assert before.result["validation_status"] == "passed"
+        assert not any(
+            row["type"] == "task.finished" for row in worker.store.events(task.task_id)
+        )
+        await worker.close()
+        worker = Worker(settings)
+        await worker.start()
+        saved = worker.store.get(task.task_id)
+        assert saved.status == State.RECOVERY_REQUIRED
+        assert saved.session_id == before.session_id and saved.turn_id == before.turn_id
+        assert saved.result == before.result and saved.workspace == before.workspace
+        assert not worker.store.queued() and not worker.running
+        assert not any(
+            row["type"] == "task.finished" for row in worker.store.events(task.task_id)
+        )
+    finally:
+        for adapter in adapters:
+            await adapter.rpc.close()
         await worker.close()
 
 
