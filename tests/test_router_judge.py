@@ -144,3 +144,41 @@ def test_frozen_plan_has_all_six_paired_orders_and_separate_repeat():
     assert len({(r["scenario"], r["seed"], r["mode"]) for r in main}) == 36
     assert [r["mode"] for r in main[:18]] == list("ABCB CACABACBCBABAC".replace(" ", ""))
     assert all(r["seed"] == 1101 for r in repeat)
+
+
+def test_frozen_batch_and_dataset_binding_are_independently_required(tmp_path):
+    import hashlib
+    from copy import deepcopy
+
+    dataset = tmp_path / "dataset.json"
+    dataset.write_text("{}")
+    digest = hashlib.sha256(dataset.read_bytes()).hexdigest()
+    raw = {
+        "barrier": {"complete": True, "stable_tail_seconds": 4, "evidence": {}},
+        "owner_id": "owner",
+        "mode": "A",
+        "logical_operation_id": "s1-1101",
+        "app_network_isolation": {
+            s: {"internal_only": True, "published_ports": 0} for s in ["control", "gateway"]
+        },
+        "source": {"revision": "frozen", "checkout_dirty": False, "file_sha256": {}},
+        "formal_batch": True,
+        "batch_id": "original-main",
+        "dataset_sha256": digest,
+    }
+    manifest = {
+        "producer_revision": "frozen",
+        "runtime_file_sha256": {},
+        "batch_id": "original-main",
+        "dataset": {"artifact": str(dataset), "sha256": digest},
+    }
+    key = "original_frozen_batch_and_dataset"
+    assert judge(raw, {}, manifest)["checks"][key]
+    for field, wrong in [
+        ("formal_batch", False),
+        ("batch_id", "repeat"),
+        ("dataset_sha256", "other-dataset"),
+    ]:
+        changed = deepcopy(raw)
+        changed[field] = wrong
+        assert not judge(changed, {}, manifest)["checks"][key]
