@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+type: software
+message: >-
+  Please cite DeerMate as software using these metadata. For experiments,
+  also record the full source commit and dataset/results identities described
+  in docs/research/references.md. Public release metadata is added only after release.
+title: DeerMate
+authors:
+  - name: DeerMate contributors
+repository-code: https://github.com/mzydmer/deermate
+url: https://github.com/mzydmer/deermate
+license: MIT
+keywords:
+  - personal-assistant
+  - agent-orchestration
+  - reproducible-systems
