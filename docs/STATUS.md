@@ -1,8 +1,10 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议与A实际异步合同已接受；B/C的Go tagged路由/权限合同四项顶层（含B/C与四种失效子组）在Linux/UID1000/networknone通过，独立评审也已重跑。当前阶段准备提交交接，下一步为B/C真实完整链路、独立judge/真实双effect负例、冻结harness/dataset后36格及单列6格复跑。尚无正式比较结果，原12实例及旧卷/归档保留。
+最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议与A实际异步合同已接受；B/C的Go tagged路由/权限合同四项顶层（含B/C与四种失效子组）在Linux/UID1000/networknone通过，独立评审也已重跑。当前先实现一个正常B单样本与完整完成屏障，跑通后同路径验证C，再扩展S1事件表和S2断ACK；之后独立judge/真实双effect负例、冻结harness/dataset后36格及单列6格复跑。尚无正式比较结果，原12实例及旧卷/归档保留。
 
 ## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
+
+单样本脚本 `scripts/run_router_sample.py` 复用现有prepare/device/ordinary MCP链，接收mode/scenario/seed，目前只接纳非正式normal校准，S1/S2在建栈前拒绝。先创建真实本人work，公开tracking只由已知执行thread的本人list/detail取得；完成条件覆盖Worker、公开MCP及通知、Go原operation/inbox/work、相关runs与模型调用，再观察4s稳定尾部。只读probe去除授权字段，保留真实diff/测试文件哈希和全量调用记录；三个屏障合同测试通过（含Worker完成但tracking/通知未收敛及错owner/替代handle反例）。实际B/C单样本尚待运行；MCP轮询已对齐协议1s。
 
 当前B/C阶段：同一canonical订阅函数在C摄取时附加，A/B在真实Router完成后确定性附加；不声称模型决定归属。测试专用model-context读入口复用原assessmentInputs/assessmentBatch，复核owner/来源/规则/event与rule revision，并向模型输入同批有界原文。四项Linux tagged合同通过（见[收据](verification/router-routing-contracts-2026-11-16.json)），默认C既有来源/订阅回归随普通Go全包race通过（controlplane34.973s）；mod verify/vet/普通无CGO和Linux evaluation构建通过，Ruff/编译、文档/设计82/token/7图通过。Native撤权不额外限制合法只读context，但新执行仍拒绝。正式完成屏障已明确包括Worker验证、MCP本人公开tracking、原Go operation/inbox、runs及通知终态，再观察4s；A04当时MCP仍working的功能收据不冒充该屏障通过。
 

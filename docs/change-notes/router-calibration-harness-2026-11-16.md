@@ -16,3 +16,5 @@
 
 
 B/C检查点新增共享canonical关联函数，C摄取时关联，测试A/B在Router完成后按既有权威订阅确定性附加；普通构建仍C且无测试入口/模式开关。专用context reader沿用原assessmentInputs/assessmentBatch及owner/用户版本/来源/规则/event revision检查；模型收到相同有界批次正文，未以“模型自行路由”宣传。Linux tagged四项顶层合同与失效子组通过，初次Origin和nonce测试fixture错误均保留且不放宽guard。已固定测试项目Git日期以便后续验证相同snapshot；B/C真实链、独立judge及36格仍未运行，不能称研究结果。新增产品技术页/待发布状态仅说明实际检查范围；默认来源回归和完整Go检查另记录。
+
+新增 `scripts/run_router_sample.py`、`tests/router_evaluation_probe.py` 与 `tests/test_router_sample.py`，复用已有A启动/设备配对函数，先校准一个normal B再验证C。原始证据采集只读并剔除nonce/凭据；公开任务handle只从本人已知thread的list/detail发现。完成屏障要求所有层和通知收敛后4秒稳定，Worker单独完成不足；测试覆盖未收敛和替代身份反例。脚本只支持非正式normal，S1/S2尚未实现即提前拒绝，尚无比较结果。全部为显式隔离fixture维护，未修改生产轮询、客户交互、默认路由或授权，因此客户指南和能力声明无需变化；共享fixture的MCP轮询对齐协议1秒。

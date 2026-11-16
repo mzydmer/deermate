@@ -816,3 +816,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 
 
 本B/C提交前普通Go mod verify/vet/全包race与普通无CGO/Linux evaluation构建通过，controlplane34.973s，覆盖既有来源/订阅与默认无测试入口反例；当前Python fixture/script的Ruff/编译和产品文档、82文件设计/token/7图门禁通过。Go tagged合同的源码以逐文件哈希留证，不把提交后的HEAD倒填为测试生产身份。
+
+
+## 2026-11-16 · Router 单样本完成屏障检查点
+
+新增非正式normal单样本运行器，复用真实Go/Gateway/MCP/Relay/Worker，公开tracking只由本人已知thread的list/detail取得。完成屏障包含Worker验证、原Go operation/inbox/work、公开MCP/通知及相关runs，随后4秒稳定尾部；只读probe保留真实diff、独立测试和全量调用。三个合同测试通过，拒绝仅Worker完成、未收敛通知、错误owner与替代handle。实际B单样本尚待运行，C和S1/S2、独立judge及正式36格仍未开始；生产行为未变。

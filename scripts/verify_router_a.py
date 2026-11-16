@@ -120,12 +120,17 @@ def prepare(args, work, project, key):
     single_host.prepare(args.images_config.absolute(), bundle, project, args.port)
     prepare_continuous_fixture.prepare(bundle)
     runtime = bundle / "runtime"
-    for name in ["continuous_native_fixture.py", "fake_codex.py", "router_evaluation_model.py"]:
+    for name in (
+        "continuous_native_fixture.py",
+        "fake_codex.py",
+        "router_evaluation_model.py",
+        "router_evaluation_probe.py",
+    ):
         shutil.copyfile(ROOT / "tests" / name, runtime / name)
     cfg = {
         "profile": "router-offline-v1",
-        "mode": "A",
-        "logical_operation_id": "calibration-a-1101",
+        "mode": getattr(args, "mode", "A"),
+        "logical_operation_id": getattr(args, "logical_operation_id", "calibration-a-1101"),
         "native_delay_seconds": 12,
         "formal_batch": False,
         "project_commit_date": "2026-11-16T00:00:00Z",
@@ -140,6 +145,7 @@ def prepare(args, work, project, key):
     ]
     config["plugins"][0]["use"] = "router_evaluation_model:install"
     config["models"][0]["use"] = "router_evaluation_model:FixtureModel"
+    config["mcp_tasks"]["poll_interval_seconds"] = 1
     profile = {
         "enabled": True,
         "command": "/app/backend/.venv/bin/python",
@@ -188,7 +194,7 @@ def prepare(args, work, project, key):
     compose["services"]["nginx"]["networks"] = ["default", "edge"]
     control["environment"].update(
         {
-            "DEERMATE_EVALUATION_MODE": "A",
+            "DEERMATE_EVALUATION_MODE": cfg["mode"],
             "DEERMATE_EVALUATION_KEY": key,
             "DEERMATE_GITHUB_REPOSITORY": "fixture/project",
         }
