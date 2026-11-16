@@ -188,6 +188,7 @@ def verify(args):
     source_project = "deermate-restore-" + suffix + "-fixture"
     target_project = "deermate-recovered-" + suffix + "-fixture"
     checks = []
+    memory_deliveries = []
 
     def check(name, condition):
         checks.append({"name": name, "passed": bool(condition)})
@@ -261,13 +262,27 @@ def verify(args):
                 return r.json()
 
             def delivery(method, path, body):
+                started_delivery = time.monotonic()
                 operation = api(method, path, body, 202)
+                initial_status = operation["status"]
                 deadline = time.monotonic() + 30
                 while (
                     operation["status"] in {"pending", "processing"} and time.monotonic() < deadline
                 ):
                     time.sleep(0.2)
                     operation = api("GET", "me/memory-operations/" + operation["id"])
+                memory_deliveries.append(
+                    {
+                        "id": operation["id"],
+                        "kind": method,
+                        "initial_status": initial_status,
+                        "final_status": operation["status"],
+                        "seconds": round(time.monotonic() - started_delivery, 3),
+                    }
+                )
+                (work / "memory-deliveries.json").write_text(
+                    json.dumps(memory_deliveries, indent=2) + "\n"
+                )
                 check("memory_delivery_completed", operation["status"] == "completed")
                 return operation
 
@@ -566,7 +581,7 @@ d.commit();print(json.dumps({'inserted':True}))
             "snapshot_id": verified["snapshot_id"],
             "recovery_point": verified["recovery_point"],
             "archive_sha256": hashlib.sha256(snapshot.read_bytes()).hexdigest(),
-            "restoration_copy_seconds": receipt["restored_seconds"],
+            "restore_preparation_seconds": receipt["restored_seconds"],
             "archive_export_seconds": exported["archive_export_seconds"],
             "archive_validation_seconds": receipt["archive_validation_seconds"],
             "archive_copy_seconds": receipt["archive_copy_seconds"],
@@ -580,6 +595,7 @@ d.commit();print(json.dumps({'inserted':True}))
                 "grant_version": grant_version,
                 "reapplied_while_dispatch_frozen": True,
             },
+            "memory_delivery_records": memory_deliveries,
             "dispatch_counters_before_restore": before,
             "dispatch_counters_after_restore": final,
             "checks": checks,

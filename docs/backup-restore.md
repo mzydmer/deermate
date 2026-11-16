@@ -71,4 +71,4 @@ python scripts/verify_single_host_restore.py \
   --receipt .deermate/verification/restore.json
 ```
 
-测试镜像由 `deploy/testing/Dockerfile.restore` 在固定 Gateway 上添加 Git，仅供嵌入的 toy Worker；正式 Worker 仍在原设备。演练只创建带 fixture 名称的独立项目和合成账号，使用离线 Provider/Native 协议；覆盖实际 driver/Worker 两轮同根、冷备/未知身份、记忆遗忘、实际六种坏归档无目标写入、空卷 API 和零恢复派发。还会在快照后实际遗忘一个事实并撤销一个合成 status-only 授权，再于冻结中的恢复实例重施、核对计数。结束停止自身容器，保留源/目标卷及私人归档。实际结果见 STATUS，不将小型本地数据的测量当作云端容量或灾难恢复保证。
+测试镜像由 `deploy/testing/Dockerfile.restore` 在固定 Gateway 上添加 Git，并预置经官方SHA-256校验的tiktoken 0.12.0/cl100k_base缓存，再以network=none实际加载校验；仅供嵌入的 toy Worker；正式 Worker 仍在原设备。演练只创建带 fixture 名称的独立项目和合成账号，使用离线 Provider/Native 协议；覆盖实际 driver/Worker 两轮同根、冷备/未知身份、记忆遗忘、实际六种坏归档无目标写入、空卷 API 和零恢复派发。还会在快照后实际遗忘一个事实并撤销一个合成 status-only 授权，再于冻结中的恢复实例重施、核对计数。结束停止自身容器，保留源/目标卷及私人归档。实际结果见 STATUS，不将小型本地数据的测量当作云端容量或灾难恢复保证。
