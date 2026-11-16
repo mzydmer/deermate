@@ -702,3 +702,15 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · 本地快速开始完整启动验收补齐
 
 补齐前述初始交付的未完成项：真实五镜像 build、隔离 up 均退出 0，四个应用容器健康；Chromium 在本次 nginx 网络命名空间访问 localhost:2026，重定向至 /setup 并显示首个管理员表单，页面异常和写请求为 0。宿主独立 22063 保留个人 2026；原 Host 白名单不放宽。浏览器前后 runs、MCP/Worker task、记忆/持续模型作业及预算均为 0，Worker 无子进程；12 个既有容器的 ID、启动时间及重启次数保持。Gateway 安装源码与 worktree 哈希一致，镜像上游标签与锁一致。初始实现 826a2a3 的远端 12/12 CI 通过，后续收据提交需核对其自身 CI。完整证据与首次依赖失败保存在[收据](verification/local-onboarding-2026-11-16.json)。未调用付费 live 验收、未合并/关闭 issue/部署；保留隔离环境与构建缓存供后续任务复用。
+
+
+## 2026-11-16 · Issue #1 退出竞态与停止确认
+
+从 main 47c9d1a 独立处理已报告的 Mac RPC 清理 PermissionError，不继承未合并 #8/#6。真实子进程回收/异步发布门控配合明确注入的 EPERM/ESRCH，复现旧失败边界；活进程拒绝不得忽略，组身份变化不得跟随，TERM/KILL 与退出核对有界，错误时也释放读取任务。Worker 无法确认清理时保留原任务/会话/轮次和显式恢复，不自动重放。
+
+阶段评审发现初始修复仍可能先发 COMPLETED 再降为恢复，新增阻塞 close 的真实验证成功反例确认此问题。现证据先以非终态保存，清理确认后才发布 task.finished；拒绝/中断保留证据与未知状态。旧 M1 本地指南与路线图改用当前默认分支，明确历史真实云到家庭记录、本次离线门控和新 live 验收的不同范围。最终测试/构建与交付进度见[收据](verification/worker-lifecycle-2026-11-16.json)。没有模型/Native 调用、设备授权变更或应用部署。
+
+
+## 2026-11-16 · Issue #1 本地全量与固定 Gateway 补齐
+
+本机全量 376 passed / 13 skipped，最后 RPC/Worker 25 项通过（独立评审另有 25 项通过）；现有 CI 范围 Ruff、最终 wheel、文档/七图/设计/token 与 133 个相对链接核对通过。固定驱动 2 项，真实固定 Gateway local 22 项 / SSH 30 项全部通过，保持同一上游锁；原生执行仅离线 fixture，没有模型或真实 Codex。额外 Linux runtime 探针 RPC 10 项通过、合计 34 项通过，但镜像没有 Git 导致 18 项 Worker/API fixture 错误，该尝试不算完整 Linux Worker 通过，原 Linux3.11/Mac3.12 CI 保留。PR #16 开放评审，本地证据补齐见[收据](verification/worker-lifecycle-2026-11-16.json)；不为 CI 状态快照追提交，不自行合并、关闭或部署。

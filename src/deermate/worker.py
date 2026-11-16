@@ -140,6 +140,7 @@ class Worker:
 
     async def _execute_traced(self, task_id: str):
         adapter = None
+        terminal = None
         try:
             task = self.store.get(task_id)
             if {
@@ -190,17 +191,16 @@ class Worker:
                     self.store.update(task_id, status=State.RUNNING)
                 outcome = await adapter.run()
                 if outcome == "interrupted":
-                    self.store.update(task_id, status=State.CANCELLED, kind="task.cancelled")
+                    terminal = {"status": State.CANCELLED, "kind": "task.cancelled"}
                     return
                 # Native completion must win a race with an unacknowledged cancel honestly.
                 if self.store.get(task_id).status == State.CANCELLING:
                     self.store.event(task_id, "cancel.too_late", {})
-                    self.store.update(
-                        task_id,
-                        status=State.NEEDS_REVIEW,
-                        error="Native turn finished before interruption; "
+                    terminal = {
+                        "status": State.NEEDS_REVIEW,
+                        "error": "Native turn finished before interruption; "
                         "validation was not started.",
-                    )
+                    }
                     return
                 self.validating.add(task_id)
                 receipt = (
@@ -233,11 +233,16 @@ class Worker:
                     if receipt["exit_code"] == 0
                     else State.FAILED
                 )
-                self.store.update(task_id, status=state, result=result, kind="task.finished")
+                # Retain actual evidence while cleanup is pending, without
+                # publishing a success that might later become unconfirmed.
+                self.store.update(task_id, result=result, kind="task.evidence_collected")
+                terminal = {"status": state, "kind": "task.finished"}
         except asyncio.CancelledError:
             if adapter:
-                await adapter.close()
+                stopped = await self._close_adapter(task_id, adapter)
                 adapter = None
+                if not stopped:
+                    raise
             requested = self.store.get(task_id).status == State.CANCELLING and not self.stopping
             self.store.update(
                 task_id,
@@ -248,23 +253,46 @@ class Worker:
             )
             raise
         except TimeoutError:
-            # Closing the owned app-server below prevents unattended continued work.
-            self.store.update(task_id, status=State.FAILED, error="task deadline exceeded")
+            terminal = {"status": State.FAILED, "error": "task deadline exceeded"}
         except (RpcError, OSError, ValueError, KeyError, RuntimeError) as error:
-            self.store.update(task_id, status=State.FAILED, error=str(error)[:2000])
+            terminal = {"status": State.FAILED, "error": str(error)[:2000]}
         except Exception as error:
             # A malformed adapter payload or internal bug must not strand an active task.
+            terminal = {
+                "status": State.FAILED,
+                "error": f"{type(error).__name__}: {str(error)[:1800]}",
+                "kind": "task.internal_error",
+            }
+        finally:
+            try:
+                stopped = await self._close_adapter(task_id, adapter) if adapter else True
+                if stopped and terminal:
+                    self.store.update(task_id, **terminal)
+            finally:
+                self.adapters.pop(task_id, None)
+                self.validating.discard(task_id)
+
+    async def _close_adapter(self, task_id: str, adapter: CodexAdapter) -> bool:
+        try:
+            await adapter.close()
+        except asyncio.CancelledError:
             self.store.update(
                 task_id,
-                status=State.FAILED,
-                error=f"{type(error).__name__}: {str(error)[:1800]}",
-                kind="task.internal_error",
+                status=State.RECOVERY_REQUIRED,
+                error="Owned process cleanup interrupted; verify before continuing.",
+                kind="task.cleanup_unconfirmed",
             )
-        finally:
-            if adapter:
-                await adapter.close()
-            self.adapters.pop(task_id, None)
-            self.validating.discard(task_id)
+            raise
+        except (OSError, RpcError) as error:
+            self.store.update(
+                task_id,
+                status=State.RECOVERY_REQUIRED,
+                error=f"Owned process stop unconfirmed ({type(error).__name__}); "
+                "verify before continuing.",
+                kind="task.cleanup_unconfirmed",
+            )
+            return False
+        return True
 
     async def cancel(self, task_id: str):
         task = self.store.get(task_id)
