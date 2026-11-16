@@ -19,6 +19,12 @@ No API key is inferred from a Codex/ChatGPT login. Without an independently supp
 5. Gateway restart preserves account, SQL task identity and result. Reusing an accepted idempotency key cannot start another native task.
 6. Provide repeatable start/status/verify/stop commands. Stop only this profile's containers/native processes; retain state and other Docker resources.
 
+### First-start documentation contract (issue #3, 2026-11-16)
+
+- English and Chinese quickstarts check `command -v codex` before the first `init`. A missing CLI stops the copied preflight block; bypassing it still yields a nonzero `init` exit and an installation hint before profile/image configuration is created.
+- CLI availability and authentication are separate prerequisites: `init → build → up` requires the CLI but no signed-in account. A fresh profile reaches `http://localhost:2026` and the first-administrator setup page with zero model requests and zero Native turns.
+- Installation can stop after administrator setup. `verify --live` has a separate opt-in section explaining quota use, administrator credentials, the generated demo project, the one-line addition diff and independent unittest result. Live verification evidence remains separate from startup evidence.
+
 Actual cloud/ACK, OS OpenSSH account policy, NAT, desktop automation and real secretary-model conversation remain separate claims. Record any installation/UI limitation accurately; a headless health check is not a browser login check.
 
 ## Observed acceptance

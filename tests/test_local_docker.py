@@ -2,6 +2,10 @@
 
 import io
 import json
+import os
+import shutil
+import subprocess
+import sys
 import tarfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -54,6 +58,37 @@ def test_unknown_submit_outcome_reuses_saved_intent(tmp_path, monkeypatch):
     assert second == first
     assert (tmp_path / "pending-verification.json").stat().st_mode & 0o777 == 0o600
     assert first["prompt"] == local.PROMPT
+
+
+@pytest.mark.skipif(
+    sys.platform != "darwin" or sys.version_info < (3, 12),
+    reason="local Compose CLI requires macOS and Python 3.12+",
+)
+def test_first_init_without_codex_prints_install_hint_and_exits(tmp_path):
+    # Run the actual entry point in a fresh root, including its public error handler.
+    # An empty private tools directory prevents a developer's cached CLI hiding the failure.
+    for relative in (
+        "scripts/local_docker.py",
+        "scripts/ack_deploy.py",
+        "scripts/deerflow_lock.py",
+        "deploy/deerflow.lock",
+    ):
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / relative, target)
+    environment = {**os.environ, "PATH": "/usr/bin:/bin", "PYTHONPATH": str(ROOT / "src")}
+    result = subprocess.run(
+        [sys.executable, str(tmp_path / "scripts/local_docker.py"), "init"],
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 1
+    assert "Codex CLI not found on PATH. Install Codex CLI" in result.stderr
+    assert "codex login status" in result.stderr
+    assert not (tmp_path / ".deermate/local-docker/profile.json").exists()
+    assert not (tmp_path / ".deermate/local-docker/images.yaml").exists()
 
 
 def test_stage_archive_excludes_host_account_and_runtime_secrets(tmp_path, monkeypatch):

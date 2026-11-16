@@ -1,0 +1,136 @@
+{
+  "issue": "https://github.com/mzydmer/deermate/issues/3",
+  "updated_at": "2026-11-16T16:34:18.008855+00:00",
+  "status": "partial: preflight verified; full five-image build/startup in progress",
+  "complete": false,
+  "task_base_sha": "8381d0cbd731af71c7993ad25cfa030752bd61b0",
+  "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "environment": {
+    "macos": "26.5.1",
+    "architecture": "x86_64",
+    "python": "3.12.15",
+    "docker": "29.9.2",
+    "helm": "3.19.0",
+    "codex_cli": "0.165.0-alpha.1.2"
+  },
+  "document_contract": {
+    "equivalent_startup_commands": true,
+    "startup_block": "(\n  set -e\n  python scripts/local_docker.py init\n  python scripts/local_docker.py build\n  python scripts/local_docker.py up\n)",
+    "equivalent_dependency_commands": true,
+    "dependency_command": "python -m pip install -e '.[dev]' 'cryptography==48.0.1'",
+    "live_step_in_default_block": false
+  },
+  "preflight_missing_cli": [
+    {
+      "document": "README.md",
+      "exit_code": 1,
+      "stderr": "Codex CLI is missing; install it before init.",
+      "later_checks_ran": false
+    },
+    {
+      "document": "README.zh-CN.md",
+      "exit_code": 1,
+      "stderr": "缺少 Codex CLI，请先安装再执行 init。",
+      "later_checks_ran": false
+    },
+    {
+      "document": "docs/local-docker.md",
+      "exit_code": 1,
+      "stderr": "缺少 Codex CLI，请先安装再执行 init。",
+      "later_checks_ran": false
+    }
+  ],
+  "preflight_cli_present": [
+    {
+      "document": "README.md",
+      "exit_code": 0,
+      "stdout": "<worktree>/.deermate/tools/codex\nlinux/x86_64\nv3.19.0+g3d8990f\n",
+      "stderr": ""
+    },
+    {
+      "document": "README.zh-CN.md",
+      "exit_code": 0,
+      "stdout": "<worktree>/.deermate/tools/codex\nlinux/x86_64\nv3.19.0+g3d8990f\n",
+      "stderr": ""
+    },
+    {
+      "document": "docs/local-docker.md",
+      "exit_code": 0,
+      "stdout": "<worktree>/.deermate/tools/codex\nlinux/x86_64\nv3.19.0+g3d8990f\n",
+      "stderr": ""
+    }
+  ],
+  "init_missing_cli": {
+    "command": "env PATH=/usr/bin:/bin PYTHONPATH=<worktree>/src <isolated-venv>/bin/python <fresh-root>/scripts/local_docker.py init",
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Local run failed (DeploymentError); inspect private local logs.\nCodex CLI not found on PATH. Install Codex CLI before local_docker.py init; check codex login status before running a native task.\n",
+    "profile_created": false,
+    "images_created": false
+  },
+  "dependency_installation": {
+    "initial_unconstrained_command": "python -m pip install -e '.[dev]'",
+    "initial_exit_code": 1,
+    "initial_failure": "cryptography 50.0.2 selected an sdist on Intel Mac; OpenSSL headers/libraries were unavailable to its Rust build",
+    "temporary_build_tools": "An existing locally built cryptography 50.0.0 wheel prepared the initial isolated tooling environment; this is not the public reproduction evidence.",
+    "documented_command": "python -m pip install -e '.[dev]' 'cryptography==48.0.1'",
+    "verified_command": "PIP_NO_CACHE_DIR=1 <fresh-venv>/bin/python -m pip install -e '.[dev]' 'cryptography==48.0.1'",
+    "public_uncached_install_exit_code": 0,
+    "installed_cryptography": "48.0.1",
+    "pip_check": "No broken requirements found.",
+    "public_wheel": "cryptography-48.0.1-cp311-abi3-macosx_10_9_universal2.whl"
+  },
+  "completed_checks": [
+    {
+      "command": "python -m pytest -q tests/test_local_docker.py tests/test_ack_deploy.py tests/test_deerflow_lock.py tests/test_product_docs.py",
+      "result": "62 passed, 2 skipped"
+    },
+    {
+      "command": "DEERMATE_ACK_UPSTREAM=<verified pinned checkout> DEERMATE_HELM=<Helm 3.19.0> python -m pytest -q tests/test_ack_deploy.py -k actual_pinned_helm_chart",
+      "result": "2 passed, 12 deselected; covers both skipped actual-chart checks"
+    },
+    {
+      "command": "<public fresh-venv>/bin/python -m pytest -q tests/test_local_docker.py",
+      "result": "6 passed"
+    },
+    {
+      "command": "ruff check scripts/local_docker.py tests/test_local_docker.py",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/product_docs.py --write; python scripts/product_docs.py --base 8381d0cbd731af71c7993ad25cfa030752bd61b0",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/sync_design_tokens.py --check; python scripts/design_gate.py; python scripts/product_doc_diagrams.py",
+      "result": "passed; seven diagrams match"
+    },
+    {
+      "command": "relative Markdown file-link resolution on both READMEs, local-docker, m2-local-docker and changed product Markdown",
+      "result": "66 links resolve"
+    }
+  ],
+  "pending": [
+    "full five-image build",
+    "isolated up",
+    "real browser administrator initialization page",
+    "zero startup model/Native counters",
+    "protected instance preservation comparison"
+  ],
+  "live_verification": {
+    "run": false,
+    "new_paid_acceptance_calls": 0
+  },
+  "limits": [
+    "macOS Intel only; no Apple Silicon/Linux/Windows local helper acceptance",
+    "No new real model or Native execution acceptance",
+    "Mac personal port 2026 is occupied; validation will use independent resources and a separate host port, with localhost:2026 checked in its isolated nginx network namespace"
+  ],
+  "checked_file_sha256": {
+    "scripts/local_docker.py": "f09090b8758c5d3866526a221438a5f34e54942e8b06e8c730742b4a17543196",
+    "tests/test_local_docker.py": "570364364aa591cc3565da34b8ae1e1282e3fa20aa64e2c45b3079d506f18b4f",
+    "README.md": "31a96cef868c51c260a7a59e24ba64580c9692993f02f2627f12ccd33246b031",
+    "README.zh-CN.md": "b32a39cb350904d8bc8adff594c0563f0b8d16f05a71a5147589dae5370fdcac",
+    "docs/local-docker.md": "fea90dd94e2ad30f4cc38c845be07a43662554823b0299cc5b7526c2920a061a"
+  }
+}
