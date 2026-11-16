@@ -1,0 +1,830 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/mzydmer/deermate/issues/4",
+  "pr": "https://github.com/mzydmer/deermate/pull/17",
+  "updated_at": "2026-11-16T19:06:45.207243+00:00",
+  "complete": true,
+  "completion_scope": "Local implementation and offline/actual synthetic acceptance; independent final-head CI/review/merge remain external delivery gates",
+  "status": "42-check real cold-backup/new-volume restoration passed from clean 4e236fb; no production deployment or real Provider/Native calls",
+  "base": "22ef5c548f134dbd28dd4e0e290538a569390c65",
+  "producer_revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872",
+  "permanent_source_url": "https://github.com/mzydmer/deermate/tree/4e236fb1b6b4e2a64bac785d7f8fef8b2179f872",
+  "producer_checkout_dirty": false,
+  "upstream_revision": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "runtime_images": {
+    "control": {
+      "ref": "deermate.local/issue4/deermate-control:coldrestore-20261116",
+      "id": "sha256:d127eef34d08f0256a99d7e19af97756785f01976fb9d45e8c7edb55a5835766",
+      "source_revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872"
+    },
+    "gateway": {
+      "ref": "deermate.local/issue4/deermate-gateway:coldrestore-20261116",
+      "id": "sha256:4279a8fd995fc5da2e4c4eddf45dbb1c905a8640c4c66399600e272129725b86",
+      "source_revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872"
+    },
+    "frontend": {
+      "ref": "deermate.local/issue4/deermate-frontend:coldrestore-20261116",
+      "id": "sha256:48c369b03b55a40bf4fedd0a8e9ffc8a102776075d3eb7a67f48afa07baaae41",
+      "source_revision": null
+    },
+    "nginx": {
+      "ref": "deermate.local/issue4/deermate-nginx:coldrestore-20261116",
+      "id": "sha256:d154f750562b438af461f76a3d08ccbfddb62da13b7d01fc3014c4642f91e746",
+      "source_revision": null
+    }
+  },
+  "image_source_labels": {
+    "control": {
+      "io.deermate.deerflow.commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "io.deermate.source-sha256": null,
+      "io.deermate.upstream-revision": null,
+      "org.opencontainers.image.revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872"
+    },
+    "frontend": {
+      "io.deermate.deerflow.commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "io.deermate.source-sha256": null,
+      "io.deermate.upstream-revision": null,
+      "org.opencontainers.image.revision": null
+    },
+    "gateway": {
+      "io.deermate.deerflow.commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "io.deermate.source-sha256": null,
+      "io.deermate.upstream-revision": null,
+      "org.opencontainers.image.revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872"
+    },
+    "nginx": {
+      "io.deermate.deerflow.commit": null,
+      "io.deermate.source-sha256": null,
+      "io.deermate.upstream-revision": null,
+      "org.opencontainers.image.revision": null
+    }
+  },
+  "frontend_nginx_reuse": "Previous #3 immutable IDs reused; Go and Gateway built/labeled for the clean producer; no frontend UI rebuild claimed",
+  "wheel_sha256": "a0ccfc1cc3b095e535e3d20b114cb03f3abae5ae65a0528a480aeaeb07960444",
+  "checked_source_sha256": {
+    ".github/workflows/ci.yml": "14a5246b6a3ae48e1181731888ba4fbaf2b7fa3086e457f6cec0fa793c1a401b",
+    "backend/cmd/deermate/main.go": "035dff668f656ef55504abd60087b0b572a1b920b5ff726385b5799c68676a59",
+    "backend/internal/controlplane/continuous_runtime.go": "52cef816aceea81d3f7ebcdadacc68a24f81cc9c7ea4fe7619d6f127b9318d4f",
+    "backend/internal/controlplane/memory.go": "7ffef06e6614a702151a802fa25c4ca2961830d6921ad8dbfce3623eece17917",
+    "backend/internal/controlplane/memory_history.go": "d3734b43603572b7bc716a0dfaaba440ede1e841c4a5b84c7aec7258a08c1929",
+    "backend/internal/controlplane/memory_jobs.go": "f6ca97ea94236454343d8413944121c11836fad3b4a6cb0d9b1795045eee911c",
+    "backend/internal/controlplane/restore_test.go": "f68868acdc320f9193bdcf0f3859de77ac36fc09786c2c8c3ca246af68b631ce",
+    "backend/internal/controlplane/server.go": "be0d418dc0f80fcef3ee640c89f8c31a6ef647e4ddbe8e02461a67ea2e0240e0",
+    "deploy/testing/Dockerfile.restore": "18ae542a501e4835e42e08dab766081c649c26ff7c7223d9fa7826e9968d1170",
+    "deploy/testing/tokenizer-cache.json": "5abee24469961436892654d0710a0d0b82593515de62d2e338cc63fe37ed8ff6",
+    "deploy/testing/tokenizer_cache.py": "c507256bfe75669261aa29c4b6b2c7031aa6a8e05e8df9eae2479ada347bb765",
+    "scripts/prepare_continuous_fixture.py": "cb99b3a37570ae5c34d3355273c679582c3755a74bab4c40ce44c295fe1692b8",
+    "scripts/single_host_backup.py": "774301c20c9e325019dd02d835832caa8b337773af7128972de7d91b35459e7a",
+    "scripts/verify_continuous_native.py": "16c55ef0509c8b6f1f853da6f678b341795a21136fd7f2ee902df69b98bf206d",
+    "scripts/verify_single_host_restore.py": "54748cb8a6a159203d45fb241ab9ed6a427fa904446d2fd494fd2b99ccf7df40",
+    "tests/continuous_fixture_model.py": "34a90aeaad9ea6c2fd53977f8b66fe4e6027eadf1c18a72f6d52b7e8c1913a15",
+    "tests/test_single_host_backup.py": "89b81045ed1528dc22c693325ffc07b187f28d2c783b0b4e55b891deeed10a40"
+  },
+  "snapshot": {
+    "id": "6d05935d-ab43-440d-befb-cd1680d45c7a",
+    "recovery_point": "2026-11-16T19:01:52.301512+00:00",
+    "archive_sha256": "97bc99ea1d2fae9d457a59f88236ce46807b6ea7f9cbe4b4ac5fd50fe79c1eef",
+    "file_count": 85,
+    "snapshot_tool": {
+      "checkout_dirty": false,
+      "git_revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872",
+      "sha256": "774301c20c9e325019dd02d835832caa8b337773af7128972de7d91b35459e7a"
+    },
+    "inflight_acknowledged": true,
+    "inflight_inventory": {
+      "memory_jobs": [],
+      "memory_operations": [],
+      "operations": [
+        {
+          "id": "bee317a6-147c-4c3e-a9e1-9fbd9a30838f",
+          "state": "uncertain"
+        }
+      ],
+      "runs": [],
+      "tasks": []
+    },
+    "archive_private": true,
+    "source_volume_preserved": true,
+    "new_empty_volume": true,
+    "source_volume_overwritten": false
+  },
+  "timings_seconds": {
+    "archive_export_seconds": 0.845,
+    "archive_validation_seconds": 0.037,
+    "archive_copy_seconds": 0.886,
+    "restore_preparation_seconds": 2.321,
+    "restore_to_ready_seconds": 42.21
+  },
+  "actual_api_checks": [
+    {
+      "name": "actual_driver_native_two_rounds_same_root",
+      "passed": true
+    },
+    {
+      "name": "synthetic_capture_enabled_for_actual_source",
+      "passed": true
+    },
+    {
+      "name": "actual_inbox_memory_delivery_completed",
+      "passed": true
+    },
+    {
+      "name": "actual_source_full_text_and_inbox_binding",
+      "passed": true
+    },
+    {
+      "name": "memory_delivery_completed",
+      "passed": true
+    },
+    {
+      "name": "memory_delivery_completed",
+      "passed": true
+    },
+    {
+      "name": "forgotten_before_snapshot_not_recalled",
+      "passed": true
+    },
+    {
+      "name": "valid_source_readable_before_snapshot",
+      "passed": true
+    },
+    {
+      "name": "actual_worker_root_matches_public_api",
+      "passed": true
+    },
+    {
+      "name": "native_root_readable_before_snapshot",
+      "passed": true
+    },
+    {
+      "name": "synthetic_status_grant_confirmed_before_point",
+      "passed": true
+    },
+    {
+      "name": "cold_backup_automatically_resumed_original",
+      "passed": true
+    },
+    {
+      "name": "synthetic_unknown_record_created",
+      "passed": true
+    },
+    {
+      "name": "unacknowledged_unknown_does_not_publish_snapshot",
+      "passed": true
+    },
+    {
+      "name": "cold_point_preserves_actual_source_text_and_binding",
+      "passed": true
+    },
+    {
+      "name": "snapshot_retains_original_unknown_id",
+      "passed": true
+    },
+    {
+      "name": "source_post_point_changes_keep_quarantine",
+      "passed": true
+    },
+    {
+      "name": "source_api_matches_archived_cold_point",
+      "passed": true
+    },
+    {
+      "name": "actual_source_forgetting_after_snapshot",
+      "passed": true
+    },
+    {
+      "name": "actual_source_revocation_after_snapshot",
+      "passed": true
+    },
+    {
+      "name": "source_safety_maintenance_did_not_dispatch",
+      "passed": true
+    },
+    {
+      "name": "actual_bad_archives_leave_no_target",
+      "passed": true
+    },
+    {
+      "name": "owner_thread_task_operation_and_native_identity_preserved",
+      "passed": true
+    },
+    {
+      "name": "counters_were_active_before_restore",
+      "passed": true
+    },
+    {
+      "name": "same_owner_logs_in",
+      "passed": true
+    },
+    {
+      "name": "quarantine_is_active",
+      "passed": true
+    },
+    {
+      "name": "valid_memory_fts5_restored",
+      "passed": true
+    },
+    {
+      "name": "pre_snapshot_forgotten_fact_stays_unrecallable",
+      "passed": true
+    },
+    {
+      "name": "same_memory_source_restored",
+      "passed": true
+    },
+    {
+      "name": "actual_work_and_task_links_readable",
+      "passed": true
+    },
+    {
+      "name": "same_native_root_readable_through_actual_api",
+      "passed": true
+    },
+    {
+      "name": "unknown_operation_readable_through_actual_api",
+      "passed": true
+    },
+    {
+      "name": "quarantine_search_preserves_csrf",
+      "passed": true
+    },
+    {
+      "name": "snapshot_precedes_actual_later_revocation",
+      "passed": true
+    },
+    {
+      "name": "post_point_forgetting_reapplied_while_frozen",
+      "passed": true
+    },
+    {
+      "name": "post_point_fact_unrecallable_before_reopening",
+      "passed": true
+    },
+    {
+      "name": "post_point_revocation_reapplied_while_frozen",
+      "passed": true
+    },
+    {
+      "name": "dispatch_blocked_messages",
+      "passed": true
+    },
+    {
+      "name": "dispatch_blocked_poll",
+      "passed": true
+    },
+    {
+      "name": "dispatch_blocked_threads",
+      "passed": true
+    },
+    {
+      "name": "zero_restored_native_or_provider_dispatches",
+      "passed": true
+    },
+    {
+      "name": "original_home_volume_still_exists",
+      "passed": true
+    }
+  ],
+  "actual_api_check_count": 42,
+  "invalid_archive_probes": [
+    {
+      "failure": "missing",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "checksum",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "mode",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "duplicate",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "link",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "escape",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    }
+  ],
+  "memory_source": {
+    "kind": "actual_captured_inbox",
+    "expectation": "verified archive at common cold point",
+    "full_object_matches": true,
+    "text_sha256": "f48e5cd98859d2eb1117227578ba15c7e0609d2cd91f57822ceb8a80bb8c5f39",
+    "message_id": "314eab62317b4be582061b171b813210",
+    "thread_id": "router-2062c41af884498782daaf5d43d86766",
+    "uses_at_cold_point": 1,
+    "frozen_source_http_status": 200,
+    "restored_source_http_status": 200,
+    "cold_point_frozen_source_and_restored_full_objects_equal": true,
+    "early_usage_count": 0,
+    "cold_point_usage_count": 1,
+    "expected_object_sha256": "14c749685aee1a606383e8470ecb54476c083fe771858c0cddd995c571280371"
+  },
+  "post_snapshot_safety_changes": {
+    "applied_at_ns": 1794855753525198000,
+    "fact_id": "mem_32bab9251b192c118fb7e4e19e157673",
+    "deletion_operation": {
+      "operation_id": "restore-postpoint-forget-babe187f",
+      "expected_revision": 1
+    },
+    "grant_id": "1945fc38-3e7a-40c9-a77c-25d7efd203d4",
+    "grant_version": 1,
+    "reapplied_while_dispatch_frozen": true
+  },
+  "memory_delivery_records": [
+    {
+      "id": "32bab9251b192c118fb7e4e19e157673230ab5a9c029fb1b5fa5422dcf817e39",
+      "kind": "INBOX",
+      "initial_status": "accepted_inbox",
+      "final_status": "completed",
+      "seconds": 1.436
+    },
+    {
+      "id": "a200ffee11049eeadbc83b59bb414d300b9cbce4adcf7b6d257e71f85b868f8e",
+      "kind": "POST",
+      "initial_status": "completed",
+      "final_status": "completed",
+      "seconds": 0.115
+    },
+    {
+      "id": "0d576f29ecf1224d7ee8cf0a36ccf2c5902e1c9bb2639142e21738bac94fa41b",
+      "kind": "DELETE",
+      "initial_status": "completed",
+      "final_status": "completed",
+      "seconds": 0.036
+    }
+  ],
+  "dispatch_evidence": {
+    "before": {
+      "dispatches": [
+        [
+          "01ac43018b60484eada30b07b7c20b55",
+          1
+        ],
+        [
+          "0a88714aad574cf0b15046bb6ab09630",
+          1
+        ],
+        [
+          "2e45b08fb6c34cb080417f58c7c5c576",
+          1
+        ],
+        [
+          "417f1dcc7bb6466b9f55a891a68d783b",
+          1
+        ],
+        [
+          "7ee85d28621e49ce855ac6bfe36b3940",
+          1
+        ],
+        [
+          "9f1dd608d3ee4ba88ea8666d01417e57",
+          1
+        ],
+        [
+          "ed0fa8110eb24c7badd56b07c0365c0c",
+          1
+        ],
+        [
+          "fd4f5f7cf8064c45bd242ded22f423a9",
+          1
+        ]
+      ],
+      "memory_jobs": [
+        [
+          "memory-af4b7984c6640191c3053ee785a162a58603d781fe88a66e",
+          "completed",
+          "reserved"
+        ]
+      ],
+      "model_calls": 8,
+      "model_calls_sha256": "27da33ed4a5f690998fccbe57f660696fe48ea2115a0a87c0b294e720e40d284",
+      "native_requests": 10,
+      "native_trace_sha256": "21ddd3c932a5d3476830989523125847fda3ebb0fe831f8dacc21fcd9a4d5bb6",
+      "operations": [
+        [
+          "01ac43018b60484eada30b07b7c20b55",
+          "settled"
+        ],
+        [
+          "0a88714aad574cf0b15046bb6ab09630",
+          "settled"
+        ],
+        [
+          "2e45b08fb6c34cb080417f58c7c5c576",
+          "settled"
+        ],
+        [
+          "403cb24083344e7f9cb18b509c371f5f",
+          "settled"
+        ],
+        [
+          "417f1dcc7bb6466b9f55a891a68d783b",
+          "settled"
+        ],
+        [
+          "4a94ee4647ef4bdcb5ebe09d33079ceb",
+          "settled"
+        ],
+        [
+          "7ee85d28621e49ce855ac6bfe36b3940",
+          "settled"
+        ],
+        [
+          "9f1dd608d3ee4ba88ea8666d01417e57",
+          "settled"
+        ],
+        [
+          "bee317a6-147c-4c3e-a9e1-9fbd9a30838f",
+          "uncertain"
+        ],
+        [
+          "df70103ed9f049b5b8c6bb3f37d67ffb",
+          "settled"
+        ],
+        [
+          "ed0fa8110eb24c7badd56b07c0365c0c",
+          "settled"
+        ],
+        [
+          "fd4f5f7cf8064c45bd242ded22f423a9",
+          "settled"
+        ]
+      ],
+      "runs": [
+        [
+          "019d305d-a17e-4de9-9203-0ee1e17cf951"
+        ],
+        [
+          "37e22e20-2c0d-4ea4-a395-5ff486991a49"
+        ],
+        [
+          "430c5a0f-1494-4eae-85a3-cbc9c7ef4f41"
+        ],
+        [
+          "4e44cf4b-e0ea-4432-b443-efaf6ccaa301"
+        ],
+        [
+          "6be7d02d-712f-4dfc-a2da-3d2159bb0554"
+        ],
+        [
+          "87a9df07-0403-4eb7-95ae-0ff807df308a"
+        ],
+        [
+          "8e002eaa-5e3e-4464-87d5-ef4622f0c7c1"
+        ],
+        [
+          "b19d8aca-4b95-486e-955b-4010d06629d0"
+        ]
+      ],
+      "tasks": [
+        [
+          "mcp-task-2ffd9ababdd4b9caee38673d378821a1",
+          "c4b681fb0e4640a79547a986f71b3171",
+          "936322dff2f34054a886b4a5adb8f74c:7ed5220e7c3b49acb262756268d4de71",
+          "completed"
+        ],
+        [
+          "mcp-task-31e1da32ad22089c05f72f69ecaead9d",
+          "c4b681fb0e4640a79547a986f71b3171",
+          "936322dff2f34054a886b4a5adb8f74c:ecffe7b1c92442949ebfea75d8414f0c",
+          "completed"
+        ]
+      ],
+      "threads": [
+        [
+          "c4b681fb0e4640a79547a986f71b3171",
+          "c61d062c-de3c-4dca-8d9e-e40389c9506b"
+        ],
+        [
+          "router-2062c41af884498782daaf5d43d86766",
+          "c61d062c-de3c-4dca-8d9e-e40389c9506b"
+        ]
+      ],
+      "users": [
+        [
+          "c61d062c-de3c-4dca-8d9e-e40389c9506b"
+        ]
+      ],
+      "worker_tasks": [
+        {
+          "attempt": 1,
+          "base_commit": "d1c2551d833263290c6f31967c590ce39c58651c",
+          "parent_task_id": "ecffe7b1c92442949ebfea75d8414f0c",
+          "session_id": "6eadbce6aa3444a386cd0499eea2051a",
+          "status": "completed",
+          "task_id": "7ed5220e7c3b49acb262756268d4de71",
+          "turn_id": "fac73d2c77ec43b494d8182e0466c182",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/ecffe7b1c92442949ebfea75d8414f0c"
+        },
+        {
+          "attempt": 1,
+          "base_commit": "d1c2551d833263290c6f31967c590ce39c58651c",
+          "parent_task_id": null,
+          "session_id": "6eadbce6aa3444a386cd0499eea2051a",
+          "status": "completed",
+          "task_id": "ecffe7b1c92442949ebfea75d8414f0c",
+          "turn_id": "180fab964371421db4296fed33ce90c5",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/ecffe7b1c92442949ebfea75d8414f0c"
+        }
+      ]
+    },
+    "after": {
+      "dispatches": [
+        [
+          "01ac43018b60484eada30b07b7c20b55",
+          1
+        ],
+        [
+          "0a88714aad574cf0b15046bb6ab09630",
+          1
+        ],
+        [
+          "2e45b08fb6c34cb080417f58c7c5c576",
+          1
+        ],
+        [
+          "417f1dcc7bb6466b9f55a891a68d783b",
+          1
+        ],
+        [
+          "7ee85d28621e49ce855ac6bfe36b3940",
+          1
+        ],
+        [
+          "9f1dd608d3ee4ba88ea8666d01417e57",
+          1
+        ],
+        [
+          "ed0fa8110eb24c7badd56b07c0365c0c",
+          1
+        ],
+        [
+          "fd4f5f7cf8064c45bd242ded22f423a9",
+          1
+        ]
+      ],
+      "memory_jobs": [
+        [
+          "memory-af4b7984c6640191c3053ee785a162a58603d781fe88a66e",
+          "completed",
+          "reserved"
+        ]
+      ],
+      "model_calls": 8,
+      "model_calls_sha256": "27da33ed4a5f690998fccbe57f660696fe48ea2115a0a87c0b294e720e40d284",
+      "native_requests": 10,
+      "native_trace_sha256": "21ddd3c932a5d3476830989523125847fda3ebb0fe831f8dacc21fcd9a4d5bb6",
+      "operations": [
+        [
+          "01ac43018b60484eada30b07b7c20b55",
+          "settled"
+        ],
+        [
+          "0a88714aad574cf0b15046bb6ab09630",
+          "settled"
+        ],
+        [
+          "2e45b08fb6c34cb080417f58c7c5c576",
+          "settled"
+        ],
+        [
+          "403cb24083344e7f9cb18b509c371f5f",
+          "settled"
+        ],
+        [
+          "417f1dcc7bb6466b9f55a891a68d783b",
+          "settled"
+        ],
+        [
+          "4a94ee4647ef4bdcb5ebe09d33079ceb",
+          "settled"
+        ],
+        [
+          "7ee85d28621e49ce855ac6bfe36b3940",
+          "settled"
+        ],
+        [
+          "9f1dd608d3ee4ba88ea8666d01417e57",
+          "settled"
+        ],
+        [
+          "bee317a6-147c-4c3e-a9e1-9fbd9a30838f",
+          "uncertain"
+        ],
+        [
+          "df70103ed9f049b5b8c6bb3f37d67ffb",
+          "settled"
+        ],
+        [
+          "ed0fa8110eb24c7badd56b07c0365c0c",
+          "settled"
+        ],
+        [
+          "fd4f5f7cf8064c45bd242ded22f423a9",
+          "settled"
+        ]
+      ],
+      "runs": [
+        [
+          "019d305d-a17e-4de9-9203-0ee1e17cf951"
+        ],
+        [
+          "37e22e20-2c0d-4ea4-a395-5ff486991a49"
+        ],
+        [
+          "430c5a0f-1494-4eae-85a3-cbc9c7ef4f41"
+        ],
+        [
+          "4e44cf4b-e0ea-4432-b443-efaf6ccaa301"
+        ],
+        [
+          "6be7d02d-712f-4dfc-a2da-3d2159bb0554"
+        ],
+        [
+          "87a9df07-0403-4eb7-95ae-0ff807df308a"
+        ],
+        [
+          "8e002eaa-5e3e-4464-87d5-ef4622f0c7c1"
+        ],
+        [
+          "b19d8aca-4b95-486e-955b-4010d06629d0"
+        ]
+      ],
+      "tasks": [
+        [
+          "mcp-task-2ffd9ababdd4b9caee38673d378821a1",
+          "c4b681fb0e4640a79547a986f71b3171",
+          "936322dff2f34054a886b4a5adb8f74c:7ed5220e7c3b49acb262756268d4de71",
+          "completed"
+        ],
+        [
+          "mcp-task-31e1da32ad22089c05f72f69ecaead9d",
+          "c4b681fb0e4640a79547a986f71b3171",
+          "936322dff2f34054a886b4a5adb8f74c:ecffe7b1c92442949ebfea75d8414f0c",
+          "completed"
+        ]
+      ],
+      "threads": [
+        [
+          "c4b681fb0e4640a79547a986f71b3171",
+          "c61d062c-de3c-4dca-8d9e-e40389c9506b"
+        ],
+        [
+          "router-2062c41af884498782daaf5d43d86766",
+          "c61d062c-de3c-4dca-8d9e-e40389c9506b"
+        ]
+      ],
+      "users": [
+        [
+          "c61d062c-de3c-4dca-8d9e-e40389c9506b"
+        ]
+      ],
+      "worker_tasks": [
+        {
+          "attempt": 1,
+          "base_commit": "d1c2551d833263290c6f31967c590ce39c58651c",
+          "parent_task_id": "ecffe7b1c92442949ebfea75d8414f0c",
+          "session_id": "6eadbce6aa3444a386cd0499eea2051a",
+          "status": "completed",
+          "task_id": "7ed5220e7c3b49acb262756268d4de71",
+          "turn_id": "fac73d2c77ec43b494d8182e0466c182",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/ecffe7b1c92442949ebfea75d8414f0c"
+        },
+        {
+          "attempt": 1,
+          "base_commit": "d1c2551d833263290c6f31967c590ce39c58651c",
+          "parent_task_id": null,
+          "session_id": "6eadbce6aa3444a386cd0499eea2051a",
+          "status": "completed",
+          "task_id": "ecffe7b1c92442949ebfea75d8414f0c",
+          "turn_id": "180fab964371421db4296fed33ce90c5",
+          "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/ecffe7b1c92442949ebfea75d8414f0c"
+        }
+      ]
+    },
+    "full_probes_equal": true,
+    "scripted_model_calls_before_and_after": 8,
+    "scripted_native_protocol_requests_before_and_after": 10,
+    "new_restore_dispatches": 0,
+    "real_provider_calls": 0,
+    "real_native_calls": 0
+  },
+  "protected_original_containers": {
+    "count": 12,
+    "ids_started_at_restart_count_equal": true,
+    "before_sha256": "6ccafaa8870f6124cd395a442b37cd267b49dce162ece7fcc42f77589810c69f",
+    "after_sha256": "6ccafaa8870f6124cd395a442b37cd267b49dce162ece7fcc42f77589810c69f"
+  },
+  "test_source_volume_and_target": "Both private synthetic volumes retained; own projects stopped, old snapshots/results retained; no unrelated networks/routes/containers changed",
+  "offline_checks": [
+    {
+      "command": "python -m pytest -q tests/test_single_host_backup.py",
+      "result": "45 passed; includes actual uncheckpointed WAL, source text/owner/thread counterexamples and early-sample usage drift"
+    },
+    {
+      "command": "go mod verify; go vet ./...; go test -race ./...; CGO_ENABLED=0 go build",
+      "result": "passed after narrow safety maintenance changes; controlplane race 34.766s"
+    },
+    {
+      "command": "DEERMATE_ACK_UPSTREAM=<fixed> DEERMATE_HELM=<helm3.19> pytest -q tests/test_ack_deploy.py tests/test_single_host.py tests/test_single_host_https.py tests/test_deerflow_lock.py",
+      "result": "52 passed on final producer source; actual pinned Helm/Compose contracts included, explicit optional-probe environment set"
+    },
+    {
+      "command": "python -m pytest -q --junitxml=<private final JUnit>",
+      "source_revision": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872",
+      "result": "458 passed / 13 skipped / 1 upstream Starlette warning, 105.45s; optional fixed-runtime/Go/Helm probes not silently counted as passes; actual deployment subset and 42-check Docker restore recorded separately"
+    },
+    {
+      "command": "python -m build --wheel",
+      "result": "passed from clean producer 4e236fb; resulting wheel installed in immutable Gateway image"
+    },
+    {
+      "command": "ruff check backup/verifier/tests/tokenizer helper; product docs --base 22ef; design gate; token sync --check; product diagrams",
+      "result": "passed; 82 UI source checks and seven diagrams, public generated prose regenerated from Markdown"
+    }
+  ],
+  "source_review_corrections": [
+    "Tar file mode/type/owners/time/PAX/raw header plus complete manifest validated before targets. The same anonymous private frozen archive is used through volume input.",
+    "Quarantine now permits only existing-owner memory deletion and admin-owned grant revocation, retaining authentication/CSRF/revision/owner checks, while all queues/new work/approval/Device polls remain frozen. Actual post-point forgetting/revocation reapplication is scripted and pending real execution.",
+    "Cold-point source proof restores archived SQLite sidecars privately and compares actual captured Inbox full text/binding/usage to both frozen source API and restored API; 45 regression tests include committed uncheckpointed WAL"
+  ],
+  "retained_attempts": [
+    {
+      "attempt": "01",
+      "outcome": "interrupted_before_readiness_for_latest_main_convergence",
+      "passed": false,
+      "note": "Last observed health exits 0 and no OOM; source volume and raw logs retained; not a restore pass"
+    },
+    {
+      "attempt": "02",
+      "producer": "4540d07169308d1398e6f534ba887ea02c52be07",
+      "outcome": "failed_second_memory_create_completion_confirmation",
+      "passed": false,
+      "note": "Original processing operation and pending ref preserved while canonical file existed. Private-clone same-operation apply returned revision1; retained source reconciled original ID after diagnostic restart. Missing official tokenizer cache directly observed, not asserted sole cause of all latency; completed/deadline conditions unchanged"
+    },
+    {
+      "attempt": "03",
+      "producer": "b21e725feb311233ff94c5ec55148a526f7f99ef",
+      "outcome": "failed_source_object_compared_to_early_api_sample",
+      "passed": false,
+      "note": "Archive ref equals restored ref; full restored source API object equals archived cold point with later usage. Early API object was not persisted, so exact early difference is not reconstructed. Source manual and lack of original-message text led to actual captured Inbox case in04; both volumes and diagnostics retained"
+    },
+    {
+      "attempt": "04",
+      "producer": "4e236fb1b6b4e2a64bac785d7f8fef8b2179f872",
+      "outcome": "passed",
+      "checks": 42
+    }
+  ],
+  "retained_implementation_diagnostics": [
+    "Initial test fixture set devmajor/devminor attributes that tarfile did not serialize for regular files. Actual raw-header counterexamples now modify bytes with valid checksum.",
+    "A follow-up raw fixture assertion incorrectly expected the reader to erase device fields; corrected to assert actual encoded value.",
+    "Initial deletion test expected deleted refs from the active-reference listing; corrected to check empty active references and canonical deleted row.",
+    "Third clean b21e725 rehearsal completed actual cold backup, six malformed-archive rejection probes and fresh-volume startup. Strict source DTO comparison failed. Archive and restored API DTO match completely, including one usage recorded after the early sample; original early DTO was not retained. Volumes and failure log retained, not counted as a pass. New verifier stores all DTOs and requires actual captured inbox source text/binding from the common archived point."
+  ],
+  "raw_evidence_sha256": {
+    "actual-restore-04.json": "a0975861f099add1b58c4a286202663844d8f1d77f88ea1ce8fdb9fa0bd55784",
+    "actual-restore-04.log": "b84f894aaa2486d98ce31403c0f57b82546090964486a14f48151d63916d684c",
+    "rehearsal-command-04.json": "866133f3bf27bf0a2bf40ba2bf71c9b0820ab81ebb2457b11573daf9642cb56f",
+    "build-source-04.json": "fedd67e49d9901a2d699f9f8eee2babb2f39914a39f2690c4499aa3ccd3ea1e2",
+    "rehearsal-03/source-field-review.json": "6a5965caad6cdee4d2c56beebcaccd089cc4cea1d028bfd81abbf3c5ae1e0790",
+    "full-final.xml": "686ee2a8f01a330ea30f6ac4b079e591588833f43903f4a5237dd0045eadcbf5",
+    "full-final.log": "7bb0d7e9feaf81d7a09c3232b1ad450530ce99a732a24a05b5858a793229386c",
+    "final-skips.json": "7ebaac816bb8613d6ddbf5d91eb5988b95601eba604bba0bf75caa82b251b5d4",
+    "deploy-final.log": "f1b88a7840d08931b84c532d242e2aac5c505441a8fdd5ed2c4eea55ab279b13"
+  },
+  "private_archive_published": false,
+  "production_changed": false,
+  "source_draft_worktree_modified": false,
+  "limits": "Local synthetic data/keys and scripted native protocol; no cloud loss or real device reconciliation; private backup is not published. No cloud disaster recovery, real device reconciliation, external TLS/Worker/project backup or capacity guarantee; final-head CI owned by independent review.",
+  "review_corrections_verified": [
+    true,
+    true
+  ]
+}

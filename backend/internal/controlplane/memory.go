@@ -206,7 +206,7 @@ func (s *Server) mutateMemory(w http.ResponseWriter, r *http.Request) {
 		memoryError(w, err)
 		return
 	}
-	if op.Status == "pending" {
+	if op.Status == "pending" || (s.cfg.RestoreQuarantine && op.Kind == "delete" && (op.Status == "processing" || op.Status == "uncertain")) {
 		s.deliverMemory(r.Context(), r, op)
 	}
 	op, err = s.Store.MemoryOperation(sessionOf(r).User.ID, op.ID)
@@ -218,6 +218,9 @@ func (s *Server) mutateMemory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deliverMemory(ctx context.Context, r *http.Request, op MemoryOperation) {
+	if s.cfg.RestoreQuarantine && op.Kind != "delete" {
+		return
+	}
 	select {
 	case s.memoryDelivery <- struct{}{}:
 		defer func() { <-s.memoryDelivery }()
@@ -251,6 +254,9 @@ func (s *Server) deliverMemory(ctx context.Context, r *http.Request, op MemoryOp
 // RunMemoryQueue reclaims deterministic deliveries after restart. It never invokes
 // a model or native task; uncertain provider writes are reconciled by operation ID.
 func (s *Server) RunMemoryQueue(ctx context.Context) {
+	if s.cfg.RestoreQuarantine {
+		return
+	}
 	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 	for {

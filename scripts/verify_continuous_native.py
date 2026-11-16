@@ -81,6 +81,7 @@ def verify(args):
         runtime = args.bundle / "runtime"
         for name in ("fake_codex.py", "continuous_native_fixture.py"):
             (runtime / name).write_text((ROOT / "tests" / name).read_text())
+            (runtime / name).chmod(0o644)
         profile = {
             "enabled": True,
             "command": "/app/backend/.venv/bin/python",

@@ -1,0 +1,8 @@
+{
+  "package": "tiktoken",
+  "version": "0.12.0",
+  "encoding": "cl100k_base",
+  "url": "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
+  "sha256": "223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7",
+  "upstream_source": "https://github.com/openai/tiktoken/blob/0.12.0/tiktoken_ext/openai_public.py"
+}

@@ -1,0 +1,17 @@
+# Test-only derivative. The real Worker stays on its enrolled device.
+ARG GATEWAY_IMAGE=deermate-gateway:restore-input
+FROM ${GATEWAY_IMAGE}
+USER 0:0
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' \
+      /etc/apt/sources.list.d/debian.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+LABEL io.deermate.fixture="cold-restore-offline-native"
+ENV TIKTOKEN_CACHE_DIR=/opt/deermate-fixture/tiktoken
+COPY tokenizer-cache.json tokenizer_cache.py /tmp/
+RUN /app/backend/.venv/bin/python /tmp/tokenizer_cache.py \
+    && rm /tmp/tokenizer_cache.py /tmp/tokenizer-cache.json
+USER 1000:1000
+RUN --network=none /app/backend/.venv/bin/python -c \
+    "import tiktoken; e=tiktoken.get_encoding('cl100k_base'); s='offline fixture'; assert e.decode(e.encode(s))==s"

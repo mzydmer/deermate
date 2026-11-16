@@ -122,6 +122,7 @@
 | NFR-008 | 所有前端遵循统一 Vercel/Geist 风格规范与可访问性基线，React/Go 共用视觉 token | [design.md](../design.md) 为规范；YAML 唯一来源；基础组件/布局/功能分层，禁止功能层原生交互控件与视觉样式；CSS 预算、反例测试、CI/构建门禁和合成浏览器合同，见[组件化规格](specs/frontend-overhaul.md) |
 | NFR-009 | 可观测核心使用标准 OTel、默认关闭、无云厂商依赖；正文不采集，异步关联持久化，遥测故障不改变授权与执行 | [可观测规格](specs/vendor-neutral-observability.md)；ARMS 是独立部署后端，验收与发布范围另行记录 |
 | NFR-010 | 构建、渲染和验证读取同一 DeerFlow 完整提交锁；缺失/非法锁和不匹配 checkout 在构建或启动前失败，产物记录实际 SHA | [版本锁规范](deerflow-version.md)；历史 ADR/收据保留当时版本，具体交付见 STATUS |
+| NFR-011 | 单机备份建立停写后的共同恢复点，离原卷保存并完整验证；只向新隔离空卷恢复，原身份保留，重开前可在冻结派发时补施遗忘/撤权 | [冷备恢复规格](specs/single-host-cold-restore.md)；实现与实际演练分别追踪，不替代外部设备恢复 |
 
 ## 验收与证据映射
 

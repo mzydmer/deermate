@@ -29,6 +29,9 @@ type workRuntimeResult struct {
 }
 
 func (s *Server) RunContinuousQueue(ctx context.Context) {
+	if s.cfg.RestoreQuarantine {
+		return
+	}
 	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 	for {

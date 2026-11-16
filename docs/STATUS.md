@@ -1,35 +1,46 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#6/#8，main 基线22ef5c5；#6默认 GitHub APA/BibTeX与Copy内容由评审实际核对完成。#4在独立工作区/PR17进行冷备恢复验收，干净4e236fb的第四轮运行中。当前 #5首批离线协议已获评审接受，开始实现harness和非正式校准，正式实验尚未冻结；尚无对照结果。未部署本轮变更，既有个人/生产实例保留。
+最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d；#4最终a7f2415的13项CI全部成功后合入，42项实际冷备/空卷隔离恢复证据保留，未部署。#5协议已接受，A切片代码已保存并正常纳入该main，01/02启动前失败与无卷预检均保留；正在重建普通/evaluation-tag版本并做A实际异步合同，正式36格尚未开始。原12实例和旧失败/恢复卷/归档保留。
 
 ## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
 
-A非正式垂直切片harness及仅Linux evaluation-tag的Go事件/计时hook已写入，实际合同尚未通过；01镜像准备、02执行位失败均发生在任务接纳前，不算协议失败或正式样本。默认构建无测试入口/模式开关反例通过，原RPC/Worker25项通过。下一步保留提交并纳入已合入#4的main，再重新预检普通/测试镜像和真实A异步重叠；完整36格仍未开始。
+A非正式垂直切片harness及仅Linux evaluation-tag的Go事件/计时hook已写入，实际合同尚未通过；01镜像准备、02执行位失败均发生在任务接纳前，不算协议失败或正式样本。默认构建无测试入口/模式开关反例通过，原RPC/Worker25项通过。已保留提交并纳入已合入#4的main，下一步重新预检普通/测试镜像和真实A异步重叠；完整36格仍未开始。
 
 独立工作区基于已合入的 main22ef5c5，具体方案见[协议](research/router-protocol-v1.md)与[基线](research/router-baseline-v1.json)：后台执行/前台响应、持久接纳回执丢失两个场景，六个配对 seed和全部六种 A/B/C 顺序，共36个计划样本。A保留现有普通MCP异步后台能力；B/C仅切换已绑定上下文是否经Router；三组真实经过Go/Gateway/MCP/Relay/Worker。独立判定器需核对实际变更、原身份、独立测试和副作用journal，并拒绝真实重复副作用负例。
 
 协议已获独立评审接受，并补充接纳到首次可见响应/完整回复及不同时间域不能相减的要求；harness、数据集和结果身份仍null/not_run。下一步先实现并验证A确实异步与B/C单分支差异合同、判定器负例，再提交干净harness/数据集SHA后运行正式批次。失败/超时/unknown/未启动均留分母，分位数只取实际观测并同时报告删失，不能据合成等待推断模型质量/费用或用户注意力。现有R-EVAL总体验收仍未勾选。
 
 
-## 2026-11-16 · 软件引用（Issue #6，本地合同通过）
+## 2026-11-16 · 共同冷备与空卷恢复（Issue #4，已合并）
+
+[PR17](https://github.com/mzydmer/deermate/pull/17)最终a7f2415的13项CI全部成功后由独立评审合入main9c7ab6d并关闭issue4；实现从main22ef5c5收敛，实际producer为干净 `4e236fb1b6b4e2a64bac785d7f8fef8b2179f872`。Go/Gateway镜像以该SHA构建/标记；frontend/nginx复用已保留不可变ID，未声称重建UI。归档离原卷、入口及全部home写入方共同停止，85个文件逐项核验，冻结同一私有归档对象后只写新空卷；未知原操作单独清点、显式承认，原卷不覆盖。
+
+第四轮实际Go/Gateway/Worker验收42项全部通过：同owner/话题/任务/Native根及不确定原ID；真实Inbox采集的原文/Thread/message与来源/usage完整对象等于归档共同点；FTS5有效事实可查、快照前已遗忘事实不可召回。实际源快照之后删除事实/撤销status-only合成授权，再在仍冻结的恢复实例重施，事实不可召回且授权已撤销。认证/CSRF/版本门禁保留，四类Go队列与Gateway/MCP自动活动不启动，新工作/设备poll返回503。
+
+六种真实坏归档CLI（缺件/校验和/权限/重复/链接/越界）均非零，目标bundle与卷均不存在。恢复前后完整身份/派发探针相同：已有8次脚本模型调用、10条原生协议请求，恢复新增均为0；非零基线使计数校验有实际意义。归档导出0.845s、验证0.037s、卷复制0.886s、恢复准备2.321s、至服务就绪42.210s，分段独立报告，不作云端容量或灾难恢复保证。结束只停止本轮容器并保留源/目标卷与秘密归档，原12容器守卫一致。
+
+45项归档/来源反例通过，包括真实未checkpoint WAL、来源owner/文本/绑定与采样后usage漂移；Go mod verify/vet/全包race/无CGO通过，52项实际固定Helm/Compose/版本锁合同通过。早先纳入main22ef的全量Python457 passed / 8 skipped；最终源码全量458 passed / 13 skipped / 1条上游提示，105.45s；可选固定运行时/Go/Helm探针的跳过不当作通过，52项部署与42项实际恢复另行计证。Ruff/wheel与文档/设计/token/七图门禁随本地验收核对。首轮为收敛main中止、第二轮记忆交付确认失败、第三轮早期来源采样漂移均保留，不计通过；完整producer/镜像/哈希/42项检查/失败边界见[脱敏收据](verification/single-host-restore-2026-11-16.json)。没有真实Provider/Native调用、生产部署或外部授权续期。
+
+
+## 2026-11-16 · 软件引用（Issue #6，已合并并完成默认引用UI复验）
 
 历史起点为 #8 的 `a28e797`；现已纳入 #8 整合头 `a1af7acb88ee1d29a468729532db566a4a25c908` 及最新 main `c1531ed`，[PR #15](https://github.com/mzydmer/deermate/pull/15) 明确依赖 PR14。CFF 1.2.0 标记 software，署名沿用 MIT 既有 DeerMate contributors，未填写 DOI、个人身份、发布日期或公开版本；包版本 0.1.0a1 不当成 Release。双语 README 新增 CFF、复现说明与既有固定研究章节入口；原 DSH/Harness 等来源保留，DeerFlow 当前值只读唯一锁。
 
 独立 cffconvert 2.0.0 实际验证通过，四个缺必填字段样本均非零，APA-like/BibTeX 的标题、集体署名和仓库一致。转换器 jsonschema 3.2.0 留在独立环境，MCP 环境仍为 jsonschema 4.26.0。记录工具仅在干净 checkout 捕获完整 SHA/永久链接及所给数据文件的版本/哈希；结果生产 SHA/所属数据集哈希保持 null、provenance 为 unverified。已用两个实际不同 fixture 提交证明旧结果不会被赋成当前 HEAD。53 项相关测试、Ruff、产品文档生成/影响及设计/token/七图门禁通过。首次生成文件未刷新导致一项文档同步测试失败，重生成后通过，保留私密日志；未做模型/Native 实验。
 
-已在干净 `176bb80294a2af7b4330c040928010f46560b714` 运行真实 CLI，记录完整相同 SHA、实际锁及两份纯 fixture 文件哈希；模板仍未运行实验、结果生产字段仍 null/unverified。重复输出退出 1、原文件哈希不变。实际 Chromium 从双语 README 普通同页点击引用说明、记录模板与 CFF，六次点击及十次页面响应均 200，见[收据](verification/software-citation-2026-11-16.json)。GitHub 官方仅在默认分支收录 CFF 后提供正式引用入口，默认分支 APA/BibTeX UI 由独立评审者合并后核对，当前不宣称已验证。
+已在干净 `176bb80294a2af7b4330c040928010f46560b714` 运行真实 CLI，记录完整相同 SHA、实际锁及两份纯 fixture 文件哈希；模板仍未运行实验、结果生产字段仍 null/unverified。重复输出退出 1、原文件哈希不变。实际 Chromium 从双语 README 普通同页点击引用说明、记录模板与 CFF，六次点击及十次页面响应均 200，见[收据](verification/software-citation-2026-11-16.json)。GitHub 官方仅在默认分支收录 CFF 后提供正式引用入口，此处为分支验收的历史范围；默认分支APA/BibTeX UI及Copy内容随后由独立评审实际核对通过。
 
-旧 #8 a28e797 的 push CI43917933797 Mac RPC 清理确有 PermissionError，另一个无步骤取消不同；该问题已由独立 #1 修复，最终 3f6691f 的 12/12 CI 全通过后合入 c1531ed 并关闭。当前引用分支保留该已合入修复，#6 自身 CFF/记录源码与既有本地验收不变；新整合头仍核对自己的 CI，不以旧重跑代替。下一实现为独立 #4 冷备恢复。
+旧 #8 a28e797 的 push CI43917933797 Mac RPC 清理确有 PermissionError，另一个无步骤取消不同；该问题已由独立 #1 修复，最终 3f6691f 的 12/12 CI 全通过后合入 c1531ed 并关闭。当前引用分支保留该已合入修复，#6 自身 CFF/记录源码与既有本地验收不变；新整合头仍核对自己的 CI，不以旧重跑代替。PR15最终129091f的13/13 CI通过，已合入最新main22ef5c5；独立评审随后实际核对默认APA/BibTeX与Copy内容并关闭issue6。当前实现为独立 #4 冷备恢复。
 
-## 2026-11-16 · GitHub 产品文档路径（Issue #8，本地与分支验收完成）
+## 2026-11-16 · GitHub 产品文档路径（Issue #8，已合并并完成默认分支复验）
 
 在独立分支纳入最新 main `47c9d1a`，将八篇文章的 16 处导航与七幅 SVG 引用迁移为相对文件路径；14 篇文章仍以原 Markdown/目录为唯一来源。生成器逐级检查路径，拒绝符号链接后再处理父目录，文档必须登记，图示保留受管目录/alt/内容校验；现有文档 CI 加入反例套件。纯路径迁移时 14 篇公开 payload 逐字节相同，加入待发布日志与日期后全部导航/图示 URL 仍相同，仅日志正文有预期新增。
 
 46 项离线测试通过，包含六项真实 CLI 非零反例及缺件、未登记、编码越界、外部符号链接、父目录与 symlink/..、不安全 SVG；Ruff、产品文档影响和设计/token/七图检查通过。首次新增 CLI 测试因夹具目录已存在失败，修正为幂等目录准备后全部通过，保留私密失败日志。仅重建本轮前端，四个内部运行时镜像复用前已核对源码哈希。隔离新站点 14 篇文章与七幅 SVG 均 200；全部图示实际显示且响应 SHA 与源 SVG 一致，真实概览→首次使用→授权点击通过，新日志可见，页面异常/写请求为 0，浏览前后数据库一致、模型/Native 新增为 0。GitHub PR 分支的两份 README 普通同页点击至概览/首次使用/授权均通过，八次页面响应 200，首次使用 SVG 的原始响应 200 且与源哈希相同；1440px 视口实际显示约 1012×1152px，截图已查看。初次默认 load 等待超时及另加 Node HTTP 探针的 TLS 中断均保留脱敏分类/私密日志哈希，未将其解释为 404。首次本地启动因 Docker 默认地址池耗尽失败；按明确授权仅停止自己的 #3 临时栈及已完成浏览器，保留其五个卷、五个镜像和数据，随后默认网络启动成功，未改全局网络设置。受保护原始 12 个容器的 ID、启动时间与重启次数保持；自己的 #3 临时栈属于预期停止范围。完整命令、边界与证据见[最终收据](verification/repository-doc-links-2026-11-16.json)。
 
-[PR #14](https://github.com/mzydmer/deermate/pull/14) 只含 #8；基线 `47c9d1a`，实现 `7651f77` 的 [push CI](https://github.com/mzydmer/deermate/actions/runs/43914594729) 为 12/12 成功；[PR CI](https://github.com/mzydmer/deermate/actions/runs/43914707490) 为 11 项成功，Mac 未取得 hosted runner 而取消、未执行测试，该 PR run 不能计为通过。最终收据提交的 CI 另以其实际 head 为准。等待独立评审合并，再由评审者核对 GitHub 默认分支入口；本执行 agent 不合并、关闭 issue 或部署。
+[PR #14](https://github.com/mzydmer/deermate/pull/14) 只含 #8；基线 `47c9d1a`，实现 `7651f77` 的 [push CI](https://github.com/mzydmer/deermate/actions/runs/43914594729) 为 12/12 成功；[PR CI](https://github.com/mzydmer/deermate/actions/runs/43914707490) 为 11 项成功，Mac 未取得 hosted runner 而取消、未执行测试，该 PR run 不能计为通过。最终收据提交的 CI 另以其实际 head 为准。独立评审已核对最终12/12 CI，合入954d0c1；真实GitHub main双语README六次普通同页点击与SVG显示复验通过，issue8已关闭。本执行agent未合并、关闭或部署。
 
-已纳入最新 main `c1531eda797ebb1e4fbe5a212e8c7244a4b185ef`，保留 #1 RPC/Worker 停止确认与终态顺序修复；#8 路径实现和已有验收不重做。旧 a28e797 的 push Mac 真实 PermissionError 与另一个无步骤取消分开看待，不能将旧失败归为容量；本次整合头需核对自己的 CI。默认分支图示/导航由独立评审合并后复验。
+已纳入最新 main `c1531eda797ebb1e4fbe5a212e8c7244a4b185ef`，保留 #1 RPC/Worker 停止确认与终态顺序修复；#8 路径实现和已有验收不重做。旧 a28e797 的 push Mac 真实 PermissionError 与另一个无步骤取消分开看待，不能将旧失败归为容量；本次整合头需核对自己的 CI。默认分支图示/导航已由独立评审在合并后实际复验通过。
 
 ## 2026-11-16 · Worker/session 生命周期（Issue #1，已合并）
 

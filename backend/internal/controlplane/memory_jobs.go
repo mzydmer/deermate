@@ -326,6 +326,9 @@ func (s *Server) runMemoryJob(ctx context.Context, j memoryJob) {
 }
 
 func (s *Server) RunMemoryExtractionQueue(ctx context.Context) {
+	if s.cfg.RestoreQuarantine {
+		return
+	}
 	go s.runMemoryExtractionMode(ctx, "model")
 	s.runMemoryExtractionMode(ctx, "fast")
 }

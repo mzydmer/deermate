@@ -22,6 +22,10 @@ func env(key, fallback string) string {
 	return fallback
 }
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "capabilities" {
+		fmt.Println(`{"capabilities":["restore-quarantine-v1"]}`)
+		return
+	}
 	if len(os.Args) > 1 && os.Args[1] == "healthcheck" {
 		client := &http.Client{Timeout: 4 * time.Second}
 		resp, err := client.Get("http://127.0.0.1:8080/health/ready")
@@ -69,7 +73,7 @@ func run() error {
 		return err
 	}
 	defer store.DB.Close()
-	handler, err := controlplane.NewServer(store, controlplane.Config{RuntimeURL: runtimeURL, Origin: env("DEERMATE_ORIGIN", "http://localhost:2026"), AllowedHosts: strings.Split(env("DEERMATE_ALLOWED_HOSTS", "localhost:2026,127.0.0.1:2026,127.0.0.1:8080,control:8080"), ","), JWTSecret: os.Getenv("AUTH_JWT_SECRET"), ContinuousEnabled: env("DEERMATE_CONTINUOUS_ENABLED", "true") == "true", GitHubRepository: os.Getenv("DEERMATE_GITHUB_REPOSITORY"), GitHubSecretHome: os.Getenv("DEERMATE_GITHUB_SECRET_HOME"), AuthorizationHome: env("DEERMATE_AUTHORIZATION_HOME", filepath.Join(filepath.Dir(filepath.Dir(databasePath)), "agent-authorizations"))})
+	handler, err := controlplane.NewServer(store, controlplane.Config{RuntimeURL: runtimeURL, Origin: env("DEERMATE_ORIGIN", "http://localhost:2026"), AllowedHosts: strings.Split(env("DEERMATE_ALLOWED_HOSTS", "localhost:2026,127.0.0.1:2026,127.0.0.1:8080,control:8080"), ","), JWTSecret: os.Getenv("AUTH_JWT_SECRET"), ContinuousEnabled: env("DEERMATE_CONTINUOUS_ENABLED", "true") == "true", RestoreQuarantine: env("DEERMATE_RESTORE_QUARANTINE", "false") == "true", GitHubRepository: os.Getenv("DEERMATE_GITHUB_REPOSITORY"), GitHubSecretHome: os.Getenv("DEERMATE_GITHUB_SECRET_HOME"), AuthorizationHome: env("DEERMATE_AUTHORIZATION_HOME", filepath.Join(filepath.Dir(filepath.Dir(databasePath)), "agent-authorizations"))})
 	if err != nil {
 		return err
 	}

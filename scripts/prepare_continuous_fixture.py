@@ -49,6 +49,7 @@ def prepare(bundle):
     shutil.copyfile(
         ROOT / "tests/continuous_fixture_model.py", bundle / "runtime/continuous_fixture_model.py"
     )
+    (bundle / "runtime/continuous_fixture_model.py").chmod(0o644)
     path = bundle / "compose.yaml"
     compose = yaml.safe_load(path.read_text())
     compose["services"]["control"]["environment"]["DEERMATE_CONTINUOUS_ENABLED"] = "true"

@@ -25,9 +25,14 @@ type Config struct {
 	PasswordCost      int
 	AuthorizationHome string
 	ContinuousEnabled bool
+	RestoreQuarantine bool
 	GitHubSecretHome  string
 	GitHubRepository  string
 }
+
+var restoreMemoryDeletionPath = regexp.MustCompile(`^/api/me/memories/[a-zA-Z0-9_-]+$`)
+var restoreAuthorizationRevocationPath = regexp.MustCompile(`^/api/agent-authorizations/[a-zA-Z0-9_-]+/revocations$`)
+
 type Server struct {
 	Store           *Store
 	cfg             Config
@@ -71,8 +76,10 @@ func NewServer(store *Store, cfg Config) (*Server, error) {
 	if err := s.initTraceBindings(); err != nil {
 		return nil, err
 	}
-	if err := s.syncWorkSources(); err != nil {
-		return nil, err
+	if !cfg.RestoreQuarantine {
+		if err := s.syncWorkSources(); err != nil {
+			return nil, err
+		}
 	}
 	engine.onResponse = s.captureMemoryResponse
 	s.continuousLanes = map[string]chan struct{}{"router": make(chan struct{}, 1), "assessor": make(chan struct{}, 1), "native": make(chan struct{}, 1), "source": make(chan struct{}, 1)}
@@ -158,6 +165,18 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Sec-Fetch-Site") == "cross-site" {
 		fail(w, 403, "origin_rejected", "Cross-site requests are not allowed")
 		return
+	}
+	if s.cfg.RestoreQuarantine {
+		w.Header().Set("X-DeerMate-Restore-Quarantine", "true")
+		read := r.Method == http.MethodGet || r.Method == http.MethodHead || r.Method == http.MethodOptions
+		read = read || (r.Method == http.MethodPost && p == "/api/me/memories/search")
+		auth := r.Method == http.MethodPost && (p == "/api/v1/auth/login/local" || p == "/api/v1/auth/logout")
+		safety := r.Method == http.MethodDelete && restoreMemoryDeletionPath.MatchString(p)
+		safety = safety || (r.Method == http.MethodPost && restoreAuthorizationRevocationPath.MatchString(p))
+		if !read && !auth && !safety {
+			fail(w, http.StatusServiceUnavailable, "restore_quarantine", "Restored state is under operator review; new work and changes are paused")
+			return
+		}
 	}
 	s.mux.ServeHTTP(w, r)
 }
