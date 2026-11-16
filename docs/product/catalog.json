@@ -20,7 +20,8 @@
       "docs/verification/frontend-overhaul-cloud-2026-11-13.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -43,7 +44,8 @@
       "docs/verification/local-onboarding-2026-11-16.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -127,7 +129,8 @@
       "docs/diagrams/product/diagrams.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -151,7 +154,8 @@
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -196,7 +200,8 @@
       "docs/verification/frontend-overhaul-cloud-2026-11-13.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -216,7 +221,8 @@
       "docs/diagrams/product/diagrams.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -238,7 +244,8 @@
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -254,7 +261,8 @@
       "docs/STATUS.md",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -290,7 +298,8 @@
       "docs/verification/local-onboarding-2026-11-16.json",
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
-      "docs/specs/product-documentation.md"
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   }
 ]
