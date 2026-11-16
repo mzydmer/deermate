@@ -1,6 +1,6 @@
 {
   "issue": "https://github.com/mzydmer/deermate/issues/8",
-  "updated_at": "2026-11-16T17:21:44.305089+00:00",
+  "updated_at": "2026-11-16T17:23:46.432486+00:00",
   "task_base_sha": "47c9d1a156d3db3c388871e60dafe386ce7cc10b",
   "complete": true,
   "status": "complete: offline, local production site and GitHub PR-branch acceptance passed; independent review pending",
@@ -869,70 +869,219 @@
   },
   "remote_ci": {
     "implementation_head": "7651f77c2de67ac6b0f72875701e6a74d28be9f1",
-    "run_url": "https://github.com/mzydmer/deermate/actions/runs/43914707490",
-    "jobs": [
+    "runs": [
       {
-        "name": "deerflow-gateway (local)",
-        "status": "completed",
-        "conclusion": "success"
+        "event": "pull_request",
+        "run_url": "https://github.com/mzydmer/deermate/actions/runs/43914707490",
+        "jobs": [
+          {
+            "name": "worker (macos-latest, 3.12)",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "steps": null
+          },
+          {
+            "name": "observability",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-contract",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "ack-package",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-intents",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (ssh)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "design-system",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (local)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-ui",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "go-control",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "product-docs",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "worker (ubuntu-latest, 3.11)",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "passed_jobs": 11,
+        "total_jobs": 12,
+        "fully_passed": false,
+        "capacity_annotation_reported_by_independent_reviewer": "The job was not acquired by Runner of type hosted even after multiple attempts",
+        "annotation_check_run": 133465624193,
+        "macos_test_steps_executed": false
       },
       {
-        "name": "frontend-ui",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "frontend-intents",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "worker (ubuntu-latest, 3.11)",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "go-control",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "observability",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "deerflow-gateway (ssh)",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "product-docs",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "ack-package",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "worker (macos-latest, 3.12)",
-        "status": "queued",
-        "conclusion": null
-      },
-      {
-        "name": "deerflow-contract",
-        "status": "completed",
-        "conclusion": "success"
-      },
-      {
-        "name": "design-system",
-        "status": "completed",
-        "conclusion": "success"
+        "event": "push",
+        "run_url": "https://github.com/mzydmer/deermate/actions/runs/43914594729",
+        "jobs": [
+          {
+            "name": "design-system",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-ui",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-contract",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (local)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "observability",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "worker (macos-latest, 3.12)",
+            "status": "completed",
+            "conclusion": "success",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run actions/setup-python@v5",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run python -m pip install -e '.[dev]'",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Run ruff check src tests scripts/deerflow_lock.py scripts/frontend_dev.py scripts/design_visual_fixture.py scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Run python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Run python -m build --wheel",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Run actions/upload-artifact@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Post Run actions/setup-python@v5",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 15
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 16
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              }
+            ]
+          },
+          {
+            "name": "worker (ubuntu-latest, 3.11)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "go-control",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "ack-package",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "product-docs",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (ssh)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-intents",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "passed_jobs": 12,
+        "total_jobs": 12,
+        "fully_passed": true
       }
     ],
-    "note": "Observed on implementation head 7651f77: 11 successful jobs and macOS queued. Final evidence commit triggers another run; no result for its future head is claimed."
+    "note": "These results are for implementation head 7651f77. Final evidence commits trigger their own checks. No CI platform or test was skipped to address runner capacity."
   },
   "private_evidence_sha256": {
     "github_probe.cjs": "dee4e9edf92a834dbc2c1f0f211b3779e68e84f7d3bc3f0895dbed3847d6c9b3",

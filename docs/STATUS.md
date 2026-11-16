@@ -8,7 +8,7 @@
 
 46 项离线测试通过，包含六项真实 CLI 非零反例及缺件、未登记、编码越界、外部符号链接、父目录与 symlink/..、不安全 SVG；Ruff、产品文档影响和设计/token/七图检查通过。首次新增 CLI 测试因夹具目录已存在失败，修正为幂等目录准备后全部通过，保留私密失败日志。仅重建本轮前端，四个内部运行时镜像复用前已核对源码哈希。隔离新站点 14 篇文章与七幅 SVG 均 200；全部图示实际显示且响应 SHA 与源 SVG 一致，真实概览→首次使用→授权点击通过，新日志可见，页面异常/写请求为 0，浏览前后数据库一致、模型/Native 新增为 0。GitHub PR 分支的两份 README 普通同页点击至概览/首次使用/授权均通过，八次页面响应 200，首次使用 SVG 的原始响应 200 且与源哈希相同；1440px 视口实际显示约 1012×1152px，截图已查看。初次默认 load 等待超时及另加 Node HTTP 探针的 TLS 中断均保留脱敏分类/私密日志哈希，未将其解释为 404。首次本地启动因 Docker 默认地址池耗尽失败；按明确授权仅停止自己的 #3 临时栈及已完成浏览器，保留其五个卷、五个镜像和数据，随后默认网络启动成功，未改全局网络设置。受保护原始 12 个容器的 ID、启动时间与重启次数保持；自己的 #3 临时栈属于预期停止范围。完整命令、边界与证据见[最终收据](verification/repository-doc-links-2026-11-16.json)。
 
-[PR #14](https://github.com/mzydmer/deermate/pull/14) 只含 #8；基线 `47c9d1a`，实现 `7651f77` 的远端 11 项 CI 通过，Mac 排队，最终收据提交的 CI 另以其实际 head 为准。等待独立评审合并，再由评审者核对 GitHub 默认分支入口；本执行 agent 不合并、关闭 issue 或部署。
+[PR #14](https://github.com/mzydmer/deermate/pull/14) 只含 #8；基线 `47c9d1a`，实现 `7651f77` 的 [push CI](https://github.com/mzydmer/deermate/actions/runs/43914594729) 为 12/12 成功；[PR CI](https://github.com/mzydmer/deermate/actions/runs/43914707490) 为 11 项成功，Mac 未取得 hosted runner 而取消、未执行测试，该 PR run 不能计为通过。最终收据提交的 CI 另以其实际 head 为准。等待独立评审合并，再由评审者核对 GitHub 默认分支入口；本执行 agent 不合并、关闭 issue 或部署。
 
 ## 2026-11-16 · 本地快速开始（Issue #3，已合并）
 
