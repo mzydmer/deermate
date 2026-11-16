@@ -132,9 +132,7 @@
     }
   ],
   "pending": [
-    "fixed upstream driver/runtime compatibility check",
-    "optional complete isolated Linux Worker check with a Git-capable test image",
-    "remote CI of actual head"
+    "Independent reviewer checks final-head remote CI, merges and closes issue. No application deployment required."
   ],
   "new_model_requests": 0,
   "new_native_turns": 0,
@@ -151,16 +149,19 @@
     "tests/test_rpc.py": "0c674c821b76895c0472196b365fc853f783627d9027fca0bcabc887b47c3895",
     "tests/test_worker.py": "a0a8a371a6f561d5c0f5d5c7285b4e25f9af038c93e76f63a6fa599f0b19a678"
   },
-  "updated_at": "2026-11-16T17:54:40.789453+00:00",
+  "updated_at": "2026-11-16T17:57:32.009040+00:00",
   "additional_linux_attempt": {
     "image": "deermate.local/runtime/deermate-gateway:local-8381d0cbd731",
     "python": "3.12.16",
     "network": "none",
     "result": "34 passed, 18 fixture setup errors: runtime image has no git. RPC tests passed; this is not a complete Linux Worker pass.",
-    "log_sha256": "6cf83ee6e88cd01f5571e24126920630d2f546f522f020df77d0d304e93017ff"
+    "log_sha256": "6cf83ee6e88cd01f5571e24126920630d2f546f522f020df77d0d304e93017ff",
+    "rpc_tests_passed": 10
   },
   "private_log_sha256": {
+    ".deermate/issue1/gateway-local.log": "54d8d1ecc207b2d05b794436cf15c74710dadfcedb8025aca3e7bd8df06b80f2",
     ".deermate/issue1/full.log": "e1fb003618f2c7b2e7ed2e1bf5d5668ae705e13505965bd712e714f231f15b24",
+    ".deermate/issue1/pinned-driver.log": "56494ffa5e896a573881307fa8c89aa2c2cc92f8fde4d016ed757b6bd67a16fd",
     ".deermate/issue1/focused-after.log": "7a0e5a76f36e71783ea5de47119f49357374a869f376cd25e60b8eb2938f4bdb",
     ".deermate/issue1/lifecycle-after-terminal-fix.log": "e657c3b410a44a59696ce8d6c38cf25fe65564b3eb5b3ef401a75cca5c6a61a7",
     ".deermate/issue1/final-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
@@ -175,7 +176,424 @@
     ".deermate/issue1/ruff-full.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
     ".deermate/issue1/worker-regression-before.log": "9c82547e2c8f0c226e0f464ab81fac34a4edbd22cb8dd1ce44042e760a39c17a",
     ".deermate/issue1/install.log": "63e391c076ae1eaf3e1b83684e434acade609de95b7f7614ac52d1627ec6f4a5",
-    ".deermate/issue1/final-wheel.log": "ef184f117329303deaf87ef338e6db0714d975b9978d0dd3ef5101a89f34e371"
+    ".deermate/issue1/final-wheel.log": "ef184f117329303deaf87ef338e6db0714d975b9978d0dd3ef5101a89f34e371",
+    ".deermate/issue1/gateway-ssh.log": "fe2bcc5f85b0bf2588f5a48afcf99b66a711390af73cb0e22052b7ac938541e3"
   },
-  "wheel_sha256": "2c524f2f3b6b35d20ba13b75c3f3583a87f560f654628c8a1c41d276c662cdb2"
+  "wheel_sha256": "2c524f2f3b6b35d20ba13b75c3f3583a87f560f654628c8a1c41d276c662cdb2",
+  "local_complete": true,
+  "pr": "https://github.com/mzydmer/deermate/pull/16",
+  "implementation_commit": "1b7dcbee0a6d9b9d72e31390fb43ce5ebb6d6177",
+  "fixed_compatibility": {
+    "driver": {
+      "command": "DEERMATE_DEERFLOW_CHECKOUT=<clean-pinned-checkout> python -m pytest -q tests/test_deerflow_compat.py",
+      "result": "2 passed in 10.38s"
+    },
+    "gateway": [
+      {
+        "command": "python scripts/verify_deerflow_gateway.py --checkout <clean-pinned-checkout> --gateway-python <pinned-runtime-python> --transport local --work-dir .deermate/issue1/gateway-local --receipt .deermate/issue1/gateway-local.json",
+        "transport": "local",
+        "passed": true,
+        "checks": [
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 15.418,
+            "tracking_id": "mcp-task-d6231d1eede64f8e8eeb7947622a602f",
+            "remote_task_id": "d84d47419b784e9aa11732a03ca01c41"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 15.418,
+            "transport": "loopback",
+            "identity": {
+              "ssh_host_key": "not_applicable",
+              "worker_instance": "observed"
+            }
+          },
+          {
+            "name": "worker_survives_gateway_stop",
+            "passed": true,
+            "elapsed_seconds": 16.264
+          },
+          {
+            "name": "gateway_process_restart_preserves_identity",
+            "passed": true,
+            "elapsed_seconds": 25.068,
+            "tracking_id": "mcp-task-d6231d1eede64f8e8eeb7947622a602f",
+            "remote_task_id": "d84d47419b784e9aa11732a03ca01c41",
+            "native_session_id": "7ecf9a0425d04f0b957fa4db15a6cadb"
+          },
+          {
+            "name": "http_cancel_confirmed_in_sql_and_worker",
+            "passed": true,
+            "elapsed_seconds": 26.189
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 27.822,
+            "tracking_id": "mcp-task-74f8a2e739e345e7a6de5a977b77c147",
+            "remote_task_id": "0d49a5adc633485fbcec3c17eda8077c"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 27.822,
+            "transport": "loopback",
+            "identity": {
+              "ssh_host_key": "not_applicable",
+              "worker_instance": "observed"
+            }
+          },
+          {
+            "name": "background_validation_completed",
+            "passed": true,
+            "elapsed_seconds": 29.874,
+            "tracking_id": "mcp-task-74f8a2e739e345e7a6de5a977b77c147",
+            "remote_task_id": "0d49a5adc633485fbcec3c17eda8077c",
+            "validation_exit_code": 0
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 31.556,
+            "tracking_id": "mcp-task-ec0506869ee247f2bebd4a2967bf9c93",
+            "remote_task_id": "6c7b58b2ad574eb8af3c5345158a556c"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 31.556,
+            "transport": "loopback",
+            "identity": {
+              "ssh_host_key": "not_applicable",
+              "worker_instance": "observed"
+            }
+          },
+          {
+            "name": "background_validation_failed",
+            "passed": true,
+            "elapsed_seconds": 32.654,
+            "tracking_id": "mcp-task-ec0506869ee247f2bebd4a2967bf9c93",
+            "remote_task_id": "6c7b58b2ad574eb8af3c5345158a556c",
+            "validation_exit_code": 1
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 34.205,
+            "tracking_id": "mcp-task-24879b1c0ab942da92797e8eecdfebca",
+            "remote_task_id": "30a98683a2694bb68f59466e6f098d60"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 34.205,
+            "transport": "loopback",
+            "identity": {
+              "ssh_host_key": "not_applicable",
+              "worker_instance": "observed"
+            }
+          },
+          {
+            "name": "outage_is_retryable_not_terminal",
+            "passed": true,
+            "elapsed_seconds": 35.927
+          },
+          {
+            "name": "reconnect_requires_explicit_recovery",
+            "passed": true,
+            "elapsed_seconds": 36.992
+          },
+          {
+            "name": "no_replayed_sessions_or_turns",
+            "passed": true,
+            "elapsed_seconds": 36.993,
+            "submitted_tasks": 4
+          },
+          {
+            "name": "source_checkout_unchanged",
+            "passed": true,
+            "elapsed_seconds": 37.019
+          },
+          {
+            "name": "three_rounds_one_native_session_and_workspace",
+            "passed": true,
+            "elapsed_seconds": 41.124,
+            "conversation_rounds": 3
+          },
+          {
+            "name": "continuation_reconcile_and_chat_scope",
+            "passed": true,
+            "elapsed_seconds": 41.124
+          },
+          {
+            "name": "chat_binding_survives_restart_and_routes_submit_to_continue",
+            "passed": true,
+            "elapsed_seconds": 57.44
+          },
+          {
+            "name": "chat_binding_reconcile_and_project_switch_no_new_native_turn",
+            "passed": true,
+            "elapsed_seconds": 57.44
+          },
+          {
+            "name": "pinned_upstream_unchanged",
+            "passed": true,
+            "elapsed_seconds": 57.529
+          }
+        ],
+        "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "deermate_source_sha256": "996b38f7dc59fa046a372636aa2af054af340af91348a2942870ea458ed2a319",
+        "gateway_runtime": {
+          "python": "3.12.14",
+          "packages": {
+            "deerflow-harness": "2.1.0",
+            "deerflow-extension-api": "0.2.9",
+            "fastapi": "0.136.1",
+            "sqlalchemy": "2.0.49",
+            "mcp": "1.30.0",
+            "langchain-mcp-adapters": "0.2.2",
+            "cryptography": "50.0.0"
+          }
+        },
+        "started_at": "2026-11-16T17:55:32.591878+00:00",
+        "finished_at": "2026-11-16T17:56:30.285297+00:00",
+        "retained_receipt_sha256": "8d0bbaeb1cc8b042dd1236ddc63198f48224190444445d482e2c2aba6c1b5f33",
+        "native_runtime": "Offline protocol fixture, not real Codex"
+      },
+      {
+        "command": "python scripts/verify_deerflow_gateway.py --checkout <clean-pinned-checkout> --gateway-python <pinned-runtime-python> --transport ssh --work-dir .deermate/issue1/gateway-ssh --receipt .deermate/issue1/gateway-ssh.json",
+        "transport": "ssh",
+        "passed": true,
+        "checks": [
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 16.863,
+            "tracking_id": "mcp-task-fc5b1e8d56074c2eacffb54089e4416f",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:aedde9f28ab94415ab2a1e58fbeec865"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 16.863,
+            "transport": "ssh",
+            "identity": {
+              "ssh_host_key": "verified",
+              "worker_instance": "pinned"
+            }
+          },
+          {
+            "name": "ssh_instance_bound_path",
+            "passed": true,
+            "elapsed_seconds": 17.079,
+            "worker_instance_id": "21aaa3aed73247eaab96cd96fb50c233",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:aedde9f28ab94415ab2a1e58fbeec865"
+          },
+          {
+            "name": "worker_survives_gateway_stop",
+            "passed": true,
+            "elapsed_seconds": 17.44
+          },
+          {
+            "name": "gateway_process_restart_preserves_identity",
+            "passed": true,
+            "elapsed_seconds": 26.06,
+            "tracking_id": "mcp-task-fc5b1e8d56074c2eacffb54089e4416f",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:aedde9f28ab94415ab2a1e58fbeec865",
+            "native_session_id": "03bdca52af7641ecb4b95dc706082792"
+          },
+          {
+            "name": "http_cancel_confirmed_in_sql_and_worker",
+            "passed": true,
+            "elapsed_seconds": 26.972
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 29.408,
+            "tracking_id": "mcp-task-e82193c93b8b4807b7d5d63676800293",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:d15aaad65f134513a040fa0e767606eb"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 29.408,
+            "transport": "ssh",
+            "identity": {
+              "ssh_host_key": "verified",
+              "worker_instance": "pinned"
+            }
+          },
+          {
+            "name": "background_validation_completed",
+            "passed": true,
+            "elapsed_seconds": 30.517,
+            "tracking_id": "mcp-task-e82193c93b8b4807b7d5d63676800293",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:d15aaad65f134513a040fa0e767606eb",
+            "validation_exit_code": 0
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 32.374,
+            "tracking_id": "mcp-task-05dbf4b514d541a4add2d12c7d664753",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:fc9788a4821646cda9237eaca9365a2f"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 32.374,
+            "transport": "ssh",
+            "identity": {
+              "ssh_host_key": "verified",
+              "worker_instance": "pinned"
+            }
+          },
+          {
+            "name": "background_validation_failed",
+            "passed": true,
+            "elapsed_seconds": 33.693,
+            "tracking_id": "mcp-task-05dbf4b514d541a4add2d12c7d664753",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:fc9788a4821646cda9237eaca9365a2f",
+            "validation_exit_code": 1
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 35.513,
+            "tracking_id": "mcp-task-e0ec376f4b7b4dc1b1e955546ffe27fd",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:c62e32e522634c2589524e5fdd659898"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 35.513,
+            "transport": "ssh",
+            "identity": {
+              "ssh_host_key": "verified",
+              "worker_instance": "pinned"
+            }
+          },
+          {
+            "name": "ssh_outage_preserves_running_worker",
+            "passed": true,
+            "elapsed_seconds": 36.944
+          },
+          {
+            "name": "ssh_reconnect_preserves_identity",
+            "passed": true,
+            "elapsed_seconds": 38.031,
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:c62e32e522634c2589524e5fdd659898",
+            "native_session_id": "f59fb618d0464b7f9e1eaf8e07b068c9"
+          },
+          {
+            "name": "ssh_revocation_does_not_claim_cancelled",
+            "passed": true,
+            "elapsed_seconds": 39.128
+          },
+          {
+            "name": "ssh_grant_restore_completes_requested_cancel",
+            "passed": true,
+            "elapsed_seconds": 40.216
+          },
+          {
+            "name": "sql_submission_and_hidden_control_tools",
+            "passed": true,
+            "elapsed_seconds": 42.046,
+            "tracking_id": "mcp-task-703740e2265d4c87bd611ff3a74e0746",
+            "remote_task_id": "21aaa3aed73247eaab96cd96fb50c233:5a6ed16cd57e43d2a76eaf968ffc9d52"
+          },
+          {
+            "name": "read_only_worker_preflight_through_gateway",
+            "passed": true,
+            "elapsed_seconds": 42.046,
+            "transport": "ssh",
+            "identity": {
+              "ssh_host_key": "verified",
+              "worker_instance": "pinned"
+            }
+          },
+          {
+            "name": "outage_is_retryable_not_terminal",
+            "passed": true,
+            "elapsed_seconds": 43.328
+          },
+          {
+            "name": "reconnect_requires_explicit_recovery",
+            "passed": true,
+            "elapsed_seconds": 44.39
+          },
+          {
+            "name": "no_replayed_sessions_or_turns",
+            "passed": true,
+            "elapsed_seconds": 44.39,
+            "submitted_tasks": 5
+          },
+          {
+            "name": "source_checkout_unchanged",
+            "passed": true,
+            "elapsed_seconds": 44.415
+          },
+          {
+            "name": "three_rounds_one_native_session_and_workspace",
+            "passed": true,
+            "elapsed_seconds": 48.738,
+            "conversation_rounds": 3
+          },
+          {
+            "name": "continuation_reconcile_and_chat_scope",
+            "passed": true,
+            "elapsed_seconds": 48.738
+          },
+          {
+            "name": "chat_binding_survives_restart_and_routes_submit_to_continue",
+            "passed": true,
+            "elapsed_seconds": 65.315
+          },
+          {
+            "name": "chat_binding_reconcile_and_project_switch_no_new_native_turn",
+            "passed": true,
+            "elapsed_seconds": 65.316
+          },
+          {
+            "name": "pinned_upstream_unchanged",
+            "passed": true,
+            "elapsed_seconds": 65.387
+          },
+          {
+            "name": "ssh_fixture_enforced_forwarding",
+            "passed": true,
+            "elapsed_seconds": 65.388,
+            "generation": 2,
+            "connections": 13,
+            "authenticated": 13,
+            "forward_requests": 15,
+            "denied_forwards": 0,
+            "denied_sessions": 0
+          }
+        ],
+        "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+        "deermate_source_sha256": "996b38f7dc59fa046a372636aa2af054af340af91348a2942870ea458ed2a319",
+        "gateway_runtime": {
+          "python": "3.12.14",
+          "packages": {
+            "deerflow-harness": "2.1.0",
+            "deerflow-extension-api": "0.2.9",
+            "fastapi": "0.136.1",
+            "sqlalchemy": "2.0.49",
+            "mcp": "1.30.0",
+            "langchain-mcp-adapters": "0.2.2",
+            "cryptography": "50.0.0"
+          }
+        },
+        "started_at": "2026-11-16T17:55:32.591846+00:00",
+        "finished_at": "2026-11-16T17:56:38.527976+00:00",
+        "retained_receipt_sha256": "5547aea97889f27742ca67d01d88904229b8f346dbbb23b2c942a0f4611755d1",
+        "native_runtime": "Offline protocol fixture, not real Codex"
+      }
+    ]
+  }
 }
