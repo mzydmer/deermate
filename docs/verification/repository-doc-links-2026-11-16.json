@@ -1,0 +1,1117 @@
+{
+  "issue": "https://github.com/mzydmer/deermate/issues/8",
+  "updated_at": "2026-11-16T17:23:46.432486+00:00",
+  "task_base_sha": "47c9d1a156d3db3c388871e60dafe386ce7cc10b",
+  "complete": true,
+  "status": "complete: offline, local production site and GitHub PR-branch acceptance passed; independent review pending",
+  "inventory_before": {
+    "articles": 14,
+    "image_references": 7,
+    "unique_svg_files": [
+      "architecture.svg",
+      "authorization.svg",
+      "execution.svg",
+      "memory.svg",
+      "observability.svg",
+      "quickstart.svg",
+      "recovery.svg"
+    ],
+    "document_link_references": 16,
+    "references": [
+      {
+        "source": "docs/product/guide/authorization.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/authorization.svg"
+      },
+      {
+        "source": "docs/product/guide/continuous.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/guide/continuous.md",
+        "image": false,
+        "href": "/docs/guide/memory"
+      },
+      {
+        "source": "docs/product/guide/continuous.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/quickstart"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/conversations"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/focus"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/guide/memory"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/technical/architecture"
+      },
+      {
+        "source": "docs/product/guide/overview.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/quickstart.svg"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/authorization"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/conversations"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/focus"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/memory"
+      },
+      {
+        "source": "docs/product/guide/quickstart.md",
+        "image": false,
+        "href": "/docs/guide/continuous"
+      },
+      {
+        "source": "docs/product/technical/architecture.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/architecture.svg"
+      },
+      {
+        "source": "docs/product/technical/architecture.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/observability.svg"
+      },
+      {
+        "source": "docs/product/technical/architecture.md",
+        "image": false,
+        "href": "/docs/technical/evaluation"
+      },
+      {
+        "source": "docs/product/technical/evaluation.md",
+        "image": false,
+        "href": "/docs/changelog"
+      },
+      {
+        "source": "docs/product/technical/memory.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/memory.svg"
+      },
+      {
+        "source": "docs/product/technical/orchestration.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/execution.svg"
+      },
+      {
+        "source": "docs/product/technical/orchestration.md",
+        "image": true,
+        "href": "/deermate/docs/diagrams/recovery.svg"
+      }
+    ]
+  },
+  "migration": {
+    "changed_articles": [
+      "guide/authorization",
+      "guide/continuous",
+      "guide/overview",
+      "guide/quickstart",
+      "technical/architecture",
+      "technical/evaluation",
+      "technical/memory",
+      "technical/orchestration"
+    ],
+    "converted_references": {
+      "documents": 16,
+      "images": 7
+    }
+  },
+  "route_contract": {
+    "articles": 14,
+    "all_site_link_and_image_destinations_unchanged": true,
+    "only_intended_body_changes": [
+      "changelog"
+    ],
+    "pure_source_path_migration_pre_changelog_was_byte_identical": true,
+    "images": 7
+  },
+  "checks": [
+    {
+      "command": "python -m pytest -q tests/test_product_docs.py",
+      "result": "46 passed, including six actual CLI failure cases with a minimal environment"
+    },
+    {
+      "command": "ruff check scripts/product_docs.py tests/test_product_docs.py",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/product_docs.py --write; python scripts/product_docs.py --base 47c9d1a156d3db3c388871e60dafe386ce7cc10b",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/design_gate.py; python scripts/sync_design_tokens.py --check; python scripts/product_doc_diagrams.py",
+      "result": "passed; seven diagrams match"
+    }
+  ],
+  "initial_test_failure": {
+    "passed": 40,
+    "failed": 6,
+    "cause": "New CLI fixtures used mkdir without exist_ok although catalog evidence had already created the scripts directory. Fixed fixture setup; all six CLI cases then passed."
+  },
+  "security_coverage": [
+    "registered sibling/cross-directory/percent-encoded article links",
+    "unchanged HTTPS query/fragment links",
+    "missing or uncatalogued articles",
+    "website-root/protocol/query/fragment rejection for local targets",
+    "encoded traversal and absolute paths",
+    "file and parent-directory symlinks",
+    "external symlink followed by .. back to a registered target",
+    "no outside-file read before rejection",
+    "missing SVG and unsafe script SVG",
+    "reference-definition bypass rejection"
+  ],
+  "pending": [],
+  "new_model_requests": 0,
+  "new_native_turns": 0,
+  "checked_file_sha256": {
+    "scripts/product_docs.py": "b34d245652036da7b934e557b0d239b41eb56a5acd34b7b11297c93e4ea89b0c",
+    "tests/test_product_docs.py": "4711940be11bc52a285656fdd4137391b92e4a8ea323630bfeb5c8c154d34eb0",
+    ".github/workflows/ci.yml": "d6c1fe9ffc4358671a1d188c744bd0361f8751f66eea273c73d259cb10343b0e",
+    "docs/DOCUMENTATION_POLICY.md": "9dd0c9b87e5c16b9092bcc5bb6a1c867a23eb62c0af3cd015f4224e464d02b24",
+    "frontend/overlay/src/components/deermate/product-docs.generated.json": "f05cf21a633d80309217ed8599e98f436221a8728bbb58b4d8dbd762b16699bc"
+  },
+  "svg_sha256": {
+    "architecture.svg": "5a6c57e1a0429a02316113d03c40f0cb384df9f17941ec25ca197bdf01bad2c7",
+    "authorization.svg": "c06fc3a4a140a682a4962f410bdc33e23a893c9a5ffe3400beed5b1ec9769593",
+    "execution.svg": "b1e634ab3e67013c537bcddb37801f7b2570efb61627d24680a01cb41161c509",
+    "memory.svg": "0d50c24ddc21d34e0f81e106751de262d652eb8b80244bf9dd8402398b122860",
+    "observability.svg": "533ac75fee340da17893850eb45244c42d574375afec27614beee06780baaf19",
+    "quickstart.svg": "78ab70745a0e7afa0abf498c8e075b7165aefbefcfad0b5c71cc76b11e72ade9",
+    "recovery.svg": "e3498169a7a74451cf1f4a510b31fd0e1cf7d4f37022cd0a6e5105662891631d"
+  },
+  "limits": [
+    "GitHub acceptance is on PR branch head 7651f77, not the main branch before merge; the reviewer owns the post-merge default-branch check.",
+    "No production or personal-instance deployment; all local writes are confined to task-owned profiles and generated inputs.",
+    "No model or Native execution acceptance; isolated runtime databases remain unchanged and empty before/after documentation browsing.",
+    "Docker default address-pool exhaustion required stopping only the completed issue-3 temporary stack. The original protected twelve containers are unchanged; do not describe all temporary containers as unchanged.",
+    "Private raw Playwright network errors may contain anonymous cookies; only sanitized classifications and file hashes are retained here."
+  ],
+  "github_rendering": {
+    "tested_head": "7651f77c2de67ac6b0f72875701e6a74d28be9f1",
+    "same_tab_normal_clicks": {
+      "passed": true,
+      "ref": "fix/issue-8-repository-doc-links",
+      "browser_version": "151.0.7922.34",
+      "flows": [
+        {
+          "readme": "README.md",
+          "readme_status": 200,
+          "overview": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "quickstart": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "authorization": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "quickstart_image": {
+            "src": "https://github.com/mzydmer/deermate/raw/fix/issue-8-repository-doc-links/frontend/overlay/public/deermate/docs/diagrams/quickstart.svg",
+            "alt": " 从一个目标到可检查的结果",
+            "width": 132,
+            "height": 150
+          }
+        },
+        {
+          "readme": "README.zh-CN.md",
+          "readme_status": 200,
+          "overview": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "quickstart": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "authorization": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "quickstart_image": {
+            "src": "https://github.com/mzydmer/deermate/raw/fix/issue-8-repository-doc-links/frontend/overlay/public/deermate/docs/diagrams/quickstart.svg",
+            "alt": " 从一个目标到可检查的结果",
+            "width": 132,
+            "height": 150
+          }
+        }
+      ],
+      "navigation": [
+        {
+          "href": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "target": "",
+          "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "mode": "normal same-tab click"
+        },
+        {
+          "href": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "target": "",
+          "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "mode": "normal same-tab click"
+        },
+        {
+          "href": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "target": "",
+          "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "mode": "normal same-tab click"
+        },
+        {
+          "href": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "target": "",
+          "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "mode": "normal same-tab click"
+        },
+        {
+          "href": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "target": "",
+          "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "mode": "normal same-tab click"
+        },
+        {
+          "href": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "target": "",
+          "actual": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "mode": "normal same-tab click"
+        }
+      ],
+      "responses": [
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/README.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/README.zh-CN.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/overview.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+          "status": 200
+        },
+        {
+          "path": "/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/authorization.md",
+          "status": 200
+        }
+      ],
+      "request_failed": [
+        {
+          "host": "viewscreen.githubusercontent.com",
+          "path": "/static/assets/mermaidMarkdown-5b99bd9a2037271fa4cf.js",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "viewscreen.githubusercontent.com",
+          "path": "/static/assets/mermaidMarkdown-5b99bd9a2037271fa4cf.js",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "created_pages": 1
+    },
+    "quickstart_geometry": {
+      "passed": true,
+      "url": "https://github.com/mzydmer/deermate/blob/fix/issue-8-repository-doc-links/docs/product/guide/quickstart.md",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "src": "https://github.com/mzydmer/deermate/raw/fix/issue-8-repository-doc-links/frontend/overlay/public/deermate/docs/diagrams/quickstart.svg",
+        "alt": " 从一个目标到可检查的结果",
+        "natural_width": 132,
+        "natural_height": 150,
+        "rendered": {
+          "x": 374.5,
+          "y": 95.59375,
+          "width": 1011.984375,
+          "height": 1152.109375
+        }
+      },
+      "assets": [
+        {
+          "host": "github.com",
+          "path": "/mzydmer/deermate/raw/fix/issue-8-repository-doc-links/frontend/overlay/public/deermate/docs/diagrams/quickstart.svg",
+          "status": 302,
+          "type": "text/html; charset=utf-8"
+        },
+        {
+          "host": "raw.githubusercontent.com",
+          "path": "/mzydmer/deermate/fix/issue-8-repository-doc-links/frontend/overlay/public/deermate/docs/diagrams/quickstart.svg",
+          "status": 200,
+          "type": "image/svg+xml",
+          "sha256": "78ab70745a0e7afa0abf498c8e075b7165aefbefcfad0b5c71cc76b11e72ade9"
+        }
+      ]
+    },
+    "screenshots_visually_inspected": true,
+    "initial_failures": [
+      {
+        "probe": "initial browser flow",
+        "failure": "waitForURL default load timeout; not classified as a 404. DOM inspection showed the expected href, empty target, and a single page navigating to overview."
+      },
+      {
+        "probe": "supplementary Node APIRequestContext GET",
+        "failure": "TLS connection disconnected before handshake; this separate HTTP path was removed from browser acceptance. Raw private error includes anonymous cookies and is retained only as a private file/hash."
+      }
+    ],
+    "final_method": "Browser response/requestfailed events, actual DOM href/target, ordinary same-tab clicks, domcontentloaded, article headings and decoded SVG dimensions. A separate modifier-click pass also passed but is not substituted for the normal-click acceptance.",
+    "default_branch_verified": false,
+    "post_merge_followup": "Independent reviewer verifies README/default-branch navigation after merging PR #14."
+  },
+  "local_site": {
+    "commands": [
+      {
+        "command": "python .deermate/issue8/run_local.py build --frontend-only",
+        "exit_code": 0,
+        "scope": "only the frontend rebuilt; four accepted runtime images reused with source-hash verification"
+      },
+      {
+        "command": "<issue3 public fresh-venv>/bin/python <issue3>/.deermate/issue3/run_local.py down",
+        "exit_code": 0,
+        "scope": "explicitly authorized task-owned cleanup; named volumes/images/state retained"
+      },
+      {
+        "command": "python .deermate/issue8/run_local.py up",
+        "exit_code": 0,
+        "scope": "four issue-8 application containers healthy"
+      },
+      {
+        "command": "python .deermate/issue8/snapshot.py",
+        "exit_code": 0,
+        "scope": "before and after browser navigation"
+      },
+      {
+        "command": "docker run --name deermate-issue8-site --network container:deermate-issue8-20261116-nginx-1 --entrypoint node -i deermate.local/issue3-browser:20261116 - < .deermate/issue8/site_probe.cjs",
+        "exit_code": 0
+      }
+    ],
+    "isolation": {
+      "compose_project": "deermate-issue8-20261116",
+      "host_bind": "127.0.0.1:22068 -> nginx:2026",
+      "worker_port": 18798,
+      "ssh_port": 19848,
+      "browser_origin": "http://localhost:2026 in this profile nginx network namespace",
+      "product_default_network_modified": false
+    },
+    "frontend_build_receipt": {
+      "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "platform": "linux/amd64",
+      "pushed": false,
+      "images": {
+        "frontend": "deermate.local/issue8/deermate-frontend:docs-20261116"
+      }
+    },
+    "frontend_source": {
+      "frontend_generated_json_sha256": "f05cf21a633d80309217ed8599e98f436221a8728bbb58b4d8dbd762b16699bc",
+      "matches_worktree": true,
+      "frontend_image": "sha256:235a36a17ee7fdcabf9f7223e522910b1fd669551f06d57d313dbb465e1fa6f9"
+    },
+    "reused_images": {
+      "control": {
+        "id": "sha256:92f3ea4a34637e67bfc4278496059180a7f1401cd6b16af6b23e2c3d8ba9005a",
+        "reference": "deermate.local/issue8/deermate-control:docs-20261116",
+        "basis": "same unchanged runtime source; source hash retained separately"
+      },
+      "gateway": {
+        "id": "sha256:48103040118b71d4267be5e3dbf73c65c931b0c580839be5df7eb9b5356c4f1e",
+        "reference": "deermate.local/issue8/deermate-gateway:docs-20261116",
+        "basis": "same unchanged runtime source; source hash retained separately"
+      },
+      "nginx": {
+        "id": "sha256:d154f750562b438af461f76a3d08ccbfddb62da13b7d01fc3014c4642f91e746",
+        "reference": "deermate.local/issue8/deermate-nginx:docs-20261116",
+        "basis": "same unchanged runtime source; source hash retained separately"
+      },
+      "tools": {
+        "id": "sha256:181c4fd94fcd5c242830a4bd405f9f275679df88f600d0dc2a965a9ffdde50af",
+        "reference": "deermate.local/issue8/deermate-tools:docs-20261116",
+        "basis": "same unchanged runtime source; source hash retained separately"
+      }
+    },
+    "runtime_source": {
+      "deermate_package_sha256": "2317bfe74711ee9f83554eca95a90cded63317a13bac04b2614c8a1cd9a07701",
+      "matches_accepted_issue3_gateway": true
+    },
+    "browser": {
+      "passed": true,
+      "origin": "http://localhost:2026 in issue-8 nginx network namespace",
+      "browser_version": "151.0.7922.34",
+      "pages": [
+        {
+          "slug": "guide/overview",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 6,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "guide/quickstart",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 5,
+          "rendered_svg": 1
+        },
+        {
+          "slug": "guide/conversations",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "guide/focus",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "guide/memory",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "guide/tools",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "guide/authorization",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 1
+        },
+        {
+          "slug": "guide/continuous",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 3,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "guide/faq",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "technical/architecture",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 1,
+          "rendered_svg": 2
+        },
+        {
+          "slug": "technical/orchestration",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 2
+        },
+        {
+          "slug": "technical/memory",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 1
+        },
+        {
+          "slug": "technical/evaluation",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 1,
+          "rendered_svg": 0
+        },
+        {
+          "slug": "changelog",
+          "status": 200,
+          "title_visible": true,
+          "document_links": 0,
+          "rendered_svg": 0
+        }
+      ],
+      "figures": [
+        {
+          "src": "/deermate/docs/diagrams/quickstart.svg",
+          "alt": " 从一个目标到可检查的结果",
+          "width": 132,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 817.40625
+          },
+          "status": 200,
+          "sha256": "78ab70745a0e7afa0abf498c8e075b7165aefbefcfad0b5c71cc76b11e72ade9",
+          "page": "/docs/guide/quickstart"
+        },
+        {
+          "src": "/deermate/docs/diagrams/authorization.svg",
+          "alt": " 设备授权：连接与执行就绪分别确认",
+          "width": 132,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 817.40625
+          },
+          "status": 200,
+          "sha256": "c06fc3a4a140a682a4962f410bdc33e23a893c9a5ffe3400beed5b1ec9769593",
+          "page": "/docs/guide/authorization"
+        },
+        {
+          "src": "/deermate/docs/diagrams/architecture.svg",
+          "alt": " 系统架构：控制、推理与设备执行",
+          "width": 210,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 514.015625
+          },
+          "status": 200,
+          "sha256": "5a6c57e1a0429a02316113d03c40f0cb384df9f17941ec25ca197bdf01bad2c7",
+          "page": "/docs/technical/architecture"
+        },
+        {
+          "src": "/deermate/docs/diagrams/observability.svg",
+          "alt": "可选调用链：持久身份与跨进程关联",
+          "width": 203,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 530.328125
+          },
+          "status": 200,
+          "sha256": "533ac75fee340da17893850eb45244c42d574375afec27614beee06780baaf19",
+          "page": "/docs/technical/architecture"
+        },
+        {
+          "src": "/deermate/docs/diagrams/execution.svg",
+          "alt": " 一轮执行的接纳与反馈",
+          "width": 113,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 955.484375
+          },
+          "status": 200,
+          "sha256": "b1e634ab3e67013c537bcddb37801f7b2570efb61627d24680a01cb41161c509",
+          "page": "/docs/technical/orchestration"
+        },
+        {
+          "src": "/deermate/docs/diagrams/recovery.svg",
+          "alt": " 结果未知时：核对原操作，不自动重发",
+          "width": 194,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 556.4375
+          },
+          "status": 200,
+          "sha256": "e3498169a7a74451cf1f4a510b31fd0e1cf7d4f37022cd0a6e5105662891631d",
+          "page": "/docs/technical/orchestration"
+        },
+        {
+          "src": "/deermate/docs/diagrams/memory.svg",
+          "alt": "记忆生命周期：来源与遗忘屏障",
+          "width": 113,
+          "height": 150,
+          "rendered": {
+            "width": 718,
+            "height": 955.484375
+          },
+          "status": 200,
+          "sha256": "0d50c24ddc21d34e0f81e106751de262d652eb8b80244bf9dd8402398b122860",
+          "page": "/docs/technical/memory"
+        }
+      ],
+      "actual_navigation": [
+        "/docs/guide/overview",
+        "/docs/guide/quickstart",
+        "/docs/guide/authorization"
+      ],
+      "page_errors": [],
+      "attempted_writes": [],
+      "new_pending_changelog_visible": true
+    },
+    "before": {
+      "gateway_table_counts": {
+        "agents": 0,
+        "alembic_version": 1,
+        "channel_connections": 0,
+        "channel_conversations": 0,
+        "channel_credentials": 0,
+        "channel_leases": 0,
+        "channel_oauth_states": 0,
+        "channel_runtime_configs": 0,
+        "channel_thread_bindings": 0,
+        "completed_run_snapshots": 0,
+        "deermate_agent_devices": 0,
+        "deermate_agent_events": 0,
+        "deermate_agent_grants": 0,
+        "deermate_agent_pairs": 0,
+        "deermate_agent_requests": 0,
+        "deermate_attention_topics": 0,
+        "deermate_audit": 0,
+        "deermate_briefing_intents": 0,
+        "deermate_briefing_snapshots": 0,
+        "deermate_control_meta": 1,
+        "deermate_login_attempts": 0,
+        "deermate_memory_barriers": 0,
+        "deermate_memory_history": 0,
+        "deermate_memory_history_items": 0,
+        "deermate_memory_jobs": 0,
+        "deermate_memory_model_budget": 0,
+        "deermate_memory_operations": 0,
+        "deermate_memory_project_topics": 0,
+        "deermate_memory_projects": 0,
+        "deermate_memory_refs": 0,
+        "deermate_memory_sources": 0,
+        "deermate_memory_stage_ends": 0,
+        "deermate_memory_usage": 0,
+        "deermate_operation_trace": 0,
+        "deermate_personal_profiles": 0,
+        "deermate_sessions": 0,
+        "deermate_topic_memory": 0,
+        "deermate_work_budget": 0,
+        "deermate_work_keys": 0,
+        "deermate_work_records": 0,
+        "deermate_workspace_feedback": 0,
+        "extension_execution_leases": 0,
+        "feedback": 0,
+        "im_notification_preferences": 0,
+        "login_throttle": 0,
+        "managed_subagents": 0,
+        "mcp_oauth_tokens": 0,
+        "mcp_tasks": 0,
+        "notification_deliveries": 0,
+        "personal_access_tokens": 0,
+        "project_documents": 0,
+        "projects": 0,
+        "run_change_clock": 0,
+        "run_event_thread_seq": 0,
+        "run_events": 0,
+        "runs": 0,
+        "scheduled_task_events": 0,
+        "scheduled_task_runs": 0,
+        "scheduled_tasks": 0,
+        "skill_mutation_assets": 0,
+        "skill_mutation_operations": 0,
+        "skill_mutation_owners": 0,
+        "skill_mutation_proposals": 0,
+        "skill_mutation_scan_attempts": 0,
+        "sqlite_sequence": 0,
+        "subagent_batch_items": 0,
+        "subagent_batches": 0,
+        "thread_read_markers": 0,
+        "thread_read_versions": 0,
+        "threads_meta": 0,
+        "user_preferences": 0,
+        "users": 0,
+        "webhook_deliveries": 0
+      },
+      "worker_table_counts": {
+        "tasks": 0,
+        "events": 0,
+        "requests": 0,
+        "conversation_heads": 0
+      }
+    },
+    "after": {
+      "gateway_table_counts": {
+        "agents": 0,
+        "alembic_version": 1,
+        "channel_connections": 0,
+        "channel_conversations": 0,
+        "channel_credentials": 0,
+        "channel_leases": 0,
+        "channel_oauth_states": 0,
+        "channel_runtime_configs": 0,
+        "channel_thread_bindings": 0,
+        "completed_run_snapshots": 0,
+        "deermate_agent_devices": 0,
+        "deermate_agent_events": 0,
+        "deermate_agent_grants": 0,
+        "deermate_agent_pairs": 0,
+        "deermate_agent_requests": 0,
+        "deermate_attention_topics": 0,
+        "deermate_audit": 0,
+        "deermate_briefing_intents": 0,
+        "deermate_briefing_snapshots": 0,
+        "deermate_control_meta": 1,
+        "deermate_login_attempts": 0,
+        "deermate_memory_barriers": 0,
+        "deermate_memory_history": 0,
+        "deermate_memory_history_items": 0,
+        "deermate_memory_jobs": 0,
+        "deermate_memory_model_budget": 0,
+        "deermate_memory_operations": 0,
+        "deermate_memory_project_topics": 0,
+        "deermate_memory_projects": 0,
+        "deermate_memory_refs": 0,
+        "deermate_memory_sources": 0,
+        "deermate_memory_stage_ends": 0,
+        "deermate_memory_usage": 0,
+        "deermate_operation_trace": 0,
+        "deermate_personal_profiles": 0,
+        "deermate_sessions": 0,
+        "deermate_topic_memory": 0,
+        "deermate_work_budget": 0,
+        "deermate_work_keys": 0,
+        "deermate_work_records": 0,
+        "deermate_workspace_feedback": 0,
+        "extension_execution_leases": 0,
+        "feedback": 0,
+        "im_notification_preferences": 0,
+        "login_throttle": 0,
+        "managed_subagents": 0,
+        "mcp_oauth_tokens": 0,
+        "mcp_tasks": 0,
+        "notification_deliveries": 0,
+        "personal_access_tokens": 0,
+        "project_documents": 0,
+        "projects": 0,
+        "run_change_clock": 0,
+        "run_event_thread_seq": 0,
+        "run_events": 0,
+        "runs": 0,
+        "scheduled_task_events": 0,
+        "scheduled_task_runs": 0,
+        "scheduled_tasks": 0,
+        "skill_mutation_assets": 0,
+        "skill_mutation_operations": 0,
+        "skill_mutation_owners": 0,
+        "skill_mutation_proposals": 0,
+        "skill_mutation_scan_attempts": 0,
+        "sqlite_sequence": 0,
+        "subagent_batch_items": 0,
+        "subagent_batches": 0,
+        "thread_read_markers": 0,
+        "thread_read_versions": 0,
+        "threads_meta": 0,
+        "user_preferences": 0,
+        "users": 0,
+        "webhook_deliveries": 0
+      },
+      "worker_table_counts": {
+        "tasks": 0,
+        "events": 0,
+        "requests": 0,
+        "conversation_heads": 0
+      }
+    },
+    "resource_failure_and_resolution": {
+      "startup_attempts_before_resolution": 2,
+      "observed_failure": "Docker: all predefined address pools have been fully subnetted",
+      "attempt2_raw_log": "up-address-pool-attempt2.log",
+      "explicit_subnet_applied": false,
+      "cidr_candidate_diagnostic": "All candidates were covered by existing Docker subnets or host routes; no Compose/daemon network setting was changed.",
+      "resolution_authorization": "Coordinator explicitly authorized stopping only this agent-owned issue-3 Compose stack and completed test browsers, retaining volumes/images/logs.",
+      "protected_original_application_containers": 12,
+      "global_prune_or_daemon_change": false,
+      "resolved": true,
+      "resolution": "Stopped only the completed agent-owned issue-3 profile with its private runner down; retained all five named volumes, five image IDs and state. Removed only completed agent-owned browser containers, then started issue-8 with its unchanged default network configuration."
+    },
+    "preservation": {
+      "protected_original_containers": 12,
+      "all_running_ids_start_times_restart_counts_unchanged": true,
+      "issue3_stack_stopped_with_explicit_coordinator_authorization": true,
+      "issue3_named_volumes_retained": [
+        "deermate-issue3-20261116_credentials",
+        "deermate-issue3-20261116_frontend-cache",
+        "deermate-issue3-20261116_home",
+        "deermate-issue3-20261116_nginx-cache",
+        "deermate-issue3-20261116_stage"
+      ],
+      "issue3_five_image_ids_preserved": true,
+      "issue3_worker_database_retained": true,
+      "only_agent_owned_completed_browsers_removed": true
+    },
+    "new_model_requests": 0,
+    "new_native_turns": 0
+  },
+  "remote_ci": {
+    "implementation_head": "7651f77c2de67ac6b0f72875701e6a74d28be9f1",
+    "runs": [
+      {
+        "event": "pull_request",
+        "run_url": "https://github.com/mzydmer/deermate/actions/runs/43914707490",
+        "jobs": [
+          {
+            "name": "worker (macos-latest, 3.12)",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "steps": null
+          },
+          {
+            "name": "observability",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-contract",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "ack-package",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-intents",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (ssh)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "design-system",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (local)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-ui",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "go-control",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "product-docs",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "worker (ubuntu-latest, 3.11)",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "passed_jobs": 11,
+        "total_jobs": 12,
+        "fully_passed": false,
+        "capacity_annotation_reported_by_independent_reviewer": "The job was not acquired by Runner of type hosted even after multiple attempts",
+        "annotation_check_run": 133465624193,
+        "macos_test_steps_executed": false
+      },
+      {
+        "event": "push",
+        "run_url": "https://github.com/mzydmer/deermate/actions/runs/43914594729",
+        "jobs": [
+          {
+            "name": "design-system",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-ui",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-contract",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (local)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "observability",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "worker (macos-latest, 3.12)",
+            "status": "completed",
+            "conclusion": "success",
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run actions/setup-python@v5",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run python -m pip install -e '.[dev]'",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Run ruff check src tests scripts/deerflow_lock.py scripts/frontend_dev.py scripts/design_visual_fixture.py scripts/live_smoke.py scripts/verify_secretary.py scripts/verify_conversation.py scripts/verify_tooling.py scripts/verify_chat_sessions.py scripts/verify_personal_memory.py scripts/verify_deerflow_gateway.py scripts/ssh_demo_fixture.py scripts/demo_replay.py scripts/ack_deploy.py scripts/ack_image_smoke.py scripts/local_docker.py scripts/local_gateway.py scripts/local_container_init.py scripts/frontend_overlay.py scripts/verify_go_control.py scripts/sync_design_tokens.py scripts/single_host.py scripts/single_host_https.py scripts/prepare_continuous_fixture.py scripts/verify_continuous.py scripts/verify_continuous_load.py scripts/verify_continuous_native.py scripts/verify_continuous_rollback.py deploy/single-host/init.py frontend/motion/generate.py",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Run python -m pytest -q --ssh-receipt .deermate/verification/ssh-ci.json",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Run python -m build --wheel",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Run actions/upload-artifact@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Post Run actions/setup-python@v5",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 15
+              },
+              {
+                "name": "Post Run actions/checkout@v4",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 16
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 17
+              }
+            ]
+          },
+          {
+            "name": "worker (ubuntu-latest, 3.11)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "go-control",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "ack-package",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "product-docs",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "deerflow-gateway (ssh)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "frontend-intents",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "passed_jobs": 12,
+        "total_jobs": 12,
+        "fully_passed": true
+      }
+    ],
+    "note": "These results are for implementation head 7651f77. Final evidence commits trigger their own checks. No CI platform or test was skipped to address runner capacity."
+  },
+  "private_evidence_sha256": {
+    "github_probe.cjs": "dee4e9edf92a834dbc2c1f0f211b3779e68e84f7d3bc3f0895dbed3847d6c9b3",
+    "github_same_tab.cjs": "080f547ba788140c8f5a35b5834d14117b834bf5ddefe1dbc82274ac37ee89cb",
+    "github_geometry.cjs": "e7ad23faeb038e53a338595454538b11eaa198a818b246cb113456cd2063e58e",
+    "github.log": "142589e4c488b3c0702ee0f4ed51c4dbfd598db2043552e1f80e6a7fd18e8d1f",
+    "github-final.log": "8baca57deaaeccbda188bc5b5b9d5bd9b1169af73b69c15e211ee356ee1c311e",
+    "github-same-tab.json": "1f2d3dd3eca98d1e72ee540874fae120f7dd5636e56741faed3745c80fc09c46",
+    "github-geometry.json": "80fd7461c9550207ede4a4bec4505edbd01fa19c03b55acd8c308611895b3866",
+    "site_probe.cjs": "992287071664340da0a6b53043c0cbc819532362496a19c1350e432768612ee2",
+    "site.json": "487d8b96f3c23c1d53bba242936f41b16857e6f393ed3389b4bbf0a180a55a9d",
+    "build.log": "a778df7ae045bac5f7a074fbe411ef59ff6a83a372291988ad31f1ae80e864e7",
+    "up.log": "14085ae924ef8fe1b68a5af567a8e3cb32d51d4bd0191d74a2ac504ecef38db8",
+    "up-address-pool-attempt2.log": "7310b555363d3dc8b4a1c954b8b3b2b20120f943ce7808d8a8a2896f7efe1dce",
+    "issue3-owned-down.log": "a067f905929646aae651e5a00f11739e5c12b08717b147144ea9f6f04511c5ef",
+    "pytest-initial-fixture-failure.log": "27d2dadfeae955f0eac4cccc80ee8a3309cfd27167a197572c79738a8f4a74b2",
+    "pytest.log": "3b80568ea22dee161f2e0b797ce1bc19e9b025ce4e044204b044296cff02d288"
+  },
+  "private_screenshot_sha256": {
+    "github-en-authorization-same-tab.png": "ad38a3f9dd96f05af6b63fe230367d44de7f58edd8853d85e3c1c83a8af29638",
+    "github-en-quickstart-same-tab.png": "0abe3a023d00f5f9e9fa75d349e37a2ff98d072e82ff4ab32080b202e27b2ab8",
+    "github-en-quickstart.png": "1eb58b089a7d2d1ded6a66acabe5b6dbfb8b4c3eb060850a240708baabc7d249",
+    "github-failure.png": "956c66089ad313e537f4f1e9e2c78f09bb26ecf79ceb81e875afe25a3a41427a",
+    "github-figure-geometry.png": "14db7a67dea8ed6ad6f865f46dbcbafcf86980eb70216778d8fe0f5219ef6f59",
+    "github-zh-authorization-same-tab.png": "61f2428bd775a6e7b22fc22a74c1640711f436f351050c2c8292b61b4ed1999a",
+    "github-zh-authorization.png": "725139c894b3139b34df4ca1370e0c3a09b3907cd984710a9de3ca086be92df4",
+    "github-zh-quickstart-same-tab.png": "5e09175db73b5fed29695913e221fce096803e3ce3949ed220475f41c8f54ac2",
+    "site-guide-authorization.png": "6865aff8a3b740208074ff7613b48cfe7ad2e818a59a02a5bcb97110eedc5d6b",
+    "site-guide-overview.png": "cf72b29e554aecd4969f034f2f799e8f37322c5ef1d862d1c4df709bd4b073f7",
+    "site-guide-quickstart.png": "bcddff22d88ba9bc50202f95e6a351548034a0e5774d626bb6f424fd3eda8883",
+    "site-technical-architecture.png": "f98c878aa0320017494e12ef687300bb2b282c5a930433a3c58e1d6422304b44"
+  }
+}

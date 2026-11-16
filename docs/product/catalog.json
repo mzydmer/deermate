@@ -4,7 +4,7 @@
     "group": "guide",
     "title": "认识 DeerMate",
     "description": "了解工作台、秘书与执行 Agent 的分工，选择你的第一条使用路径。",
-    "updated": "2026-11-13",
+    "updated": "2026-11-16",
     "status": "Alpha",
     "sources": [
       "docs/STATUS.md",
@@ -17,7 +17,11 @@
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "docs/specs/frontend-overhaul.md",
-      "docs/verification/frontend-overhaul-cloud-2026-11-13.json"
+      "docs/verification/frontend-overhaul-cloud-2026-11-13.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -37,7 +41,11 @@
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "docs/local-docker.md",
       "docs/specs/m2-local-docker.md",
-      "docs/verification/local-onboarding-2026-11-16.json"
+      "docs/verification/local-onboarding-2026-11-16.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -117,12 +125,16 @@
     "group": "guide",
     "title": "设备与 Agent 授权",
     "description": "理解配对、本机确认、执行就绪、续期与撤销。",
-    "updated": "2026-11-05",
+    "updated": "2026-11-16",
     "status": "云端页面/API 已验收",
     "sources": [
       "docs/agent-authorizations.md",
       "docs/verification/agent-authorization-cloud-2026-11-04.json",
-      "docs/diagrams/product/diagrams.json"
+      "docs/diagrams/product/diagrams.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -130,7 +142,7 @@
     "group": "guide",
     "title": "持续秘书与工作",
     "description": "在 Alpha 中持续跟进目标、观察来源和处理候选。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-16",
     "status": "Alpha · 默认可用",
     "sources": [
       "docs/continuous-secretary.md",
@@ -143,7 +155,11 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -172,7 +188,7 @@
     "group": "technical",
     "title": "系统架构与设计边界",
     "description": "面向技术与研究读者的组件职责、数据路径和设计取舍。",
-    "updated": "2026-11-13",
+    "updated": "2026-11-16",
     "status": "技术方案",
     "sources": [
       "docs/architecture.md",
@@ -189,7 +205,11 @@
       "docs/verification/observability-cloud-2026-11-12.json",
       "design.md",
       "docs/specs/frontend-overhaul.md",
-      "docs/verification/frontend-overhaul-cloud-2026-11-13.json"
+      "docs/verification/frontend-overhaul-cloud-2026-11-13.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -207,6 +227,10 @@
       "src/deermate/continuous.py",
       "src/deermate/continuous_middleware.py",
       "docs/diagrams/product/diagrams.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json",
       "docs/local-worker.md",
       "src/deermate/rpc.py",
       "src/deermate/worker.py",
@@ -218,7 +242,7 @@
     "group": "technical",
     "title": "记忆、上下文与来源治理",
     "description": "显式事实、有界检索、来源版本与遗忘屏障。",
-    "updated": "2026-11-09",
+    "updated": "2026-11-16",
     "status": "技术方案",
     "sources": [
       "docs/specs/m4-memory-technical-design.md",
@@ -229,7 +253,11 @@
       "docs/specs/workspace-assistant-v2.md",
       "docs/specs/workspace-assistant-v2-plan.md",
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
-      "docs/verification/workspace-v2-model-2026-11-09.json"
+      "docs/verification/workspace-v2-model-2026-11-09.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -237,12 +265,16 @@
     "group": "technical",
     "title": "研究问题与评估方法",
     "description": "对照实验、消融设计、指标口径与可复现证据要求。",
-    "updated": "2026-11-04",
+    "updated": "2026-11-16",
     "status": "实验待开展",
     "sources": [
       "docs/specs/m4-continuous-agent-plan.md",
       "docs/verification/continuous-secretary-2026-11-04.json",
-      "docs/STATUS.md"
+      "docs/STATUS.md",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json"
     ]
   },
   {
@@ -276,6 +308,10 @@
       "docs/local-docker.md",
       "docs/specs/m2-local-docker.md",
       "docs/verification/local-onboarding-2026-11-16.json",
+      "scripts/product_docs.py",
+      "docs/DOCUMENTATION_POLICY.md",
+      "docs/specs/product-documentation.md",
+      "docs/verification/repository-doc-links-2026-11-16.json",
       "docs/local-worker.md",
       "src/deermate/rpc.py",
       "src/deermate/worker.py",

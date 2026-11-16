@@ -34,6 +34,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Exercise offline document and diagram target guards
+        run: python -m pytest -q tests/test_product_docs.py
       - name: Check product documentation and change impact
         env:
           DOCS_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
