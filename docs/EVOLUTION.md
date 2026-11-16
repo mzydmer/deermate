@@ -798,3 +798,8 @@ PR #12 将 <600px 的统计入口收为 44px 图标，保留可访问名称、�
 ## 2026-11-16 · Issue #5 纳入已合并冷备基线
 
 先以6ffe57e保存A切片实施和未完成事实，再正常合并main9c7ab6d，保留#4所有来源/日志/隔离规则及#5协议/源码，产品正文和来源合并后重生成。#4由独立评审核对最终a7f2415的13项CI后合并并关闭；未部署。接续先重新编译普通和Linux evaluation-tag、UID1000/networknone capabilities与二进制元数据预检，再进行新的A非正式实际合同。
+
+
+## 2026-11-16 · Issue #5 隔离入口校准
+
+干净16b5a01的普通Go mod/vet/全race（controlplane35.138s）、普通无CGO与Linux evaluation-tag构建通过，UID1000/networknone capability及镜像内平台/tag/ID预检通过。A03尚未创建账号即出现internal发布端口拒绝；无状态HTTP/最小代理探针定位并验证200，后端始终只接internal。harness改用固定上游最小Nginx入口，仅代理双网loopback，Go/Gateway保留无外网。协议/基线说明执行环境共用，未改变输入/预算，03及探针失败保留，不计正式样本。

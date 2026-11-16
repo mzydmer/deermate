@@ -10,3 +10,6 @@
 
 
 现已正常合入main9c7ab6d；capabilities来自该已合并基线。新启动前先核对tag与给定不可变ID、从镜像只读取出二进制核对Linux/amd64及evaluation build tag，再以UID1000/networknone运行capabilities，全部通过才建校准卷。COPY只对二进制使用0555，不放宽bundle。尚待重新构建及实际A合同。
+
+
+校准03的服务内健康通过，但internal-only控制面发布端口在Mac拒绝连接，尚未创建账号或任务。无状态HTTP探针证实internal监听可用、仅internal发布端口不可达；独立最小代理双网入口的第二次无卷探针200且后端始终只有internal。新harness复用既有Nginx镜像和固定上游最小配置，只有代理双网/loopback，Go与Gateway无外网，不改daemon/全局路由；三组共享此执行环境，不改输入或预算。首个代理探针未就绪记录也保留，未当作通过。

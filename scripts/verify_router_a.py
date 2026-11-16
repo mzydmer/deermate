@@ -169,17 +169,22 @@ def prepare(args, work, project, key):
     (runtime / "extensions_config.json").write_text(
         json.dumps({"mcpServers": {"deermate": profile}, "skills": {}})
     )
+    shutil.copyfile(ROOT / "deploy/testing/router-nginx.conf", runtime / "nginx.conf")
     for path in runtime.iterdir():
         if path.is_file():
             path.chmod(0o644)
     compose = yaml.safe_load((bundle / "compose.yaml").read_text())
-    for name in ["frontend", "nginx"]:
-        del compose["services"][name]
+    del compose["services"]["frontend"]
+    compose["services"]["nginx"]["depends_on"].pop("frontend")
     compose["networks"] = {
-        "default": {"internal": True, "ipam": {"config": [{"subnet": args.subnet}]}}
+        "default": {"internal": True, "ipam": {"config": [{"subnet": args.subnet}]}},
+        "edge": {"ipam": {"config": [{"subnet": args.edge_subnet}]}},
     }
     control = compose["services"]["control"]
-    control["ports"] = [f"127.0.0.1:{args.port}:8080"]
+    control.pop("ports", None)
+    control["networks"] = ["default"]
+    compose["services"]["gateway"]["networks"] = ["default"]
+    compose["services"]["nginx"]["networks"] = ["default", "edge"]
     control["environment"].update(
         {
             "DEERMATE_EVALUATION_MODE": "A",
@@ -456,4 +461,5 @@ if __name__ == "__main__":
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--port", type=int, default=22045)
     parser.add_argument("--subnet", default="192.168.240.0/24")
+    parser.add_argument("--edge-subnet", default="192.168.241.0/24")
     verify(parser.parse_args())

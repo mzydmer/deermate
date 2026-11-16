@@ -142,5 +142,11 @@
     "service_native": "one Linux monotonic domain for service/native phase durations",
     "schedule_origin": "runner receipt of actual turn/start event; preserve observation intervals and scheduling drift",
     "observer_poll_interval_seconds": 0.02
+  },
+  "execution_environment": {
+    "ingress": "fixed-upstream minimal HTTP proxy; loopback only; proxy alone has dual networks",
+    "go_gateway": "internal network only; no external network",
+    "runner": "Mac client/schedule clock domain; service and Native clocks remain same Linux monotonic domain",
+    "same_for_all_modes": true
   }
 }
