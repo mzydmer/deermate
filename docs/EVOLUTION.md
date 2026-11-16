@@ -841,3 +841,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · 正常B完整屏障与计时观察器修正
 
 干净4abb692的B06完整normal通过并经独立复核，单任务/根/轮次/effect、独立测试0、公开MCP与通知完成、Go四操作settled及4.15172s稳定尾部，通知1947bytes原admission哈希一致。该提交必要Go检查与Linux九项合同通过。C01同源前台perform/query发生OperationalError，原操作uncertain/前台超时而Native与通知完成，失败保留。两个新Linux合同证明旧计时每次GET反复零匹配写入争夺写锁，修正后仅前台建时钟、首次可见写一次、后续只读且不改原时间；原C日志未能证明具体竞争写方，不能预称全部根因解决。仅evaluation配置下原perform/query异常加0600私存栈并原样抛出，无等待/重试。新版本检查与同源B/C复验待完成，正式样本未开始。
+
+
+## 2026-11-16 · 同源正常B/C完整校准与S1固定事件表代码
+
+干净bb7b91b的B07/C02均经独立复核接受完整屏障，公开MCP/通知/Go/runs收敛，单Worker/root/turn/effect与独立测试0，toy初始提交相同；原12容器保持，旧失败全保留。原normal投影计时仅诊断，见新公开收据。S1代码在peer review后改为各offset独立sender、独立reader、finally保留失败及未发计划，使用第二个真正认证的合成admin/正确ExpectedID测试外owner，旧header错配单列。五项sender/barrier与Linux七项evaluation合同通过并由评审复跑；Go时钟改在实际JSON写出后成功Flush采样，失败为空，明确服务传输指标与真实client complete-read分列，无浏览器精确时刻/流式token声明。S1尚未实际运行，新stage必要检查后按C/B/A校准；S2/judge/负例及正式36+6尚待完成。

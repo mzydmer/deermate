@@ -130,11 +130,10 @@
     "cloud_capacity",
     "all_R-EVAL_complete"
   ],
-  "primary_latency": "service durable admission -> first actual visible content, same Linux clock domain",
+  "primary_latency": "service durable admission -> successful actual complete-reply JSON transport flush (client visibility bound, not exact browser timing)",
   "secondary_latencies": [
-    "client send -> first actual visible content, runner clock domain",
-    "client send -> complete reply, runner clock domain",
-    "service admission -> complete reply, same Linux clock domain",
+    "client send -> actual complete JSON read containing original foreground reply, runner clock domain",
+    "service transport flush and client read reported separately; no cross-domain subtraction",
     "queue duration, same service clock domain"
   ],
   "clock_domains": {
@@ -204,8 +203,22 @@
   },
   "timing_instrumentation": {
     "admission": "declared foreground input only",
-    "first_visible": "one actual settled nonempty foreground projection",
+    "first_visible": "after actual JSON body write and successful transport Flush; failed Flush leaves null",
     "subsequent_polls": "read only, no repeated zero-row updates",
-    "same_for_all_modes": true
+    "same_for_all_modes": true,
+    "legacy_name": "first_visible_ns denotes service reply flush, not browser display"
+  },
+  "s1_sender": {
+    "independent_sender_per_offset": true,
+    "client_per_attempt": true,
+    "foreground_reader_independent": true,
+    "actual_drift_retained": true,
+    "failed_timeout_and_unstarted_attempts_retained": true
+  },
+  "s1_outside_owner": {
+    "identity": "second actual authenticated synthetic admin without Worker grants, correct ExpectedID",
+    "expected_event_status": 403,
+    "original_work_read_forbidden": true,
+    "header_mismatch_negative": "separate Go contract, not the outside-owner event"
   }
 }

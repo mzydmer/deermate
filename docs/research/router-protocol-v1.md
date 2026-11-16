@@ -56,9 +56,11 @@ S2 代理以已保存的 operation 对应 tracking 为触发条件，不能在 A
 
 A/B对已绑定事件的最终附加是测试适配中的“已有权威订阅确定性附加”，不声称模型自行决定工作归属。B必须先经过真实Router完成，之前不能成为context；C在摄取时直接附加且绑定事件零新增Router。A/B模型真实接收相同批次的有界事件原文，使用原assessmentInputs/assessmentBatch复核owner、来源、规则及event/rule revision；完成后的附加再次复核，失效则不附加。Native授权撤销阻止新增执行，不额外阻止仍合法的只读context。普通构建保留默认C合同，专用测试适配不得扩大公开功能。
 
-模型输入计数/上限包含实际序列化messages（含tool_calls和非string内容）与绑定工具schema；按operation/run/thread/role关联日志，事件批次另记引用与context哈希。当前Router API在settled时才返回非空整段回复，因此first与complete为同一服务事件，不称为流式首token。
+模型输入计数/上限包含实际序列化messages（含tool_calls和非string内容）与绑定工具schema；按operation/run/thread/role关联日志，事件批次另记完整有界正文、引用与context哈希。当前Router API在settled时才返回非空整段回复，不称为流式首token。
 
-计时仅对已声明的前台输入建立admission记录，首次实际可见时用同域时钟写入一次；后续轮询读取，不对已计时回复重复执行写语句。初始安排和后台回执不建立前台时钟，三组规则一致。测试perform/query异常栈只私存并原样抛出，不重试动作；初期存储竞争及计时干扰的校准失败保留，修正后冻结新版本。
+计时仅对已声明的前台输入建立admission记录；Go写出包含原回复的实际JSON并成功Flush后才采同域时钟，随后持久化一次，失败Flush保留null。主服务指标命名为 **service admission → reply flush**；旧列名first_visible_ns/complete_ns表示这同一整段回复的服务传输观测点，不能宣传为浏览器精确可见时间。客户端另记请求发送→完整JSON实际读到原前台marker的真实值，两域不相减。normal预试旧字段是响应前投影快照，仅诊断，不混入本指标。后续轮询只读，初始安排和后台回执不建立前台时钟，三组规则一致。测试perform/query异常栈只私存并原样抛出，不重试动作；初期存储竞争及计时干扰的校准失败保留，修正后冻结新版本。
+
+S1每个固定offset独立发送并持有独立客户端，前台观察器独立运行；先前HTTP响应不会阻塞后续输入发送。所有计划项预先保留，finally记录实际send/status/error/drift，HTTP失败、timeout和未发送项不删除。外owner项使用第二个真实创建、已认证的合成admin，无Worker授权，携带其本人正确ExpectedID；其读取原工作和事件接纳均应403。仅伪造原owner的ExpectedID属于另列Go反例，不充作外owner事件。合成GitHub只读token仅供静态fixture transport，三组共用，不接触真实GitHub或凭据。
 
 三组通知统一使用测试适配 `owned-admission-v1`：以当前runtime已知run复核owner、thread与持久origin_kind=mcp_notification，只读取该run原始接纳的单个完整HumanMessage（含原通知说明和已框定的不可信事件）；配固定短System提示、空tools，保留原通知全文序列化SHA。普通会话历史、重试错误历史和通用工具说明不注入这一步，不截通知正文，也不增加12,000 bytes/1024 output上限；非本人、非通知、thread不匹配、多消息或非Human输入拒绝。超预算拒绝另记实际bytes/hash与身份。此为所有组共同的离线测试输入适配，不能据此声称默认生产通知已经在该预算内验证。
 
@@ -96,9 +98,9 @@ A/B对已绑定事件的最终附加是测试适配中的“已有权威订阅�
 | 指标 | 分母和算法 |
 | --- | --- |
 | 验证完成率 | 独立判定完成数 / 每场景每组计划 6；超时/unknown/未启动留分母，另列状态计数 |
-| 前台响应主指标 | 同一服务计时域内，原前台请求持久 admission→首次真实可见内容；报告逐次值与 nearest-rank p50/p95/max，取排序第 ceil(q×n) 项；列实际观测分母、删失和排队耗时 |
-| 客户端/完整回复 | runner同域的请求发出→first、发出→complete；服务同域的admission→complete另报；同样列分母/删失，不把HTTP接纳当回复 |
-| 前台可重叠率 | 回复在 Native 独立验证完成前结束的数 / 6；没有可用回复计未达到，不填 0ms |
+| 前台响应主指标 | 同一服务计时域内，原前台请求持久 admission→完整JSON回复成功flush（服务传输点）；报告逐次值与 nearest-rank p50/p95/max，取排序第 ceil(q×n) 项；列实际观测分母、删失和排队耗时 |
+| 客户端/完整回复 | runner同域的请求发出→实际完整JSON读到原前台回复；服务同域的admission→reply flush分列，不称精确浏览器显示；同样列分母/删失，不把HTTP接纳当回复 |
+| 前台可重叠率 | 服务reply flush在Native独立验证完成前结束的数（不冒称浏览器显示） / 6；没有可用回复计未达到，不填 0ms |
 | 完成/排队/恢复延迟 | 各阶段实际事件差；未完成记 null + censor/status，不混入延迟分位数 |
 | 重复副作用/根 | 同逻辑 operation 的额外实际 effect/root 数；另报受影响逻辑操作数 / 6；查询重试不计 mutation |
 | 原操作恢复核对率 | 原已接纳结果被正常查询接口确认且独立证据一致数 / 注入故障样本 6；unknown 单列 |

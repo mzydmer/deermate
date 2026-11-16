@@ -209,8 +209,8 @@ func (s *Server) routerView(w http.ResponseWriter, r *http.Request) {
 		workError(w, e)
 		return
 	}
-	s.evaluationVisible(owner, items)
 	respond(w, 200, map[string]any{"session": workPublic(router), "items": items})
+	s.evaluationVisible(w, owner, items)
 }
 func (s *Server) routerMessage(w http.ResponseWriter, r *http.Request) {
 	if !s.workAccess(w, r) {

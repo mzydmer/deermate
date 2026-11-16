@@ -1,31 +1,18 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议与A实际异步合同已接受；B/C的Go tagged路由/权限合同四项顶层（含B/C与四种失效子组）在Linux/UID1000/networknone通过，独立评审也已重跑。当前先实现一个正常B单样本与完整完成屏障，跑通后同路径验证C，再扩展S1事件表和S2断ACK；之后独立judge/真实双effect负例、冻结harness/dataset后36格及单列6格复跑。尚无正式比较结果，原12实例及旧卷/归档保留。
+最后核对：2026-11-16。独立评审已合并并关闭 #1/#3/#4/#6/#8，main基线9c7ab6d，未部署本轮变更。#5协议、A异步及同源正常B/C完整屏障已接受；当前S1固定事件表代码/合同已完成，准备新stage检查与实际C/B/A校准。S2/judge/冻结/36+6格仍待完成，没有正式比较结果；原12实例、旧失败卷及归档保留。
 
 ## 2026-11-16 · Router 首批离线协议（Issue #5，协议已接受）
 
-最新实际状态：干净4abb692的B06完整normal屏障通过，独立复核接受；单Worker/MCP/root/turn/effect、独立测试0、公开MCP completed/delivered、四Go操作settled，4.15172s稳定尾部，通知原admission哈希一致、输入1947bytes。该提交必要Go检查均通过（race36.600s），实际Linux九项顶层合同通过，普通构建仍无evaluation入口。同源C01在前台perform/query出现OperationalError而uncertain/前台超时，Native与通知完成，原样保留。先修正计时fixture每次GET反复零匹配写入的干扰：仅前台建时钟，首次可见后只读；两项Linux合同红→绿，另加原异常私存栈/原样抛出、无重试。新改动的必要检查及同源B/C复验待完成，S1事件与S2故障仍未实现，正式36格未开始。
+同一干净 `bb7b91b7564a34c825be4a403758cfd4f720ed7d` 的B07/C02正常完整链均通过并获独立复核接受：单Worker/MCP/root/turn/effect、独立验证0、公开MCP/通知完成、四Go操作settled、相关runs成功；稳定尾部4.5123s/4.0783s，toy初始提交相同，原12容器不变。见[收据](verification/router-normal-calibration-2026-11-16.json)。bb7必要Go检查均通过（race37.106s）及实际Linux11项顶层合同；原normal计时是响应前投影快照，仅诊断。旧B01/04/05接纳前SQLite BUSY/503、B02/03通知超预算dead_letter、C01前台OperationalError/uncertain均保留，未为碰成功重放原mutation。
 
-当前正常链校准：B01/04/05真实SQLite BUSY/503且未进Native，B02/03通知超预算后dead_letter，五次均保留。已停止新卷预试，原ToolMessage/checkpoint仅私存，原卷WAL且接纳标记未持久；受控第二连接写锁稳定复现旧deferred读取→首次写入BUSY(5)与原记录完整回滚。有限候选在workTransaction回调前取得writer intent、回调一次、沿用5s busy/context、无外部重放；22处生产及两处tag回调已核对无外部runtime I/O。五项聚焦合同通过，评审方向接受；详见[说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。普通Go必要检查尚待运行，通过后构建三组共用的新源码镜像，再校准正常B/C；正式批次未开始。
+此前A04普通MCP后台异步合同已由独立评审接受，保留[原收据](verification/router-a-calibration-2026-11-16.json)；它当时仅观察到Worker完成，不能替代当前完整MCP/Go/通知屏障。B/C共享权威订阅关联，C摄取时附加、A/B真实Router完成后确定性附加，绝不声称模型自行决定归属；[路由合同](verification/router-routing-contracts-2026-11-16.json)验证来源/规则/事件版本及合法只读context不新增Native授权要求。
 
-单样本脚本 `scripts/run_router_sample.py` 复用现有prepare/device/ordinary MCP链，接收mode/scenario/seed，目前只接纳非正式normal校准，S1/S2在建栈前拒绝。先创建真实本人work，公开tracking只由已知执行thread的本人list/detail取得；完成条件覆盖Worker、公开MCP及通知、Go原operation/inbox/work、相关runs与模型调用，再观察4s稳定尾部。只读probe去除授权字段，保留真实diff/测试文件哈希和全量调用记录；三个屏障合同测试通过（含Worker完成但tracking/通知未收敛及错owner/替代handle反例）。实际B/C单样本尚待运行；MCP轮询已对齐协议1s。
+共享账本修正先取得writer intent、原DB回调一次、保持5s busy/context，不重试外部动作；22处生产及两处tag回调核对无外部runtime I/O，五项并发/回滚/原token单action合同通过，见[说明](change-notes/router-shared-sqlite-writer-2026-11-16.md)。三组统一owned-admission-v1通知适配保持完整原admission HumanMessage/哈希、短提示/空tools，12,000 bytes不变，三项Gateway合同及独立复跑通过；这不是默认生产通知预算验收。计时重复GET零匹配写锁干扰已消除，旧失败保留，原C01具体竞争写方未被完整原栈记录，不能预称全部根因。
 
-`c6b959a` 的两个normal B预试保留：01在Router工具接纳前因真实Go SQLITE_BUSY/503失败，0 MCP/Worker/Native；02实际完成一个Native/Worker与公开MCP，Go账本已settled，但通知输入超12,000 bytes被拒绝并进入dead_letter，不能计完整完成。仅测试适配修正为A/B/C通知均不带无关普通工具schema，原通知messages及12,000上限保持；超预算拒绝另记录identity/实际bytes/hash，不冒充已调用模型。需新样本验证，未开始正式批次，也未改生产SQLite/通知行为。
+当前S1代码加入九个固定offset各自独立sender/独立前台reader、finally全计划落盘、实际第二账号正确ExpectedID、原工作读取/事件接纳403及七事件归属/有界正文证据。五项sender/barrier测试和Linux七项evaluation顶层合同通过，独立评审已复跑；服务时钟在JSON实际写出、成功Flush后采样，失败Flush为null，指标明确为service admission→reply flush，客户端另报实际complete-read，两域不相减、不称浏览器精确时间。新S1 stage必要Go全检和实际C/B/A校准待执行；S2代理、独立judge/真实双effect负例、干净harness/dataset冻结、正式36格及同版本独立6格仍未完成，不能称比较结果。
 
-`7fd47ef` 的B03去工具schema后通知首次仍12,544 bytes，五次超预算拒绝后dead_letter，完整屏障仍unknown。新 `owned-admission-v1` 适配由独立评审接受用于本离线协议：复核当前owner/run/thread/origin_kind，仅用完整原始接纳HumanMessage及固定短提示/空tools；原全文序列化SHA与notification run和模型调用关联，三组相同，12,000预算保持。固定Gateway镜像内UID1000/networknone/只读挂载的三个合同测试通过（全部模式一致哈希、错身份/类型/多消息拒绝）；协议/配置/研究页明确这是测试适配，并非默认生产通知预算验收。下一步B04实际收敛，再同路径C。
-
-当前B/C阶段：同一canonical订阅函数在C摄取时附加，A/B在真实Router完成后确定性附加；不声称模型决定归属。测试专用model-context读入口复用原assessmentInputs/assessmentBatch，复核owner/来源/规则/event与rule revision，并向模型输入同批有界原文。四项Linux tagged合同通过（见[收据](verification/router-routing-contracts-2026-11-16.json)），默认C既有来源/订阅回归随普通Go全包race通过（controlplane34.973s）；mod verify/vet/普通无CGO和Linux evaluation构建通过，Ruff/编译、文档/设计82/token/7图通过。Native撤权不额外限制合法只读context，但新执行仍拒绝。正式完成屏障已明确包括Worker验证、MCP本人公开tracking、原Go operation/inbox、runs及通知终态，再观察4s；A04当时MCP仍working的功能收据不冒充该屏障通过。
-
-干净 `4180872120422fbb149d6238b81ef56850560606` 的A04合同通过，独立评审复核实际同Linux时域时间线、真实Worker补丁与独立unittest：Native12004.4ms，service持久接纳→首次可见8632.3ms，首次可见早于Native完成3321.4ms；一个MCP/Worker task、一个根/轮次/实际effect，同一协调thread。首次可见和完整回复相同，因为当前Router接口只在settled显示整段；没有称作流式token。最终采样MCP仍working，未据此宣称公开完成投影或丢回执对账通过。见[非正式校准收据](verification/router-a-calibration-2026-11-16.json)，原12守卫一致。正式36格及同冻结版本独立复跑仍待B/C/judge负例后冻结。
-
-A非正式垂直切片harness及仅Linux evaluation-tag的Go事件/计时hook已写入，下述为此前实施检查点；01镜像准备、02执行位失败均发生在任务接纳前，不算协议失败或正式样本。默认构建无测试入口/模式开关反例通过，原RPC/Worker25项通过。已保留提交并纳入已合入#4的main，下一步重新预检普通/测试镜像和真实A异步重叠；完整36格仍未开始。
-
-校准03通过镜像/服务内健康预检，但internal-only控制面发布端口在Mac拒绝连接，未接纳账号/任务；无卷探针定位后改为只有最小入口代理双网，Go/Gateway仍无外网。普通Go mod/vet/全race及两种构建在main9c7ab6d上通过；等待新的A实际校准。
-
-独立工作区基于已合入的 main22ef5c5，具体方案见[协议](research/router-protocol-v1.md)与[基线](research/router-baseline-v1.json)：后台执行/前台响应、持久接纳回执丢失两个场景，六个配对 seed和全部六种 A/B/C 顺序，共36个计划样本。A保留现有普通MCP异步后台能力；B/C仅切换已绑定上下文是否经Router；三组真实经过Go/Gateway/MCP/Relay/Worker。独立判定器需核对实际变更、原身份、独立测试和副作用journal，并拒绝真实重复副作用负例。
-
-协议已获独立评审接受，并补充接纳到首次可见响应/完整回复及不同时间域不能相减的要求；harness、数据集和结果身份仍null/not_run。下一步先实现并验证A确实异步与B/C单分支差异合同、判定器负例，再提交干净harness/数据集SHA后运行正式批次。失败/超时/unknown/未启动均留分母，分位数只取实际观测并同时报告删失，不能据合成等待推断模型质量/费用或用户注意力。现有R-EVAL总体验收仍未勾选。
-
+[协议](research/router-protocol-v1.md)与[基线](research/router-baseline-v1.json)保留六配对seed、全部六顺序、两个场景、失败/unknown/未启动分母及nearest-rank算法。只读观察器不得向恢复驱动注入私有task句柄；正式任务仅在Worker验证、本人公开MCP、原Go operation/inbox、runs和通知全部核对并观察4s后判完成。默认Go无evaluation路由/开关；所有实际调用使用合成Native/Provider，零付费，未部署或改变既有权限。完整事件/故障比较、真实模型与用户研究均未开展，R-EVAL总验收仍未勾选。
 
 ## 2026-11-16 · 共同冷备与空卷恢复（Issue #4，已合并）
 

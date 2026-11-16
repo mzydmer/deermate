@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -258,12 +259,12 @@ func TestEvaluationTimingOnlyTracksForegroundAndPreservesFirstClock(t *testing.T
 	if err := s.Store.DB.QueryRow("SELECT count(*) FROM deermate_evaluation_timings WHERE owner=?", user.ID).Scan(&count); err != nil || count != 1 {
 		t.Fatalf("timing instrumentation admitted unrelated messages: count=%d err=%v", count, err)
 	}
-	s.evaluationVisible(user.ID, []workRecord{start, foreground})
+	evaluationTimingProjection(s, user.ID, []workRecord{start, foreground})
 	var first, complete int64
 	if err := s.Store.DB.QueryRow("SELECT first_visible_ns,complete_ns FROM deermate_evaluation_timings WHERE owner=? AND inbox=?", user.ID, foreground.ID).Scan(&first, &complete); err != nil || first <= 0 || first != complete {
 		t.Fatalf("actual first/complete clock missing: %d %d %v", first, complete, err)
 	}
-	s.evaluationVisible(user.ID, []workRecord{start, foreground})
+	evaluationTimingProjection(s, user.ID, []workRecord{start, foreground})
 	var repeated int64
 	if err := s.Store.DB.QueryRow("SELECT first_visible_ns FROM deermate_evaluation_timings WHERE owner=? AND inbox=?", user.ID, foreground.ID).Scan(&repeated); err != nil || repeated != first {
 		t.Fatal("polling rewrote the original first-visible clock", err)
@@ -272,11 +273,11 @@ func TestEvaluationTimingOnlyTracksForegroundAndPreservesFirstClock(t *testing.T
 
 func TestEvaluationVisibleReadDoesNotCompeteWithExistingWriter(t *testing.T) {
 	s, user, start, foreground := evaluationForegroundTimingFixture(t)
-	s.evaluationVisible(user.ID, []workRecord{start, foreground})
+	evaluationTimingProjection(s, user.ID, []workRecord{start, foreground})
 	_, writer := competingWorkWriter(t, s.Store)
 	done := make(chan struct{})
 	go func() {
-		s.evaluationVisible(user.ID, []workRecord{start, foreground})
+		evaluationTimingProjection(s, user.ID, []workRecord{start, foreground})
 		close(done)
 	}()
 	select {
@@ -288,5 +289,88 @@ func TestEvaluationVisibleReadDoesNotCompeteWithExistingWriter(t *testing.T) {
 		writer.Rollback()
 		<-done
 		t.Fatal("already-visible polling attempted another write while a separate writer held the WAL lock")
+	}
+}
+
+func evaluationTimingProjection(s *Server, owner string, items []workRecord) {
+	w := httptest.NewRecorder()
+	respond(w, 200, map[string]any{"items": items})
+	s.evaluationVisible(w, owner, items)
+}
+
+type evaluationTimingWriter struct {
+	*httptest.ResponseRecorder
+	beforeWrite func()
+	flush       func() error
+}
+
+func (w *evaluationTimingWriter) Write(body []byte) (int, error) {
+	if w.beforeWrite != nil {
+		w.beforeWrite()
+	}
+	return w.ResponseRecorder.Write(body)
+}
+
+func (w *evaluationTimingWriter) FlushError() error {
+	if w.flush != nil {
+		return w.flush()
+	}
+	w.ResponseRecorder.Flush()
+	return nil
+}
+
+func TestEvaluationClockFollowsActualBodyWriteAndSuccessfulFlush(t *testing.T) {
+	for _, failed := range []bool{false, true} {
+		t.Run(fmt.Sprint("flush_failed_", failed), func(t *testing.T) {
+			s, user, _, foreground := evaluationForegroundTimingFixture(t)
+			if err := s.Store.workTransaction(context.Background(), func(tx *sql.Tx) error {
+				item, err := workGet(tx, user.ID, "inbox", foreground.ID)
+				if err != nil {
+					return err
+				}
+				item.State = "settled"
+				item.Data["reply"] = "Synthetic visible reply"
+				return workPut(tx, &item)
+			}); err != nil {
+				t.Fatal(err)
+			}
+			browser := session(t, s.Store, user)
+			request := httptest.NewRequest("GET", "http://localhost:2026/api/me/router", nil)
+			request.AddCookie(&http.Cookie{Name: "access_token", Value: browser.raw})
+			writer := &evaluationTimingWriter{ResponseRecorder: httptest.NewRecorder()}
+			writer.beforeWrite = func() {
+				var stamp sql.NullInt64
+				if err := s.Store.DB.QueryRow("SELECT first_visible_ns FROM deermate_evaluation_timings WHERE owner=? AND inbox=?", user.ID, foreground.ID).Scan(&stamp); err != nil || stamp.Valid {
+					t.Fatal("clock was written before actual response body", stamp, err)
+				}
+			}
+			var flushed int64
+			writer.flush = func() error {
+				if !strings.Contains(writer.Body.String(), "Synthetic visible reply") {
+					t.Fatal("flush preceded the actual complete reply body")
+				}
+				if failed {
+					return errors.New("synthetic transport flush failure")
+				}
+				writer.ResponseRecorder.Flush()
+				flushed = evaluationClock()
+				return nil
+			}
+			s.ServeHTTP(writer, request)
+			if writer.Code != 200 {
+				t.Fatal("owned view failed", writer.Code)
+			}
+			var first, complete sql.NullInt64
+			if err := s.Store.DB.QueryRow("SELECT first_visible_ns,complete_ns FROM deermate_evaluation_timings WHERE owner=? AND inbox=?", user.ID, foreground.ID).Scan(&first, &complete); err != nil {
+				t.Fatal(err)
+			}
+			if failed {
+				if first.Valid || complete.Valid {
+					t.Fatal("failed flush fabricated a visible clock")
+				}
+			} else if !first.Valid || !complete.Valid || first.Int64 < flushed || first.Int64 != complete.Int64 {
+				t.Fatal("clock is not the successful complete-reply flush boundary", first, complete, flushed)
+			}
+		})
 	}
 }

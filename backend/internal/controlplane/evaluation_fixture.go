@@ -110,7 +110,7 @@ func (s *Server) evaluationAdmitted(owner, inbox, text string) {
 	_, _ = s.Store.DB.Exec("INSERT OR IGNORE INTO deermate_evaluation_timings(owner,inbox,admitted_ns) VALUES(?,?,?)", owner, inbox, evaluationClock())
 }
 
-func (s *Server) evaluationVisible(owner string, items []workRecord) {
+func (s *Server) evaluationVisible(w http.ResponseWriter, owner string, items []workRecord) {
 	if os.Getenv("DEERMATE_EVALUATION_MODE") == "" {
 		return
 	}
@@ -129,11 +129,27 @@ func (s *Server) evaluationVisible(owner string, items []workRecord) {
 		}
 	}
 	rows.Close()
+	visible := []string{}
 	for _, item := range items {
 		if pending[item.ID] && item.State == "settled" && workString(item, "reply") != "" {
-			stamp := evaluationClock()
-			_, _ = s.Store.DB.Exec("UPDATE deermate_evaluation_timings SET first_visible_ns=?,complete_ns=? WHERE owner=? AND inbox=? AND first_visible_ns IS NULL", stamp, stamp, owner, item.ID)
+			visible = append(visible, item.ID)
 		}
+	}
+	if len(visible) == 0 {
+		return
+	}
+	// The JSON body has already been written by routerView. Bypass our tracing
+	// wrapper's void Flush method so a real transport flush error stays visible.
+	writer := w
+	if traced, ok := w.(*tracedResponse); ok {
+		writer = traced.ResponseWriter
+	}
+	if http.NewResponseController(writer).Flush() != nil {
+		return
+	}
+	stamp := evaluationClock()
+	for _, id := range visible {
+		_, _ = s.Store.DB.Exec("UPDATE deermate_evaluation_timings SET first_visible_ns=?,complete_ns=? WHERE owner=? AND inbox=? AND first_visible_ns IS NULL", stamp, stamp, owner, id)
 	}
 }
 
@@ -233,7 +249,18 @@ func (s *Server) evaluationFixtureRoutes() {
 			workError(w, err)
 			return
 		}
-		respond(w, 200, map[string]any{"accepted": true, "clock_domain": domain, "clock_ns": evaluationClock()})
+		items, err := s.Store.workList(sessionOf(r).User.ID, "event", "", 0, 20)
+		if err != nil {
+			workError(w, err)
+			return
+		}
+		for _, item := range items {
+			if workInt(item, "remote_id") == body.ID {
+				respond(w, 200, map[string]any{"accepted": true, "clock_domain": domain, "clock_ns": evaluationClock(), "event": map[string]any{"id": item.ID, "state": item.State, "parent_id": item.Parent, "revision": item.Revision, "remote_id": body.ID}})
+				return
+			}
+		}
+		fail(w, 503, "fixture_event_evidence_missing", "The original event was not found after ingestion")
 	}))
 	s.mux.HandleFunc("GET /__deermate_evaluation/evidence", guard(func(w http.ResponseWriter, r *http.Request) {
 		rows, err := s.Store.DB.Query("SELECT inbox,admitted_ns,first_visible_ns,complete_ns FROM deermate_evaluation_timings WHERE owner=? ORDER BY admitted_ns", sessionOf(r).User.ID)
@@ -259,7 +286,10 @@ func (s *Server) evaluationFixtureRoutes() {
 			}
 			items = append(items, map[string]any{"inbox": inbox, "admitted_ns": admitted, "first_visible_ns": f, "complete_ns": c})
 		}
-		respond(w, 200, map[string]any{"mode": mode, "clock_domain": domain, "clock_ns": evaluationClock(), "items": items})
+		respond(w, 200, map[string]any{"mode": mode, "clock_domain": domain, "clock_ns": evaluationClock(), "items": items,
+			"observation_boundary":  "successful flush of actual settled JSON reply after response body write; clock sampled before persistence, not before response write",
+			"visibility_limit":      "server flush is a lower bound on client JSON/UI visibility; client complete-read clock is separately recorded and never subtracted from service clock",
+			"first_equals_complete": "one complete reply projection; not streaming tokens"})
 	}))
 	// The response contains only static synthetic source data; no external
 	// credential is used or network contacted by the fixture transport.

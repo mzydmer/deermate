@@ -26,3 +26,7 @@ B03移除工具后仍首次12,544 bytes超预算，失败保留。经评审接�
 干净4abb692的B06完整正常链通过并经独立复核：一个Worker/MCP/root/turn/effect、独立测试0、公开MCP完成且通知delivered、Go四操作settled，4.15172秒稳定尾部，通知完整admission哈希与1947bytes模型输入可关联。普通Go mod/vet/full race（36.600s）/无CGO与Linux-tag构建及实际Linux九项顶层合同通过；这是normal校准，不是S1或正式比较。
 
 同源C01 Native/Worker及通知已完成，前台perform/query的OperationalError使原操作uncertain并超时，失败保留；原日志未捕获完整栈，尚不能指定竞争写方。发现测试计时在每次GET中对已可见项执行零匹配UPDATE，两个受控Linux合同先失败后通过：现仅前台接纳建时钟记录，只有首次实际可见时写一次，后续在其他连接持写锁时仍只读且原时钟不变。普通构建仍无测试路由/计时，三组统一新测试策略；这不是取消实际共库竞争或改变生产派单。`continuous_fixture_model.py` 对evaluation配置下的原perform/query异常增加0600私有栈记录并原样抛出，调用一次且不加等待/重试。新版本需要重新检查并校准；原C失败不覆盖，不预称根因全部排除。
+
+bb7同源B07/C02均达到完整正常屏障，已获独立复核接受，见router-normal-calibration收据；旧投影计时仅诊断。S1新代码独立调度九个固定项，前台reader独立，各项finally落盘且未发送保留；新增测试用阻塞前台HTTP验证后续仍发送，并保留真实503和全部未发送项。另以现有Go管理API创建第二个合成已认证admin，正确ExpectedID、无Worker授权，验证原工作读取403及事件接纳403；旧header错配仅独立反例。模型保留实际有界事件正文与哈希，operator fixture事件回执返回原事件ID/状态/归属便于核对，未扩生产API。
+
+服务计时hook移到实际JSON写出后，成功Flush才取时刻，随后存DB；失败Flush不记数，追加真实HTTP writer顺序/失败合同。指标改名service admission→reply flush，客户端另报真实complete-read值，服务点不能宣传浏览器精确可见。普通hook仍no-op，只有tag fixture Flush。合成只读token0600置于新home，由静态GitHub transport读取，防止>60s校准因缺fixture token而失效，不调用外部GitHub。当前S1仅代码/合同通过，实际S1、S2代理、judge/负例和正式批次尚待完成；所有模式共享实现、权限和预算。

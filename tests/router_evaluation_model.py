@@ -213,6 +213,7 @@ class FixtureMiddleware(continuous_middleware.ContinuousMiddleware):
                 identity["event_context_sha256"] = hashlib.sha256(
                     event_context.encode()
                 ).hexdigest()
+                identity["event_context_text"] = event_context
         token = MODEL_IDENTITY.set(identity)
         try:
             return await self._bounded_model_call(request, handler, op, cfg, event_context)

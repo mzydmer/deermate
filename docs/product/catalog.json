@@ -305,7 +305,12 @@
       "docs/verification/router-routing-contracts-2026-11-16.json",
       "backend/internal/controlplane/evaluation_fixture.go",
       "tests/router_evaluation_model.py",
-      "scripts/verify_router_a.py"
+      "scripts/verify_router_a.py",
+      "docs/verification/router-normal-calibration-2026-11-16.json",
+      "scripts/run_router_sample.py",
+      "tests/router_evaluation_probe.py",
+      "tests/test_router_sample.py",
+      "tests/router_evaluation_model_contract.py"
     ]
   },
   {
@@ -368,7 +373,12 @@
       "backend/internal/controlplane/continuous_store.go",
       "backend/internal/controlplane/continuous_runtime.go",
       "backend/internal/controlplane/continuous_store_concurrency_test.go",
-      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md"
+      "docs/change-notes/router-shared-sqlite-writer-2026-11-16.md",
+      "docs/verification/router-normal-calibration-2026-11-16.json",
+      "scripts/run_router_sample.py",
+      "tests/router_evaluation_probe.py",
+      "tests/test_router_sample.py",
+      "tests/router_evaluation_model_contract.py"
     ]
   }
 ]

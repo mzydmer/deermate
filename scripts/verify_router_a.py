@@ -80,12 +80,12 @@ def preflight_control(args):
         raise RuntimeError("Control image predates the merged capability command")
     return {
         "image_id": image["Id"],
-        "producer_revision": image["Config"].get("Labels", {}).get(
-            "org.opencontainers.image.revision"
-        ),
-        "producer_source_dirty": image["Config"].get("Labels", {}).get(
-            "io.deermate.evaluation.source-dirty"
-        ),
+        "producer_revision": image["Config"]
+        .get("Labels", {})
+        .get("org.opencontainers.image.revision"),
+        "producer_source_dirty": image["Config"]
+        .get("Labels", {})
+        .get("io.deermate.evaluation.source-dirty"),
         "binary_sha256": digest,
         "platform": "linux/amd64",
         "test_tag": "deermate_evaluation",
@@ -141,6 +141,7 @@ def prepare(args, work, project, key):
         "formal_batch": False,
         "project_commit_date": "2026-11-16T00:00:00Z",
         "notification_context_adapter": "owned-admission-v1",
+        "scenario": getattr(args, "scenario", "normal"),
     }
     (runtime / "evaluation.json").write_text(json.dumps(cfg) + "\n")
     config = yaml.safe_load((runtime / "config.yaml").read_text())
@@ -204,6 +205,7 @@ def prepare(args, work, project, key):
             "DEERMATE_EVALUATION_MODE": cfg["mode"],
             "DEERMATE_EVALUATION_KEY": key,
             "DEERMATE_GITHUB_REPOSITORY": "fixture/project",
+            "DEERMATE_GITHUB_SECRET_HOME": "/runtime-home/evaluation-secrets",
         }
     )
     compose["services"]["gateway"]["environment"]["DEERMATE_EVALUATION_CONFIG"] = (

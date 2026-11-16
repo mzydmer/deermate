@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run one fresh offline Router calibration through the complete public tracking barrier.
+"""Run one fresh offline normal/S1 calibration through the complete tracking barrier.
 
-The first adapter supports a normal start/foreground interaction. It is not a
-formal S1/S2 sample; event scheduling and ACK-loss calibration are separate steps.
+S1 sends the fixed reviewed event table; S2 awaits its durable ACK-loss proxy.
+Calibration runs are never included in the frozen formal sample matrix.
 """
 
 import argparse
@@ -13,7 +13,9 @@ import secrets
 import subprocess
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Event, Lock
 
 import httpx
 
@@ -51,6 +53,12 @@ def isolation(project):
 
 def bootstrap(client, gateway, api, cfg):
     grant = fixture.native_device(client, gateway, api)
+    fixture.docker_python(
+        gateway,
+        "from pathlib import Path; p=Path('/app/backend/.deer-flow/evaluation-secrets');"
+        "p.mkdir(mode=0o700); f=p/'github-read-token';"
+        "f.write_text('synthetic-fixture-only-read-token');f.chmod(0o600);print('true')",
+    )
     api(
         "PATCH",
         "me/continuous-config",
@@ -68,6 +76,19 @@ def bootstrap(client, gateway, api, cfg):
     )
     setup = client.post("/__deermate_evaluation/setup", json={"work_id": work["id"]})
     setup.raise_for_status()
+    if cfg["scenario"] == "S1":
+        api(
+            "POST",
+            "me/automation-rules",
+            {
+                "operation_id": "observe-" + cfg["logical_operation_id"],
+                "source_id": "github",
+                "mode": "observe",
+                "instruction": "Read references only. No execution is authorized.",
+                "event_kinds": ["comment"],
+                "native_budget": 0,
+            },
+        )
     # This is an existing owner work record, never an observer-discovered task
     # handle or invented Native head. All task discovery below uses public APIs.
     fixture.docker_python(
@@ -78,6 +99,260 @@ def bootstrap(client, gateway, api, cfg):
         {"work_id": work["id"]},
     )
     return work, setup.json()
+
+
+def observe_foreground(api, inbox, logical, deadline):
+    while time.monotonic() < deadline:
+        view = api("GET", "me/router")
+        item = next(v for v in view["items"] if v["id"] == inbox)
+        if "EVAL_VISIBLE " + logical in item["data"].get("reply", ""):
+            return time.monotonic_ns(), view
+        time.sleep(0.02)
+    raise RuntimeError("No actual foreground response within its deadline")
+
+
+def second_owner(client, api, work_id):
+    """Create and authenticate a distinct synthetic admin, without Worker grants."""
+    email = "outside-owner-fixture@example.com"
+    password = secrets.token_urlsafe(24)
+    created = api(
+        "POST",
+        "v1/admin/users",
+        {
+            "email": email,
+            "password": password,
+            "system_role": "admin",
+        },
+    )
+    with httpx.Client(base_url=str(client.base_url), trust_env=False, timeout=20) as outside:
+        outside.post(
+            "/api/v1/auth/login/local",
+            data={
+                "username": email,
+                "password": password,
+            },
+        ).raise_for_status()
+        me = outside.get("/api/v1/auth/me")
+        me.raise_for_status()
+        user = me.json()
+        if (
+            user["id"] != created["id"]
+            or user.get("needs_setup")
+            or user["id"] == client.headers["X-Expected-User-Id"]
+        ):
+            raise RuntimeError("The distinct synthetic owner did not authenticate")
+        outside.headers.update(
+            {
+                "X-CSRF-Token": outside.cookies["csrf_token"],
+                "X-Expected-User-Id": user["id"],
+                "X-DeerMate-Evaluation": client.headers["X-DeerMate-Evaluation"],
+            }
+        )
+        read = outside.get("/api/me/work-orders/" + work_id)
+        if read.status_code != 403:
+            raise RuntimeError("The authenticated outside owner could access the original work")
+        return {
+            "user_id": user["id"],
+            "cookies": dict(outside.cookies),
+            "headers": dict(outside.headers),
+            "original_work_read_status": read.status_code,
+        }
+
+
+def s1_plan(cfg, seed):
+    plan = [(index / 10, "bound", index) for index in range(1, 7)]
+    plan += [(0.25, "foreground", 0), (0.7, "unbound", 8), (0.8, "wrong_owner", 99)]
+    rows = []
+    for offset, kind, index in sorted(plan):
+        body = (
+            {
+                "operation_id": "front-" + cfg["logical_operation_id"],
+                "text": "EVAL_FRONT " + cfg["logical_operation_id"],
+            }
+            if kind == "foreground"
+            else {
+                "id": seed * 100 + index,
+                "number": 7 if kind in {"bound", "wrong_owner"} else 8,
+                "text": (
+                    f"Bound {seed}/{index}: reference only for the original work."
+                    if kind == "bound"
+                    else f"{kind} {seed}: reference only. No execution."
+                ),
+                "revision": f"revision-{seed}-{index}",
+            }
+        )
+        rows.append(
+            {
+                "kind": kind,
+                "index": index,
+                "intended_offset_seconds": offset,
+                "input": body,
+                "clock_domain": "runner-monotonic",
+                "attempt_status": "not_started",
+                "sent_runner_ns": None,
+                "response_status": None,
+                "received_runner_ns": None,
+                "error_kind": None,
+                "drift_ms": None,
+                "due_runner_ns": None,
+            }
+        )
+    return rows
+
+
+def run_s1(client, api, cfg, seed, anchor_ns, deadline, directory, result, outside):
+    """Each offset owns a sender; HTTP responses never gate later input sends."""
+    foreground = {}
+    ready = Event()
+    deliveries = result.get("scheduled_deliveries") or s1_plan(cfg, seed)
+    result["scheduled_deliveries"] = deliveries
+    result["schedule_origin_runner_ns"] = anchor_ns
+    result["schedule_origin"] = "runner receipt of actual original Native turn/start"
+    log_lock = Lock()
+
+    def send_one(record):
+        kind = record["kind"]
+        due = anchor_ns + int(record["intended_offset_seconds"] * 1e9)
+        record["due_runner_ns"] = due
+        identity = (
+            outside
+            if kind == "wrong_owner"
+            else {
+                "user_id": client.headers["X-Expected-User-Id"],
+                "headers": dict(client.headers),
+                "cookies": dict(client.cookies),
+            }
+        )
+        record["actor_user_id"] = identity["user_id"]
+        record["expected_user_id_matches_authenticated_user"] = True
+        try:
+            with httpx.Client(
+                base_url=str(client.base_url),
+                trust_env=False,
+                timeout=20,
+                headers=identity["headers"],
+                cookies=identity["cookies"],
+            ) as sending:
+                time.sleep(max(0, (due - time.monotonic_ns()) / 1e9))
+                if time.monotonic() >= deadline:
+                    record["attempt_status"] = "not_started_deadline"
+                    raise TimeoutError("Common S1 deadline exhausted before this send")
+                sent = time.monotonic_ns()
+                record.update(
+                    sent_runner_ns=sent, drift_ms=(sent - due) / 1e6, attempt_status="sent"
+                )
+                path = (
+                    "/api/me/router/messages"
+                    if kind == "foreground"
+                    else "/__deermate_evaluation/events"
+                )
+                response = sending.post(
+                    path,
+                    json=record["input"],
+                    timeout=max(0.1, min(20, deadline - time.monotonic())),
+                )
+                record.update(
+                    response_status=response.status_code,
+                    received_runner_ns=time.monotonic_ns(),
+                    attempt_status="responded",
+                )
+                record["receipt"] = response.json()
+                if kind == "wrong_owner":
+                    if response.status_code != 403:
+                        raise RuntimeError("The distinct authenticated non-owner was not rejected")
+                else:
+                    response.raise_for_status()
+                if kind == "foreground":
+                    foreground.update(inbox=record["receipt"]["id"], runner_send=sent)
+        except Exception as error:
+            record["error_kind"] = type(error).__name__
+            if record["attempt_status"] != "not_started_deadline":
+                record["attempt_status"] = (
+                    "failed" if record["sent_runner_ns"] else "not_started_error"
+                )
+        finally:
+            record["completed_runner_ns"] = time.monotonic_ns()
+            # One final record per planned attempt, including HTTP errors,
+            # timeouts and unsent slots. No failed request is retried.
+            with log_lock, (directory / "schedule.jsonl").open("a") as out:
+                out.write(json.dumps(record) + "\n")
+            if kind == "foreground":
+                ready.set()
+
+    with ThreadPoolExecutor(max_workers=len(deliveries)) as executor:
+        futures = [executor.submit(send_one, record) for record in deliveries]
+        try:
+            while not ready.wait(0.02):
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("No foreground admission before the common S1 deadline")
+            if not foreground:
+                raise RuntimeError("S1 foreground admission failed; see the retained schedule")
+            result["foreground_inbox"] = foreground["inbox"]
+            first, view = observe_foreground(
+                api,
+                foreground["inbox"],
+                cfg["logical_operation_id"],
+                min(deadline, foreground["runner_send"] / 1e9 + 30),
+            )
+        finally:
+            for future in futures:
+                future.result()
+    if any(row["error_kind"] for row in deliveries):
+        raise RuntimeError("At least one S1 delivery failed; all attempts are retained")
+    return {"id": foreground["inbox"]}, foreground["runner_send"], first, view
+
+
+def s1_contract(barrier, deliveries, work_id, owner, mode):
+    evidence = barrier["evidence"]
+    events = [v for v in evidence["go_records"] if v["kind"] == "event"]
+    bound_inputs = [v for v in deliveries if v["kind"] == "bound"]
+    bound_ids = {v["receipt"]["event"]["id"] for v in bound_inputs}
+    unbound = next(v for v in deliveries if v["kind"] == "unbound")
+    unbound_id = unbound["receipt"]["event"]["id"]
+    calls = [v for v in evidence["model_events"] if v["kind"] == "model_started"]
+    bound_read, unbound_read, exact_bodies = set(), False, True
+    for call in calls:
+        refs = {v["id"] for v in call.get("event_refs", [])}
+        bound_read |= refs & bound_ids
+        unbound_read |= unbound_id in refs
+        for delivered in bound_inputs + [unbound]:
+            if delivered["receipt"]["event"]["id"] in refs:
+                exact_bodies &= delivered["input"]["text"] in call.get("event_context_text", "")
+    conditions = {
+        "all_seven_inputs_preserved": len(events) == 7 and len(bound_ids) == 6,
+        "bound_events_same_original_work": all(
+            v["owner"] == owner and v["parent"] == work_id and v["state"] == "context"
+            for v in events
+            if v["id"] in bound_ids
+        )
+        and len([v for v in events if v["id"] in bound_ids]) == 6,
+        "outside_owner_rejected": next(v for v in deliveries if v["kind"] == "wrong_owner")[
+            "response_status"
+        ]
+        == 403
+        and next(v for v in deliveries if v["kind"] == "wrong_owner")["actor_user_id"] != owner
+        and next(v for v in deliveries if v["kind"] == "wrong_owner")[
+            "expected_user_id_matches_authenticated_user"
+        ],
+        "all_accepted_events_owned_by_original_owner": all(v["owner"] == owner for v in events),
+        "unbound_has_no_work_association": any(
+            v["id"] == unbound_id and not v["parent"] and v["state"] not in {"context", "attached"}
+            for v in events
+        ),
+        "unbound_event_traversed_router": unbound_read,
+        "exact_bounded_bodies_read": exact_bodies,
+        "bound_router_factor": not bound_read if mode == "C" else bound_read == bound_ids,
+    }
+    return {
+        "conditions": conditions,
+        "passed": all(conditions.values()),
+        "bound_event_ids": sorted(bound_ids),
+        "bound_read_ids": sorted(bound_read),
+        "unbound_event_id": unbound_id,
+        "bound_router_model_calls": sum(
+            bool({v["id"] for v in c.get("event_refs", [])} & bound_ids) for c in calls
+        ),
+    }
 
 
 def public_tracking(api, thread):
@@ -135,8 +410,8 @@ def barrier_state(evidence, public, view, work, mode, owner):
     return reasons
 
 
-def await_barrier(api, gateway, thread, work_id, mode, owner, directory):
-    deadline = time.monotonic() + 90
+def await_barrier(api, gateway, thread, work_id, mode, owner, directory, deadline=None):
+    deadline = deadline if deadline is not None else time.monotonic() + 90
     stable_since, previous = None, None
     samples = []
     while True:
@@ -197,11 +472,11 @@ def await_barrier(api, gateway, thread, work_id, mode, owner, directory):
 
 def run(args):
     os.umask(0o077)
-    if args.scenario != "normal":
-        raise ValueError("This calibration step currently supports only --scenario normal")
+    if args.scenario not in {"normal", "S1"}:
+        raise ValueError("S2 requires the separately calibrated durable ACK-loss proxy")
     if args.port == 2026 or not 1024 <= args.port <= 65535:
         raise ValueError("Use a separate unprivileged fixture port")
-    args.logical_operation_id = "normal-" + str(args.seed)
+    args.logical_operation_id = args.scenario.lower() + "-" + str(args.seed)
     preflight = fixture.preflight_control(args)
     args.control_image = preflight["image_id"]
     directory = args.work_dir.absolute()
@@ -234,7 +509,7 @@ def run(args):
     bundle, cfg = fixture.prepare(args, directory, project, key)
     gateway = project + "-gateway-1"
     result = {
-        "profile": "single offline normal calibration",
+        "profile": "single offline " + args.scenario + " calibration",
         "formal_batch": False,
         "mode": args.mode,
         "scenario": args.scenario,
@@ -246,6 +521,8 @@ def run(args):
         "real_provider_calls": 0,
         "real_native_calls": 0,
     }
+    if args.scenario == "S1":
+        result["scheduled_deliveries"] = s1_plan(cfg, args.seed)
     try:
         subprocess.run([str(bundle / "start.sh")], check=True, stdout=subprocess.DEVNULL)
         result["app_network_isolation"] = isolation(project)
@@ -276,6 +553,16 @@ def run(args):
 
             work, setup = bootstrap(client, gateway, api, cfg)
             result.update(work_id=work["id"], fixture_setup=setup)
+            outside = None
+            if args.scenario == "S1":
+                outside = second_owner(client, api, work["id"])
+                result["outside_owner"] = {
+                    "user_id": outside["user_id"],
+                    "authenticated": True,
+                    "original_work_read_status": outside["original_work_read_status"],
+                }
+                result["scheduled_deliveries"] = s1_plan(cfg, args.seed)
+            sample_deadline = time.monotonic() + 90
             start = api(
                 "POST",
                 "me/router/messages",
@@ -286,11 +573,13 @@ def run(args):
             )
             result["start_inbox"] = start["id"]
             observations = []
-            deadline = time.monotonic() + 30
+            deadline = min(sample_deadline, time.monotonic() + 30)
             while time.monotonic() < deadline:
+                observation_started = time.monotonic_ns()
                 evidence = probe(gateway)
                 observations.append(
                     {
+                        "probe_started_runner_ns": observation_started,
                         "runner_ns": time.monotonic_ns(),
                         "service_ns": evidence["clock_ns"],
                         "native_events": len(evidence["native_events"]),
@@ -302,27 +591,35 @@ def run(args):
             else:
                 raise RuntimeError("The actual original Native turn did not start")
             result["native_observation_samples"] = observations
-            runner_send = time.monotonic_ns()
-            front = api(
-                "POST",
-                "me/router/messages",
-                {
-                    "operation_id": "front-" + cfg["logical_operation_id"],
-                    "text": "EVAL_FRONT " + cfg["logical_operation_id"],
-                },
-            )
-            result["foreground_inbox"] = front["id"]
-            first = None
-            deadline = time.monotonic() + 30
-            while time.monotonic() < deadline:
-                view = api("GET", "me/router")
-                item = next(v for v in view["items"] if v["id"] == front["id"])
-                if "EVAL_VISIBLE " + cfg["logical_operation_id"] in item["data"].get("reply", ""):
-                    first = time.monotonic_ns()
-                    break
-                time.sleep(0.02)
-            if first is None:
-                raise RuntimeError("No actual foreground response within its deadline")
+            if args.scenario == "S1":
+                front, runner_send, first, view = run_s1(
+                    client,
+                    api,
+                    cfg,
+                    args.seed,
+                    observations[-1]["runner_ns"],
+                    sample_deadline,
+                    directory,
+                    result,
+                    outside,
+                )
+            else:
+                runner_send = time.monotonic_ns()
+                front = api(
+                    "POST",
+                    "me/router/messages",
+                    {
+                        "operation_id": "front-" + cfg["logical_operation_id"],
+                        "text": "EVAL_FRONT " + cfg["logical_operation_id"],
+                    },
+                )
+                result["foreground_inbox"] = front["id"]
+                first, view = observe_foreground(
+                    api,
+                    front["id"],
+                    cfg["logical_operation_id"],
+                    min(sample_deadline, time.monotonic() + 30),
+                )
             thread = (
                 view["session"]["data"]["thread_id"]
                 if args.mode == "A"
@@ -331,16 +628,34 @@ def run(args):
             result.update(
                 coordinator_thread=view["session"]["data"]["thread_id"], tracking_thread=thread
             )
-            barrier = await_barrier(api, gateway, thread, work["id"], args.mode, uid, directory)
+            barrier = await_barrier(
+                api,
+                gateway,
+                thread,
+                work["id"],
+                args.mode,
+                uid,
+                directory,
+                deadline=sample_deadline,
+            )
             result["barrier"] = barrier
             service = client.get("/__deermate_evaluation/evidence")
             service.raise_for_status()
             result["service_evidence"] = service.json()
             timing = next(v for v in service.json()["items"] if v["inbox"] == front["id"])
-            result["foreground_admission_to_first_ms"] = (
-                timing["first_visible_ns"] - timing["admitted_ns"]
-            ) / 1e6
-            result["client_send_to_first_ms"] = (first - runner_send) / 1e6
+            result["service_admission_to_reply_flush_ms"] = (
+                (timing["first_visible_ns"] - timing["admitted_ns"]) / 1e6
+                if timing.get("first_visible_ns") is not None
+                else None
+            )
+            result["client_send_to_complete_read_ms"] = (first - runner_send) / 1e6
+            result["metric_semantics"] = {
+                "service": "durable admission -> successful flush of actual complete JSON reply",
+                "visibility_limit": "transport boundary; not exact browser display timing",
+                "client": "send -> complete JSON read containing the original foreground marker",
+                "clock_domains": "Linux service and client clocks stay separate; no subtraction",
+                "no_streaming_token_claim": True,
+            }
             result["client_send_to_end_barrier_ms"] = (
                 barrier["runner_observed_ns"] - runner_send
             ) / 1e6
@@ -358,6 +673,15 @@ def run(args):
                 and all(v["status"] == "completed" for v in barrier["public_tracking"]["items"])
                 and (args.mode == "A" or barrier["work"]["data"].get("verified") is True)
             )
+            if args.scenario == "S1":
+                result["s1_contract"] = s1_contract(
+                    barrier,
+                    result["scheduled_deliveries"],
+                    work["id"],
+                    uid,
+                    args.mode,
+                )
+                result["passed"] = result["passed"] and result["s1_contract"]["passed"]
     except Exception as error:
         result["failure_kind"] = type(error).__name__
         result["failure_message"] = str(error)[:500]
