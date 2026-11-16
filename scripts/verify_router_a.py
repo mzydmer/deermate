@@ -80,6 +80,12 @@ def preflight_control(args):
         raise RuntimeError("Control image predates the merged capability command")
     return {
         "image_id": image["Id"],
+        "producer_revision": image["Config"].get("Labels", {}).get(
+            "org.opencontainers.image.revision"
+        ),
+        "producer_source_dirty": image["Config"].get("Labels", {}).get(
+            "io.deermate.evaluation.source-dirty"
+        ),
         "binary_sha256": digest,
         "platform": "linux/amd64",
         "test_tag": "deermate_evaluation",

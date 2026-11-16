@@ -70,6 +70,14 @@ class FixtureModel(ExistingFixtureModel):
         encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()
         human = next((m.content for m in reversed(messages) if m.type == "human"), "")
         if len(encoded) > 12000:
+            record(
+                "model_rejected",
+                **identity,
+                mode=cfg["mode"],
+                reason="input_budget",
+                input_bytes=len(encoded),
+                input_sha256=hashlib.sha256(encoded).hexdigest(),
+            )
             raise ValueError("Evaluation input budget exceeded")
         record(
             "model_started",
@@ -183,6 +191,11 @@ class FixtureMiddleware(continuous_middleware.ContinuousMiddleware):
 
     async def _bounded_model_call(self, request, handler, op, cfg, event_context):
         bounded = await asyncio.to_thread(continuous_middleware.restricted, request, op)
+        if op is None:
+            # Task notifications acknowledge the original durable event; they
+            # cannot submit work. Keep the actual messages intact and remove
+            # unrelated ordinary-chat tool schemas equally in all three modes.
+            return await handler(bounded.override(tools=[]))
         if event_context is not None:
             bounded = bounded.override(
                 messages=[

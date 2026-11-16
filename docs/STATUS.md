@@ -6,6 +6,8 @@
 
 单样本脚本 `scripts/run_router_sample.py` 复用现有prepare/device/ordinary MCP链，接收mode/scenario/seed，目前只接纳非正式normal校准，S1/S2在建栈前拒绝。先创建真实本人work，公开tracking只由已知执行thread的本人list/detail取得；完成条件覆盖Worker、公开MCP及通知、Go原operation/inbox/work、相关runs与模型调用，再观察4s稳定尾部。只读probe去除授权字段，保留真实diff/测试文件哈希和全量调用记录；三个屏障合同测试通过（含Worker完成但tracking/通知未收敛及错owner/替代handle反例）。实际B/C单样本尚待运行；MCP轮询已对齐协议1s。
 
+`c6b959a` 的两个normal B预试保留：01在Router工具接纳前因真实Go SQLITE_BUSY/503失败，0 MCP/Worker/Native；02实际完成一个Native/Worker与公开MCP，Go账本已settled，但通知输入超12,000 bytes被拒绝并进入dead_letter，不能计完整完成。仅测试适配修正为A/B/C通知均不带无关普通工具schema，原通知messages及12,000上限保持；超预算拒绝另记录identity/实际bytes/hash，不冒充已调用模型。需新样本验证，未开始正式批次，也未改生产SQLite/通知行为。
+
 当前B/C阶段：同一canonical订阅函数在C摄取时附加，A/B在真实Router完成后确定性附加；不声称模型决定归属。测试专用model-context读入口复用原assessmentInputs/assessmentBatch，复核owner/来源/规则/event与rule revision，并向模型输入同批有界原文。四项Linux tagged合同通过（见[收据](verification/router-routing-contracts-2026-11-16.json)），默认C既有来源/订阅回归随普通Go全包race通过（controlplane34.973s）；mod verify/vet/普通无CGO和Linux evaluation构建通过，Ruff/编译、文档/设计82/token/7图通过。Native撤权不额外限制合法只读context，但新执行仍拒绝。正式完成屏障已明确包括Worker验证、MCP本人公开tracking、原Go operation/inbox、runs及通知终态，再观察4s；A04当时MCP仍working的功能收据不冒充该屏障通过。
 
 干净 `4180872120422fbb149d6238b81ef56850560606` 的A04合同通过，独立评审复核实际同Linux时域时间线、真实Worker补丁与独立unittest：Native12004.4ms，service持久接纳→首次可见8632.3ms，首次可见早于Native完成3321.4ms；一个MCP/Worker task、一个根/轮次/实际effect，同一协调thread。首次可见和完整回复相同，因为当前Router接口只在settled显示整段；没有称作流式token。最终采样MCP仍working，未据此宣称公开完成投影或丢回执对账通过。见[非正式校准收据](verification/router-a-calibration-2026-11-16.json)，原12守卫一致。正式36格及同冻结版本独立复跑仍待B/C/judge负例后冻结。
