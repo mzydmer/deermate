@@ -1,8 +1,8 @@
 {
   "issue": "https://github.com/mzydmer/deermate/issues/3",
-  "updated_at": "2026-11-16T16:34:18.008855+00:00",
-  "status": "partial: preflight verified; full five-image build/startup in progress",
-  "complete": false,
+  "updated_at": "2026-11-16T16:52:37.823828+00:00",
+  "status": "complete: local onboarding acceptance passed; independent PR review pending",
+  "complete": true,
   "task_base_sha": "8381d0cbd731af71c7993ad25cfa030752bd61b0",
   "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
   "environment": {
@@ -11,7 +11,10 @@
     "python": "3.12.15",
     "docker": "29.9.2",
     "helm": "3.19.0",
-    "codex_cli": "0.165.0-alpha.1.2"
+    "codex_cli": "0.165.0-alpha.1.2",
+    "compose": "5.6.1",
+    "chromium": "151.0.7922.34",
+    "playwright": "1.62.1"
   },
   "document_contract": {
     "equivalent_startup_commands": true,
@@ -107,30 +110,374 @@
     },
     {
       "command": "relative Markdown file-link resolution on both READMEs, local-docker, m2-local-docker and changed product Markdown",
-      "result": "66 links resolve"
+      "result": "67 links resolve in final documents (66 before the final receipt link)"
     }
   ],
-  "pending": [
-    "full five-image build",
-    "isolated up",
-    "real browser administrator initialization page",
-    "zero startup model/Native counters",
-    "protected instance preservation comparison"
-  ],
+  "pending": [],
   "live_verification": {
     "run": false,
     "new_paid_acceptance_calls": 0
   },
   "limits": [
     "macOS Intel only; no Apple Silicon/Linux/Windows local helper acceptance",
-    "No new real model or Native execution acceptance",
-    "Mac personal port 2026 is occupied; validation will use independent resources and a separate host port, with localhost:2026 checked in its isolated nginx network namespace"
+    "No new real model or Native execution acceptance; verify --live was not run",
+    "The existing Mac localhost:2026 personal instance was not rebound or changed. A separate host port and isolated nginx namespace validate the default internal localhost:2026 origin and setup page.",
+    "Initial unconstrained pip installation failed; the corrected published-wheel constraint was independently installed from public sources with pip caching disabled. The initial locally cached tooling wheel is not the public installation evidence.",
+    "This is startup/request-journal evidence, not a provider-side billing audit."
   ],
   "checked_file_sha256": {
     "scripts/local_docker.py": "f09090b8758c5d3866526a221438a5f34e54942e8b06e8c730742b4a17543196",
     "tests/test_local_docker.py": "570364364aa591cc3565da34b8ae1e1282e3fa20aa64e2c45b3079d506f18b4f",
     "README.md": "31a96cef868c51c260a7a59e24ba64580c9692993f02f2627f12ccd33246b031",
     "README.zh-CN.md": "b32a39cb350904d8bc8adff594c0563f0b8d16f05a71a5147589dae5370fdcac",
-    "docs/local-docker.md": "fea90dd94e2ad30f4cc38c845be07a43662554823b0299cc5b7526c2920a061a"
+    "docs/local-docker.md": "a038b903688920a07ca369f3c643de5b1ff21db23b1f080254c1682741b49a59"
+  },
+  "preflight_copy_checks_bash_and_zsh": [
+    {
+      "shell": "bash",
+      "document": "README.md",
+      "exit_code": 1,
+      "stderr": "Codex CLI is missing; install it before init."
+    },
+    {
+      "shell": "bash",
+      "document": "README.zh-CN.md",
+      "exit_code": 1,
+      "stderr": "缺少 Codex CLI，请先安装再执行 init。"
+    },
+    {
+      "shell": "bash",
+      "document": "docs/local-docker.md",
+      "exit_code": 1,
+      "stderr": "缺少 Codex CLI，请先安装再执行 init。"
+    },
+    {
+      "shell": "zsh",
+      "document": "README.md",
+      "exit_code": 1,
+      "stderr": "Codex CLI is missing; install it before init."
+    },
+    {
+      "shell": "zsh",
+      "document": "README.zh-CN.md",
+      "exit_code": 1,
+      "stderr": "缺少 Codex CLI，请先安装再执行 init。"
+    },
+    {
+      "shell": "zsh",
+      "document": "docs/local-docker.md",
+      "exit_code": 1,
+      "stderr": "缺少 Codex CLI，请先安装再执行 init。"
+    }
+  ],
+  "startup": {
+    "helper": "scripts/local_docker.py, actual CLI main() through a private isolation runner",
+    "commands": [
+      {
+        "command": "<public fresh-venv>/bin/python .deermate/issue3/run_local.py init",
+        "exit_code": 0
+      },
+      {
+        "command": "<initial isolated-venv>/bin/python .deermate/issue3/run_local.py build",
+        "exit_code": 0,
+        "result": "all five images built locally; no registry push"
+      },
+      {
+        "command": "<public fresh-venv>/bin/python .deermate/issue3/run_local.py up",
+        "exit_code": 0,
+        "result": "four application containers healthy"
+      },
+      {
+        "command": "<public fresh-venv>/bin/python .deermate/issue3/snapshot.py",
+        "exit_code": 0,
+        "scope": "executed after up, before browser, and after browser"
+      },
+      {
+        "command": "docker run --name deermate-issue3-browser --network container:deermate-issue3-20261116-nginx-1 deermate.local/issue3-browser:20261116",
+        "exit_code": 0
+      }
+    ],
+    "isolation": {
+      "compose_project": "deermate-issue3-20261116",
+      "state_directory": ".deermate/issue3-stack",
+      "host_bind": "127.0.0.1:22063 -> nginx:2026",
+      "worker_bind": "127.0.0.1:18793",
+      "ssh_bind": "127.0.0.1:19843",
+      "changes_from_default": "Only state/Compose path, Compose/stage resource names and the three host ports are remapped. App images, startup logic, model configuration, internal port/origin and Host allowlist use the actual helper defaults.",
+      "browser_origin": "http://localhost:2026 in the new nginx network namespace",
+      "upstream_checkout": "reused a clean, lock-verified checkout read-only; Docker build caches retained"
+    },
+    "build_receipt": {
+      "upstream_commit": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "platform": "linux/amd64",
+      "pushed": false,
+      "images": {
+        "control": "deermate.local/runtime/deermate-control:local-8381d0cbd731",
+        "gateway": "deermate.local/runtime/deermate-gateway:local-8381d0cbd731",
+        "frontend": "deermate.local/runtime/deermate-frontend:local-8381d0cbd731",
+        "nginx": "deermate.local/runtime/deermate-nginx:local-8381d0cbd731",
+        "tools": "deermate.local/runtime/deermate-tools:local-8381d0cbd731"
+      }
+    },
+    "images": {
+      "control": {
+        "reference": "deermate.local/runtime/deermate-control:local-8381d0cbd731",
+        "id": "sha256:92f3ea4a34637e67bfc4278496059180a7f1401cd6b16af6b23e2c3d8ba9005a",
+        "upstream_commit_label": null
+      },
+      "gateway": {
+        "reference": "deermate.local/runtime/deermate-gateway:local-8381d0cbd731",
+        "id": "sha256:48103040118b71d4267be5e3dbf73c65c931b0c580839be5df7eb9b5356c4f1e",
+        "upstream_commit_label": "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+      },
+      "frontend": {
+        "reference": "deermate.local/runtime/deermate-frontend:local-8381d0cbd731",
+        "id": "sha256:48c369b03b55a40bf4fedd0a8e9ffc8a102776075d3eb7a67f48afa07baaae41",
+        "upstream_commit_label": "a1b89d0432de4e45adc59f512cb25bb386ea1e51"
+      },
+      "nginx": {
+        "reference": "deermate.local/runtime/deermate-nginx:local-8381d0cbd731",
+        "id": "sha256:d154f750562b438af461f76a3d08ccbfddb62da13b7d01fc3014c4642f91e746",
+        "upstream_commit_label": null
+      },
+      "tools": {
+        "reference": "deermate.local/runtime/deermate-tools:local-8381d0cbd731",
+        "id": "sha256:181c4fd94fcd5c242830a4bd405f9f275679df88f600d0dc2a965a9ffdde50af",
+        "upstream_commit_label": null
+      }
+    },
+    "gateway_source": {
+      "deermate_package_sha256": "2317bfe74711ee9f83554eca95a90cded63317a13bac04b2614c8a1cd9a07701",
+      "matches_worktree_source": true
+    },
+    "before": {
+      "worker_database_exists": false,
+      "demo_project_exists": false,
+      "compose_volumes": [],
+      "configured_models": 0,
+      "model_requests": 0,
+      "native_turns": 0,
+      "basis": "fresh, absent runtime databases and no configured model; no startup has been attempted"
+    },
+    "after_up_before_browser": {
+      "gateway_table_counts": {
+        "agents": 0,
+        "alembic_version": 1,
+        "channel_connections": 0,
+        "channel_conversations": 0,
+        "channel_credentials": 0,
+        "channel_leases": 0,
+        "channel_oauth_states": 0,
+        "channel_runtime_configs": 0,
+        "channel_thread_bindings": 0,
+        "completed_run_snapshots": 0,
+        "deermate_agent_devices": 0,
+        "deermate_agent_events": 0,
+        "deermate_agent_grants": 0,
+        "deermate_agent_pairs": 0,
+        "deermate_agent_requests": 0,
+        "deermate_attention_topics": 0,
+        "deermate_audit": 0,
+        "deermate_briefing_intents": 0,
+        "deermate_briefing_snapshots": 0,
+        "deermate_control_meta": 1,
+        "deermate_login_attempts": 0,
+        "deermate_memory_barriers": 0,
+        "deermate_memory_history": 0,
+        "deermate_memory_history_items": 0,
+        "deermate_memory_jobs": 0,
+        "deermate_memory_model_budget": 0,
+        "deermate_memory_operations": 0,
+        "deermate_memory_project_topics": 0,
+        "deermate_memory_projects": 0,
+        "deermate_memory_refs": 0,
+        "deermate_memory_sources": 0,
+        "deermate_memory_stage_ends": 0,
+        "deermate_memory_usage": 0,
+        "deermate_operation_trace": 0,
+        "deermate_personal_profiles": 0,
+        "deermate_sessions": 0,
+        "deermate_topic_memory": 0,
+        "deermate_work_budget": 0,
+        "deermate_work_keys": 0,
+        "deermate_work_records": 0,
+        "deermate_workspace_feedback": 0,
+        "extension_execution_leases": 0,
+        "feedback": 0,
+        "im_notification_preferences": 0,
+        "login_throttle": 0,
+        "managed_subagents": 0,
+        "mcp_oauth_tokens": 0,
+        "mcp_tasks": 0,
+        "notification_deliveries": 0,
+        "personal_access_tokens": 0,
+        "project_documents": 0,
+        "projects": 0,
+        "run_change_clock": 0,
+        "run_event_thread_seq": 0,
+        "run_events": 0,
+        "runs": 0,
+        "scheduled_task_events": 0,
+        "scheduled_task_runs": 0,
+        "scheduled_tasks": 0,
+        "skill_mutation_assets": 0,
+        "skill_mutation_operations": 0,
+        "skill_mutation_owners": 0,
+        "skill_mutation_proposals": 0,
+        "skill_mutation_scan_attempts": 0,
+        "sqlite_sequence": 0,
+        "subagent_batch_items": 0,
+        "subagent_batches": 0,
+        "thread_read_markers": 0,
+        "thread_read_versions": 0,
+        "threads_meta": 0,
+        "user_preferences": 0,
+        "users": 0,
+        "webhook_deliveries": 0
+      },
+      "worker_table_counts": {
+        "tasks": 0,
+        "events": 0,
+        "requests": 0,
+        "conversation_heads": 0
+      }
+    },
+    "browser": {
+      "passed": true,
+      "url": "http://localhost:2026/setup",
+      "ready_status": 200,
+      "setup_status": {
+        "needs_setup": true,
+        "registration_enabled": false
+      },
+      "administrator_form_visible": true,
+      "page_errors": [],
+      "attempted_write_requests": [],
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "browser_version": "151.0.7922.34",
+      "isolated_network": "shares only the issue-3 nginx network namespace; localhost:2026 is isolated from the Mac personal instance"
+    },
+    "after_browser": {
+      "gateway_table_counts": {
+        "agents": 0,
+        "alembic_version": 1,
+        "channel_connections": 0,
+        "channel_conversations": 0,
+        "channel_credentials": 0,
+        "channel_leases": 0,
+        "channel_oauth_states": 0,
+        "channel_runtime_configs": 0,
+        "channel_thread_bindings": 0,
+        "completed_run_snapshots": 0,
+        "deermate_agent_devices": 0,
+        "deermate_agent_events": 0,
+        "deermate_agent_grants": 0,
+        "deermate_agent_pairs": 0,
+        "deermate_agent_requests": 0,
+        "deermate_attention_topics": 0,
+        "deermate_audit": 0,
+        "deermate_briefing_intents": 0,
+        "deermate_briefing_snapshots": 0,
+        "deermate_control_meta": 1,
+        "deermate_login_attempts": 0,
+        "deermate_memory_barriers": 0,
+        "deermate_memory_history": 0,
+        "deermate_memory_history_items": 0,
+        "deermate_memory_jobs": 0,
+        "deermate_memory_model_budget": 0,
+        "deermate_memory_operations": 0,
+        "deermate_memory_project_topics": 0,
+        "deermate_memory_projects": 0,
+        "deermate_memory_refs": 0,
+        "deermate_memory_sources": 0,
+        "deermate_memory_stage_ends": 0,
+        "deermate_memory_usage": 0,
+        "deermate_operation_trace": 0,
+        "deermate_personal_profiles": 0,
+        "deermate_sessions": 0,
+        "deermate_topic_memory": 0,
+        "deermate_work_budget": 0,
+        "deermate_work_keys": 0,
+        "deermate_work_records": 0,
+        "deermate_workspace_feedback": 0,
+        "extension_execution_leases": 0,
+        "feedback": 0,
+        "im_notification_preferences": 0,
+        "login_throttle": 0,
+        "managed_subagents": 0,
+        "mcp_oauth_tokens": 0,
+        "mcp_tasks": 0,
+        "notification_deliveries": 0,
+        "personal_access_tokens": 0,
+        "project_documents": 0,
+        "projects": 0,
+        "run_change_clock": 0,
+        "run_event_thread_seq": 0,
+        "run_events": 0,
+        "runs": 0,
+        "scheduled_task_events": 0,
+        "scheduled_task_runs": 0,
+        "scheduled_tasks": 0,
+        "skill_mutation_assets": 0,
+        "skill_mutation_operations": 0,
+        "skill_mutation_owners": 0,
+        "skill_mutation_proposals": 0,
+        "skill_mutation_scan_attempts": 0,
+        "sqlite_sequence": 0,
+        "subagent_batch_items": 0,
+        "subagent_batches": 0,
+        "thread_read_markers": 0,
+        "thread_read_versions": 0,
+        "threads_meta": 0,
+        "user_preferences": 0,
+        "users": 0,
+        "webhook_deliveries": 0
+      },
+      "worker_table_counts": {
+        "tasks": 0,
+        "events": 0,
+        "requests": 0,
+        "conversation_heads": 0
+      }
+    },
+    "preservation": {
+      "protected_existing_containers": 12,
+      "all_ids_start_times_restart_counts_preserved": true,
+      "worker_child_processes": [],
+      "database_snapshots_unchanged_after_browser": true
+    },
+    "host_whitelist": {
+      "unmodified_host_whitelist": true,
+      "ip_host_canonical_redirect_status": 301,
+      "remapped_localhost_host_status": 403,
+      "original_host_header_status": 200,
+      "needs_setup": true,
+      "diagnostic_note": "The first auxiliary probe incorrectly expected 403 for the IP alias; nginx returns its canonical 301. Explicit Host localhost:22063 correctly returns host_rejected 403. This did not affect startup or browser acceptance."
+    },
+    "new_model_requests": 0,
+    "new_native_turns": 0,
+    "counter_basis": "No configured models, zero persisted runs/MCP tasks/memory model jobs/budgets/work records, zero Worker tasks/events/requests/heads, no Worker child processes and zero browser write attempts. Database snapshots are identical before and after browser navigation. No provider billing API was queried.",
+    "private_environment_retained": true
+  },
+  "remote_ci": {
+    "implementation_head": "826a2a31641fc8246a79654fa612117c91ef09bd",
+    "run_url": "https://github.com/mzydmer/deermate/actions/runs/43909147991",
+    "jobs_passed": 12,
+    "jobs_total": 12,
+    "note": "Observed on the implementation head. The final documentation/evidence commit will trigger another run; no result for that future head is claimed here."
+  },
+  "private_evidence_sha256": {
+    "run_local.py": "91d62437e0181b71b7fc3c8165f0932005aeadc3705f14ff2e6484c2f97151f2",
+    "snapshot.py": "bbf3a07fca9f009403dd828b0a475637cd0a65a86dca21d5aa90448460d66690",
+    "browser_probe.cjs": "e880249c42252a900163e55ccc55025ebe9af7d8090844e06b2d07e7f1e766c1",
+    "init.log": "f7f289dc47af8c01f4556116c88d4e38f8646697d6cb8cbbd1dc1d5829f9aca2",
+    "build.log": "eabde3b48c20e33726e5a5aa36cc2c276e7d23da05aaea84ac951c88ee49efd3",
+    "up.log": "296d740092a3fd28ce7807ca62346c75bc98d9691507b3b88209b2ac7ec25499",
+    "public-install.log": "f7ba7a78431a4b549e8c405c1a6f931f1e7ff3715f0b29a7b328478a676e4aeb",
+    "browser.json": "046865397ccf3caf211724223dd33a2b172eda54cf99a0ee1878e1b7f9b1e53f",
+    "setup.png": "33a7facdefed734aedc2fe1daac7fc73943760135294682c677993221817a716"
   }
 }

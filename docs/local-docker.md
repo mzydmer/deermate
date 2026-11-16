@@ -115,6 +115,8 @@ python scripts/local_docker.py verify --live
 
 ## 实际证据与排障
 
+[2026-11-16 首次启动收据](verification/local-onboarding-2026-11-16.json)记录公开无缓存依赖安装、缺 CLI 真实退出、五镜像构建和隔离初始化页。该次只做启动验收，新增模型请求与 Native 轮次均为 0；为保留已占用的个人端口，宿主映射为 22063，在本次 nginx 的隔离网络内验证 `localhost:2026`。这不替代下面的历史真实执行证据，也没有运行新的 `verify --live`。
+
 [2026-10-26 收据](verification/local-docker-2026-10-26.json)保留 Docker/镜像身份、脚本哈希、14 项真实 Gateway/SSH/Codex 检查、独立测试及四项浏览器检查。浏览器在私有 Compose 网络中的隔离 Linux Chromium 上登录；没有访问锁屏 Mac 桌面或个人浏览器资料。[工作区截图](assets/local-workspace-2026-10-26.png)来自该次真实登录。
 
 ```bash

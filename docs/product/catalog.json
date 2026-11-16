@@ -36,7 +36,8 @@
       "docs/verification/workspace-v2-cloud-2026-11-09.json",
       "docs/verification/workspace-v2-model-2026-11-09.json",
       "docs/local-docker.md",
-      "docs/specs/m2-local-docker.md"
+      "docs/specs/m2-local-docker.md",
+      "docs/verification/local-onboarding-2026-11-16.json"
     ]
   },
   {
@@ -261,7 +262,8 @@
       "docs/verification/frontend-overhaul-cloud-2026-11-13.json",
       "docs/verification/live-walkthrough-2026-11-13.json",
       "docs/local-docker.md",
-      "docs/specs/m2-local-docker.md"
+      "docs/specs/m2-local-docker.md",
+      "docs/verification/local-onboarding-2026-11-16.json"
     ]
   }
 ]
