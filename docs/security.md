@@ -58,6 +58,8 @@ The optional [Codex follow-up tool](codex-conversation.md) resolves only records
 
 Persist a task/session mapping before launching. Reconcile after a timeout or reconnect rather than replaying blindly. Deduplicate event deliveries and write operations. Record uncertain outcomes explicitly. A cancellation request remains pending until the worker reports interruption; a disconnected machine may continue working and must not be falsely displayed as stopped.
 
+Worker cleanup signals only the process group created by that live app-server instance, after checking the current group. It never follows a different group or uses a persisted PID. Signal lookup/permission errors are resolved only by a bounded confirmation of the subprocess's actual exit. If termination remains unconfirmed, retain the task/session/turn and require explicit recovery; cleanup failure cannot become cancellation success or a replacement native session.
+
 ## Go login and administration
 
 The public API/login boundary is Go. Go stores session-token and CSRF digests, verifies compatible password hashes, applies host/origin checks and enforces administrator routes. Password changes, role changes, suspension and logout revoke access. Existing streams are rechecked every five seconds. This revokes access without asserting that native work stopped. Last-active-admin checks and account writes are serialized inside SQLite transactions.
