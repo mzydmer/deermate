@@ -280,7 +280,9 @@
       "docs/research/references.md",
       "docs/research/evaluation-record.template.json",
       "scripts/evaluation_record.py",
-      "scripts/verify_citation.py"
+      "scripts/verify_citation.py",
+      "docs/research/router-protocol-v1.md",
+      "docs/research/router-baseline-v1.json"
     ]
   },
   {
@@ -327,7 +329,9 @@
       "docs/local-worker.md",
       "src/deermate/rpc.py",
       "src/deermate/worker.py",
-      "docs/verification/worker-lifecycle-2026-11-16.json"
+      "docs/verification/worker-lifecycle-2026-11-16.json",
+      "docs/research/router-protocol-v1.md",
+      "docs/research/router-baseline-v1.json"
     ]
   }
 ]

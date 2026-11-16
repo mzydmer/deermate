@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "protocol_version": "router-offline-v1-draft1",
+  "status": "accepted_protocol_pre_calibration",
+  "experiment_status": "not_run",
+  "review_baseline_revision": "22ef5c548f134dbd28dd4e0e290538a569390c65",
+  "runtime_revision_source": "deploy/deerflow.lock",
+  "producer_revision": null,
+  "harness_sha256": null,
+  "dataset": {
+    "version": null,
+    "artifact": null,
+    "sha256": null
+  },
+  "results": {
+    "artifact": null,
+    "sha256": null
+  },
+  "modes": [
+    "A_single_coordinator_async",
+    "B_all_events_router",
+    "C_bound_subscription_direct"
+  ],
+  "scenarios": [
+    "S1_background_foreground",
+    "S2_lost_admission_ack"
+  ],
+  "paired_order": [
+    {
+      "seed": 1101,
+      "order": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    {
+      "seed": 1102,
+      "order": [
+        "B",
+        "C",
+        "A"
+      ]
+    },
+    {
+      "seed": 1103,
+      "order": [
+        "C",
+        "A",
+        "B"
+      ]
+    },
+    {
+      "seed": 1104,
+      "order": [
+        "A",
+        "C",
+        "B"
+      ]
+    },
+    {
+      "seed": 1105,
+      "order": [
+        "C",
+        "B",
+        "A"
+      ]
+    },
+    {
+      "seed": 1106,
+      "order": [
+        "B",
+        "A",
+        "C"
+      ]
+    }
+  ],
+  "planned_samples": 36,
+  "samples_per_scenario_mode": 6,
+  "limits": {
+    "anchor_timeout_seconds": 30,
+    "foreground_timeout_seconds": 30,
+    "sample_timeout_seconds": 90,
+    "worker_concurrency": 1,
+    "native_roots_per_work": 1,
+    "native_mutation_turns_per_work": 1,
+    "native_delay_seconds": 12,
+    "scripted_model_delay_seconds": 0.05,
+    "model_output_tokens_ceiling": 1024,
+    "model_input_utf8_bytes_ceiling": 12000,
+    "coordinator_call_budget": 20,
+    "assessor_call_budget": 4,
+    "native_budget": 1,
+    "go_queue_tick_seconds": 3,
+    "mcp_poll_interval_seconds": 1,
+    "event_batch_max_count": 20,
+    "event_batch_max_bytes": 16000
+  },
+  "s1_offsets_seconds": {
+    "bound_events": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6
+    ],
+    "foreground_question": 0.25,
+    "unbound_event": 0.7,
+    "wrong_owner_event": 0.8
+  },
+  "s2_offsets_seconds": {
+    "foreground_question": 0.25,
+    "duplicate_logical_input": 0.5
+  },
+  "fault_boundary": "After Gateway run/MCP tracking/chat journal are durable, before Go receives admission ACK; drop first response only",
+  "a_async_baseline_contract_required": true,
+  "b_c_only_bound_branch_diff_required": true,
+  "same_source_authority_and_batching_required": true,
+  "independent_evidence_judge_required": true,
+  "real_duplicate_effect_negative_control_required": true,
+  "all_failures_timeouts_unknown_and_unstarted_retained": true,
+  "quantiles": "nearest-rank ceil(q*n) over observed values; denominator/censoring always separate",
+  "real_provider_calls_authorized": 0,
+  "real_native_turns_authorized": 0,
+  "claims_excluded": [
+    "real_model_quality",
+    "provider_billing",
+    "human_attention",
+    "cloud_capacity",
+    "all_R-EVAL_complete"
+  ],
+  "primary_latency": "service durable admission -> first actual visible content, same Linux clock domain",
+  "secondary_latencies": [
+    "client send -> first actual visible content, runner clock domain",
+    "client send -> complete reply, runner clock domain",
+    "service admission -> complete reply, same Linux clock domain",
+    "queue duration, same service clock domain"
+  ],
+  "clock_domains": {
+    "runner": "runner monotonic; never subtract from Native/service clocks",
+    "service_native": "one Linux monotonic domain for service/native phase durations",
+    "schedule_origin": "runner receipt of actual turn/start event; preserve observation intervals and scheduling drift",
+    "observer_poll_interval_seconds": 0.02
+  }
+}

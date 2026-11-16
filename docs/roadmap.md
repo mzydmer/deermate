@@ -187,6 +187,8 @@ Prioritize bounded SSH enrollment, worker contract review, and configured-model 
 - [ ] Verify one separately configured live GitHub/model/Codex loop, then deploy with valid access.
 - [ ] Publish R-EVAL-01–05 comparisons and ablations; local functional tests do not establish research gains.
 
+Issue #5 first-batch [protocol](research/router-protocol-v1.md) / [baseline](research/router-baseline-v1.json) have an accepted protocol and have not run: two scenarios, six paired seeds per mode and 36 planned samples. Baseline contracts and judge calibration precede harness/data freeze and experiments; this leaves the broader research checkbox open.
+
 [Implementation plan](specs/m4-continuous-agent-plan.md) · [Usage](continuous-secretary.md) · [Current evidence](verification/continuous-secretary-2026-11-04.json).
 
 2026-11-04 用户要求取消秘书单独启用：交互与手动工作默认可用，沿用对话模型；设置集中管理本人记忆。见 [专项规格](specs/default-secretary-memory-settings.md)，实现/验收/发布在 STATUS 单独追踪，不改变既有后台/设备授权或整个 P7 验收状态。
