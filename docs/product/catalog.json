@@ -21,7 +21,9 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "releases/alpha-notes.md",
+      "docs/verification/public-alpha-release-2026-11-17.json"
     ]
   },
   {
@@ -422,7 +424,11 @@
       "scripts/release_publish.py",
       "scripts/verify_release_workspace.py",
       ".github/workflows/release.yml",
-      "docs/verification/public-alpha-candidate-2026-11-17.json"
+      "docs/verification/public-alpha-candidate-2026-11-17.json",
+      "docs/verification/public-alpha-release-2026-11-17.json",
+      "scripts/repair_alpha_release_body.py",
+      ".github/workflows/alpha-release-body.yml",
+      "tests/test_release_body.py"
     ]
   }
 ]

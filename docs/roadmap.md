@@ -249,4 +249,4 @@ Scope and evidence: [observability spec](specs/vendor-neutral-observability.md) 
 
 ## Public self-hosted Alpha release · Issue #7
 
-Candidate v0.1.0-alpha.1 maps to Worker0.1.0a1. [Release contract](specs/public-alpha-release.md) covers fixed source/upstream/CI/platform/checksum identity, verified wheel installation, full Linux startup, UTC/CFF gates and hosted-rollout separation. Actual tag/Release remains pending independent review and candidate verification; no public OCI images or production deployment.
+Public prerelease v0.1.0-alpha.1 maps to Worker0.1.0a1 and source `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`. [Release contract](specs/public-alpha-release.md) and [actual publication receipt](verification/public-alpha-release-2026-11-17.json) record exact-source 13-job CI, the original main candidate, Linux startup, public asset checksums and fresh-venv installation. Published at UTC 2026-11-17T00:46:52Z; Issue #7 awaits independent review of this final record. No public OCI images or hosted production deployment.

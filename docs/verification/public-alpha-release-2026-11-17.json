@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "status": "public_prerelease_verified",
+  "verified_at_utc": "2026-11-17T00:50:33.774980+00:00",
+  "tag": "v0.1.0-alpha.1",
+  "source_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+  "worker_version": "0.1.0a1",
+  "deerflow_sha": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "release_date_utc": "2026-11-17",
+  "publication": {
+    "release_id": 447839083,
+    "url": "https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1",
+    "published_at_utc": "2026-11-17T00:46:52Z",
+    "published_at_user_timezone": "2026-11-16T16:46:52-08:00",
+    "user_timezone": "America/Los_Angeles",
+    "draft": false,
+    "prerelease": true
+  },
+  "tag_resolution": {
+    "name": "v0.1.0-alpha.1",
+    "object_sha": "e0ec3f211c47f9e7bfeea2bc7562a9113120cfbb",
+    "target_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+    "target_type": "commit",
+    "tagger_date": "2026-11-17T00:46:19Z",
+    "message": "DeerMate v0.1.0-alpha.1\n\nSource: b9f20fb75162a51102ecc53b0f9cee20d2e30aee\nWorker: 0.1.0a1\nDeerFlow: a1b89d0432de4e45adc59f512cb25bb386ea1e51\nCI: 43988806948 (all 13 jobs successful, exact-source main push)\nCandidate: 43988807046 (successful main push)\nCandidate artifact: 14286657796\nCandidate ZIP SHA256: 9b9b3a6e9c3d6e2a04f2a4e0da705c75ec8aa79e1bcad7138805e5511d4c65de\nCandidate manifest SHA256: e751047697bdd75fff00363ebde42f4548de5f8cb9c5bea428c4d230c8aa910f\n\nIndependently reviewed candidate; publish the original wheel/sdist bytes.\nPublic self-hosted Alpha; no hosted instance rollout.\n"
+  },
+  "ci": {
+    "run_id": 43988806948,
+    "source_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+    "verified_success": true,
+    "url": "https://github.com/mzydmer/deermate/actions/runs/43988806948",
+    "jobs": [
+      "ack-package",
+      "deerflow-contract",
+      "deerflow-gateway (local)",
+      "deerflow-gateway (ssh)",
+      "design-system",
+      "frontend-intents",
+      "frontend-ui",
+      "go-control",
+      "observability",
+      "product-docs",
+      "software-citation",
+      "worker (macos-latest, 3.12)",
+      "worker (ubuntu-latest, 3.11)"
+    ]
+  },
+  "ci_job_count": 13,
+  "candidate": {
+    "run_id": 43988807046,
+    "event": "push",
+    "branch": "main",
+    "conclusion": "success",
+    "artifact_id": 14286657796,
+    "artifact_archive_sha256": "9b9b3a6e9c3d6e2a04f2a4e0da705c75ec8aa79e1bcad7138805e5511d4c65de",
+    "manifest_sha256": "e751047697bdd75fff00363ebde42f4548de5f8cb9c5bea428c4d230c8aa910f",
+    "builder": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1016-aws-x86_64-with-glibc2.43"
+    },
+    "install_smoke": {
+      "passed": true,
+      "source_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+      "wheel_sha256": "e20801eb7d25cfdd2fe22deb051c8608e2174b4c7a54656abac98bb5d3e35a49",
+      "installed_version": "0.1.0a1",
+      "platform": "linux/x86_64",
+      "cli_help": true,
+      "worker_ready": true,
+      "native_tasks_submitted": 0,
+      "real_provider_calls": 0
+    },
+    "workspace_smoke": {
+      "passed": true,
+      "source_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+      "platform": "linux/amd64",
+      "setup_html": true,
+      "go_ready": true,
+      "needs_setup": true,
+      "database_counts": {
+        "users": 0,
+        "runs": 0,
+        "mcp_tasks": 0
+      },
+      "native_tasks_submitted": 0,
+      "real_provider_calls": 0,
+      "scope": "Fresh source-built application; no hosted rollout",
+      "elapsed_seconds": 34.65915028300003
+    }
+  },
+  "publication_run": {
+    "id": 43990334101,
+    "head_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+    "status": "completed",
+    "conclusion": "success",
+    "event": "push",
+    "head_branch": "v0.1.0-alpha.1",
+    "html_url": "https://github.com/mzydmer/deermate/actions/runs/43990334101"
+  },
+  "assets": [
+    {
+      "id": 757050937,
+      "name": "deermate-0.1.0a1-py3-none-any.whl",
+      "size": 104142,
+      "sha256": "e20801eb7d25cfdd2fe22deb051c8608e2174b4c7a54656abac98bb5d3e35a49",
+      "server_digest": "sha256:e20801eb7d25cfdd2fe22deb051c8608e2174b4c7a54656abac98bb5d3e35a49",
+      "public_url": "https://github.com/mzydmer/deermate/releases/download/v0.1.0-alpha.1/deermate-0.1.0a1-py3-none-any.whl",
+      "public_download_digest_and_size_verified": true
+    },
+    {
+      "id": 757050953,
+      "name": "deermate-0.1.0a1.tar.gz",
+      "size": 12841090,
+      "sha256": "1c91933e51cdb6a839115216f4f1b967402b5b90f38a40e1adefcdf2b3cc003d",
+      "server_digest": "sha256:1c91933e51cdb6a839115216f4f1b967402b5b90f38a40e1adefcdf2b3cc003d",
+      "public_url": "https://github.com/mzydmer/deermate/releases/download/v0.1.0-alpha.1/deermate-0.1.0a1.tar.gz",
+      "public_download_digest_and_size_verified": true
+    },
+    {
+      "id": 757051008,
+      "name": "manifest.json",
+      "size": 1842,
+      "sha256": "300c362dbf95d1fd1bdb6582b2004eaaeed29b0d8cd57c92139cd8441e94a225",
+      "server_digest": "sha256:300c362dbf95d1fd1bdb6582b2004eaaeed29b0d8cd57c92139cd8441e94a225",
+      "public_url": "https://github.com/mzydmer/deermate/releases/download/v0.1.0-alpha.1/manifest.json",
+      "public_download_digest_and_size_verified": true
+    },
+    {
+      "id": 757051031,
+      "name": "SHA256SUMS",
+      "size": 270,
+      "sha256": "3f246cfe15bae67738957e7998265dd9f56162b0b0027b75dc69d0100f005a32",
+      "server_digest": "sha256:3f246cfe15bae67738957e7998265dd9f56162b0b0027b75dc69d0100f005a32",
+      "public_url": "https://github.com/mzydmer/deermate/releases/download/v0.1.0-alpha.1/SHA256SUMS",
+      "public_download_digest_and_size_verified": true
+    }
+  ],
+  "checksums_exact_coverage_verified": true,
+  "original_distribution_bytes_preserved": true,
+  "original_builder_preserved": true,
+  "post_publication_public_wheel_smoke": {
+    "passed": true,
+    "source_sha": "b9f20fb75162a51102ecc53b0f9cee20d2e30aee",
+    "wheel_sha256": "e20801eb7d25cfdd2fe22deb051c8608e2174b4c7a54656abac98bb5d3e35a49",
+    "installed_version": "0.1.0a1",
+    "platform": "darwin/x86_64",
+    "cli_help": true,
+    "worker_ready": true,
+    "native_tasks_submitted": 0,
+    "real_provider_calls": 0,
+    "fresh_temporary_venv": true,
+    "wheel_origin": "public_release_download",
+    "python": "3.12.15",
+    "isolated_cli": true,
+    "log_sha256": "c1ea3f317ba800e58536c3fcba5d9096ccb9786b5909d2214055184929106f10"
+  },
+  "retained_failures": [
+    {
+      "run_id": 43982773716,
+      "source_sha": "303e839a78115746cea3e4809a4324711af202bc",
+      "job_id": 133703167584,
+      "failure": "Original operation unresolved after 100 seconds during initial Native fixture, before cold backup/restore",
+      "root_cause": "unconfirmed; available job log has no SQLite lock or receipt_unconfirmed evidence and no ack diagnostic artifact",
+      "mutation_replayed": false
+    },
+    {
+      "run_id": 43985613436,
+      "source_sha": "31db0780b0e55034e51d8dc9b602f064cc506d2f",
+      "failure": "Healthy containers; strict readiness probe rejected HTTP 301 from 127.0.0.1 to canonical localhost",
+      "resolution": "b8f5b93 changed only probe host; final main candidate actually passed strict readiness/setup/empty-database verification"
+    },
+    {
+      "run_id": 43987127888,
+      "source_sha": "b8f5b93e08785ba51729c4062bf62f8530fdaa28",
+      "failure": "Push documentation gate required a reasoned impact note for the probe correction",
+      "resolution": "d944857 added the required note; exact final main all 13 CI jobs successful"
+    }
+  ],
+  "scope": {
+    "public_oci_images": [],
+    "source_build_platforms": [
+      "linux/amd64"
+    ],
+    "hosted_instance_deployed": false,
+    "real_provider_calls": 0,
+    "real_native_tasks_submitted": 0,
+    "runtime_changes_in_this_receipt_commit": false
+  },
+  "limits": [
+    "Linux startup and wheel installation only; no production safety, capacity, real-model quality or complete R-EVAL acceptance.",
+    "SQLite-related unresolved/recovery observations remain known limitations; this release does not establish a runtime fix for historical failures.",
+    "This receipt documents released source b9f20fb75162a51102ecc53b0f9cee20d2e30aee; the later receipt commit is not the release producer."
+  ],
+  "release_body_link_repair": {
+    "status": "pending_root_review_and_main_actions",
+    "release_id": 447839083,
+    "workflow": ".github/workflows/alpha-release-body.yml",
+    "script": "scripts/repair_alpha_release_body.py",
+    "before_body_sha256": "a4a491fa0699fb501a7a09760d7c0c230c3198c2db5269ea048440d08e868bf8",
+    "expected_after_body_sha256": "113f8c5b847464d7251a5a3061210af9d6eea4d6c98824725f8ac5d82b5f8af7",
+    "scope": "PATCH body only: replace three relative documentation links with fixed v0.1.0-alpha.1 URLs; verify tag/source/date/four asset IDs/digests unchanged",
+    "contract_tests_passed": 13,
+    "actual_connector_api_read_only_preflight_passed": true,
+    "local_urllib_network_preflight": "TLS EOF; no TLS bypass or API write; actual Linux network preflight awaits workflow",
+    "actual_body_patch_completed": false
+  }
+}
