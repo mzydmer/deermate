@@ -2,7 +2,7 @@
 
 公开自托管 Alpha；Worker 包版本为 `0.1.0a1`。这是公开版本基线，不表示维护者托管实例已升级，也不表示生产安全、真实模型质量或所有 R-EVAL 已验收。
 
-发布状态与下载入口：[v0.1.0-alpha.1](https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1)。评审中的候选不代表该页面已发布。
+已公开预发行与下载入口：[v0.1.0-alpha.1](https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1)。源码为 `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`；实际发布时间为 UTC `2026-11-17T00:46:52Z`（用户时区 America/Los_Angeles 为 2026-11-16）。[公开下载与安装验收收据](../docs/verification/public-alpha-release-2026-11-17.json)记录 main CI、构建/发布 run、四份资产和干净环境验证；收据的后续提交不改变发布源码或分发字节。
 
 ## 产物和平台
 
@@ -20,7 +20,7 @@ python3.12 -m venv .venv
 .venv/bin/deermate --help
 ```
 
-CLI help 和空 Worker readiness 不调用 Codex。实际执行前仍须按[Worker 指南](../docs/local-worker.md)配置项目、Codex 和有效授权；MCP/SSH 是独立 extras，wheel 不包含完整网页工作台。
+CLI help 和空 Worker readiness 不调用 Codex。实际执行前仍须按[Worker 指南](https://github.com/mzydmer/deermate/blob/v0.1.0-alpha.1/docs/local-worker.md)配置项目、Codex 和有效授权；MCP/SSH 是独立 extras，wheel 不包含完整网页工作台。
 
 ## 从固定 tag 构建完整工作台
 
@@ -39,11 +39,11 @@ cd .deermate/alpha
 ./start.sh
 ```
 
-从 loopback 端口进入首次管理员 setup 表示启动就绪。全栈 smoke 检查 Go readiness、生产 setup HTML 和空用户/模型/任务表，不提交执行任务。Mac Docker Desktop 的交互式开发入口继续见[本地指南](../docs/local-docker.md)，也应从同一 tag 开始。
+从 loopback 端口进入首次管理员 setup 表示启动就绪。全栈 smoke 检查 Go readiness、生产 setup HTML 和空用户/模型/任务表，不提交执行任务。Mac Docker Desktop 的交互式开发入口继续见[本地指南](https://github.com/mzydmer/deermate/blob/v0.1.0-alpha.1/docs/local-docker.md)，也应从同一 tag 开始。
 
 ## 兼容、备份与回退
 
-本发布工具变更不增加运行时数据库迁移；运行时基线包含此前 main 的改动，不能据此承诺任意旧数据库直接兼容。建议新空环境开始；升级已有实例先停止所有写入方并创建[共同状态冷备](../docs/backup-restore.md)，保留原源码/镜像和完整匹配归档。
+本发布工具变更不增加运行时数据库迁移；运行时基线包含此前 main 的改动，不能据此承诺任意旧数据库直接兼容。建议新空环境开始；升级已有实例先停止所有写入方并创建[共同状态冷备](https://github.com/mzydmer/deermate/blob/v0.1.0-alpha.1/docs/backup-restore.md)，保留原源码/镜像和完整匹配归档。
 
 首版没有更早的公开 Alpha Release 可作为回退目标。已有部署应使用自己保留的原版本与匹配共同快照，在新隔离实例验证恢复；不要在线覆盖旧数据库、混搭单个状态文件或重放未知操作。设备授权、截止时间、撤权和任务原身份照常适用。
 

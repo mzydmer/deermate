@@ -876,3 +876,9 @@ PR18 c2408b7最终13项CI全部通过，独立评审合入main303e839并关闭#5
 ## 2026-11-16 · Alpha实际本机候选与提升边界（UTC17日）
 
 干净ed59c1b构建wheel/sdist并完成freshvenv安装/help/空Worker readiness，0执行/Provider调用，收据保留该实际SHA。PR19已建立draft启动Linuxcandidate CI；补26项main候选/提升合同，固定源、两smoke、wheel摘要和原build_run_id，tag只提升已验证main原分发字节。候选过期可取消，tag发布不自动取消。仍无tag/Release或生产部署，最终发布候选须独立核验。
+
+## 2026-11-16 · 公开自托管Alpha实际发布（UTC17日）
+
+PR19最终d944857的13项CI与Linux候选通过，独立评审合入main `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`。main CI43988806948全部13项成功，候选43988807046及artifact14286657796由监督者独立下载核验后，按明确指令通过现有SSH新建并单独push annotated tag v0.1.0-alpha.1，不force或移动已有tag。发布run43990334101提升原main候选wheel/sdist字节，核对服务端digest后在UTC2026-11-17T00:46:52Z公开prerelease447839083。四份公开下载摘要/大小/清单/source/CI/build/publish身份正确，与原候选分发文件逐字节相同；公开wheel在全新venv安装/help/空Worker readiness通过，0真实Provider/Native任务。实际[发布收据](verification/public-alpha-release-2026-11-17.json)保留旧main原操作未解除、候选301及文档门禁失败，不把最终成功当作历史runtime修复。后续收据提交不冒充release SHA；未部署托管实例、未改既有设备权限或实验producer。
+
+发布后独立GitHub UI发现Release正文相对指南链接渲染缺tag/ref，准备窄范围main Actions正文修复：固定原/新body SHA，只PATCH现有release447839083的body，保留tag/source/date/四资产ID与digest。13项边界合同通过，真实连接器API数据只读预检匹配；本机urllib TLS EOF未绕过，实际Linux作业和正文修复须在PR评审合入后单独核验。

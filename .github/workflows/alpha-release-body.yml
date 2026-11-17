@@ -1,0 +1,61 @@
+name: Repair existing Alpha Release documentation links
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/alpha-release-body.yml'
+      - 'scripts/repair_alpha_release_body.py'
+      - 'tests/test_release_body.py'
+      - 'docs/verification/public-alpha-release-2026-11-17.json'
+  push:
+    branches: ['main']
+    paths:
+      - '.github/workflows/alpha-release-body.yml'
+      - 'scripts/repair_alpha_release_body.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alpha-release-body
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - run: ruff check scripts/repair_alpha_release_body.py tests/test_release_body.py
+      - run: python -m pytest -q tests/test_release_body.py
+      - name: Read-only preflight against the existing public Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/repair_alpha_release_body.py --receipt .deermate/verification/alpha-body-dry-run.json
+
+  repair:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.repository == 'mzydmer/deermate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch only the existing body and verify fixed Release identity
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/repair_alpha_release_body.py --apply --receipt .deermate/verification/alpha-release-body.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpha-release-body-verification
+          path: .deermate/verification/alpha-release-body.json
+          include-hidden-files: true

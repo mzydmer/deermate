@@ -117,7 +117,7 @@
 | NFR-003 | 在模型提示词之外接纳权限，使用明确执行边界 | M1 仅可信本地项目；无多租户/生产隔离承诺 |
 | NFR-004 | 正常测试不需要模型凭据；真实模型测试明确标识并限定范围 | 离线协议 fixture、临时 Git 仓库和 opt-in live smoke 已具备 |
 | NFR-005 | 保存可复核的状态、事件、补丁和验证记录 | Worker 本地 SQLite；本地 Docker 命名卷与 Gateway 重启保留结果已验证；ACK 云盘实际部署待验收；无总容量配额或通用脱敏保证 |
-| NFR-006 | 区分实现、验证、合并和发布，维护可接续文档 | 以 STATUS/EVOLUTION 与 Git/CI 管理；[公开Alpha规格](specs/public-alpha-release.md)要求实际tag、全SHA、成功CI、制品校验和与UTC日期一致，候选不冒充发布 |
+| NFR-006 | 区分实现、验证、合并和发布，维护可接续文档 | 以 STATUS/EVOLUTION 与 Git/CI 管理；[公开Alpha规格](specs/public-alpha-release.md)已完成v0.1.0-alpha.1实际tag、全SHA、成功CI、校验和与UTC同日发布验收，见[发布收据](verification/public-alpha-release-2026-11-17.json)；托管实例升级独立记录 |
 | NFR-007 | 明确平台范围与运行限制 | Worker 支持 macOS/Linux、Python 3.11+；ACK 脚本 Python 3.12+ / Helm 3.18+（3.x），快速配置面向普通 ECS 节点；本地 Compose 实测 Intel Docker Desktop；可选[单机包](specs/single-host-minimal.md)面向预构建 amd64 Linux 镜像，2 核 2 GiB 轻量云主机基础页面/API 和受控整机重启已验收，单次低并发云端模型/家庭 Codex 另有通过证据，不代表容量；暂不支持 Windows |
 | NFR-008 | 所有前端遵循统一 Vercel/Geist 风格规范与可访问性基线，React/Go 共用视觉 token | [design.md](../design.md) 为规范；YAML 唯一来源；基础组件/布局/功能分层，禁止功能层原生交互控件与视觉样式；CSS 预算、反例测试、CI/构建门禁和合成浏览器合同，见[组件化规格](specs/frontend-overhaul.md) |
 | NFR-009 | 可观测核心使用标准 OTel、默认关闭、无云厂商依赖；正文不采集，异步关联持久化，遥测故障不改变授权与执行 | [可观测规格](specs/vendor-neutral-observability.md)；ARMS 是独立部署后端，验收与发布范围另行记录 |

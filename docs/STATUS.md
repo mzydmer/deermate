@@ -1,12 +1,16 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16（用户时区）；UTC已到2026-11-17。#1/#3/#4/#5/#6/#8已由独立评审合并关闭；#5最终c2408b7的13项CI通过，main基线303e839。当前最后#7公开Alpha在独立release分支实现，尚未发布tag/Release、未部署。CFF候选UTC日为2026-11-17，实际发布必须同日，否则重新核验候选。
+最后核对：2026-11-16（用户时区）；UTC已到2026-11-17。#1/#3/#4/#5/#6/#8已由独立评审合并关闭。#7实现PR19已评审合入main `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`，同SHA普通CI与Linux候选成功后，经具体候选授权发布 `v0.1.0-alpha.1`；实际发布时间UTC `2026-11-17T00:46:52Z`。公开下载与安装已验证；收尾评审及关闭验收以 [PR20](https://github.com/mzydmer/deermate/pull/20) / [Issue #7](https://github.com/mzydmer/deermate/issues/7) 的实际状态为准。未部署托管实例。
 
-## 公开Alpha候选（Issue #7，未发布）
+## 公开自托管Alpha（Issue #7，已公开）
 
-目标v0.1.0-alpha.1对应Worker0.1.0a1，提供wheel/sdist/manifest/SHA256SUMS，无公共OCI镜像。候选CI只构建/验证；真实tag push且已合入main、同SHA全部13项CI通过、UTC日期一致，才可创建draft并核对上传digest后公开prerelease。独立评审/合并和具体候选核验之前不得push tag或发布Release。
+`v0.1.0-alpha.1` 对应Worker `0.1.0a1`，提供wheel/sdist/manifest/SHA256SUMS，无公共OCI镜像。[Release](https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1) 为公开prerelease。annotated tag `e0ec3f211c47f9e7bfeea2bc7562a9113120cfbb` 解引用到完整main SHA `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`；main普通CI `43988806948` 全部13项成功，Linux候选 `43988807046` 与artifact `14286657796` 经独立下载验收。tag发布run `43990334101` 成功，先draft上传并核对四份服务端digest后公开，保留原build run和wheel/sdist字节。
 
-已实现版本/日期/来源/checksum与发布门禁，26项离线合同通过，包含main候选拒绝与源/smoke/wheel/build_run提升边界。干净ed59c1b实际构建wheel/sdist，本机freshvenv校验安装、CLI help和空Worker就绪均通过，见[候选收据](verification/public-alpha-candidate-2026-11-17.json)。PR19 Linux全栈candidate CI正在运行，只认最终exact head；尚未验证或发布main最终产物。源码构建、平台/兼容/回退边界见[发行说明](../releases/alpha-notes.md)，内部步骤见[runbook](releasing.md)，不加入产品部署导航。现有设备权限、任务身份、托管实例与实验producer不变。
+四份公开下载逐一匹配服务端digest/size与SHA256SUMS，最终manifest的source/CI/build/publication身份正确。公开wheel在全新venv安装，CLI help及空Worker readiness通过，0任务/真实Provider调用；同源Linux候选的完整栈Go readiness、setup HTML和0 users/runs/MCP tasks均通过。26项发布合同及[历史本机候选](verification/public-alpha-candidate-2026-11-17.json)保留各自真实身份；[实际发布收据](verification/public-alpha-release-2026-11-17.json)单独记录最终来源，不把收据提交当作发布producer。源码构建、平台/兼容/回退边界见[发行说明](../releases/alpha-notes.md)，内部[runbook](releasing.md)不进入产品部署导航。
+
+发布后实际GitHub UI检查发现Release正文三处相对指南链接缺tag/ref。仓库说明已固定到本tag绝对URL；`alpha-release-body.yml`/`repair_alpha_release_body.py` 在PR20评审合入main后仅PATCH既有正文，前后验证完整tag与四资产身份，不重传或重发。13项写入边界测试与连接器真实API数据只读预检通过，本机Python网络预检TLS EOF保留。收据中的修复状态是其记录时刻的快照；后续实际Linux作业ID、正文摘要与公开链接验收见 [#7关闭验收记录](https://github.com/mzydmer/deermate/issues/7)，不通过后续收据提交改变release身份。
+
+保留旧main `303e839` 的冷恢复前置Native fixture失败：原operation等待100秒未解除，现有日志无法确定根因，未重放mutation；不能归因为已证实SQLite锁。候选 `31db078` 的Healthy后HTTP301探测失败已改用规范localhost并在最终main实际通过，`b8f5b93` push文档门禁失败由 `d944857` 补齐说明。历史失败与known limitations保留在实际收据，不据本轮成功宣称runtime问题已修复。现有设备权限、任务身份、托管实例与实验producer不变。
 
 ## 2026-11-16 · Router 首批离线结果（Issue #5，已合并）
 
