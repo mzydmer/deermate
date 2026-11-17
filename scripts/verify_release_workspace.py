@@ -26,7 +26,7 @@ def run(images_config, directory):
     compose = ["docker", "compose", "--project-directory", str(directory.resolve())]
     try:
         subprocess.run([str(directory.resolve() / "start.sh")], check=True)
-        with httpx.Client(base_url="http://127.0.0.1:22077", trust_env=False, timeout=10) as client:
+        with httpx.Client(base_url="http://localhost:22077", trust_env=False, timeout=10) as client:
             ready = client.get("/health/ready")
             ready.raise_for_status()
             setup = client.get("/api/v1/auth/setup-status")
