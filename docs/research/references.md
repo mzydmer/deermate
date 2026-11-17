@@ -1,6 +1,6 @@
 # 引用 DeerMate 与追溯研究来源
 
-DeerMate 是软件项目，不是已发表的研究论文。根目录 [CITATION.cff](../../CITATION.cff) 使用 CFF 1.2 的 software 类型，署名沿用 [MIT 许可证](../../LICENSE)中的 **DeerMate contributors**；不虚构个人署名、DOI、ORCID、论文或研究效果。Python 包版本 `0.1.0a1` 不是已发布的 Release。本轮不填写 CFF 的 version、date-released、DOI 或 preferred-citation；公开 Alpha 由 issue #7 的实际 tag/清单决定，发布后再同步元数据。
+DeerMate 是软件项目，不是已发表的论文。[CITATION.cff](../../CITATION.cff)沿用MIT既有集体署名，无DOI、ORCID或preferred-paper身份。公开Alpha候选使用版本 `0.1.0-alpha.1`，对应Worker `0.1.0a1`；日期来自实际UTC候选日，发布guard要求真正发布也在同日，跨日拒绝。是否已发布以[Release页面](https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1)为准，候选元数据不构成发布事实；[发布规格](../specs/public-alpha-release.md)记录校验范围。
 
 ## 软件引用
 

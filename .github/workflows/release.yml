@@ -1,0 +1,119 @@
+name: Public Alpha candidate and release
+
+on:
+  push:
+    branches: ['main']
+    tags: ['v*-alpha.*']
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - 'scripts/release_*.py'
+      - 'scripts/verify_release_workspace.py'
+      - 'scripts/verify_citation.py'
+      - 'tests/test_release.py'
+      - 'releases/**'
+      - 'CITATION.cff'
+      - 'pyproject.toml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: alpha-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    if: "!startsWith(github.ref, 'refs/tags/')"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - run: python -m pip install -e '.[dev]'
+      - run: ruff check scripts/release_artifacts.py scripts/release_publish.py scripts/verify_release_workspace.py tests/test_release.py
+      - run: python -m pytest -q tests/test_release.py
+      - name: Build clean wheel and sdist, then record actual source and hashes
+        run: |
+          python -m build --outdir .deermate/release/candidate
+          python scripts/release_artifacts.py prepare --directory .deermate/release/candidate
+          python scripts/release_artifacts.py smoke --directory .deermate/release/candidate --receipt .deermate/release/candidate/install-smoke.json
+      - name: Install checksum-verified Helm
+        run: |
+          curl -fsSLO https://get.helm.sh/helm-v3.19.0-linux-amd64.tar.gz
+          curl -fsSLO https://get.helm.sh/helm-v3.19.0-linux-amd64.tar.gz.sha256sum
+          sha256sum --check helm-v3.19.0-linux-amd64.tar.gz.sha256sum
+          tar -xzf helm-v3.19.0-linux-amd64.tar.gz
+          sudo install linux-amd64/helm /usr/local/bin/helm
+          rm helm-v3.19.0-linux-amd64.tar.gz helm-v3.19.0-linux-amd64.tar.gz.sha256sum
+          rm -r linux-amd64
+      - name: Build source-only application images from the same source
+        run: |
+          python scripts/ack_deploy.py init --registry registry.example.invalid/deermate-alpha --context no-cluster --tag "$GITHUB_SHA"
+          python scripts/ack_deploy.py prepare
+          python scripts/ack_deploy.py build
+      - name: Verify the actual Linux application becomes ready without execution
+        run: |
+          python scripts/verify_release_workspace.py --images-config .deermate/ack/config.yaml --work-dir .deermate/release/workspace --receipt .deermate/release/candidate/workspace-smoke.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpha-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .deermate/release/candidate/
+          include-hidden-files: true
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && github.repository == 'mzydmer/deermate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[deploy]'
+      - name: Find the successful candidate built from this exact merged source
+        id: candidate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/release_publish.py find-candidate --directory .deermate/release/final --tag "$GITHUB_REF_NAME"
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpha-candidate-${{ github.sha }}
+          path: .deermate/release/candidate
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.candidate.outputs.run_id }}
+      - name: Verify candidate before copying immutable distribution files
+        run: |
+          python scripts/release_artifacts.py verify --directory .deermate/release/candidate
+          python -c "from pathlib import Path;import shutil;p=Path('.deermate/release/final');p.mkdir();s=Path('.deermate/release/candidate');[shutil.copyfile(f,p/f.name) for f in s.iterdir() if f.suffix=='.whl' or f.name.endswith('.tar.gz')]"
+          git fetch --no-tags origin main:refs/remotes/origin/main
+      - name: Require all exact-source CI jobs, then prepare final manifest
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/release_publish.py wait-ci --directory .deermate/release/final --candidate-directory .deermate/release/candidate --tag "$GITHUB_REF_NAME"
+      - name: Upload verified assets to a draft, verify server digests, then publish prerelease
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/release_publish.py publish --directory .deermate/release/final --tag "$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha-publication-${{ github.sha }}
+          path: .deermate/release/final/
+          if-no-files-found: ignore

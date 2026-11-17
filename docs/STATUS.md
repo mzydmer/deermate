@@ -1,8 +1,14 @@
 # 当前开发状态与 Agent 接续
 
-最后核对：2026-11-16。#1/#3/#4/#6/#8已由独立评审合并关闭，main基线9c7ab6d。#5已完成首批离线36项和同版本独立6项复跑，正在交付PR18供最终评审；本执行agent未合并、关闭issue或部署。#7公开Alpha在PR18合并后基于最新main处理。
+最后核对：2026-11-16（用户时区）；UTC已到2026-11-17。#1/#3/#4/#5/#6/#8已由独立评审合并关闭；#5最终c2408b7的13项CI通过，main基线303e839。当前最后#7公开Alpha在独立release分支实现，尚未发布tag/Release、未部署。CFF候选UTC日为2026-11-17，实际发布必须同日，否则重新核验候选。
 
-## 2026-11-16 · Router 首批离线结果（Issue #5，待最终评审）
+## 公开Alpha候选（Issue #7，未发布）
+
+目标v0.1.0-alpha.1对应Worker0.1.0a1，提供wheel/sdist/manifest/SHA256SUMS，无公共OCI镜像。候选CI只构建/验证；真实tag push且已合入main、同SHA全部13项CI通过、UTC日期一致，才可创建draft并核对上传digest后公开prerelease。独立评审/合并和具体候选核验之前不得push tag或发布Release。
+
+已实现版本/日期/来源/checksum与发布门禁，17项离线合同通过；真实cleanvenv与Linux全栈候选验证待进行。源码构建、平台/兼容/回退边界见[发行说明](../releases/alpha-notes.md)，内部步骤见[runbook](releasing.md)，不加入产品部署导航。现有设备权限、任务身份、托管实例与实验producer不变。
+
+## 2026-11-16 · Router 首批离线结果（Issue #5，已合并）
 
 实际生产源码始终为干净 `7c84904e39f4b3adb0bed3d7430cc9adcb64934e`，不是之后整理报告的HEAD；同SHA控制镜像label/binary VCS、固定上游、dataset/config/harness与环境已冻结。主批次33 complete/2 outcome_unknown/1 failed，六项复跑均complete且与原seed终态及离散计数一致。见[报告与单命令重算](research/router-offline-v1/README.md)、[主JSONL](research/router-offline-v1/main/records.jsonl)、[复跑JSONL](research/router-offline-v1/repeat/records.jsonl)、[来源哈希](research/router-offline-v1/provenance.json)。
 

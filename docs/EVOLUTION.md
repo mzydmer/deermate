@@ -866,3 +866,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · Router冻结36+6与公开离线结果
 
 干净7c84904为唯一实际producer，Go镜像label/binary VCS相同；主36按固定顺序完整运行，33complete/2unknown/1failed，另6同版本复跑全部complete，终态及Worker/MCP/Go operations/Native turns/modelcalls/root/effect计数一致。S1-1104-C前台30s、S2-1103-A配对503、S2-1106-B原run已查回但Go未收敛均保留，不补跑/改预算。主批次0/35 observed额外root/effect、另1unobserved；query确认与完整恢复分开定义。真实双effect负例同root/test0，仅effect条件拒绝。公开42份逐字节raw、两JSONL、主/复跑清单汇总、负例和制品哈希，单命令可重判；独立评审已复核原件与哈希及两份汇总。两个收敛失败私有日志有SQLite锁冲突，竞争写者未知。实际producer7c的13项CI已通过，后续文档提交另验，不冒充生产SHA。未部署/付费调用，原12容器不变，R-EVAL整体仍未验收。
+
+
+## 2026-11-16 · 公开Alpha候选实现（UTC2026-11-17，未发布）
+
+PR18 c2408b7最终13项CI全部通过，独立评审合入main303e839并关闭#5。#7从该main独立工作区准备v0.1.0-alpha.1↔Worker0.1.0a1；新增wheel/sdist清单/校验、干净venv/空Worker与Linux完整栈smoke，候选只读、tag发布contents:write。同SHA真实13job CI、main祖先、CFF/UTC同日与服务端asset digest均为发布门禁；17项离线合同通过。当前未发布tag/Release、未部署，实际安装/候选CI仍待验。
