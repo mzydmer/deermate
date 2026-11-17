@@ -1,6 +1,6 @@
 # 可追溯公开 Alpha 发布
 
-状态：实现PR19已独立评审合入，公开prerelease `v0.1.0-alpha.1` 已发布。实际源码 main `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`，UTC `2026-11-17T00:46:52Z`；同SHA的13项CI、Linux候选、公开资产下载和全新venv安装已通过，见[实际收据](../verification/public-alpha-release-2026-11-17.json)。Issue #7待收尾记录独立评审后由监督者关闭。对应 NFR-006/007/010，保留既有权限、任务身份和数据恢复约束。
+状态：实现PR19已独立评审合入，公开prerelease `v0.1.0-alpha.1` 已发布。实际源码 main `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`，UTC `2026-11-17T00:46:52Z`；同SHA的13项CI、Linux候选、公开资产下载和全新venv安装已通过，见[实际收据](../verification/public-alpha-release-2026-11-17.json)。收尾评审与正文链接修复的最终验收见 [PR20](https://github.com/mzydmer/deermate/pull/20) / [Issue #7](https://github.com/mzydmer/deermate/issues/7) 的实际记录。对应 NFR-006/007/010，保留既有权限、任务身份和数据恢复约束。
 
 ## 范围与验收
 
