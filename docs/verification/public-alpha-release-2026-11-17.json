@@ -191,7 +191,6 @@
     "This receipt documents released source b9f20fb75162a51102ecc53b0f9cee20d2e30aee; the later receipt commit is not the release producer."
   ],
   "release_body_link_repair": {
-    "status": "pending_root_review_and_main_actions",
     "release_id": 447839083,
     "workflow": ".github/workflows/alpha-release-body.yml",
     "script": "scripts/repair_alpha_release_body.py",
@@ -201,6 +200,15 @@
     "contract_tests_passed": 13,
     "actual_connector_api_read_only_preflight_passed": true,
     "local_urllib_network_preflight": "TLS EOF; no TLS bypass or API write; actual Linux network preflight awaits workflow",
-    "actual_body_patch_completed": false
+    "status_at_recorded_time": "pending_root_review_and_main_actions",
+    "actual_body_patch_completed_at_recorded_time": false,
+    "recorded_at_utc": "2026-11-17T01:02:00.187995+00:00",
+    "completion_proof_source": {
+      "issue": "https://github.com/mzydmer/deermate/issues/7",
+      "review": "https://github.com/mzydmer/deermate/pull/20",
+      "workflow": ".github/workflows/alpha-release-body.yml",
+      "artifact": "alpha-release-body-verification",
+      "note": "This is a pre-merge snapshot. Actual job ID, final body hash and public-link acceptance are recorded in Issue #7 after the main repair; no later receipt commit replaces the release source."
+    }
   }
 }
