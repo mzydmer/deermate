@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: alpha-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
   candidate:
@@ -101,7 +101,6 @@ jobs:
       - name: Verify candidate before copying immutable distribution files
         run: |
           python scripts/release_artifacts.py verify --directory .deermate/release/candidate
-          python -c "from pathlib import Path;import shutil;p=Path('.deermate/release/final');p.mkdir();s=Path('.deermate/release/candidate');[shutil.copyfile(f,p/f.name) for f in s.iterdir() if f.suffix=='.whl' or f.name.endswith('.tar.gz')]"
           git fetch --no-tags origin main:refs/remotes/origin/main
       - name: Require all exact-source CI jobs, then prepare final manifest
         env:

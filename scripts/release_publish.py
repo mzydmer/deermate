@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import shutil
 import time
 import urllib.error
 import urllib.parse
@@ -116,6 +117,41 @@ def successful_candidate(revision):
         if any(v["name"] == expected and not v["expired"] for v in candidates):
             return run["id"]
     raise ValueError("No successful main candidate exists for this exact source SHA")
+
+
+def promote(candidate_directory, directory, proof, *, root=artifacts.ROOT):
+    candidate = artifacts.verify(candidate_directory, root=root)
+    revision = candidate["source_sha"]
+    if proof["source_sha"] != revision or proof["verified_success"] is not True:
+        raise ValueError("Promotion CI proof has a different source")
+    if candidate["build_run_id"] != str(successful_candidate(revision)):
+        raise ValueError("Downloaded candidate is not the successful main build")
+    receipts = {}
+    for filename in ("install-smoke.json", "workspace-smoke.json"):
+        receipt = json.loads((candidate_directory / filename).read_text())
+        if receipt.get("passed") is not True or receipt.get("source_sha") != revision:
+            raise ValueError("Candidate smoke receipt does not match this source")
+        receipts[filename] = receipt
+    install = receipts["install-smoke.json"]
+    wheel = next(v for v in candidate["artifacts"] if v["name"].endswith(".whl"))
+    if install["wheel_sha256"] != wheel["sha256"]:
+        raise ValueError("Installed wheel does not match candidate artifact")
+    workspace = receipts["workspace-smoke.json"]
+    if workspace.get("platform") != "linux/amd64" or workspace.get("database_counts") != {
+        "users": 0,
+        "runs": 0,
+        "mcp_tasks": 0,
+    }:
+        raise ValueError("Candidate must prove an empty Linux/amd64 workspace")
+    directory.mkdir(parents=True, exist_ok=False)
+    for item in candidate["artifacts"]:
+        shutil.copyfile(candidate_directory / item["name"], directory / item["name"])
+    result = artifacts.prepare(
+        directory, ci_run_id=proof["run_id"], root=root, build_identity=candidate
+    )
+    if result["artifacts"] != candidate["artifacts"] or result["ci"] != proof:
+        raise ValueError("Promoted distributions or CI identity differ from candidate")
+    return result
 
 
 def publication_guard(tag, *, root=artifacts.ROOT):
@@ -241,24 +277,7 @@ def main():
                 time.sleep(15)
         if args.candidate_directory is None:
             raise ValueError("Publication must promote a verified main candidate")
-        candidate = artifacts.verify(args.candidate_directory.resolve())
-        if candidate["build_run_id"] != str(successful_candidate(revision)):
-            raise ValueError("Downloaded candidate is not the successful main build")
-        for filename in ("install-smoke.json", "workspace-smoke.json"):
-            receipt = json.loads((args.candidate_directory / filename).read_text())
-            if receipt.get("passed") is not True or receipt.get("source_sha") != revision:
-                raise ValueError("Candidate smoke receipt does not match this source")
-        install = json.loads((args.candidate_directory / "install-smoke.json").read_text())
-        wheel = next(v for v in candidate["artifacts"] if v["name"].endswith(".whl"))
-        if install["wheel_sha256"] != wheel["sha256"]:
-            raise ValueError("Installed wheel does not match candidate artifact")
-        manifest = artifacts.prepare(
-            args.directory.resolve(), ci_run_id=proof["run_id"], build_identity=candidate
-        )
-        if manifest["artifacts"] != candidate["artifacts"]:
-            raise ValueError("Promoted distribution files differ from approved candidate")
-        if manifest["ci"] != proof:
-            raise ValueError("Candidate CI proof differs")
+        promote(args.candidate_directory.resolve(), args.directory.resolve(), proof)
         print(json.dumps({"ci_run_id": proof["run_id"], "source_sha": revision}))
     else:
         print(json.dumps(publish(args.directory.resolve(), args.tag, args.notes)))

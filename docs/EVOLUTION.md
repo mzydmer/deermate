@@ -871,3 +871,8 @@ B01/04/05 SQLite BUSY/503且0 Native，B02/03通知dead_letter，五份预试均
 ## 2026-11-16 · 公开Alpha候选实现（UTC2026-11-17，未发布）
 
 PR18 c2408b7最终13项CI全部通过，独立评审合入main303e839并关闭#5。#7从该main独立工作区准备v0.1.0-alpha.1↔Worker0.1.0a1；新增wheel/sdist清单/校验、干净venv/空Worker与Linux完整栈smoke，候选只读、tag发布contents:write。同SHA真实13job CI、main祖先、CFF/UTC同日与服务端asset digest均为发布门禁；17项离线合同通过。当前未发布tag/Release、未部署，实际安装/候选CI仍待验。
+
+
+## 2026-11-16 · Alpha实际本机候选与提升边界（UTC17日）
+
+干净ed59c1b构建wheel/sdist并完成freshvenv安装/help/空Worker readiness，0执行/Provider调用，收据保留该实际SHA。PR19已建立draft启动Linuxcandidate CI；补26项main候选/提升合同，固定源、两smoke、wheel摘要和原build_run_id，tag只提升已验证main原分发字节。候选过期可取消，tag发布不自动取消。仍无tag/Release或生产部署，最终发布候选须独立核验。

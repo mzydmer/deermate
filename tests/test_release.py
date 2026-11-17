@@ -261,3 +261,105 @@ def test_draft_publication_requires_all_server_digests_before_final_patch(
         result = publication.publish(distributions, "v0.1.0-alpha.1", notes, root=source)
         assert len(result["asset_names"]) == len(uploads) == 4
         assert patches == [{"draft": False, "prerelease": True, "make_latest": "false"}]
+
+
+@pytest.mark.parametrize("invalid", ["pr", "sha", "failed", "expired"])
+def test_main_candidate_lookup_rejects_wrong_origin_and_expired_artifact(monkeypatch, invalid):
+    revision = "a" * 40
+    run = {
+        "id": 5678,
+        "head_sha": revision,
+        "head_branch": "main",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+    }
+    artifact = {"name": "alpha-candidate-" + revision, "expired": False}
+    if invalid == "pr":
+        run["event"] = "pull_request"
+    elif invalid == "sha":
+        run["head_sha"] = "b" * 40
+    elif invalid == "failed":
+        run["conclusion"] = "failure"
+    else:
+        artifact["expired"] = True
+
+    def api(method, path, **kwargs):
+        assert method == "GET"
+        return {"artifacts": [artifact]} if "/artifacts?" in path else {"workflow_runs": [run]}
+
+    monkeypatch.setattr(publication, "api", api)
+    with pytest.raises(ValueError, match="successful main candidate"):
+        publication.successful_candidate(revision)
+
+
+@pytest.mark.parametrize("invalid", [None, "source", "install", "workspace", "wheel"])
+def test_promotion_binds_source_smokes_wheel_and_original_build(
+    source, distributions, monkeypatch, invalid
+):
+    import hashlib
+
+    monkeypatch.setenv("GITHUB_RUN_ID", "5678")
+    candidate = artifacts.prepare(distributions, root=source)
+    revision = candidate["source_sha"]
+    run, jobs = api_shape(revision)
+    main_run = {
+        "id": 5678,
+        "head_sha": revision,
+        "head_branch": "main",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+    }
+
+    def api(method, path, **kwargs):
+        assert method == "GET"
+        if "/actions/workflows/release.yml/" in path:
+            return {"workflow_runs": [main_run]}
+        if "/artifacts?" in path:
+            return {"artifacts": [{"name": "alpha-candidate-" + revision, "expired": False}]}
+        return {"jobs": jobs} if "/jobs?" in path else run
+
+    monkeypatch.setattr(publication, "api", api)
+    proof = publication.successful_ci(revision, 1234)
+    wheel = next(v for v in candidate["artifacts"] if v["name"].endswith(".whl"))
+    install = {"passed": True, "source_sha": revision, "wheel_sha256": wheel["sha256"]}
+    workspace = {
+        "passed": True,
+        "source_sha": revision,
+        "platform": "linux/amd64",
+        "database_counts": {"users": 0, "runs": 0, "mcp_tasks": 0},
+    }
+    if invalid == "source":
+        candidate["source_sha"] = "b" * 40
+        (distributions / "manifest.json").write_text(json.dumps(candidate))
+        sums = [distributions / v["name"] for v in candidate["artifacts"]]
+        sums.append(distributions / "manifest.json")
+        (distributions / "SHA256SUMS").write_text(
+            "".join(
+                hashlib.sha256(p.read_bytes()).hexdigest() + "  " + p.name + "\n"
+                for p in sorted(sums)
+            )
+        )
+    elif invalid == "install":
+        install["passed"] = False
+    elif invalid == "workspace":
+        workspace["source_sha"] = "b" * 40
+    elif invalid == "wheel":
+        install["wheel_sha256"] = "0" * 64
+    (distributions / "install-smoke.json").write_text(json.dumps(install))
+    (distributions / "workspace-smoke.json").write_text(json.dumps(workspace))
+    monkeypatch.setenv("GITHUB_RUN_ID", "9999")
+    destination = distributions.parent / "promoted"
+    if invalid:
+        with pytest.raises(ValueError):
+            publication.promote(distributions, destination, proof, root=source)
+        assert not destination.exists()
+    else:
+        result = publication.promote(distributions, destination, proof, root=source)
+        assert result["build_run_id"] == "5678" and result["publication_run_id"] == "9999"
+        assert result["artifacts"] == candidate["artifacts"]
+        for item in result["artifacts"]:
+            assert (destination / item["name"]).read_bytes() == (
+                distributions / item["name"]
+            ).read_bytes()

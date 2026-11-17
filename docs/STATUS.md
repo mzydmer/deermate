@@ -6,7 +6,7 @@
 
 目标v0.1.0-alpha.1对应Worker0.1.0a1，提供wheel/sdist/manifest/SHA256SUMS，无公共OCI镜像。候选CI只构建/验证；真实tag push且已合入main、同SHA全部13项CI通过、UTC日期一致，才可创建draft并核对上传digest后公开prerelease。独立评审/合并和具体候选核验之前不得push tag或发布Release。
 
-已实现版本/日期/来源/checksum与发布门禁，17项离线合同通过；真实cleanvenv与Linux全栈候选验证待进行。源码构建、平台/兼容/回退边界见[发行说明](../releases/alpha-notes.md)，内部步骤见[runbook](releasing.md)，不加入产品部署导航。现有设备权限、任务身份、托管实例与实验producer不变。
+已实现版本/日期/来源/checksum与发布门禁，26项离线合同通过，包含main候选拒绝与源/smoke/wheel/build_run提升边界。干净ed59c1b实际构建wheel/sdist，本机freshvenv校验安装、CLI help和空Worker就绪均通过，见[候选收据](verification/public-alpha-candidate-2026-11-17.json)。PR19 Linux全栈candidate CI正在运行，只认最终exact head；尚未验证或发布main最终产物。源码构建、平台/兼容/回退边界见[发行说明](../releases/alpha-notes.md)，内部步骤见[runbook](releasing.md)，不加入产品部署导航。现有设备权限、任务身份、托管实例与实验producer不变。
 
 ## 2026-11-16 · Router 首批离线结果（Issue #5，已合并）
 
