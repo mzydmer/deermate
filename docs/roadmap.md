@@ -245,3 +245,8 @@ Issue #5 [first offline results](research/router-offline-v1/README.md) use clean
 - [ ] Verify native/Pilot internal subtrace joining and optional AgentLoop AI views separately.
 
 Scope and evidence: [observability spec](specs/vendor-neutral-observability.md) and [cloud receipt](verification/observability-cloud-2026-11-12.json). The local implementation creates no cloud resources; the existing production deployment now uses a private ARMS workspace profile. Real Router calls, synthetic execution diagnostics and unverified native/Pilot joining remain separate acceptance scopes.
+
+
+## Public self-hosted Alpha release · Issue #7
+
+Candidate v0.1.0-alpha.1 maps to Worker0.1.0a1. [Release contract](specs/public-alpha-release.md) covers fixed source/upstream/CI/platform/checksum identity, verified wheel installation, full Linux startup, UTC/CFF gates and hosted-rollout separation. Actual tag/Release remains pending independent review and candidate verification; no public OCI images or production deployment.

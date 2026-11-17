@@ -38,11 +38,18 @@ def verify(converter, root=ROOT):
         )
     if "Copyright (c) 2026 DeerMate contributors" not in (root / "LICENSE").read_text():
         raise ValueError("Review citation authors against the MIT license")
-    # There is no public release/DOI in issue #6. Issue #7 owns adding actual release metadata.
-    if any(key in data for key in ("version", "date-released", "doi", "preferred-citation")):
-        raise ValueError(
-            "Unreleased citation must not invent publication or preferred-paper metadata"
-        )
+    if any(key in data for key in ("doi", "preferred-citation")):
+        raise ValueError("No DOI or preferred-paper metadata has been assigned")
+    fields = [key in data for key in ("version", "date-released")]
+    release = None
+    if any(fields):
+        if not all(fields):
+            raise ValueError("Release version and date must be declared together")
+        if __package__:
+            from .release_artifacts import metadata
+        else:
+            from release_artifacts import metadata
+        release = metadata(root)
     validation = run("--validate", "-i", source)
     if validation.returncode:
         raise ValueError("cffconvert rejected CITATION.cff: " + validation.stderr.strip())
@@ -73,7 +80,8 @@ def verify(converter, root=ROOT):
         "type": "software",
         "authors": data["authors"],
         "repository": REPOSITORY,
-        "publication_fields_omitted": True,
+        "publication_fields_omitted": release is None,
+        "release_metadata": release,
         "required_field_exit_codes": missing,
         "exports": exports,
         "limits": (

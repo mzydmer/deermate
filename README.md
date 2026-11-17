@@ -42,12 +42,14 @@ Memory is on by default for new accounts; existing choices are preserved. Coding
 
 ## Get started
 
+Public self-hosted Alpha target: [v0.1.0-alpha.1](https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1) (Worker `0.1.0a1`). Check that page for publication status and verified wheel/sdist assets; an implementation candidate is not an already-published Release. [Platforms, checksums, source build, compatibility and rollback](releases/alpha-notes.md). Hosted rollout is tracked separately.
+
 For the full local workspace, use **macOS, Docker Desktop, Python 3.12+, Git, Helm 3.18+ (3.x), and Codex CLI on PATH**. The helper checks for Codex during the first `init` and starts a host Worker and a generated-key SSH development connection during `up`. See the [platform notes](docs/local-docker.md#主机预检).
 
 If Codex is missing, follow the [official OpenAI installation instructions](https://learn.chatgpt.com/docs/codex/cli#install-codex) (macOS: `curl -fsSL https://chatgpt.com/codex/install.sh | sh`), then open a terminal where `command -v codex` succeeds.
 
 ```bash
-git clone https://github.com/mzydmer/deermate.git
+git clone --branch v0.1.0-alpha.1 --depth 1 https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate

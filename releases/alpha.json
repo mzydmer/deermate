@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "tag": "v0.1.0-alpha.1",
+  "version": "0.1.0-alpha.1",
+  "worker_version": "0.1.0a1",
+  "release_date_utc": "2026-11-17",
+  "prerelease": true,
+  "public_oci_images": [],
+  "source_build_platforms": [
+    "linux/amd64"
+  ],
+  "wheel_install_platforms": [
+    "linux/amd64",
+    "darwin/x86_64"
+  ],
+  "python": ">=3.11",
+  "upstream_revision_source": "deploy/deerflow.lock"
+}

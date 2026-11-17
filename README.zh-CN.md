@@ -42,12 +42,14 @@ DeerMate 是一个可自托管的个人助手：基于 **DeerFlow**，由 **Go �
 
 ## 开始使用
 
+公开自托管 Alpha 目标：[v0.1.0-alpha.1](https://github.com/mzydmer/deermate/releases/tag/v0.1.0-alpha.1)（Worker `0.1.0a1`）。实际发布状态与校验产物以该页面为准，评审中的候选不等于已发布 Release。[平台、校验、源码构建与兼容回退](releases/alpha-notes.md)。维护者托管实例的 rollout 单独记录。
+
 完整本地工作台需要 **macOS、Docker Desktop、Python 3.12+、Git、Helm 3.18+（3.x），以及 PATH 中可用的 Codex CLI**。脚本首次 `init` 就检查 Codex，`up` 会启动本机 Worker 和使用生成密钥的 SSH 开发连接。先看[平台说明](docs/local-docker.md#主机预检)。
 
 缺少 Codex 时，按 [OpenAI 官方安装说明](https://learn.chatgpt.com/docs/codex/cli#install-codex)安装（macOS：`curl -fsSL https://chatgpt.com/codex/install.sh | sh`），然后在能通过 `command -v codex` 的终端继续。
 
 ```bash
-git clone https://github.com/mzydmer/deermate.git
+git clone --branch v0.1.0-alpha.1 --depth 1 https://github.com/mzydmer/deermate.git
 cd deermate
 python3.12 -m venv .venv
 source .venv/bin/activate

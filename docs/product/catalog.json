@@ -414,7 +414,15 @@
       "docs/research/router-offline-v1/repeat/manifest.json",
       "docs/research/router-offline-v1/repeat/summary.json",
       "docs/research/router-offline-v1/repeat/comparison.json",
-      "docs/research/router-offline-v1/calibration/double-effect/verdict.json"
+      "docs/research/router-offline-v1/calibration/double-effect/verdict.json",
+      "releases/alpha.json",
+      "releases/alpha-notes.md",
+      "docs/specs/public-alpha-release.md",
+      "scripts/release_artifacts.py",
+      "scripts/release_publish.py",
+      "scripts/verify_release_workspace.py",
+      ".github/workflows/release.yml",
+      "docs/verification/public-alpha-candidate-2026-11-17.json"
     ]
   }
 ]

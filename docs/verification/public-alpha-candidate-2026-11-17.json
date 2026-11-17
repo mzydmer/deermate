@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "local_candidate_verified_not_published",
+  "tag": "v0.1.0-alpha.1",
+  "tag_created": false,
+  "release_published": false,
+  "source_sha": "ed59c1b21ed9b1d7cf0159dcafdd2faf0e2f58bc",
+  "worker_version": "0.1.0a1",
+  "candidate_release_date_utc": "2026-11-17",
+  "deerflow_sha": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+  "artifacts": [
+    {
+      "name": "deermate-0.1.0a1-py3-none-any.whl",
+      "sha256": "e20801eb7d25cfdd2fe22deb051c8608e2174b4c7a54656abac98bb5d3e35a49",
+      "size": 104142,
+      "platform": "py3-none-any"
+    },
+    {
+      "name": "deermate-0.1.0a1.tar.gz",
+      "sha256": "91b399a3ffd056933b121c53678d3453cc58d736c72eb3e321b0551d08150d3f",
+      "size": 12838839,
+      "platform": "source"
+    }
+  ],
+  "clean_venv_smoke": {
+    "passed": true,
+    "source_sha": "ed59c1b21ed9b1d7cf0159dcafdd2faf0e2f58bc",
+    "wheel_sha256": "e20801eb7d25cfdd2fe22deb051c8608e2174b4c7a54656abac98bb5d3e35a49",
+    "installed_version": "0.1.0a1",
+    "platform": "darwin/x86_64",
+    "cli_help": true,
+    "worker_ready": true,
+    "native_tasks_submitted": 0,
+    "real_provider_calls": 0
+  },
+  "publication_or_hosted_rollout": false,
+  "real_provider_calls": 0,
+  "real_native_tasks_submitted": 0,
+  "limits": "This receipt belongs to clean ed59c1b local artifacts. Final exact-head/main Linux candidate and public release are separately verified; do not relabel this source SHA."
+}

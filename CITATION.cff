@@ -3,7 +3,7 @@ type: software
 message: >-
   Please cite DeerMate as software using these metadata. For experiments,
   also record the full source commit and dataset/results identities described
-  in docs/research/references.md. Public release metadata is added only after release.
+  in docs/research/references.md. Release version and UTC date must match the tag policy and actual publication guard.
 title: DeerMate
 authors:
   - name: DeerMate contributors
@@ -14,3 +14,5 @@ keywords:
   - personal-assistant
   - agent-orchestration
   - reproducible-systems
+version: 0.1.0-alpha.1
+date-released: '2026-11-17'
