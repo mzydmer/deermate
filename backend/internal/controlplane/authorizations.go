@@ -161,6 +161,22 @@ func (s *Server) agentSave(tx *sql.Tx, g agentGrant, event string) error {
 	_, err = tx.Exec("INSERT INTO deermate_agent_events(owner,grant_id,action,created) VALUES(?,?,?,?)", g.Owner, g.ID, event, time.Now().Unix())
 	return err
 }
+
+// Authorization writes share the Gateway's WAL database. Reserve the writer
+// before any policy/version read so a concurrent writer uses the bounded busy
+// wait instead of failing immediately when a read transaction upgrades.
+// Callers perform no runtime/network I/O until after commit or rollback.
+func (s *Server) agentWriteTx(ctx context.Context) (*sql.Tx, error) {
+	tx, err := s.Store.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = tx.ExecContext(ctx, "UPDATE deermate_agent_grants SET data=data WHERE 0"); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	return tx, nil
+}
 func (s *Server) agentInventory(w http.ResponseWriter, r *http.Request) {
 	owner := sessionOf(r).User.ID
 	grants, err := s.agentGrants(owner)
@@ -210,7 +226,7 @@ func (s *Server) agentInventory(w http.ResponseWriter, r *http.Request) {
 func (s *Server) agentPairStart(w http.ResponseWriter, r *http.Request) {
 	// The installed MCP runtime is single-owner; do not share it across admins.
 	owner := sessionOf(r).User.ID
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return
@@ -269,7 +285,7 @@ func (s *Server) agentPairClaim(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return
@@ -376,7 +392,7 @@ func (s *Server) agentCreate(w http.ResponseWriter, r *http.Request) {
 		fail(w, 422, "invalid_policy", "Choose registered projects, operations, expiry and task policy")
 		return
 	}
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return
@@ -408,7 +424,7 @@ func (s *Server) agentChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	owner := sessionOf(r).User.ID
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return
@@ -453,7 +469,7 @@ func (s *Server) agentCancelChange(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &b) {
 		return
 	}
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return
@@ -496,7 +512,7 @@ func (s *Server) agentRevoke(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &b) {
 		return
 	}
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return
@@ -609,7 +625,7 @@ func (s *Server) agentConfirm(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &b) {
 		return
 	}
-	tx, err := s.Store.DB.Begin()
+	tx, err := s.agentWriteTx(r.Context())
 	if err != nil {
 		storeError(w, err)
 		return

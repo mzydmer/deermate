@@ -199,7 +199,7 @@
     "group": "technical",
     "title": "系统架构与设计边界",
     "description": "面向技术与研究读者的组件职责、数据路径和设计取舍。",
-    "updated": "2026-11-16",
+    "updated": "2026-11-17",
     "status": "技术方案",
     "sources": [
       "docs/architecture.md",
@@ -220,7 +220,8 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "docs/change-notes/memory-write-confirmation-2026-11-17.md"
     ]
   },
   {
