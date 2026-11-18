@@ -312,5 +312,20 @@
         "<ChevronDownIcon className=\"hidden size-3 min-[600px]:block\" />"
       ]
     ]
+  },
+  {
+    "path": "package.json",
+    "sha256": "9b28495e552c5d19bb972e7088c50e57896de4759e6c08a393ddab0c83e38ec2",
+    "replace": [
+      [
+        "\"next\": \"^16.4.1\"",
+        "\"next\": \"16.4.6\""
+      ]
+    ]
+  },
+  {
+    "path": "pnpm-lock.yaml",
+    "sha256": "2e6e65291e1913c3df7de14622e5931cac218f91ff8fc7dae6d39500d19d9870",
+    "replace": []
   }
 ]

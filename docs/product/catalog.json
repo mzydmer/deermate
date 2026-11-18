@@ -221,7 +221,8 @@
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
       "docs/verification/repository-doc-links-2026-11-16.json",
-      "docs/change-notes/memory-write-confirmation-2026-11-17.md"
+      "docs/change-notes/memory-write-confirmation-2026-11-17.md",
+      "docs/change-notes/frontend-security-2026-11-17.md"
     ]
   },
   {
@@ -431,7 +432,8 @@
       "scripts/repair_alpha_release_body.py",
       ".github/workflows/alpha-release-body.yml",
       "tests/test_release_body.py",
-      "docs/change-notes/memory-write-confirmation-2026-11-17.md"
+      "docs/change-notes/memory-write-confirmation-2026-11-17.md",
+      "docs/change-notes/frontend-security-2026-11-17.md"
     ]
   }
 ]

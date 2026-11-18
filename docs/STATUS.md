@@ -4,7 +4,7 @@
 
 远端 #1/#3–8 均已完成评审、合并与关闭，公开 Alpha v0.1.0-alpha.1 已发布；现有新加坡托管实例仍为此前前端/控制面/Gateway版本。本轮以干净 main a934af4 为基线，保留旧 issues worktree 的未提交内容，不重复合并已被后续 PR 取代的实现。
 
-发现该 main 的 CI 43994567825 有一项恢复演练失败（memory_delivery_completed）。共享 SQLite 的记忆 claim/finish 两连接回归修复前均稳定 SQLITE_BUSY；已添加先取得写意图的局部修正及失败诊断，真实集成验证与新 CI 尚待完成。线上仍健康，未变更生产、现有模型配置或设备授权。下一步完成恢复/必要检查、发布新提交，再按冷备/回退和原数据守卫升级既有实例。
+发现该 main 的 CI 43994567825 有一项恢复演练失败（memory_delivery_completed）。共享 SQLite 的记忆 claim/finish 两连接回归修复前均稳定 SQLITE_BUSY；已添加先取得写意图的局部修正及失败诊断，配对/授权短写事务随后补齐相同修正。干净 847ee21 的42项真实 API 冷恢复和13项远端 CI 全部通过；仍不等于已部署。线上仍健康，未变更生产、现有模型配置或设备授权。构建进一步发现固定 Next 16.4.1 的已公开安全修复待纳入，正在锁定16.4.6及其 @next 子包；DeerFlow SHA不变。下一步完成前端补丁、必要检查与当前CI，再按冷备/回退和原数据守卫升级既有实例。
 
 
 最后核对：2026-11-16（用户时区）；UTC已到2026-11-17。#1/#3/#4/#5/#6/#8已由独立评审合并关闭。#7实现PR19已评审合入main `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`，同SHA普通CI与Linux候选成功后，经具体候选授权发布 `v0.1.0-alpha.1`；实际发布时间UTC `2026-11-17T00:46:52Z`。公开下载与安装已验证；收尾评审及关闭验收以 [PR20](https://github.com/mzydmer/deermate/pull/20) / [Issue #7](https://github.com/mzydmer/deermate/issues/7) 的实际状态为准。未部署托管实例。

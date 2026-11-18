@@ -1,0 +1,648 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "profile": "synthetic Docker cold restore; real Go/Gateway/Worker APIs",
+  "snapshot_id": "fbad01a2-c62e-44ed-8982-473f13c14bd8",
+  "recovery_point": "2026-11-18T02:56:53.093543+00:00",
+  "archive_sha256": "3756e81ce824ddebbd40d47e4737c3e25b1a03f786715d138f8f28181b39bf8b",
+  "restore_preparation_seconds": 2.385,
+  "archive_export_seconds": 0.853,
+  "archive_validation_seconds": 0.05,
+  "archive_copy_seconds": 0.803,
+  "restore_to_ready_seconds": 57.261,
+  "invalid_archive_probes": [
+    {
+      "failure": "missing",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "checksum",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "mode",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "duplicate",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "link",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    },
+    {
+      "failure": "escape",
+      "exit_code": 1,
+      "target_bundle_exists": false,
+      "target_volume_exists": false,
+      "passed": true
+    }
+  ],
+  "post_snapshot_safety_changes": {
+    "applied_at_ns": 1794970654433509000,
+    "fact_id": "mem_f1b2d4982d9cb65d27861f5744fbc84f",
+    "deletion_operation": {
+      "operation_id": "restore-postpoint-forget-b613fcbd",
+      "expected_revision": 1
+    },
+    "grant_id": "d873a8bf-a3c9-4a26-a41f-e67724ddd711",
+    "grant_version": 1,
+    "reapplied_while_dispatch_frozen": true
+  },
+  "memory_delivery_records": [
+    {
+      "id": "f1b2d4982d9cb65d27861f5744fbc84f9a531f4529b4ce628879ebc8b4b146e8",
+      "kind": "INBOX",
+      "initial_status": "accepted_inbox",
+      "final_status": "completed",
+      "seconds": 3.396
+    },
+    {
+      "id": "316ba62fbba009e8ddae8b04a7eb7f596288464f273c6e71ba3b6983c18a514e",
+      "kind": "POST",
+      "initial_status": "completed",
+      "final_status": "completed",
+      "seconds": 0.039
+    },
+    {
+      "id": "24e676830f96914f669f574a9282c95229a3e164736de4740eebdba2fdffc3fa",
+      "kind": "DELETE",
+      "initial_status": "completed",
+      "final_status": "completed",
+      "seconds": 0.074
+    }
+  ],
+  "memory_source": {
+    "kind": "actual_captured_inbox",
+    "expectation": "verified archive at common cold point",
+    "full_object_matches": true,
+    "text_sha256": "f48e5cd98859d2eb1117227578ba15c7e0609d2cd91f57822ceb8a80bb8c5f39",
+    "message_id": "0e80e6263b8f411abd26a27f7811e080",
+    "thread_id": "router-2ba075ce5f7c4b9f9df07a690125a810",
+    "uses_at_cold_point": 0
+  },
+  "dispatch_counters_before_restore": {
+    "dispatches": [
+      [
+        "430cb3a6923b45fd876c72bd69668993",
+        1
+      ],
+      [
+        "78f095d4f89a43cca02cf3750a806a19",
+        1
+      ],
+      [
+        "bb69123d6f354844bac719a4ce0ada0d",
+        1
+      ],
+      [
+        "e968d80728904467b09f2229f6f171a9",
+        1
+      ],
+      [
+        "eebc8eb002504224881bace3f555655e",
+        1
+      ],
+      [
+        "ef2a2980812c409b837a103df98182d7",
+        1
+      ],
+      [
+        "f07cebb940994a7992318d0bf1cedcaf",
+        1
+      ],
+      [
+        "fd3096f1383e4b579012a24ef2065168",
+        1
+      ]
+    ],
+    "memory_jobs": [
+      [
+        "memory-d47b0531e83c96897e4d79b154a1565eb981022bacb2cae5",
+        "completed",
+        "reserved"
+      ]
+    ],
+    "model_calls": 7,
+    "model_calls_sha256": "df00055796e32ffc0fca11d47851d32ec0e54cb19f6e90ec3746c80668609532",
+    "native_requests": 10,
+    "native_trace_sha256": "53b582d19b4b19cf73da64efaeeba7975b07f43d0d156c2dc884c89bd27fe9db",
+    "operations": [
+      [
+        "0be319fd7a2142ef932a9a4819ab58b5",
+        "settled"
+      ],
+      [
+        "24843f50-a9fe-4bdc-8b2c-be1d3f25cddc",
+        "uncertain"
+      ],
+      [
+        "430cb3a6923b45fd876c72bd69668993",
+        "settled"
+      ],
+      [
+        "453c58f6feea4a36850c20d7004691ca",
+        "settled"
+      ],
+      [
+        "78f095d4f89a43cca02cf3750a806a19",
+        "settled"
+      ],
+      [
+        "a9d05d6013a74b54850b87feb9451ce1",
+        "settled"
+      ],
+      [
+        "bb69123d6f354844bac719a4ce0ada0d",
+        "settled"
+      ],
+      [
+        "e968d80728904467b09f2229f6f171a9",
+        "settled"
+      ],
+      [
+        "eebc8eb002504224881bace3f555655e",
+        "settled"
+      ],
+      [
+        "ef2a2980812c409b837a103df98182d7",
+        "settled"
+      ],
+      [
+        "f07cebb940994a7992318d0bf1cedcaf",
+        "settled"
+      ],
+      [
+        "fd3096f1383e4b579012a24ef2065168",
+        "settled"
+      ]
+    ],
+    "runs": [
+      [
+        "16ac665e-b993-43d0-8c1a-6a04101796f6"
+      ],
+      [
+        "1f176bcd-2624-4a5a-bdcf-920f8f5e3c1d"
+      ],
+      [
+        "6985b351-c86e-4f9a-8bdc-c1a26f219185"
+      ],
+      [
+        "6a229a6f-070e-4412-873d-a57d2c554219"
+      ],
+      [
+        "7d9f415a-5d12-4d18-9631-36fd01d4199c"
+      ],
+      [
+        "b505b0d2-fba4-425d-be32-97efcfc890d1"
+      ],
+      [
+        "ba1f15c8-5005-47c5-88f1-bde09ded96cb"
+      ],
+      [
+        "e6c73475-1b6e-4879-b4d7-e6915c85d7f7"
+      ]
+    ],
+    "tasks": [
+      [
+        "mcp-task-7ec1383c29b718fbd94dc439c58aa439",
+        "edb37c6ee7104fc58d59b2d2067b98c3",
+        "3c575adf95324848b06108af70a25a42:4ab9e67256c44705aa647df3ed2b761b",
+        "completed"
+      ],
+      [
+        "mcp-task-f22ae20c4083b85b21edaca209457d05",
+        "edb37c6ee7104fc58d59b2d2067b98c3",
+        "3c575adf95324848b06108af70a25a42:635c200293264dbe8a5728f9b9d15272",
+        "completed"
+      ]
+    ],
+    "threads": [
+      [
+        "edb37c6ee7104fc58d59b2d2067b98c3",
+        "3aa64c18-a100-4367-bd31-8b4512dfc4e2"
+      ],
+      [
+        "router-2ba075ce5f7c4b9f9df07a690125a810",
+        "3aa64c18-a100-4367-bd31-8b4512dfc4e2"
+      ]
+    ],
+    "users": [
+      [
+        "3aa64c18-a100-4367-bd31-8b4512dfc4e2"
+      ]
+    ],
+    "worker_tasks": [
+      {
+        "attempt": 1,
+        "base_commit": "95de4186570f3c21b060b5fb538cc193b7fef20e",
+        "parent_task_id": "635c200293264dbe8a5728f9b9d15272",
+        "session_id": "36fbbd2886654a48b773fe254277badc",
+        "status": "completed",
+        "task_id": "4ab9e67256c44705aa647df3ed2b761b",
+        "turn_id": "a95ad222e2a14f28bc348ce819ff03f0",
+        "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/635c200293264dbe8a5728f9b9d15272"
+      },
+      {
+        "attempt": 1,
+        "base_commit": "95de4186570f3c21b060b5fb538cc193b7fef20e",
+        "parent_task_id": null,
+        "session_id": "36fbbd2886654a48b773fe254277badc",
+        "status": "completed",
+        "task_id": "635c200293264dbe8a5728f9b9d15272",
+        "turn_id": "d14fb36ec4a04ff6a04527d1791e1a47",
+        "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/635c200293264dbe8a5728f9b9d15272"
+      }
+    ]
+  },
+  "dispatch_counters_after_restore": {
+    "dispatches": [
+      [
+        "430cb3a6923b45fd876c72bd69668993",
+        1
+      ],
+      [
+        "78f095d4f89a43cca02cf3750a806a19",
+        1
+      ],
+      [
+        "bb69123d6f354844bac719a4ce0ada0d",
+        1
+      ],
+      [
+        "e968d80728904467b09f2229f6f171a9",
+        1
+      ],
+      [
+        "eebc8eb002504224881bace3f555655e",
+        1
+      ],
+      [
+        "ef2a2980812c409b837a103df98182d7",
+        1
+      ],
+      [
+        "f07cebb940994a7992318d0bf1cedcaf",
+        1
+      ],
+      [
+        "fd3096f1383e4b579012a24ef2065168",
+        1
+      ]
+    ],
+    "memory_jobs": [
+      [
+        "memory-d47b0531e83c96897e4d79b154a1565eb981022bacb2cae5",
+        "completed",
+        "reserved"
+      ]
+    ],
+    "model_calls": 7,
+    "model_calls_sha256": "df00055796e32ffc0fca11d47851d32ec0e54cb19f6e90ec3746c80668609532",
+    "native_requests": 10,
+    "native_trace_sha256": "53b582d19b4b19cf73da64efaeeba7975b07f43d0d156c2dc884c89bd27fe9db",
+    "operations": [
+      [
+        "0be319fd7a2142ef932a9a4819ab58b5",
+        "settled"
+      ],
+      [
+        "24843f50-a9fe-4bdc-8b2c-be1d3f25cddc",
+        "uncertain"
+      ],
+      [
+        "430cb3a6923b45fd876c72bd69668993",
+        "settled"
+      ],
+      [
+        "453c58f6feea4a36850c20d7004691ca",
+        "settled"
+      ],
+      [
+        "78f095d4f89a43cca02cf3750a806a19",
+        "settled"
+      ],
+      [
+        "a9d05d6013a74b54850b87feb9451ce1",
+        "settled"
+      ],
+      [
+        "bb69123d6f354844bac719a4ce0ada0d",
+        "settled"
+      ],
+      [
+        "e968d80728904467b09f2229f6f171a9",
+        "settled"
+      ],
+      [
+        "eebc8eb002504224881bace3f555655e",
+        "settled"
+      ],
+      [
+        "ef2a2980812c409b837a103df98182d7",
+        "settled"
+      ],
+      [
+        "f07cebb940994a7992318d0bf1cedcaf",
+        "settled"
+      ],
+      [
+        "fd3096f1383e4b579012a24ef2065168",
+        "settled"
+      ]
+    ],
+    "runs": [
+      [
+        "16ac665e-b993-43d0-8c1a-6a04101796f6"
+      ],
+      [
+        "1f176bcd-2624-4a5a-bdcf-920f8f5e3c1d"
+      ],
+      [
+        "6985b351-c86e-4f9a-8bdc-c1a26f219185"
+      ],
+      [
+        "6a229a6f-070e-4412-873d-a57d2c554219"
+      ],
+      [
+        "7d9f415a-5d12-4d18-9631-36fd01d4199c"
+      ],
+      [
+        "b505b0d2-fba4-425d-be32-97efcfc890d1"
+      ],
+      [
+        "ba1f15c8-5005-47c5-88f1-bde09ded96cb"
+      ],
+      [
+        "e6c73475-1b6e-4879-b4d7-e6915c85d7f7"
+      ]
+    ],
+    "tasks": [
+      [
+        "mcp-task-7ec1383c29b718fbd94dc439c58aa439",
+        "edb37c6ee7104fc58d59b2d2067b98c3",
+        "3c575adf95324848b06108af70a25a42:4ab9e67256c44705aa647df3ed2b761b",
+        "completed"
+      ],
+      [
+        "mcp-task-f22ae20c4083b85b21edaca209457d05",
+        "edb37c6ee7104fc58d59b2d2067b98c3",
+        "3c575adf95324848b06108af70a25a42:635c200293264dbe8a5728f9b9d15272",
+        "completed"
+      ]
+    ],
+    "threads": [
+      [
+        "edb37c6ee7104fc58d59b2d2067b98c3",
+        "3aa64c18-a100-4367-bd31-8b4512dfc4e2"
+      ],
+      [
+        "router-2ba075ce5f7c4b9f9df07a690125a810",
+        "3aa64c18-a100-4367-bd31-8b4512dfc4e2"
+      ]
+    ],
+    "users": [
+      [
+        "3aa64c18-a100-4367-bd31-8b4512dfc4e2"
+      ]
+    ],
+    "worker_tasks": [
+      {
+        "attempt": 1,
+        "base_commit": "95de4186570f3c21b060b5fb538cc193b7fef20e",
+        "parent_task_id": "635c200293264dbe8a5728f9b9d15272",
+        "session_id": "36fbbd2886654a48b773fe254277badc",
+        "status": "completed",
+        "task_id": "4ab9e67256c44705aa647df3ed2b761b",
+        "turn_id": "a95ad222e2a14f28bc348ce819ff03f0",
+        "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/635c200293264dbe8a5728f9b9d15272"
+      },
+      {
+        "attempt": 1,
+        "base_commit": "95de4186570f3c21b060b5fb538cc193b7fef20e",
+        "parent_task_id": null,
+        "session_id": "36fbbd2886654a48b773fe254277badc",
+        "status": "completed",
+        "task_id": "635c200293264dbe8a5728f9b9d15272",
+        "turn_id": "d14fb36ec4a04ff6a04527d1791e1a47",
+        "workspace": "/app/backend/.deer-flow/continuous-native-fixture/state/workspaces/635c200293264dbe8a5728f9b9d15272"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "actual_driver_native_two_rounds_same_root",
+      "passed": true
+    },
+    {
+      "name": "synthetic_capture_enabled_for_actual_source",
+      "passed": true
+    },
+    {
+      "name": "actual_inbox_memory_delivery_completed",
+      "passed": true
+    },
+    {
+      "name": "actual_source_full_text_and_inbox_binding",
+      "passed": true
+    },
+    {
+      "name": "memory_delivery_completed",
+      "passed": true
+    },
+    {
+      "name": "memory_delivery_completed",
+      "passed": true
+    },
+    {
+      "name": "forgotten_before_snapshot_not_recalled",
+      "passed": true
+    },
+    {
+      "name": "valid_source_readable_before_snapshot",
+      "passed": true
+    },
+    {
+      "name": "actual_worker_root_matches_public_api",
+      "passed": true
+    },
+    {
+      "name": "native_root_readable_before_snapshot",
+      "passed": true
+    },
+    {
+      "name": "synthetic_status_grant_confirmed_before_point",
+      "passed": true
+    },
+    {
+      "name": "cold_backup_automatically_resumed_original",
+      "passed": true
+    },
+    {
+      "name": "synthetic_unknown_record_created",
+      "passed": true
+    },
+    {
+      "name": "unacknowledged_unknown_does_not_publish_snapshot",
+      "passed": true
+    },
+    {
+      "name": "cold_point_preserves_actual_source_text_and_binding",
+      "passed": true
+    },
+    {
+      "name": "snapshot_retains_original_unknown_id",
+      "passed": true
+    },
+    {
+      "name": "source_post_point_changes_keep_quarantine",
+      "passed": true
+    },
+    {
+      "name": "source_api_matches_archived_cold_point",
+      "passed": true
+    },
+    {
+      "name": "actual_source_forgetting_after_snapshot",
+      "passed": true
+    },
+    {
+      "name": "actual_source_revocation_after_snapshot",
+      "passed": true
+    },
+    {
+      "name": "source_safety_maintenance_did_not_dispatch",
+      "passed": true
+    },
+    {
+      "name": "actual_bad_archives_leave_no_target",
+      "passed": true
+    },
+    {
+      "name": "owner_thread_task_operation_and_native_identity_preserved",
+      "passed": true
+    },
+    {
+      "name": "counters_were_active_before_restore",
+      "passed": true
+    },
+    {
+      "name": "same_owner_logs_in",
+      "passed": true
+    },
+    {
+      "name": "quarantine_is_active",
+      "passed": true
+    },
+    {
+      "name": "valid_memory_fts5_restored",
+      "passed": true
+    },
+    {
+      "name": "pre_snapshot_forgotten_fact_stays_unrecallable",
+      "passed": true
+    },
+    {
+      "name": "same_memory_source_restored",
+      "passed": true
+    },
+    {
+      "name": "actual_work_and_task_links_readable",
+      "passed": true
+    },
+    {
+      "name": "same_native_root_readable_through_actual_api",
+      "passed": true
+    },
+    {
+      "name": "unknown_operation_readable_through_actual_api",
+      "passed": true
+    },
+    {
+      "name": "quarantine_search_preserves_csrf",
+      "passed": true
+    },
+    {
+      "name": "snapshot_precedes_actual_later_revocation",
+      "passed": true
+    },
+    {
+      "name": "post_point_forgetting_reapplied_while_frozen",
+      "passed": true
+    },
+    {
+      "name": "post_point_fact_unrecallable_before_reopening",
+      "passed": true
+    },
+    {
+      "name": "post_point_revocation_reapplied_while_frozen",
+      "passed": true
+    },
+    {
+      "name": "dispatch_blocked_messages",
+      "passed": true
+    },
+    {
+      "name": "dispatch_blocked_poll",
+      "passed": true
+    },
+    {
+      "name": "dispatch_blocked_threads",
+      "passed": true
+    },
+    {
+      "name": "zero_restored_native_or_provider_dispatches",
+      "passed": true
+    },
+    {
+      "name": "original_home_volume_still_exists",
+      "passed": true
+    }
+  ],
+  "real_provider_calls": 0,
+  "real_native_calls": 0,
+  "restored_dispatches": 0,
+  "protocol_native_roots_before_restore": 1,
+  "limits": "Local synthetic data/keys and scripted native protocol; no cloud loss or real device reconciliation; private backup is not published.",
+  "source_revision": "847ee21ce576d5356b3fded550d1a96bd9377b05",
+  "user_date": "2026-11-17",
+  "failed_attempts_retained": [
+    {
+      "attempt": "01",
+      "phase": "preflight",
+      "classification": "Helm missing from PATH"
+    },
+    {
+      "attempt": "02",
+      "phase": "fixture_start",
+      "classification": "network overlap"
+    },
+    {
+      "attempt": "03",
+      "phase": "authorization_create",
+      "classification": "actual SQLite BUSY; memory deliveries completed"
+    },
+    {
+      "attempt": "04",
+      "phase": "fixture_start",
+      "classification": "retained network overlap"
+    }
+  ],
+  "integration_image_limits": "Go binary built from the recorded clean source; reused pinned issue4 Gateway/test image and issue8 frontend, not a fresh production frontend acceptance."
+}
