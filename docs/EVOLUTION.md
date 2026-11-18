@@ -882,3 +882,7 @@ PR18 c2408b7最终13项CI全部通过，独立评审合入main303e839并关闭#5
 PR19最终d944857的13项CI与Linux候选通过，独立评审合入main `b9f20fb75162a51102ecc53b0f9cee20d2e30aee`。main CI43988806948全部13项成功，候选43988807046及artifact14286657796由监督者独立下载核验后，按明确指令通过现有SSH新建并单独push annotated tag v0.1.0-alpha.1，不force或移动已有tag。发布run43990334101提升原main候选wheel/sdist字节，核对服务端digest后在UTC2026-11-17T00:46:52Z公开prerelease447839083。四份公开下载摘要/大小/清单/source/CI/build/publish身份正确，与原候选分发文件逐字节相同；公开wheel在全新venv安装/help/空Worker readiness通过，0真实Provider/Native任务。实际[发布收据](verification/public-alpha-release-2026-11-17.json)保留旧main原操作未解除、候选301及文档门禁失败，不把最终成功当作历史runtime修复。后续收据提交不冒充release SHA；未部署托管实例、未改既有设备权限或实验producer。
 
 发布后独立GitHub UI发现Release正文相对指南链接渲染缺tag/ref，准备窄范围main Actions正文修复：固定原/新body SHA，只PATCH现有release447839083的body，保留tag/source/date/四资产ID与digest。13项边界合同通过，真实连接器API数据只读预检匹配；本机urllib TLS EOF未绕过，实际Linux作业和正文修复须在PR评审合入后单独核验。
+
+## 2026-11-17 · 接续已合并 issues 与云端升级
+
+核对远端七项 issue 均由后续 PR 完成并关闭，公开 Alpha 已存在，旧批次 worktree 的进度不能再代表 main。本轮从 a934af4 独立接续，原私有未提交工作保留。生产读取表明托管实例尚未纳入这批修复。最新 main 的恢复 CI 暴露记忆完成确认超时；先补齐共享 SQLite claim/finish 两阶段红测试，再修正短事务写意图，完整恢复/CI/部署按实际结果续记。

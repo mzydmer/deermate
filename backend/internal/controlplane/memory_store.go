@@ -451,6 +451,11 @@ func (s *Store) claimMemory(ctx context.Context, owner, id string) (MemoryOperat
 		return MemoryOperation{}, err
 	}
 	defer tx.Rollback()
+	// Reserve this short database-only write before reading. A deferred WAL
+	// read cannot upgrade while the Gateway holds the competing writer lock.
+	if _, err = tx.ExecContext(ctx, "UPDATE deermate_memory_operations SET status=status WHERE 0"); err != nil {
+		return MemoryOperation{}, err
+	}
 	op, err := scanMemoryOperation(tx.QueryRow("SELECT "+memoryOperationColumns+" FROM deermate_memory_operations WHERE owner=? AND id=?", owner, id))
 	if err != nil {
 		return op, err
@@ -473,6 +478,11 @@ func (s *Store) finishMemory(ctx context.Context, op MemoryOperation, revision i
 		return err
 	}
 	defer tx.Rollback()
+	// Provider I/O has already finished. Wait within the existing busy/context
+	// bound before inspecting the receipt; never retry the provider operation.
+	if _, err = tx.ExecContext(ctx, "UPDATE deermate_memory_operations SET status=status WHERE 0"); err != nil {
+		return err
+	}
 	var status string
 	if err = tx.QueryRow("SELECT status FROM deermate_memory_operations WHERE id=?", op.ID).Scan(&status); err != nil {
 		return err

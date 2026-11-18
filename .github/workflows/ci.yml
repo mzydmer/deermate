@@ -242,6 +242,7 @@ jobs:
             --work-dir .deermate/verification/cold-restore \
             --receipt .deermate/verification/single-host-restore.json
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: ack-package-verification
           path: |
@@ -249,6 +250,7 @@ jobs:
             .deermate/ack/build-receipt.json
             .deermate/verification/ack-image-ci.json
             .deermate/verification/single-host-restore.json
+            .deermate/verification/cold-restore/failure.json
           include-hidden-files: true
 
   deerflow-contract:

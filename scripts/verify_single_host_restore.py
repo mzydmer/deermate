@@ -767,6 +767,21 @@ d.commit();print(json.dumps({'inserted':True}))
                 }
             )
         )
+    except Exception as error:
+        # This fixture uses synthetic identities. Publish only bounded state
+        # diagnostics; archives, cookies, payloads and container logs stay private.
+        (work / "failure.json").write_text(
+            json.dumps(
+                {
+                    "passed": False,
+                    "error_type": type(error).__name__,
+                    "checks": checks,
+                    "memory_deliveries": memory_deliveries,
+                },
+                indent=2,
+            ) + "\n"
+        )
+        raise
     finally:
         for bundle in reversed(started):
             single_host_backup.compose(bundle, "stop", "--timeout", "60")

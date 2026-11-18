@@ -262,7 +262,7 @@
     "group": "technical",
     "title": "记忆、上下文与来源治理",
     "description": "显式事实、有界检索、来源版本与遗忘屏障。",
-    "updated": "2026-11-16",
+    "updated": "2026-11-17",
     "status": "技术方案",
     "sources": [
       "docs/specs/m4-memory-technical-design.md",
@@ -277,7 +277,8 @@
       "scripts/product_docs.py",
       "docs/DOCUMENTATION_POLICY.md",
       "docs/specs/product-documentation.md",
-      "docs/verification/repository-doc-links-2026-11-16.json"
+      "docs/verification/repository-doc-links-2026-11-16.json",
+      "docs/change-notes/memory-write-confirmation-2026-11-17.md"
     ]
   },
   {
@@ -338,7 +339,7 @@
     "group": "changelog",
     "title": "变更日志",
     "description": "查看产品变化、启用条件和交付范围。",
-    "updated": "2026-11-16",
+    "updated": "2026-11-17",
     "status": "持续更新",
     "sources": [
       "docs/EVOLUTION.md",
@@ -428,7 +429,8 @@
       "docs/verification/public-alpha-release-2026-11-17.json",
       "scripts/repair_alpha_release_body.py",
       ".github/workflows/alpha-release-body.yml",
-      "tests/test_release_body.py"
+      "tests/test_release_body.py",
+      "docs/change-notes/memory-write-confirmation-2026-11-17.md"
     ]
   }
 ]
